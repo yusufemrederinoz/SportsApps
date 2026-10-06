@@ -183,3 +183,5 @@ Doğrulama: tip denetimi, lint, 22 uygulama testi ve Android paketleme geçiyor.
 | `b00357b` | 7 Ekim | Seviye eşiklerinin veritabanına yazılması |
 | `a7a0579` | 7 Ekim | Offline maç ekranı, arama, bot |
 | `32b76f9` | 7 Ekim | Belgeler: günlük, teknik mimari, belge dizini |
+| `2afe0d8` | 7 Ekim | Arayüz teknolojisi ve görsel yön kararları |
+| `ed57182` | 7 Ekim | Gece stadyumu tasarım dili: zemin, sayaç, animasyon, titreşim, ses |
