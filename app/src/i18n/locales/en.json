@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "Football Tic-Tac-Toe",
+    "subtitle": "Name a footballer who fits both the row and the column.",
+    "rulesTitle": "How it works",
+    "ruleTurn": "You have {{seconds}} seconds for each move.",
+    "ruleLine": "Three cells in a line win the game.",
+    "ruleCells": "If nobody completes a line, the side with more cells wins."
+  }
+}

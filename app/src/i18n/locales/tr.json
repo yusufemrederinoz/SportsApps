@@ -1,0 +1,10 @@
+{
+  "home": {
+    "title": "Futbol XOX",
+    "subtitle": "Satırdaki ve sütundaki ölçütün ikisine de uyan bir futbolcu yaz.",
+    "rulesTitle": "Nasıl oynanır",
+    "ruleTurn": "Her hamle için {{seconds}} saniyen var.",
+    "ruleLine": "Aynı hizada üç hücreyi alan oyunu kazanır.",
+    "ruleCells": "Kimse üçlü yapamazsa daha çok hücre alan kazanır."
+  }
+}
