@@ -133,7 +133,16 @@ Doğrulama durumu:
 
 ### Oyun hissi ve arayüz teknolojisi
 
-Arayüzün iddialı olması istendi. Şu anki ekranlar işlevsel bir iskelet; görsel kimlik ve oyun hissi ayrı bir adım olarak plana eklendi (Adım 4B). Önerilen teknoloji seti yönelim belgesinde.
+Arayüzün iddialı olması istendi. Şu anki ekranlar işlevsel bir iskelet; görsel kimlik ve oyun hissi ayrı bir adım olarak plana eklendi (Adım 4B).
+
+- Teknoloji seti onaylandı: Skia, Reanimated, Lottie, expo-haptics, expo-audio. Hepsinin Expo SDK 57 tarafından sürüm sabitlendiği denetlendi.
+- Oyun motoru kullanılmayacak: sıra tabanlı, isim yazmaya dayalı bir oyunda motor yük getirir.
+- Rive değerlendirildi ama eklenmedi; Expo SDK 57 sürümünü sabitlemiyor.
+- Görsel yön "gece stadyumu" olarak seçildi. Diğer seçenekler çıkartma albümü, temiz ve sportif, retro arcade idi.
+
+### Belgeleme
+
+Yapılan işlerin düzenli belgelenmesi istendi. `docs` altına belge dizini, teknik mimari ve bu günlük eklendi; her adımda güncellenecek.
 
 ## Commit listesi
 
@@ -149,3 +158,4 @@ Arayüzün iddialı olması istendi. Şu anki ekranlar işlevsel bir iskelet; g�
 | `b9ac818` | 7 Ekim | Uygulama veritabanı, ortak ad sadeleştirme, bot |
 | `b00357b` | 7 Ekim | Seviye eşiklerinin veritabanına yazılması |
 | `a7a0579` | 7 Ekim | Offline maç ekranı, arama, bot |
+| `32b76f9` | 7 Ekim | Belgeler: günlük, teknik mimari, belge dizini |

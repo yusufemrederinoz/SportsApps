@@ -98,9 +98,9 @@ Bitti sayılır: Android ve iOS'ta internetsiz bir maç baştan sona oynanır.
 
 ## Adım 4B — Tasarım dili ve oyun hissi
 
-Durum: başlamadı. Görsel yön kararı bekliyor.
+Durum: başlamadı. Görsel yön "gece stadyumu" olarak seçildi, teknoloji seti onaylandı (7 Ekim 2026). Başlamadan önce Adım 4'ün cihaz denemesi yapılmalı.
 
-- Görsel yön seçilir; renk, tipografi, boşluk ve bileşen kuralları yazılır.
+- Seçilen görsel yön için renk, tipografi, boşluk ve bileşen kuralları yazılır.
 - Skia, Lottie, expo-haptics ve expo-audio projeye eklenir.
 - Izgara, hücre alma, sıra geçişi, sayaç ve sonuç ekranı hareket, ses ve dokunsal geri bildirimle yeniden yapılır.
 - Oyuncu kartı bileşeni tasarlanır; Adım 3'teki görsellerle birlikte çalışacak şekilde.

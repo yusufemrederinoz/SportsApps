@@ -30,6 +30,8 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Üçlü olmazsa | Daha çok hücre alan kazanır; hücre sayısı eşitse beraberlik |
 | Veri isteklerinde kimlik | Wikipedia ve diğer veri kaynaklarına giden isteklerde iletişim bilgisi olarak depo adresi gönderilir |
 | Arayüz iddiası | Bu bir oyundur; arayüz ve kullanıcı deneyimi iddialı olacak. Düz uygulama görünümü yeterli değil |
+| Arayüz teknolojisi | Skia, Reanimated, Lottie, expo-haptics, expo-audio. Oyun motoru kullanılmaz |
+| Görsel yön | Gece stadyumu: koyu zemin, projektör ışığı parlamaları, canlı vurgu renkleri, skor tabelası tipografisi |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 
@@ -91,9 +93,11 @@ Serbest lisans fotoğrafın telifini çözer; oyuncunun kişilik hakkı riski s�
 
 ## Arayüz ve oyun hissi
 
-Durum: teknoloji seti önerildi, onay bekliyor. Görsel yön henüz seçilmedi.
+Durum: teknoloji seti ve görsel yön onaylandı (7 Ekim 2026). Tasarım dili Adım 4B'de yazılacak.
 
-Oyun motoru (Unity, Godot gibi) önerilmiyor. Sıra tabanlı, metin girişli bir bilgi oyununda motor; klavye, liste, çok dillilik ve uygulama boyutu açısından yük getirir. Oyun hissi hareket, ses, dokunsal geri bildirim ve görsel efektlerden gelir; bunlar Expo içinde kurulabilir.
+Görsel yön "gece stadyumu": koyu zemin, projektör ışığı parlamaları, canlı vurgu renkleri ve skor tabelası tipografisi. Oyuncu kartlarının parlama efektleri koyu zeminde öne çıkar.
+
+Oyun motoru (Unity, Godot gibi) kullanılmıyor. Sıra tabanlı, metin girişli bir bilgi oyununda motor; klavye, liste, çok dillilik ve uygulama boyutu açısından yük getirir. Oyun hissi hareket, ses, dokunsal geri bildirim ve görsel efektlerden gelir; bunlar Expo içinde kurulabilir.
 
 | Katman | Teknoloji | Ne için |
 |---|---|---|
@@ -128,9 +132,7 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 5. Joker olacak mı, olacaksa hangileri?
 6. Uygulamanın adı. Şimdilik çalışma adı olarak "Futbol XOX" kullanılıyor.
 7. Tıkanan oyun ne zaman biter? Şimdilik art arda dört turda hücre alınamazsa oyun biter ve hücre sayısına bakılır.
-8. Görsel yön: uygulamanın genel görünümü ve havası.
-9. Arayüz teknoloji seti onaylanıyor mu?
-10. Uygulama veritabanı depoda mı kalsın, yoksa derleme sırasında mı indirilsin?
+8. Uygulama veritabanı depoda mı kalsın, yoksa derleme sırasında mı indirilsin?
 
 ## Riskler
 
