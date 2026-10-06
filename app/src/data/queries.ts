@@ -112,7 +112,7 @@ export async function searchFootballers(
   }
   const match = tokens.map((token) => `"${token}"*`).join(' ');
   return database.getAllAsync<FootballerSummary>(
-    `SELECT p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode
+    `SELECT p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode, p.position AS role
      FROM (SELECT DISTINCT player_id FROM player_search WHERE player_search MATCH ?) s
      JOIN players p ON p.id = s.player_id
      LEFT JOIN countries c ON c.id = p.country_id
@@ -138,9 +138,12 @@ export async function isCorrectAnswer(
   return result?.correct === 1;
 }
 
-export async function loadFootballerName(database: QueryRunner, footballerId: number): Promise<string | null> {
-  const row = await database.getFirstAsync<{ name: string }>('SELECT name FROM players WHERE id = ?', [footballerId]);
-  return row?.name ?? null;
+export async function loadFootballer(database: QueryRunner, footballerId: number): Promise<FootballerSummary | null> {
+  return database.getFirstAsync<FootballerSummary>(
+    `SELECT p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode, p.position AS role
+     FROM players p LEFT JOIN countries c ON c.id = p.country_id WHERE p.id = ?`,
+    [footballerId],
+  );
 }
 
 export async function loadMinimumFame(database: QueryRunner, difficulty: Difficulty): Promise<number> {

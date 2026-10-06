@@ -31,7 +31,9 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Veri isteklerinde kimlik | Wikipedia ve diğer veri kaynaklarına giden isteklerde iletişim bilgisi olarak depo adresi gönderilir |
 | Arayüz iddiası | Bu bir oyundur; arayüz ve kullanıcı deneyimi iddialı olacak. Düz uygulama görünümü yeterli değil |
 | Arayüz teknolojisi | Skia, Reanimated, Lottie, expo-haptics, expo-audio. Oyun motoru kullanılmaz |
-| Görsel yön | Gece stadyumu: koyu zemin, projektör ışığı parlamaları, canlı vurgu renkleri, skor tabelası tipografisi |
+| Görsel yön | Gece stadyumu: koyu zemin, projektör ışığı, metalik oyuncu kartları |
+| Arayüz hedef çıtası | EA FC Ultimate Team: metalik kartlar, sinematik geçişler, premium futbol havası |
+| Arayüz incelemesi | Geliştirme makinesinde emülatör yok. Görünüm, telefondan atılan ekran görüntüleriyle incelenir |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 

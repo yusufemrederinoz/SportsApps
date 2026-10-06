@@ -22,7 +22,7 @@ function answer(turnNumber: number, row: number, column: number, id: number, cor
     type: 'answer',
     turnNumber,
     position: { row, column },
-    footballer: { id, name: `Footballer ${id}` },
+    footballer: { id, name: `Footballer ${id}`, countryCode: 'TR', role: 'MF' },
     correct,
     now,
   };
@@ -43,8 +43,9 @@ describe('reduceSession', () => {
   it('records a correct answer, its name and restarts the clock', () => {
     const session = reduceSession(startSession(grid, 'x', 0), answer(1, 0, 0, 7));
     expect(session.match.cells[0]).toEqual({ side: 'x', footballerId: 7 });
-    expect(session.footballerNames).toEqual({ 7: 'Footballer 7' });
+    expect(session.footballers).toEqual({ 7: { id: 7, name: 'Footballer 7', countryCode: 'TR', role: 'MF' } });
     expect(session.feedback).toEqual({ kind: 'correct', side: 'x', footballerName: 'Footballer 7' });
+    expect(session.lastClaim).toEqual({ index: 0, side: 'x', turnNumber: 1 });
     expect(session.turnEndsAt).toBe(25_000);
     expect(session.match.turn).toBe('o');
   });
@@ -52,7 +53,8 @@ describe('reduceSession', () => {
   it('reports a wrong answer without keeping the name', () => {
     const session = reduceSession(startSession(grid, 'x', 0), answer(1, 0, 0, 7, false));
     expect(session.match.cells[0]).toBeNull();
-    expect(session.footballerNames).toEqual({});
+    expect(session.footballers).toEqual({});
+    expect(session.lastClaim).toBeNull();
     expect(session.feedback?.kind).toBe('wrong');
     expect(session.match.turn).toBe('o');
   });

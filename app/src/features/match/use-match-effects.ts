@@ -25,9 +25,9 @@ export function useMatchEffects(session: MatchSession | null, secondsLeft: numbe
       return;
     }
     if (feedback.kind === 'correct') {
+      playSound('impact');
       if (feedback.side === opponentSide) {
         haptics.tick();
-        playSound('tick');
       } else {
         haptics.success();
         playSound('correct');
@@ -44,6 +44,7 @@ export function useMatchEffects(session: MatchSession | null, secondsLeft: numbe
     if (!result) {
       return;
     }
+    playSound('whoosh');
     if (result.winner !== null && result.winner !== opponentSide) {
       haptics.celebrate();
       playSound('win');

@@ -3,12 +3,12 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
-import { ActionButton } from '@/components/action-button';
+import { ModeCard } from '@/components/mode-card';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
+import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import type { MatchMode } from '@/features/match/use-match';
@@ -30,16 +30,22 @@ export default function HomeScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
-      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.hero}>
-        <ThemedText type="display" style={styles.title} accessibilityRole="header">
-          {uppercase(t('home.title'))}
-        </ThemedText>
-        <ThemedText themeColor="textSecondary" style={styles.centered}>
-          {t('home.subtitle')}
-        </ThemedText>
-      </Animated.View>
+      <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
+        <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
+          <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
+        </Animated.View>
+        <Animated.View entering={FadeInLeft.duration(Motion.slow).delay(110)} style={styles.accentRow}>
+          <ThemedText type="display" style={styles.accent}>
+            {uppercase(t('home.titleAccent'))}
+          </ThemedText>
+          <View style={styles.slash} />
+        </Animated.View>
+        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
+          <ThemedText themeColor="textSecondary">{t('home.subtitle')}</ThemedText>
+        </Animated.View>
+      </View>
 
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(80)} style={styles.section}>
+      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(300)} style={styles.section}>
         <ThemedText type="label" themeColor="textSecondary">
           {uppercase(t('home.difficulty'))}
         </ThemedText>
@@ -56,25 +62,36 @@ export default function HomeScreen() {
                   setDifficulty(option);
                 }}
                 style={[styles.difficultyOption, selected && styles.difficultySelected]}>
-                <ThemedText type="label" themeColor={selected ? 'pitch' : 'textSecondary'}>
+                <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
                   {uppercase(t(DIFFICULTY_LABELS[option]))}
                 </ThemedText>
               </Pressable>
             );
           })}
         </View>
-        <ActionButton label={t('home.playBot')} onPress={() => start('bot')} />
-        <ActionButton label={t('home.playLocal')} onPress={() => start('local')} variant="secondary" />
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(160)} style={styles.rulesCard}>
-        <ThemedText type="label" themeColor="floodlight">
+      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(380)} style={styles.section}>
+        <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={() => start('bot')} />
+        <ModeCard
+          title={t('home.modeLocalTitle')}
+          hint={t('home.modeLocalHint')}
+          finish={Finishes.o}
+          onPress={() => start('local')}
+        />
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(460)} style={styles.rules}>
+        <ThemedText type="label" themeColor="volt">
           {uppercase(t('home.rulesTitle'))}
         </ThemedText>
-        {rules.map((rule) => (
-          <ThemedText key={rule} type="small" themeColor="textSecondary">
-            {rule}
-          </ThemedText>
+        {rules.map((rule, index) => (
+          <View key={rule} style={styles.rule}>
+            <ThemedText style={styles.ruleNumber}>{`0${index + 1}`}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.ruleText}>
+              {rule}
+            </ThemedText>
+          </View>
         ))}
       </Animated.View>
     </Screen>
@@ -83,27 +100,33 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    alignItems: 'center',
     gap: Spacing.four,
     paddingHorizontal: Spacing.four,
   },
   hero: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
+    gap: Spacing.one,
+  },
+  accentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.three,
   },
-  title: {
-    textAlign: 'center',
-    textShadowColor: Colors.floodlight,
-    textShadowRadius: 18,
+  accent: {
+    color: Colors.volt,
+    textShadowColor: Colors.volt,
+    textShadowRadius: 22,
     textShadowOffset: { width: 0, height: 0 },
   },
-  centered: {
-    textAlign: 'center',
+  slash: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: Colors.volt,
+    transform: [{ rotate: '-4deg' }],
   },
   section: {
-    alignSelf: 'stretch',
     gap: Spacing.three,
   },
   difficultyRow: {
@@ -117,21 +140,43 @@ const styles = StyleSheet.create({
     minHeight: MinimumTouchSize,
     borderRadius: Radius.medium,
     borderWidth: 1.5,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    borderColor: Colors.stroke,
+    backgroundColor: Colors.panel,
   },
   difficultySelected: {
-    borderColor: Colors.pitch,
-    backgroundColor: Colors.surfaceRaised,
+    borderColor: Colors.volt,
+    backgroundColor: Colors.volt,
+    shadowColor: Colors.volt,
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 8,
   },
-  rulesCard: {
-    alignSelf: 'stretch',
+  difficultyLabel: {
+    fontFamily: Fonts.heading,
+    fontSize: 18,
+    lineHeight: 20,
+    letterSpacing: 1,
+  },
+  rules: {
     gap: Spacing.two,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    borderRadius: Radius.large,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    backgroundColor: Colors.surface,
+    paddingTop: Spacing.three,
+    borderTopWidth: 1,
+    borderTopColor: Colors.stroke,
+  },
+  rule: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  ruleNumber: {
+    fontFamily: Fonts.display,
+    fontSize: 22,
+    lineHeight: 24,
+    color: Colors.volt,
+    width: 28,
+  },
+  ruleText: {
+    flex: 1,
   },
 });

@@ -27,9 +27,12 @@ export interface GridView {
   columns: readonly [HeaderView, HeaderView, HeaderView];
 }
 
+export type FootballerRole = 'GK' | 'DF' | 'MF' | 'FW';
+
 export interface FootballerSummary {
   id: number;
   name: string;
   birthYear: number | null;
   countryCode: string | null;
+  role: FootballerRole | null;
 }

@@ -1,19 +1,22 @@
-import { Canvas, Circle } from '@shopify/react-native-skia';
+import { Canvas, Group, Rect } from '@shopify/react-native-skia';
 import { useEffect } from 'react';
 import { StyleSheet, useWindowDimensions } from 'react-native';
 import { Easing, useDerivedValue, useSharedValue, withTiming, type SharedValue } from 'react-native-reanimated';
 
-import { Colors } from '@/constants/theme';
+import { Colors, Finishes } from '@/constants/theme';
 
-const PARTICLE_COUNT = 36;
-const DURATION = 1600;
-const GRAVITY = 0.55;
-const PALETTE = [Colors.gold, Colors.pitch, Colors.sideX, Colors.sideO, Colors.floodlight];
+const PIECE_COUNT = 54;
+const DURATION = 2600;
+const PALETTE = [Finishes.x.base, Finishes.x.light, Colors.volt, Finishes.o.base, '#FFFFFF'];
 
-interface Particle {
-  angle: number;
-  speed: number;
-  radius: number;
+interface Piece {
+  lane: number;
+  drift: number;
+  fall: number;
+  delay: number;
+  spin: number;
+  width: number;
+  height: number;
   color: string;
 }
 
@@ -22,31 +25,39 @@ function pseudoRandom(seed: number): number {
   return value - Math.floor(value);
 }
 
-const PARTICLES: Particle[] = Array.from({ length: PARTICLE_COUNT }, (_, index) => ({
-  angle: (index / PARTICLE_COUNT) * Math.PI * 2 + pseudoRandom(index + 1) * 0.4,
-  speed: 0.35 + pseudoRandom(index + 11) * 0.65,
-  radius: 3 + pseudoRandom(index + 23) * 4,
+const PIECES: Piece[] = Array.from({ length: PIECE_COUNT }, (_, index) => ({
+  lane: pseudoRandom(index + 1),
+  drift: pseudoRandom(index + 17) - 0.5,
+  fall: 0.75 + pseudoRandom(index + 31) * 0.5,
+  delay: pseudoRandom(index + 47) * 0.35,
+  spin: (pseudoRandom(index + 59) - 0.5) * 14,
+  width: 5 + pseudoRandom(index + 71) * 6,
+  height: 9 + pseudoRandom(index + 83) * 9,
   color: PALETTE[index % PALETTE.length] as string,
 }));
 
-interface ParticleDotProps {
-  particle: Particle;
+interface ConfettiPieceProps {
+  piece: Piece;
   progress: SharedValue<number>;
-  originX: number;
-  originY: number;
-  reach: number;
+  width: number;
+  height: number;
 }
 
-function ParticleDot({ particle, progress, originX, originY, reach }: ParticleDotProps) {
-  const cx = useDerivedValue(() => originX + Math.cos(particle.angle) * particle.speed * reach * progress.get());
-  const cy = useDerivedValue(
-    () =>
-      originY +
-      Math.sin(particle.angle) * particle.speed * reach * progress.get() +
-      GRAVITY * reach * progress.get() * progress.get(),
+function ConfettiPiece({ piece, progress, width, height }: ConfettiPieceProps) {
+  const transform = useDerivedValue(() => {
+    const local = Math.max(0, Math.min(1, (progress.get() - piece.delay) / (1 - piece.delay)));
+    return [
+      { translateX: piece.lane * width + piece.drift * width * 0.3 * local },
+      { translateY: -40 + local * height * 1.1 * piece.fall },
+      { rotate: piece.spin * local },
+    ];
+  });
+  const opacity = useDerivedValue(() => (progress.get() > 0.85 ? (1 - progress.get()) / 0.15 : 1));
+  return (
+    <Group transform={transform} opacity={opacity}>
+      <Rect x={-piece.width / 2} y={-piece.height / 2} width={piece.width} height={piece.height} color={piece.color} />
+    </Group>
   );
-  const opacity = useDerivedValue(() => 1 - progress.get() * progress.get());
-  return <Circle cx={cx} cy={cy} r={particle.radius} color={particle.color} opacity={opacity} />;
 }
 
 export function WinBurst() {
@@ -54,20 +65,13 @@ export function WinBurst() {
   const progress = useSharedValue(0);
 
   useEffect(() => {
-    progress.set(withTiming(1, { duration: DURATION, easing: Easing.out(Easing.cubic) }));
+    progress.set(withTiming(1, { duration: DURATION, easing: Easing.out(Easing.quad) }));
   }, [progress]);
 
   return (
     <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-      {PARTICLES.map((particle, index) => (
-        <ParticleDot
-          key={index}
-          particle={particle}
-          progress={progress}
-          originX={width / 2}
-          originY={height * 0.42}
-          reach={width * 0.6}
-        />
+      {PIECES.map((piece, index) => (
+        <ConfettiPiece key={index} piece={piece} progress={progress} width={width} height={height} />
       ))}
     </Canvas>
   );

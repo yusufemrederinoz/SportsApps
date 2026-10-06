@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,13 +7,15 @@ import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
 
 type ScreenProps = PropsWithChildren<{
   contentStyle?: StyleProp<ViewStyle>;
+  overlay?: ReactNode;
 }>;
 
-export function Screen({ children, contentStyle }: ScreenProps) {
+export function Screen({ children, contentStyle, overlay }: ScreenProps) {
   return (
     <View style={styles.container}>
       <StadiumBackground />
       <SafeAreaView style={[styles.content, contentStyle]}>{children}</SafeAreaView>
+      {overlay}
     </View>
   );
 }

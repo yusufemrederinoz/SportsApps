@@ -1,14 +1,22 @@
-import { BlurMask, Canvas, Path, Skia, rect } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Circle, Path, Skia, rect } from '@shopify/react-native-skia';
 import { useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Easing, cancelAnimation, useSharedValue, withTiming } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
+import Animated, {
+  Easing,
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors } from '@/constants/theme';
 
-const SIZE = 88;
+const SIZE = 96;
 const STROKE = 7;
-const GLOW = 6;
+const GLOW = 7;
 const INSET = STROKE / 2 + GLOW;
 
 const RING = Skia.Path.Make();
@@ -20,11 +28,14 @@ interface TurnTimerProps {
   secondsLeft: number;
   color: string;
   running: boolean;
+  urgent: boolean;
   accessibilityLabel: string;
 }
 
-export function TurnTimer({ turnEndsAt, totalSeconds, secondsLeft, color, running, accessibilityLabel }: TurnTimerProps) {
+export function TurnTimer({ turnEndsAt, totalSeconds, secondsLeft, color, running, urgent, accessibilityLabel }: TurnTimerProps) {
   const progress = useSharedValue(1);
+  const beat = useSharedValue(1);
+  const beatStyle = useAnimatedStyle(() => ({ transform: [{ scale: beat.get() }] }));
 
   useEffect(() => {
     if (!running) {
@@ -37,18 +48,29 @@ export function TurnTimer({ turnEndsAt, totalSeconds, secondsLeft, color, runnin
     return () => cancelAnimation(progress);
   }, [progress, running, totalSeconds, turnEndsAt]);
 
+  useEffect(() => {
+    if (running && urgent) {
+      beat.set(withSequence(withTiming(1.2, { duration: 90 }), withSpring(1, { damping: 7, stiffness: 240 })));
+    }
+  }, [beat, running, urgent, secondsLeft]);
+
   return (
-    <View style={styles.container} accessible accessibilityRole="timer" accessibilityLabel={accessibilityLabel}>
+    <Animated.View
+      style={[styles.container, beatStyle]}
+      accessible
+      accessibilityRole="timer"
+      accessibilityLabel={accessibilityLabel}>
       <Canvas style={StyleSheet.absoluteFill}>
-        <Path path={RING} style="stroke" strokeWidth={STROKE} color={Colors.surfaceRaised} />
+        <Circle cx={SIZE / 2} cy={SIZE / 2} r={SIZE / 2 - INSET} color={Colors.ink} opacity={0.85} />
+        <Path path={RING} style="stroke" strokeWidth={STROKE} color={Colors.stroke} />
         <Path path={RING} style="stroke" strokeWidth={STROKE} strokeCap="round" color={color} start={0} end={progress}>
           <BlurMask blur={GLOW / 2} style="solid" />
         </Path>
       </Canvas>
-      <ThemedText type="score" style={[styles.seconds, { color }]}>
+      <ThemedText type="score" style={{ color }}>
         {secondsLeft}
       </ThemedText>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -58,9 +80,5 @@ const styles = StyleSheet.create({
     height: SIZE,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  seconds: {
-    fontSize: 34,
-    lineHeight: 38,
   },
 });

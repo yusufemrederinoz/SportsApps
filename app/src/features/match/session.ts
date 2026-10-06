@@ -1,6 +1,7 @@
 import {
   DEFAULT_RULES,
   MatchError,
+  cellIndex,
   createMatch,
   skipTurn,
   submitAnswer,
@@ -19,10 +20,24 @@ export interface Feedback {
   footballerName: string | null;
 }
 
+export interface PlayedFootballer {
+  id: number;
+  name: string;
+  countryCode: string | null;
+  role: string | null;
+}
+
+export interface Claim {
+  index: number;
+  side: Side;
+  turnNumber: number;
+}
+
 export interface MatchSession {
   match: MatchState;
-  footballerNames: Readonly<Record<number, string>>;
+  footballers: Readonly<Record<number, PlayedFootballer>>;
   feedback: Feedback | null;
+  lastClaim: Claim | null;
   turnEndsAt: number;
 }
 
@@ -31,7 +46,7 @@ export type SessionAction =
       type: 'answer';
       turnNumber: number;
       position: CellPosition;
-      footballer: { id: number; name: string };
+      footballer: PlayedFootballer;
       correct: boolean;
       now: number;
     }
@@ -49,8 +64,9 @@ export function startSession(
 ): MatchSession {
   return {
     match: createMatch(grid, startingSide, rules),
-    footballerNames: {},
+    footballers: {},
     feedback: null,
+    lastClaim: null,
     turnEndsAt: turnDeadline(rules, now),
   };
 }
@@ -77,10 +93,11 @@ export function reduceSession(session: MatchSession, action: SessionAction): Mat
     const claimed = outcome === 'claimed';
     return {
       match: state,
-      footballerNames: claimed
-        ? { ...session.footballerNames, [action.footballer.id]: action.footballer.name }
-        : session.footballerNames,
+      footballers: claimed
+        ? { ...session.footballers, [action.footballer.id]: action.footballer }
+        : session.footballers,
       feedback: { kind: claimed ? 'correct' : outcome, side, footballerName: action.footballer.name },
+      lastClaim: claimed ? { index: cellIndex(action.position), side, turnNumber: match.turnNumber } : session.lastClaim,
       turnEndsAt,
     };
   } catch (error) {

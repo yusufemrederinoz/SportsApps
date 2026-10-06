@@ -9,6 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   isCorrectAnswer,
   loadBotOptions,
+  loadFootballer,
   loadGrid,
   loadMinimumFame,
   pickGridId,
@@ -83,6 +84,9 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     const results = await searchFootballers(runner, 'tr', 'calhan');
     expect(results[0]?.name).toBe('Hakan Çalhanoğlu');
     expect(results[0]?.countryCode).toBe('TR');
+    expect(results[0]?.role).toBe('MF');
+    expect(await loadFootballer(runner, results[0]?.id ?? -1)).toEqual(results[0]);
+    expect(await loadFootballer(runner, -1)).toBeNull();
     expect((await searchFootballers(runner, 'tr', 'mau ica'))[0]?.name).toBe('Mauro Icardi');
     expect(await searchFootballers(runner, 'tr', 'ş')).toEqual([]);
     expect(await searchFootballers(runner, 'tr', '  ')).toEqual([]);

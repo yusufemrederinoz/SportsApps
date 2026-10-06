@@ -88,6 +88,14 @@ function hasLine(cells: readonly (Mark | null)[], side: Side): boolean {
   return LINES.some((line) => line.every((index) => cells[index]?.side === side));
 }
 
+export function findWinningLine(state: MatchState): readonly number[] | null {
+  const winner = state.result?.reason === 'line' ? state.result.winner : null;
+  if (!winner) {
+    return null;
+  }
+  return LINES.find((line) => line.every((index) => state.cells[index]?.side === winner)) ?? null;
+}
+
 export function completesLine(state: MatchState, position: CellPosition, side: Side): boolean {
   const target = cellIndex(position);
   return LINES.some(

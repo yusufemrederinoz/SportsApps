@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import {
   isCorrectAnswer,
   loadBotOptions,
-  loadFootballerName,
+  loadFootballer,
   loadGrid,
   loadMinimumFame,
   pickGridId,
@@ -113,7 +113,7 @@ export function useMatch(mode: MatchMode, difficulty: Difficulty) {
         setup.minimumFame,
       );
       const move = chooseBotMove(match, BOT_SIDE, options, BOT_PROFILES[difficulty]);
-      const name = move.kind === 'answer' ? await loadFootballerName(database, move.footballerId) : null;
+      const footballer = move.kind === 'answer' ? await loadFootballer(database, move.footballerId) : null;
       if (cancelled) {
         return;
       }
@@ -121,12 +121,12 @@ export function useMatch(mode: MatchMode, difficulty: Difficulty) {
         current &&
         reduceSession(
           current,
-          move.kind === 'answer' && name !== null
+          move.kind === 'answer' && footballer !== null
             ? {
                 type: 'answer',
                 turnNumber: match.turnNumber,
                 position: move.position,
-                footballer: { id: move.footballerId, name },
+                footballer,
                 correct: true,
                 now: Date.now(),
               }
@@ -156,7 +156,7 @@ export function useMatch(mode: MatchMode, difficulty: Difficulty) {
           type: 'answer',
           turnNumber: match.turnNumber,
           position,
-          footballer: { id: footballer.id, name: footballer.name },
+          footballer,
           correct,
           now: Date.now(),
         }),

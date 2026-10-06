@@ -1,28 +1,43 @@
 import '@/global.css';
 
+import type { Side } from '@sportapps/game-core';
+
 export const Colors = {
-  background: '#060A18',
-  backgroundDeep: '#02040B',
-  surface: '#0F1730',
-  surfaceRaised: '#18223F',
-  border: '#2A3760',
-  text: '#F4F8FF',
-  textSecondary: '#A9B5D1',
-  floodlight: '#CFE6FF',
-  pitch: '#2EE59D',
-  sideX: '#3DD6FF',
-  sideO: '#FFB020',
-  positive: '#2EE59D',
-  negative: '#FF5A6E',
-  gold: '#FFD166',
-  onAccent: '#06101F',
+  ink: '#05070A',
+  background: '#0A0D12',
+  panel: '#121821',
+  panelRaised: '#1B2430',
+  stroke: '#2B3644',
+  strokeBright: '#5B6B80',
+  text: '#F6F8FB',
+  textSecondary: '#9BA8BA',
+  volt: '#C8FF2E',
+  voltDeep: '#86C400',
+  gold: '#F3C653',
+  blue: '#5B9BFF',
+  positive: '#3BEA8B',
+  negative: '#FF4D6A',
+  onAccent: '#0A0D12',
 } as const;
 
 export type ThemeColor = keyof typeof Colors;
 
+export interface Finish {
+  light: string;
+  base: string;
+  deep: string;
+  ink: string;
+}
+
+export const Finishes: Readonly<Record<Side, Finish>> = {
+  x: { light: '#FFF1C2', base: '#F3C653', deep: '#A8741A', ink: '#2E1E04' },
+  o: { light: '#E3EEFF', base: '#5B9BFF', deep: '#1D3FAF', ink: '#06153F' },
+};
+
 export const Fonts = {
-  display: 'BarlowCondensed_700Bold',
-  displayMedium: 'BarlowCondensed_600SemiBold',
+  display: 'BarlowCondensed_800ExtraBold_Italic',
+  heading: 'BarlowCondensed_700Bold',
+  label: 'BarlowCondensed_600SemiBold',
   body: 'Barlow_500Medium',
   bodyBold: 'Barlow_700Bold',
 } as const;
@@ -38,15 +53,16 @@ export const Spacing = {
 } as const;
 
 export const Radius = {
-  small: 8,
-  medium: 14,
-  large: 22,
+  small: 6,
+  medium: 12,
+  large: 20,
 } as const;
 
 export const Motion = {
   quick: 120,
   base: 220,
   slow: 420,
+  cinematic: 700,
 } as const;
 
 export const MinimumTouchSize = 48;

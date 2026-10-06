@@ -4,6 +4,7 @@ import { Barlow_500Medium } from '@expo-google-fonts/barlow/500Medium';
 import { Barlow_700Bold } from '@expo-google-fonts/barlow/700Bold';
 import { BarlowCondensed_600SemiBold } from '@expo-google-fonts/barlow-condensed/600SemiBold';
 import { BarlowCondensed_700Bold } from '@expo-google-fonts/barlow-condensed/700Bold';
+import { BarlowCondensed_800ExtraBold_Italic } from '@expo-google-fonts/barlow-condensed/800ExtraBold_Italic';
 import { useFonts } from 'expo-font';
 import { DarkTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -20,10 +21,10 @@ const NIGHT_STADIUM_THEME = {
   colors: {
     ...DarkTheme.colors,
     background: Colors.background,
-    card: Colors.surface,
+    card: Colors.panel,
     text: Colors.text,
-    border: Colors.border,
-    primary: Colors.pitch,
+    border: Colors.stroke,
+    primary: Colors.volt,
   },
 };
 
@@ -33,6 +34,7 @@ export default function RootLayout() {
     Barlow_700Bold,
     BarlowCondensed_600SemiBold,
     BarlowCondensed_700Bold,
+    BarlowCondensed_800ExtraBold_Italic,
   });
   const ready = loaded || error !== null;
 

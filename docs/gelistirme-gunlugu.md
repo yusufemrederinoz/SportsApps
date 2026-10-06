@@ -168,6 +168,31 @@ Sorunlar ve çözümleri:
 
 Doğrulama: tip denetimi, lint, 22 uygulama testi ve Android paketleme geçiyor. Görünüm cihazda henüz incelenmedi.
 
+### Adım 4B — İkinci sürüm: EA FC Ultimate Team çıtası
+
+Birinci sürüm telefonda incelendi ve yetersiz bulundu. Dört başlığın dördü de zayıf olarak işaretlendi: oyun gibi değil, animasyonlar zayıf, ızgara çekici değil, renk ve yazı oturmamış. Hedef çıta EA FC Ultimate Team olarak seçildi.
+
+Çıkarılan ders: birinci sürüm ekranı görmeden, yalnızca renk ve yazı tipi değiştirerek yazılmıştı. Bu bir yeniden boyamaydı, tasarım değildi. Oyunun merkezindeki nesne (hücre) kendi başına çekici olmadıkça hiçbir renk paleti oyun hissi vermiyor.
+
+Yapılanlar:
+
+- Palet değişti: nötr koyu zemin, marka vurgusu olarak volt yeşili, taraflar için altın ve mavi metalik kaplamalar.
+- Başlık yazısı eğik ve daha kalın yapıldı (Barlow Condensed ExtraBold Italic).
+- Alınan hücre metalik oyuncu kartına dönüştü. Bunun için arama ve bot cevabı artık oyuncunun mevkisini ve bayrağını da taşıyor.
+- Izgara zemini tek Skia tuvaline alındı; kartlar ve efektler ayrı katmanlarda.
+- Kural motoruna kazanan üçlüyü bulan işlev eklendi; kazanan kartlar vurgulanıyor.
+- Yeni animasyonlar: kart gelişi, kıvılcım, sarsılma, damga, skor sıçraması, sayaç atışı, sonuç perdesi, konfeti.
+- İki yeni yer tutucu ses: tok vuruş ve hışırtı.
+- Skia'nın kurulum betiği onaylandı ve çalıştırıldı; yerel derleme için gereken dosyalar yerinde.
+
+Önizleme arayışı:
+
+- Bu makinede Android emülatörü yok.
+- Web önizlemesi denendi ve bırakıldı: Skia ve veritabanı kütüphanesinin web kurulumu belirsiz ve uzun.
+- Karar: görünüm, telefondan atılan ekran görüntüleriyle incelenecek.
+
+Doğrulama: tip denetimi, lint, 22 uygulama testi, 24 kural motoru testi ve Android paketleme geçiyor. Görünüm henüz incelenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -94,18 +94,22 @@ Bitti sayılır: Android ve iOS'ta internetsiz bir maç baştan sona oynanır.
 
 ## Adım 4B — Tasarım dili ve oyun hissi
 
-Durum: ilk sürüm yazıldı, cihazda inceleme bekliyor (7 Ekim 2026). Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
+Durum: ikinci sürüm yazıldı, ekran görüntüsüyle inceleme bekliyor (7 Ekim 2026). Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
 
-Yapılanlar:
+Birinci sürüm yetersiz bulundu: oyun gibi değil, animasyonlar zayıf, ızgara çekici değil, renk ve yazı oturmamış. Hedef çıta EA FC Ultimate Team olarak belirlendi ve arayüz baştan tasarlandı.
 
-- Renk, tipografi, boşluk ve hareket değerleri tek dosyada toplandı; uygulama yalnızca koyu görünümle çalışıyor.
-- Barlow yazı tipleri, Skia ile çizilen stadyum zemini ve sayaç halkası eklendi.
-- Ana ekran, maç ekranı ve arama penceresi yeni dille yeniden yapıldı.
-- Hücre alma, sonuç ve kazanma animasyonları, dokunsal geri bildirim ve sesler eklendi.
+İkinci sürümde yapılanlar:
+
+- Alınan hücre metalik oyuncu kartına dönüşüyor: mevki, bayrak, ad, taraf kaplaması.
+- Izgara zemini tek Skia tuvalinde çiziliyor; sıra oyuncudayken boş yuvalar nabız gibi atıyor.
+- Kart gelişi, kıvılcım, yanlışta sarsılma, damga geri bildirimi, kazanan üçlünün vurgusu eklendi.
+- Sonuç artık ekranı kaplayan bir perde: dönen ışık hüzmeleri, çarpan başlık, konfeti.
+- Ana ekran metalik mod kartlarıyla, arama penceresi mevki rozetli satırlarla yeniden yapıldı.
 
 Kalanlar:
 
-- Cihazda inceleme ve buna göre renk, boyut, hız ayarı.
+- Ekran görüntüleriyle inceleme ve buna göre boyut, renk, hız ayarı.
+- Kartın ortasına oyuncu görseli (Adım 3).
 - Gerçek ses tasarımı, vektör bayraklar, ikon seti, ses ve titreşim ayarı.
 - Oyuncu kartı bileşeni (Adım 3'teki görsellerle birlikte).
 

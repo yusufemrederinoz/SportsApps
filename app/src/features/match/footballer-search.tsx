@@ -14,6 +14,9 @@ import { useUppercase } from '@/i18n/uppercase';
 import { flagEmoji } from './flags';
 import { URGENT_SECONDS } from './use-match-effects';
 
+const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
+const NO_ROLE = '-';
+
 interface FootballerSearchProps {
   title: string;
   market: string;
@@ -44,18 +47,22 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const searched = found.text === text && text.trim().length >= 2;
+  const urgent = secondsLeft <= URGENT_SECONDS;
 
   return (
     <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
-            <ThemedText type="label" style={styles.title} numberOfLines={2}>
+            <View style={styles.accent} />
+            <ThemedText style={styles.title} numberOfLines={2}>
               {uppercase(title)}
             </ThemedText>
-            <ThemedText type="score" themeColor={secondsLeft <= URGENT_SECONDS ? 'negative' : 'floodlight'}>
-              {secondsLeft}
-            </ThemedText>
+            <View style={[styles.clock, urgent && styles.clockUrgent]}>
+              <ThemedText type="score" style={[styles.clockText, { color: urgent ? Colors.negative : Colors.volt }]}>
+                {secondsLeft}
+              </ThemedText>
+            </View>
           </View>
           <TextInput
             autoFocus
@@ -66,14 +73,14 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
             onChangeText={setText}
             placeholder={t('search.placeholder')}
             placeholderTextColor={Colors.textSecondary}
-            selectionColor={Colors.pitch}
+            selectionColor={Colors.volt}
             style={styles.input}
           />
           <FlatList
             data={results}
             keyExtractor={(footballer) => String(footballer.id)}
             keyboardShouldPersistTaps="handled"
-            ItemSeparatorComponent={() => <View style={styles.separator} />}
+            contentContainerStyle={styles.list}
             ListEmptyComponent={
               <ThemedText type="small" themeColor="textSecondary" style={styles.empty}>
                 {searched ? t('search.empty') : t('search.hint')}
@@ -88,11 +95,14 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
                   onSelect(item);
                 }}
                 style={({ pressed }) => [styles.result, pressed && styles.resultPressed]}>
-                <ThemedText style={styles.resultFlag}>{flagEmoji(item.countryCode) ?? ''}</ThemedText>
+                <View style={styles.role}>
+                  <ThemedText style={styles.roleText}>{item.role ? t(ROLE_KEYS[item.role]) : NO_ROLE}</ThemedText>
+                </View>
                 <ThemedText style={styles.resultName} numberOfLines={1}>
                   {item.name}
                 </ThemedText>
-                <ThemedText type="small" themeColor="textSecondary">
+                <ThemedText style={styles.resultFlag}>{flagEmoji(item.countryCode) ?? ''}</ThemedText>
+                <ThemedText type="label" themeColor="textSecondary">
                   {item.birthYear ?? ''}
                 </ThemedText>
               </Pressable>
@@ -123,28 +133,50 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     gap: Spacing.three,
+  },
+  accent: {
+    width: 5,
+    alignSelf: 'stretch',
+    borderRadius: 3,
+    backgroundColor: Colors.volt,
   },
   title: {
     flex: 1,
-    fontSize: 18,
-    lineHeight: 22,
+    fontFamily: Fonts.display,
+    fontSize: 26,
+    lineHeight: 28,
+    color: Colors.text,
+  },
+  clock: {
+    minWidth: 64,
+    alignItems: 'center',
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.volt,
+    backgroundColor: Colors.ink,
+    paddingVertical: Spacing.one,
+  },
+  clockUrgent: {
+    borderColor: Colors.negative,
+  },
+  clockText: {
+    fontSize: 32,
+    lineHeight: 34,
   },
   input: {
     minHeight: MinimumTouchSize + Spacing.two,
     borderRadius: Radius.medium,
-    borderWidth: 1.5,
-    borderColor: Colors.pitch,
-    backgroundColor: Colors.surface,
+    borderWidth: 2,
+    borderColor: Colors.volt,
+    backgroundColor: Colors.panel,
     color: Colors.text,
-    fontFamily: Fonts.body,
+    fontFamily: Fonts.bodyBold,
     fontSize: 18,
     paddingHorizontal: Spacing.three,
   },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.border,
+  list: {
+    gap: Spacing.two,
   },
   empty: {
     textAlign: 'center',
@@ -153,20 +185,41 @@ const styles = StyleSheet.create({
   result: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.two,
+    gap: Spacing.three,
     minHeight: MinimumTouchSize + Spacing.two,
     paddingHorizontal: Spacing.two,
-    borderRadius: Radius.small,
+    borderRadius: Radius.medium,
+    borderWidth: 1,
+    borderColor: Colors.stroke,
+    backgroundColor: Colors.panel,
   },
   resultPressed: {
-    backgroundColor: Colors.surfaceRaised,
+    borderColor: Colors.volt,
+    backgroundColor: Colors.panelRaised,
   },
-  resultFlag: {
-    width: 28,
+  role: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: Radius.small,
+    backgroundColor: Colors.gold,
+  },
+  roleText: {
+    fontFamily: Fonts.display,
+    fontSize: 20,
+    lineHeight: 22,
+    color: Colors.onAccent,
   },
   resultName: {
     flex: 1,
+    fontFamily: Fonts.bodyBold,
     fontSize: 17,
+    lineHeight: 22,
+  },
+  resultFlag: {
+    fontSize: 18,
+    lineHeight: 24,
   },
   cancel: {
     alignItems: 'center',

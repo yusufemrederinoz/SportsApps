@@ -6,6 +6,7 @@ import {
   countCells,
   createMatch,
   emptyCells,
+  findWinningLine,
   forfeit,
   headersAt,
   skipTurn,
@@ -119,6 +120,7 @@ describe('submitAnswer', () => {
       ['x', 0, 2],
     ]);
     expect(state.result).toEqual({ winner: 'x', reason: 'line' });
+    expect(findWinningLine(state)).toEqual([0, 1, 2]);
     expectError(() => submitAnswer(state, 'o', at(2, 2), 999, always), 'match-finished');
   });
 
@@ -136,6 +138,7 @@ describe('submitAnswer', () => {
     ]);
     expect(countCells(state, 'x')).toBe(5);
     expect(countCells(state, 'o')).toBe(4);
+    expect(findWinningLine(state)).toBeNull();
     expect(state.result).toEqual({ winner: 'x', reason: 'cells' });
   });
 });
