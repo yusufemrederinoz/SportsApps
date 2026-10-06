@@ -2,9 +2,45 @@
   "home": {
     "title": "Football Tic-Tac-Toe",
     "subtitle": "Name a footballer who fits both the row and the column.",
+    "difficulty": "Difficulty",
+    "playLocal": "Two players, one device",
+    "playBot": "Play against the bot",
     "rulesTitle": "How it works",
     "ruleTurn": "You have {{seconds}} seconds for each move.",
     "ruleLine": "Three cells in a line win the game.",
     "ruleCells": "If nobody completes a line, the side with more cells wins."
+  },
+  "difficulty": {
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard"
+  },
+  "match": {
+    "loading": "Preparing the grid…",
+    "unavailable": "No grid is available.",
+    "sideX": "Player X",
+    "sideO": "Player O",
+    "you": "You",
+    "bot": "Bot",
+    "turn": "Turn: {{name}}",
+    "secondsLeft": "{{seconds}} s",
+    "correct": "Correct: {{name}}",
+    "wrong": "{{name}} does not fit this cell.",
+    "alreadyUsed": "{{name}} is already on the board.",
+    "timeout": "Time is up.",
+    "botPassed": "The bot could not answer.",
+    "winner": "{{name}} wins",
+    "draw": "Draw",
+    "byLine": "Three in a line",
+    "byCells": "Cells: {{x}} – {{o}}",
+    "playAgain": "Play again",
+    "home": "Home",
+    "quit": "Quit"
+  },
+  "search": {
+    "placeholder": "Type a footballer's name",
+    "hint": "Type at least two letters.",
+    "empty": "No footballer found.",
+    "cancel": "Cancel"
   }
 }

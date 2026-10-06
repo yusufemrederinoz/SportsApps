@@ -2,9 +2,45 @@
   "home": {
     "title": "Futbol XOX",
     "subtitle": "Satırdaki ve sütundaki ölçütün ikisine de uyan bir futbolcu yaz.",
+    "difficulty": "Zorluk",
+    "playLocal": "Aynı cihazda iki kişi",
+    "playBot": "Bota karşı oyna",
     "rulesTitle": "Nasıl oynanır",
     "ruleTurn": "Her hamle için {{seconds}} saniyen var.",
     "ruleLine": "Aynı hizada üç hücreyi alan oyunu kazanır.",
     "ruleCells": "Kimse üçlü yapamazsa daha çok hücre alan kazanır."
+  },
+  "difficulty": {
+    "easy": "Kolay",
+    "medium": "Orta",
+    "hard": "Zor"
+  },
+  "match": {
+    "loading": "Izgara hazırlanıyor…",
+    "unavailable": "Uygun ızgara bulunamadı.",
+    "sideX": "X oyuncusu",
+    "sideO": "O oyuncusu",
+    "you": "Sen",
+    "bot": "Bot",
+    "turn": "Sıra: {{name}}",
+    "secondsLeft": "{{seconds}} sn",
+    "correct": "Doğru: {{name}}",
+    "wrong": "{{name}} bu hücreye uymuyor.",
+    "alreadyUsed": "{{name}} zaten kullanıldı.",
+    "timeout": "Süre doldu.",
+    "botPassed": "Bot cevap veremedi.",
+    "winner": "{{name}} kazandı",
+    "draw": "Berabere",
+    "byLine": "Üçlü tamamlandı",
+    "byCells": "Hücreler: {{x}} – {{o}}",
+    "playAgain": "Tekrar oyna",
+    "home": "Ana sayfa",
+    "quit": "Çık"
+  },
+  "search": {
+    "placeholder": "Futbolcu adı yaz",
+    "hint": "En az iki harf yaz.",
+    "empty": "Futbolcu bulunamadı.",
+    "cancel": "Vazgeç"
   }
 }
