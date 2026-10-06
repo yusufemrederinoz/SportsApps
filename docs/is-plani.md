@@ -1,10 +1,10 @@
 # İş Planı
 
-Son güncelleme: 6 Ekim 2026
+Son güncelleme: 7 Ekim 2026
 
 Adımlar bağımlılık sırasına göre dizilmiştir. Süre tahmini yoktur; Adım 0'daki kararlar kapandıktan sonra eklenir. Kararların gerekçesi [proje-yonelimi.md](proje-yonelimi.md) içindedir.
 
-Sıra: 0 → 1 → 2 → 4 → 5 → 6 → 8 → 9 → 10. Adım 3, Adım 2 ile aynı anda yürüyebilir. Adım 7, Adım 3 bittikten sonra herhangi bir zamanda yapılabilir.
+Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 6 → 8 → 9 → 10. Adım 3, Adım 2 ile aynı anda yürüyebilir. Adım 7, Adım 3 bittikten sonra herhangi bir zamanda yapılabilir.
 
 ## Adım 0 — Açık kararları kapat
 
@@ -71,7 +71,20 @@ Bitti sayılır: Tarz ve araç seçilir, görsel başına maliyet bilinir.
 
 ## Adım 4 — Uygulama iskeleti ve offline XOX
 
-Durum: başladı (7 Ekim 2026). Expo projesi (SDK 57), uygulama ve sunucunun ortak kullanacağı kural motoru (13 test) ve çok dilli altyapı (Türkçe, İngilizce) hazır. Kalanlar: veritabanını gömmek, oyuncu arama, ızgara ekranı, offline modlar.
+Durum: kod tamam, cihazda deneme bekliyor (7 Ekim 2026).
+
+Yapılanlar:
+
+- Expo projesi (SDK 57) ve çok dilli altyapı (Türkçe, İngilizce).
+- Uygulama ve sunucunun ortak kullanacağı kural motoru ve bot (24 test).
+- Uygulamaya gömülen 13 MB'lık veritabanı ve ad araması.
+- Ana ekran ve maç ekranı: zorluk seçimi, bota karşı, aynı cihazda iki kişi, 20 saniyelik sayaç, sonuç.
+- 22 uygulama testi, tip denetimi, lint ve Android paketleme geçiyor.
+
+Kalanlar:
+
+- Uygulamayı gerçek cihazda açıp bir maçı baştan sona oynamak. Bu yapılmadan adım bitmiş sayılmaz.
+- Cihazda görülen hataları düzeltmek.
 
 Çalıştırma: depo kökünde `npm install`, ardından `app` klasöründe `npx expo start`. Testler için kökte `npm test`.
 
@@ -82,6 +95,17 @@ Durum: başladı (7 Ekim 2026). Expo projesi (SDK 57), uygulama ve sunucunun ort
 - Offline modlar: bota karşı ve aynı telefonda iki kişi.
 
 Bitti sayılır: Android ve iOS'ta internetsiz bir maç baştan sona oynanır.
+
+## Adım 4B — Tasarım dili ve oyun hissi
+
+Durum: başlamadı. Görsel yön kararı bekliyor.
+
+- Görsel yön seçilir; renk, tipografi, boşluk ve bileşen kuralları yazılır.
+- Skia, Lottie, expo-haptics ve expo-audio projeye eklenir.
+- Izgara, hücre alma, sıra geçişi, sayaç ve sonuç ekranı hareket, ses ve dokunsal geri bildirimle yeniden yapılır.
+- Oyuncu kartı bileşeni tasarlanır; Adım 3'teki görsellerle birlikte çalışacak şekilde.
+
+Bitti sayılır: Bir maç, baştan sona seçilen görsel dille, animasyon ve sesle oynanır; ekranlar iskelet görünümünden çıkar.
 
 ## Adım 5 — Online altyapı ve bot
 

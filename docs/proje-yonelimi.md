@@ -1,6 +1,6 @@
 # Proje Yönelimi
 
-Son güncelleme: 6 Ekim 2026
+Son güncelleme: 7 Ekim 2026
 
 ## Ürün
 
@@ -29,6 +29,8 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Maç formatı | Tek oyun |
 | Üçlü olmazsa | Daha çok hücre alan kazanır; hücre sayısı eşitse beraberlik |
 | Veri isteklerinde kimlik | Wikipedia ve diğer veri kaynaklarına giden isteklerde iletişim bilgisi olarak depo adresi gönderilir |
+| Arayüz iddiası | Bu bir oyundur; arayüz ve kullanıcı deneyimi iddialı olacak. Düz uygulama görünümü yeterli değil |
+| Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 
 ## Rakiplerden çıkan dersler
@@ -87,6 +89,25 @@ Kaynak olarak Wikidata'nın işaret ettiği Wikimedia Commons fotoğrafları ön
 
 Serbest lisans fotoğrafın telifini çözer; oyuncunun kişilik hakkı riski sürer. Bu risk bilinerek alınmıştır.
 
+## Arayüz ve oyun hissi
+
+Durum: teknoloji seti önerildi, onay bekliyor. Görsel yön henüz seçilmedi.
+
+Oyun motoru (Unity, Godot gibi) önerilmiyor. Sıra tabanlı, metin girişli bir bilgi oyununda motor; klavye, liste, çok dillilik ve uygulama boyutu açısından yük getirir. Oyun hissi hareket, ses, dokunsal geri bildirim ve görsel efektlerden gelir; bunlar Expo içinde kurulabilir.
+
+| Katman | Teknoloji | Ne için |
+|---|---|---|
+| Özel çizim ve efekt | React Native Skia | Parıltı, gölgelendirici, parçacık, kart üzerinde ışık oyunu, sayaç halkası |
+| Animasyon | Reanimated 4 | Hücre alma, sıra geçişi, ekran geçişleri; arayüz iş parçacığında akıcı |
+| Dokunma hareketleri | Gesture Handler | Kart sürükleme, kaydırma |
+| Hazır vektör animasyon | Lottie | Kazanma, kaybetme, yükleme sahneleri |
+| Dokunsal geri bildirim | expo-haptics | Doğru, yanlış, süre uyarısı |
+| Ses | expo-audio | Efekt sesleri ve kısa müzikler |
+| Görseller | expo-image | Oyuncu kartlarının önbellekli yüklenmesi |
+| Yazı tipi | expo-font | Markaya özgü tipografi |
+
+Hepsi Expo SDK 57'nin sürüm sabitlediği paketlerdir. Reanimated, Gesture Handler ve expo-image projede kurulu; diğerleri Adım 4B'de eklenecek.
+
 ## Online mimari
 
 Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
@@ -107,6 +128,9 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 5. Joker olacak mı, olacaksa hangileri?
 6. Uygulamanın adı. Şimdilik çalışma adı olarak "Futbol XOX" kullanılıyor.
 7. Tıkanan oyun ne zaman biter? Şimdilik art arda dört turda hücre alınamazsa oyun biter ve hücre sayısına bakılır.
+8. Görsel yön: uygulamanın genel görünümü ve havası.
+9. Arayüz teknoloji seti onaylanıyor mu?
+10. Uygulama veritabanı depoda mı kalsın, yoksa derleme sırasında mı indirilsin?
 
 ## Riskler
 
