@@ -87,6 +87,11 @@ Kurallar:
 | Geri bildirim damgası | Eğik, büyük yazı: "DOĞRU!", "YANLIŞ!", "SÜRE DOLDU!". Altında futbolcunun adı |
 | Sonuç perdesi | Ekranı kaplar: dönen ışık hüzmeleri, çarparak gelen başlık, skor, düğmeler, konfeti |
 | Ana düğme | Volt dolgu, koyu eğik yazı, belirli aralıklarla üstünden geçen parlama |
+| Form ekranı (`FormScreen`) | Geri bağlantısı ve büyük başlık üstte, alanlar hemen altında. Klavye açılınca odaklanan alan yukarı kayar |
+| Metin alanı (`TextField`) | Üstünde büyük harf etiket; odaklanınca etiket ve kenarlık volt olur |
+| Şifre kuralları | Her kural bir satır; sağlanan kuralın işareti ve yazısı yeşile döner |
+| Tanıtım | Üç sayfa: üstte örnek görsel, altta volt numara, eğik başlık ve kısa açıklama. Altta sayfa noktaları ve tek ana düğme |
+| Karşılama | Uygulama adı üstte; altta bir ana düğme (misafir) ve iki ikincil düğme (giriş, hesap oluştur) |
 
 ## Hareket
 

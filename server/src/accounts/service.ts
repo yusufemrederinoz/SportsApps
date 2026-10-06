@@ -68,17 +68,21 @@ export function createAccountService(database: Database, options: AccountService
     return String(randomInt(10 ** SUFFIX_DIGITS)).padStart(SUFFIX_DIGITS, '0');
   }
 
+  function isUsernameFree(username: string): boolean {
+    return repository.findUserByUsernameKey(usernameKey(username)) === undefined;
+  }
+
   function availableUsername(preferred: string): string {
     const base = Array.from(keepUsernameCharacters(preferred))
       .slice(0, USERNAME_MAX_LENGTH - SUFFIX_DIGITS)
       .join('');
     const stem = Array.from(base).length >= USERNAME_MIN_LENGTH ? base : FALLBACK_PREFIX;
-    if (stem !== GUEST_PREFIX && !repository.findUserByUsernameKey(usernameKey(stem))) {
+    if (stem !== GUEST_PREFIX && isUsernameFree(stem)) {
       return stem;
     }
     for (;;) {
       const candidate = `${stem}${randomSuffix()}`;
-      if (!repository.findUserByUsernameKey(usernameKey(candidate))) {
+      if (isUsernameFree(candidate)) {
         return candidate;
       }
     }
@@ -98,24 +102,9 @@ export function createAccountService(database: Database, options: AccountService
     return user;
   }
 
-  function requireFreeUsername(username: string, ownerId: string | null): void {
-    if (!isValidUsername(username)) {
-      throw new ApiError('invalid-username');
-    }
-    const owner = repository.findUserByUsernameKey(usernameKey(username));
-    if (owner && owner.id !== ownerId) {
-      throw new ApiError('username-taken');
-    }
-  }
-
-  function renamed(user: UserRow, username: string, isGuest: boolean): UserRow {
-    repository.updateUser(user.id, username, usernameKey(username), isGuest ? 1 : 0, now());
-    return repository.findUser(user.id) as UserRow;
-  }
-
   return {
     createGuest(): AuthResponse {
-      return transaction(database, () => startSession(createUser(`${GUEST_PREFIX}${randomSuffix()}`, true)));
+      return transaction(database, () => startSession(createUser(availableUsername(GUEST_PREFIX), true)));
     },
 
     authenticate(token: string): AuthenticatedSession | null {
@@ -139,17 +128,17 @@ export function createAccountService(database: Database, options: AccountService
       return repository.toAccount(user);
     },
 
-    async register(current: UserRow | null, input: RegisterRequest): Promise<AuthResponse> {
+    async register(input: RegisterRequest): Promise<AuthResponse> {
       const email = input.email.trim();
       const username = input.username.trim();
+      if (!isValidUsername(username)) {
+        throw new ApiError('invalid-username');
+      }
       if (!isValidEmail(email)) {
         throw new ApiError('invalid-email');
       }
       if (!isValidPassword(input.password)) {
         throw new ApiError('invalid-password');
-      }
-      if (!isValidUsername(username)) {
-        throw new ApiError('invalid-username');
       }
       const passwordHash = await hashPassword(input.password);
       const emailKey = email.toLowerCase();
@@ -158,9 +147,10 @@ export function createAccountService(database: Database, options: AccountService
         if (repository.findCredentialByEmailKey(emailKey)) {
           throw new ApiError('email-taken');
         }
-        const upgradable = current?.is_guest === 1 ? repository.findUser(current.id) : undefined;
-        requireFreeUsername(username, upgradable?.id ?? null);
-        const user = upgradable ? renamed(upgradable, username, false) : createUser(username, false);
+        if (!isUsernameFree(username)) {
+          throw new ApiError('username-taken');
+        }
+        const user = createUser(username, false);
         repository.insertCredential(user.id, email, emailKey, passwordHash, now());
         return startSession(user);
       });
@@ -176,7 +166,7 @@ export function createAccountService(database: Database, options: AccountService
       return startSession(user);
     },
 
-    async signInWithIdentity(current: UserRow | null, provider: IdentityProvider, token: string): Promise<AuthResponse> {
+    async signInWithIdentity(provider: IdentityProvider, token: string): Promise<AuthResponse> {
       const verify = verifiers[provider];
       if (!verify) {
         throw new ApiError('provider-unavailable');
@@ -191,9 +181,7 @@ export function createAccountService(database: Database, options: AccountService
         if (existing) {
           return startSession(existing);
         }
-        const preferred = availableUsername(identity.email?.split('@')[0] ?? FALLBACK_PREFIX);
-        const upgradable = current?.is_guest === 1 ? repository.findUser(current.id) : undefined;
-        const user = upgradable ? renamed(upgradable, preferred, false) : createUser(preferred, false);
+        const user = createUser(availableUsername(identity.email?.split('@')[0] ?? FALLBACK_PREFIX), false);
         repository.insertIdentity(provider, identity.subject, user.id, identity.email, now());
         return startSession(user);
       });
@@ -201,14 +189,6 @@ export function createAccountService(database: Database, options: AccountService
 
     logout(token: string): void {
       repository.deleteSession(hashToken(token));
-    },
-
-    updateUsername(user: UserRow, username: string): Account {
-      const trimmed = username.trim();
-      return transaction(database, () => {
-        requireFreeUsername(trimmed, user.id);
-        return repository.toAccount(renamed(user, trimmed, user.is_guest === 1));
-      });
     },
 
     removeExpiredSessions(): void {

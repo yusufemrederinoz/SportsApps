@@ -21,7 +21,7 @@ const config: ServerConfig = {
   googleClientIds: [GOOGLE_CLIENT_ID],
   appleClientIds: [],
 };
-const credentials = { email: 'Arda@Example.com', password: 'correct-horse-9', username: 'Arda_10' };
+const credentials = { email: 'Arda@Example.com', password: 'Correct-horse-9', username: 'Arda_10' };
 
 let app: FastifyInstance;
 let clock: number;
@@ -79,11 +79,11 @@ afterEach(async () => {
 
 describe('passwords', () => {
   it('verifies only the original password', async () => {
-    const hash = await hashPassword('correct-horse-9');
+    const hash = await hashPassword('Correct-horse-9');
     expect(hash.startsWith('scrypt$')).toBe(true);
-    expect(await verifyPassword('correct-horse-9', hash)).toBe(true);
-    expect(await verifyPassword('correct-horse-8', hash)).toBe(false);
-    expect(await verifyPassword('correct-horse-9', 'not-a-hash')).toBe(false);
+    expect(await verifyPassword('Correct-horse-9', hash)).toBe(true);
+    expect(await verifyPassword('Correct-horse-8', hash)).toBe(false);
+    expect(await verifyPassword('Correct-horse-9', 'not-a-hash')).toBe(false);
   });
 });
 
@@ -123,24 +123,32 @@ describe('guest accounts', () => {
 });
 
 describe('registration', () => {
-  it('upgrades a guest in place and replaces the session', async () => {
-    const before = await guest();
-    const registered = await call<AuthResponse>('POST', '/auth/register', credentials, before.token);
+  it('creates an account with the chosen username', async () => {
+    const registered = await call<AuthResponse>('POST', '/auth/register', credentials);
     expect(registered.status).toBe(200);
     expect(registered.body.account).toMatchObject({
-      id: before.account.id,
       username: 'Arda_10',
       isGuest: false,
       email: 'Arda@Example.com',
       hasPassword: true,
     });
-    expect(registered.body.token).not.toBe(before.token);
-    expect(errorCode(await call('GET', '/me', undefined, before.token))).toBe('unauthorized');
   });
 
-  it('creates a new account without a guest session', async () => {
-    const registered = await call<AuthResponse>('POST', '/auth/register', credentials);
-    expect(registered.body.account.isGuest).toBe(false);
+  it('refuses to create or enter an account while a session is active', async () => {
+    const current = await guest();
+    const attempts = [
+      await call('POST', '/auth/register', credentials, current.token),
+      await call('POST', '/auth/login', credentials, current.token),
+      await call('POST', '/auth/guest', undefined, current.token),
+      await call('POST', '/auth/google', { token: 'anything' }, current.token),
+    ];
+    for (const attempt of attempts) {
+      expect([attempt.status, errorCode(attempt)]).toEqual([409, 'already-signed-in']);
+    }
+    await call('POST', '/auth/logout', undefined, current.token);
+    const registered = await call<AuthResponse>('POST', '/auth/register', credentials, current.token);
+    expect(registered.status).toBe(200);
+    expect(registered.body.account.id).not.toBe(current.account.id);
   });
 
   it('rejects taken emails and usernames regardless of case or accents', async () => {
@@ -154,7 +162,9 @@ describe('registration', () => {
   it('validates the email, password and username', async () => {
     const invalid = async (change: object) => errorCode(await call('POST', '/auth/register', { ...credentials, ...change }));
     expect(await invalid({ email: 'not-an-email' })).toBe('invalid-email');
-    expect(await invalid({ password: 'short' })).toBe('invalid-password');
+    for (const password of ['Short1a', 'alllowercase1', 'ALLUPPERCASE1', 'NoDigitsHere']) {
+      expect(await invalid({ password })).toBe('invalid-password');
+    }
     expect(await invalid({ username: 'ab' })).toBe('invalid-username');
     expect(await invalid({ username: 'has space' })).toBe('invalid-username');
     expect(errorCode(await call('POST', '/auth/register', { email: credentials.email }))).toBe('validation');
@@ -197,14 +207,10 @@ describe('login and logout', () => {
 });
 
 describe('profile', () => {
-  it('renames an account and refuses taken or invalid names', async () => {
-    await call('POST', '/auth/register', credentials);
-    const second = await guest();
-    const renamed = await call<{ account: Account }>('PATCH', '/me', { username: 'Kaptan' }, second.token);
-    expect(renamed.body.account).toMatchObject({ username: 'Kaptan', isGuest: true });
-    expect(errorCode(await call('PATCH', '/me', { username: 'ARDA10' }, second.token))).toBe('username-taken');
-    expect(errorCode(await call('PATCH', '/me', { username: 'a b' }, second.token))).toBe('invalid-username');
-    expect(errorCode(await call('PATCH', '/me', { username: 'Kaptan' }))).toBe('unauthorized');
+  it('offers no way to change a username', async () => {
+    const { token } = await guest();
+    const reply = await call('PATCH', '/me', { username: 'Kaptan' }, token);
+    expect([reply.status, errorCode(reply)]).toEqual([404, 'not-found']);
   });
 });
 
@@ -222,13 +228,6 @@ describe('identity sign-in', () => {
     });
     const second = await call<AuthResponse>('POST', '/auth/google', { token });
     expect(second.body.account.id).toBe(first.body.account.id);
-  });
-
-  it('upgrades the current guest instead of creating a second account', async () => {
-    const before = await guest();
-    const token = await signGoogleToken({ sub: 'google-2', email: 'baris@example.com', email_verified: true });
-    const upgraded = await call<AuthResponse>('POST', '/auth/google', { token }, before.token);
-    expect(upgraded.body.account).toMatchObject({ id: before.account.id, isGuest: false, providers: ['google'] });
   });
 
   it('picks a free username when the preferred one is taken', async () => {

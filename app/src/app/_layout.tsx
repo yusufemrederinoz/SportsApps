@@ -11,7 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
-import { AuthProvider } from '@/auth/auth-provider';
+import { AuthProvider, useAuth } from '@/auth/auth-provider';
 import { Colors } from '@/constants/theme';
 import { DatabaseProvider } from '@/data/database-provider';
 
@@ -29,15 +29,9 @@ const NIGHT_STADIUM_THEME = {
   },
 };
 
-export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    Barlow_500Medium,
-    Barlow_700Bold,
-    BarlowCondensed_600SemiBold,
-    BarlowCondensed_700Bold,
-    BarlowCondensed_800ExtraBold_Italic,
-  });
-  const ready = loaded || error !== null;
+function RootNavigator({ fontsReady }: { fontsReady: boolean }) {
+  const { state, onboarded } = useAuth();
+  const ready = fontsReady && state.status !== 'loading' && onboarded !== null;
 
   useEffect(() => {
     if (ready) {
@@ -49,12 +43,43 @@ export default function RootLayout() {
     return null;
   }
 
+  const entered = state.status === 'signed-in' || state.status === 'offline';
+  const onboarding = !entered && !onboarded;
+
+  return (
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }}>
+      <Stack.Protected guard={entered}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="match" />
+        <Stack.Screen name="account" />
+      </Stack.Protected>
+      <Stack.Protected guard={onboarding}>
+        <Stack.Screen name="onboarding" />
+      </Stack.Protected>
+      <Stack.Protected guard={!entered && !onboarding}>
+        <Stack.Screen name="welcome" />
+        <Stack.Screen name="login" />
+        <Stack.Screen name="register" />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  const [loaded, error] = useFonts({
+    Barlow_500Medium,
+    Barlow_700Bold,
+    BarlowCondensed_600SemiBold,
+    BarlowCondensed_700Bold,
+    BarlowCondensed_800ExtraBold_Italic,
+  });
+
   return (
     <ThemeProvider value={NIGHT_STADIUM_THEME}>
       <StatusBar style="light" />
       <AuthProvider>
         <DatabaseProvider>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
+          <RootNavigator fontsReady={loaded || error !== null} />
         </DatabaseProvider>
       </AuthProvider>
     </ThemeProvider>

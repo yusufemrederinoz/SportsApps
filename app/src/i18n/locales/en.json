@@ -1,8 +1,43 @@
 {
+  "onboarding": {
+    "skip": "Skip",
+    "next": "Next",
+    "start": "Start",
+    "readTitle": "Read the grid",
+    "readBody": "Every row and column has a header: a club or a country.",
+    "answerTitle": "Name a footballer",
+    "answerBody": "Pick a cell and type a footballer who fits both of its headers. You have {{seconds}} seconds.",
+    "winTitle": "Complete a line",
+    "winBody": "Three cells in a line win the game. If nobody manages it, the side with more cells wins."
+  },
+  "welcome": {
+    "guest": "Continue as guest",
+    "login": "Sign in",
+    "register": "Create account",
+    "guestHint": "Your guest account stays on this phone."
+  },
+  "login": {
+    "title": "Sign in",
+    "submit": "Sign in",
+    "switch": "Create a new account"
+  },
+  "register": {
+    "title": "Create account",
+    "submit": "Create account",
+    "switch": "I already have an account",
+    "usernameHint": "Your username cannot be changed later."
+  },
+  "passwordRules": {
+    "length": "At least 8 characters",
+    "uppercase": "One uppercase letter",
+    "lowercase": "One lowercase letter",
+    "digit": "One digit"
+  },
   "home": {
     "titleLead": "Football",
     "titleAccent": "XOX",
     "subtitle": "Name a footballer who fits both the row and the column.",
+    "account": "Account",
     "difficulty": "Difficulty",
     "modeBotTitle": "Versus bot",
     "modeBotHint": "Play alone against the bot.",
@@ -11,8 +46,7 @@
     "rulesTitle": "How it works",
     "ruleTurn": "You have {{seconds}} seconds for each move.",
     "ruleLine": "Three cells in a line win the game.",
-    "ruleCells": "If nobody completes a line, the side with more cells wins.",
-    "account": "Account"
+    "ruleCells": "If nobody completes a line, the side with more cells wins."
   },
   "difficulty": {
     "easy": "Easy",
@@ -58,36 +92,29 @@
   "account": {
     "title": "Account",
     "back": "Back",
-    "connecting": "Connecting…",
     "offline": "Offline",
     "offlineHint": "The server could not be reached. Offline play still works.",
     "retry": "Try again",
     "guestBadge": "Guest",
     "memberBadge": "Member",
-    "guestHint": "You are playing as a guest. Save your account to keep your progress on any phone.",
-    "loginHint": "Sign in to continue with your saved account.",
+    "guestNote": "To create an account or sign in, sign out first. Your guest account stays on this phone and opens again when you continue as guest.",
     "username": "Username",
     "email": "Email",
     "password": "Password",
-    "register": "Save account",
-    "login": "Sign in",
-    "haveAccount": "I already have an account",
-    "needAccount": "Create a new account",
-    "saveUsername": "Save username",
-    "logout": "Sign out",
-    "saved": "Saved."
+    "logout": "Sign out"
   },
   "errors": {
     "network": "The server could not be reached. Check your connection.",
     "unconfigured": "Online play is not set up in this build.",
     "validation": "Please fill in every field.",
     "unauthorized": "Your session has ended. Please sign in again.",
+    "alreadySignedIn": "Sign out before signing in to another account.",
     "invalidCredentials": "The email or password is wrong.",
     "emailTaken": "This email already has an account. Sign in instead.",
     "usernameTaken": "This username is taken.",
     "invalidUsername": "Usernames are 3 to 16 letters, digits or underscores.",
     "invalidEmail": "Enter a valid email address.",
-    "invalidPassword": "Passwords need at least 8 characters.",
+    "invalidPassword": "The password does not meet the rules below.",
     "providerUnavailable": "This sign-in method is not available yet.",
     "invalidIdentityToken": "Sign-in could not be verified. Try again.",
     "rateLimited": "Too many attempts. Wait a minute and try again.",

@@ -261,12 +261,13 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 |---|---|
 | `GET /health` | Sunucu ayakta mı |
 | `POST /auth/guest` | Misafir hesap ve oturum açar |
-| `POST /auth/register` | E-posta, şifre ve kullanıcı adıyla kayıt. İstek bir misafir oturumuyla gelirse o misafir yerinde kalıcı hesaba dönüşür |
+| `POST /auth/register` | E-posta, şifre ve kullanıcı adıyla yeni hesap açar |
 | `POST /auth/login` | E-posta ve şifreyle giriş |
-| `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş. Kimlik yeniyse ve istek misafir oturumuyla geldiyse misafir yerinde dönüşür |
+| `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş |
 | `POST /auth/logout` | Oturumu kapatır |
 | `GET /me` | Oturumdaki hesabı döndürür |
-| `PATCH /me` | Kullanıcı adını değiştirir |
+
+Giriş ve kayıt uçları, geçerli bir oturumla gelen isteği "zaten giriş yapılmış" hatasıyla reddeder; önce çıkış yapılmalıdır. Kullanıcı adını değiştiren bir uç yoktur.
 
 Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların tam listesi `packages/protocol` içindedir; uygulama her kodu kendi dilindeki mesaja çevirir.
 
@@ -284,11 +285,11 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 
 ### Hesap kuralları
 
-- **Misafir.** Uygulama ilk açılışta sormadan misafir hesap açar. Kullanıcı adı `guest` ve altı rakamdır.
-- **Yerinde dönüşüm.** Misafir kayıt olur ya da Google/Apple ile girerse hesabın kimliği değişmez; maç geçmişi ve puanı korunur.
-- **Kullanıcı adı.** 3–16 karakter; harf, rakam ve alt çizgi. Benzersizlik büyük-küçük harf ve aksan farkı gözetmez: "Çağrı_10" varken "cagri10" alınamaz.
-- **Şifre.** En az 8 karakter. scrypt ile özetlenir, düz hâli hiçbir yerde saklanmaz.
-- **Oturum.** Rastgele 256 bitlik jeton; veritabanında yalnızca özeti durur. Kullanıldıkça ömrü uzar. Kayıt ya da giriş sonrası eski oturum kapatılır.
+- **Misafir.** Oyuncu "misafir olarak devam et" dediğinde açılır. Kullanıcı adı `guest` ve altı rakamdır. Misafir hesabı cihaza bağlıdır ve kalıcı hesaba dönüşmez.
+- **Ayrı hesaplar.** Misafir ile üye hesabı birbirinden bağımsızdır. Misafirken hesap açılamaz ve giriş yapılamaz; önce çıkış yapılır.
+- **Kullanıcı adı.** 3–16 karakter; harf, rakam ve alt çizgi. Kayıtta seçilir ve sonradan değiştirilemez. Benzersizlik büyük-küçük harf ve aksan farkı gözetmez: "Çağrı_10" varken "cagri10" alınamaz.
+- **Şifre.** En az 8 karakter, bir büyük harf, bir küçük harf ve bir rakam. scrypt ile özetlenir, düz hâli hiçbir yerde saklanmaz. Kurallar `packages/protocol` içindedir; uygulama ve sunucu aynı denetimi kullanır.
+- **Oturum.** Rastgele 256 bitlik jeton; veritabanında yalnızca özeti durur. Kullanıldıkça ömrü uzar.
 - **Yanlış giriş.** Bilinmeyen e-posta ile yanlış şifre aynı cevabı ve aynı süreyi verir; hangi e-postaların kayıtlı olduğu anlaşılmaz.
 - **İstek sınırı.** Giriş ve kayıt uçları adres başına dakikada 30 istekle sınırlıdır.
 - **Google ve Apple.** Sunucu, sağlayıcının imzaladığı jetonu sağlayıcının açık anahtarlarıyla doğrular ve yalnızca bizim istemci kimliklerimize kesilmiş jetonları kabul eder.
@@ -298,14 +299,33 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 | Konum | İçerik |
 |---|---|
 | `src/api/` | Sunucu adresi çözümü ve istek istemcisi |
-| `src/auth/session.ts` | Oturum akışı: saklanan jetonu dene, geçersizse yeni misafir aç, sunucu yoksa çevrimdışı kal |
-| `src/auth/storage.ts` | Jetonu cihazın güvenli deposunda saklar |
+| `src/auth/session.ts` | Giriş akışının mantığı |
+| `src/auth/storage.ts` | Jetonları ve tanıtım bayrağını cihazın güvenli deposunda saklar |
 | `src/auth/auth-provider.tsx` | Hesap durumunu tüm ekranlara verir |
-| `src/app/account.tsx` | Hesap ekranı: kayıt, giriş, kullanıcı adı, çıkış |
+| `src/app/_layout.tsx` | Hangi ekranların açık olduğunu hesap durumuna göre belirler |
+| `src/app/onboarding.tsx` | Tanıtım: üç sayfada oyunun anlatımı |
+| `src/app/welcome.tsx` | Karşılama: misafir olarak devam et, giriş yap, hesap oluştur |
+| `src/app/login.tsx`, `src/app/register.tsx` | Giriş ve kayıt formları |
+| `src/app/account.tsx` | Hesap ekranı: kullanıcı adı, e-posta, çıkış |
+| `src/components/form-screen.tsx` | Klavye açılınca odaklanan alanı görünür tutan form zemini |
 
+Açılış akışı:
+
+| Durum | Açılan ekran |
+|---|---|
+| İlk açılış | Tanıtım, ardından karşılama |
+| Üye olarak giriş yapılmış | Doğrudan ana ekran |
+| Yalnızca misafir hesabı var | Her açılışta karşılama |
+| Üyenin oturumu sunucuda geçersiz | Karşılama |
+| Üye, ama sunucuya ulaşılamıyor | Ana ekran, çevrimdışı |
+
+- **Misafir hesabı cihazda kalır.** Cihazda iki ayrı jeton saklanır: misafir jetonu ve üye jetonu. "Misafir olarak devam et" her seferinde aynı misafir hesabını açar; yeni misafir yalnızca eski jeton artık kabul edilmiyorsa oluşur.
+- **Çıkış.** Üye çıkışı sunucudaki oturumu kapatır. Misafir çıkışı yalnızca karşılama ekranına döndürür; misafir hesabı durur.
+- **Ekran koruması.** Ekranlar Expo Router'ın korumalı yığınıyla açılıp kapanır; hesap durumu değişince yönlendirme kendiliğinden olur.
+- **Klavye.** Form ekranı klavye yüksekliği kadar alt boşluk ekler ve odaklanan alanı yukarı kaydırır. Klavye kütüphanesi kullanılmadı, çünkü Expo Go içinde gelmiyor.
 - **Sunucu adresi.** `EXPO_PUBLIC_API_URL` verilmişse o kullanılır. Verilmemişse geliştirme sırasında Expo'nun çalıştığı bilgisayarın adresi ve 4000 kapısı kendiliğinden kullanılır; ayar gerekmez.
-- **Çevrimdışı.** Sunucuya ulaşılamazsa uygulama çevrimdışı kalır; bota karşı ve iki kişilik oyun çalışmaya devam eder.
-- **Henüz yok.** Google ve Apple düğmeleri uygulamada yok; geliştirici hesapları ve özel derleme gerektiriyor. Sunucu tarafı hazır.
+- **Çevrimdışı.** Sunucuya ulaşılamazsa misafir girişi yine içeri alır; bota karşı ve iki kişilik oyun çalışmaya devam eder.
+- **Ertelendi.** Google ve Apple girişinin uygulama tarafı sonraya bırakıldı. Sunucu tarafı hazır.
 
 ## Testler
 
@@ -313,8 +333,8 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 |---|---|---|
 | Veri hattı | 23 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme |
 | Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
-| Sunucu | 20 | Misafir, kayıt, giriş, çıkış, oturum süresi, kullanıcı adı, Google jetonu doğrulama, istek sınırı |
-| Uygulama | 31 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, hesap oturumu |
+| Sunucu | 19 | Misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, oturum açıkken girişin reddi, Google jetonu doğrulama, istek sınırı |
+| Uygulama | 40 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -328,7 +348,8 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Uygulama veritabanı (13 MB) depoya ikili dosya olarak giriyor; her veri güncellemesi depo geçmişini büyütür.
 - Web hedefi kurulmadı; veritabanı kütüphanesinin web desteği ek ayar ister.
-- Hesap ekranı cihazda henüz denenmedi.
+- Yeni giriş akışı (tanıtım, karşılama, giriş, kayıt, hesap) cihazda henüz denenmedi.
+- Misafir hesabı kalıcı hesaba dönüşmediği için misafirken oynanan maçlar üye hesabına taşınmaz.
 - Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
 - Hesap silme yok; mağazalar hesap açılan uygulamalarda bunu şart koşuyor.
 - İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.

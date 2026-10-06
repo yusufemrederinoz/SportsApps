@@ -35,7 +35,14 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Arayüz hedef çıtası | EA FC Ultimate Team: metalik kartlar, sinematik geçişler, premium futbol havası |
 | Tasarım durumu | İkinci sürüm kabul edildi; bu hâliyle kalıyor |
 | Sunucu veritabanı | SQLite. Futbol verisi de SQLite olduğu için tek tür veritabanı; ileride PostgreSQL'e geçilebilir |
-| Giriş yöntemleri | Misafir, e-posta ve şifre, Google, Apple. Dördü de ilk sürümde olacak |
+| Giriş yöntemleri | Misafir ve e-posta/şifre şimdi. Google ve Apple sonraya bırakıldı; sunucu tarafı hazır |
+| Açılış ekranı | Uygulama sormadan misafir açmaz. Açılışta "misafir olarak devam et", "giriş yap" ve "hesap oluştur" seçenekleri çıkar |
+| Misafirin dönüşü | Misafir her açılışta giriş ekranını görür; "misafir olarak devam et" her seferinde aynı misafir hesabını açar |
+| Üyenin dönüşü | E-posta, Google ya da Apple ile giren oyuncu sonraki açılışlarda giriş ekranını görmez |
+| Misafir ve hesap | Misafirken hesap açılamaz; önce çıkış yapılır. Misafir hesabı kalıcı hesaba dönüşmez |
+| Kullanıcı adı | Kayıtta seçilir, sonradan değiştirilemez |
+| Şifre kuralı | En az 8 karakter, bir büyük harf, bir küçük harf, bir rakam |
+| Tanıtım | İlk açılışta oyunu anlatan üç sayfalık tanıtım gösterilir |
 | Botun görünümü | Online'da rakip bulunamayınca gelen bot gerçek oyuncu gibi görünür, rastgele bir oyuncu adı taşır |
 | Sıradaki iş | Oyuncu görselleri (Adım 3) ertelendi; önce sunucu tarafı |
 | Arayüz incelemesi | Geliştirme makinesinde emülatör yok. Görünüm, telefondan atılan ekran görüntüleriyle incelenir |

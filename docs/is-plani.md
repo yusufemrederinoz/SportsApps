@@ -119,22 +119,34 @@ Durum: sürüyor. Dört dilime ayrıldı.
 
 ### 5A — Hesaplar
 
-Durum: kod tamam, cihazda deneme bekliyor (7 Ekim 2026).
+Durum: ilk denemeden sonra yeniden yazıldı, cihazda deneme bekliyor (7 Ekim 2026).
 
 Yapılanlar:
 
 - Sunucu iskeleti: Node.js, Fastify, SQLite. Çalıştırma: `server` klasöründe `npm run dev`.
-- Misafir hesap, e-posta ve şifreyle kayıt ve giriş, çıkış, kullanıcı adı değiştirme.
+- Misafir hesap, e-posta ve şifreyle kayıt ve giriş, çıkış.
 - Google ve Apple kimlik jetonlarının sunucuda doğrulanması.
-- Misafirin kayıt olunca yerinde kalıcı hesaba dönüşmesi.
-- Uygulamada otomatik misafir girişi, güvenli jeton saklama, hesap ekranı.
-- 20 sunucu testi ve uygulama tarafında 9 yeni test geçiyor.
+- Uygulamada tanıtım, karşılama, giriş, kayıt ve hesap ekranları.
+- 19 sunucu testi ve 40 uygulama testi geçiyor.
+
+İlk denemeden sonra değişenler:
+
+- Uygulama artık sormadan misafir açmıyor; açılışta "misafir olarak devam et", "giriş yap" ve "hesap oluştur" seçenekleri çıkıyor.
+- Misafir her açılışta bu ekranı görür ve aynı misafir hesabına döner. Üye bir daha görmez.
+- Misafirken hesap açılamıyor; önce çıkış gerekiyor. Misafirin kalıcı hesaba dönüşmesi kaldırıldı.
+- Kullanıcı adı değiştirilemiyor.
+- Şifre kuralı sıkılaştı: en az 8 karakter, büyük harf, küçük harf, rakam. Kayıt ekranında kurallar canlı işaretleniyor.
+- İlk açılışta üç sayfalık tanıtım gösteriliyor.
+- Şifre alanının klavye altında kalması düzeltildi: giriş ve kayıt ayrı, kaydırılabilir form ekranlarına taşındı.
 
 Kalanlar:
 
-- Hesap ekranını telefonda denemek.
-- Google ve Apple düğmeleri. Bunun için Google Cloud'da OAuth istemci kimlikleri, Apple geliştirici hesabı ve özel derleme gerekiyor.
+- Yeni akışı telefonda denemek.
 - Şifre sıfırlama, e-posta doğrulama ve hesap silme.
+
+Ertelenenler:
+
+- Google ve Apple girişinin uygulama tarafı. Sunucu tarafı hazır.
 
 ### 5B — Online maç
 

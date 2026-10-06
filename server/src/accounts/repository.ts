@@ -55,10 +55,6 @@ export function createAccountRepository(database: Database) {
       return one<UserRow>('SELECT * FROM users WHERE username_key = ?', usernameKey);
     },
 
-    updateUser(id: string, username: string, usernameKey: string, isGuest: number, now: number): void {
-      run('UPDATE users SET username = ?, username_key = ?, is_guest = ?, updated_at = ? WHERE id = ?', username, usernameKey, isGuest, now, id);
-    },
-
     findCredentialByEmailKey(emailKey: string): CredentialRow | undefined {
       return one<CredentialRow>('SELECT * FROM credentials WHERE email_key = ?', emailKey);
     },

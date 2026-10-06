@@ -1,31 +1,42 @@
-import type { AuthResponse, LoginRequest, RegisterRequest } from '@sportapps/protocol';
+import type { LoginRequest, RegisterRequest } from '@sportapps/protocol';
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
 
 import { api } from '@/api';
 
-import { adoptSession, endSession, restoreSession, type AuthState } from './session';
-import { secureTokenStorage } from './storage';
+import {
+  adoptMember,
+  completeOnboarding,
+  enterAsGuest,
+  hasCompletedOnboarding,
+  leaveSession,
+  restoreSession,
+  type AuthState,
+} from './session';
+import { secureStore } from './storage';
 
 interface AuthContextValue {
   state: AuthState;
-  retry: () => Promise<void>;
+  onboarded: boolean | null;
+  finishOnboarding: () => Promise<void>;
+  continueAsGuest: () => Promise<void>;
   register: (input: RegisterRequest) => Promise<void>;
   login: (input: LoginRequest) => Promise<void>;
-  rename: (username: string) => Promise<void>;
-  logout: () => Promise<void>;
+  leave: () => Promise<void>;
+  retry: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [state, setState] = useState<AuthState>({ status: 'loading' });
-  const token = state.status === 'signed-in' ? state.token : null;
+  const [onboarded, setOnboarded] = useState<boolean | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    void restoreSession(api, secureTokenStorage).then((restored) => {
+    void Promise.all([restoreSession(api, secureStore), hasCompletedOnboarding(secureStore)]).then(([restored, completed]) => {
       if (!cancelled) {
         setState(restored);
+        setOnboarded(completed);
       }
     });
     return () => {
@@ -33,27 +44,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
     };
   }, []);
 
-  const adopt = async (response: AuthResponse) => setState(await adoptSession(secureTokenStorage, response));
-
   const value: AuthContextValue = {
     state,
+    onboarded,
+    finishOnboarding: async () => {
+      await completeOnboarding(secureStore);
+      setOnboarded(true);
+    },
+    continueAsGuest: async () => setState(await enterAsGuest(api, secureStore)),
+    register: async (input) => setState(await adoptMember(secureStore, await api.register(input))),
+    login: async (input) => setState(await adoptMember(secureStore, await api.login(input))),
+    leave: async () => setState(await leaveSession(api, secureStore)),
     retry: async () => {
-      setState({ status: 'loading' });
-      setState(await restoreSession(api, secureTokenStorage));
-    },
-    register: async (input) => adopt(await api.register(input, token)),
-    login: async (input) => adopt(await api.login(input, token)),
-    rename: async (username) => {
-      if (state.status === 'signed-in') {
-        const { account } = await api.updateAccount(username, state.token);
-        setState({ ...state, account });
-      }
-    },
-    logout: async () => {
-      if (token) {
-        setState({ status: 'loading' });
-        setState(await endSession(api, secureTokenStorage, token));
-      }
+      const restored = await restoreSession(api, secureStore);
+      setState(restored.status === 'signed-out' ? await enterAsGuest(api, secureStore) : restored);
     },
   };
 

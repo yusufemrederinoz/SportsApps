@@ -9,7 +9,6 @@ import {
   type IdentitySignInRequest,
   type LoginRequest,
   type RegisterRequest,
-  type UpdateAccountRequest,
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
 
@@ -49,7 +48,6 @@ const REGISTER = body({
 });
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
 const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
-const UPDATE_ACCOUNT = body({ username: text(USERNAME_INPUT_MAX_LENGTH) });
 
 function errorBody(error: ApiError): ApiErrorResponse {
   return { error: { code: error.code } };
@@ -79,17 +77,13 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     return current;
   };
 
-  const limitAttempts = (request: FastifyRequest): void => {
+  const startSignIn = (request: FastifyRequest): void => {
     if (!authAttempts.allow(request.ip)) {
       throw new ApiError('rate-limited');
     }
-  };
-
-  const replaceSession = (previous: AuthenticatedSession | null, next: AuthResponse): AuthResponse => {
-    if (previous) {
-      accounts.logout(previous.token);
+    if (session(request)) {
+      throw new ApiError('already-signed-in');
     }
-    return next;
   };
 
   app.setErrorHandler((error: FastifyError | ApiError, request, reply) => {
@@ -108,30 +102,27 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.get(`${API_PREFIX}/health`, () => ({ status: 'ok' }));
 
   app.post(`${API_PREFIX}/auth/guest`, (request): AuthResponse => {
-    limitAttempts(request);
+    startSignIn(request);
     return accounts.createGuest();
   });
 
-  app.post<{ Body: RegisterRequest }>(`${API_PREFIX}/auth/register`, { schema: REGISTER }, async (request): Promise<AuthResponse> => {
-    limitAttempts(request);
-    const current = session(request);
-    return replaceSession(current, await accounts.register(current?.user ?? null, request.body));
+  app.post<{ Body: RegisterRequest }>(`${API_PREFIX}/auth/register`, { schema: REGISTER }, (request): Promise<AuthResponse> => {
+    startSignIn(request);
+    return accounts.register(request.body);
   });
 
-  app.post<{ Body: LoginRequest }>(`${API_PREFIX}/auth/login`, { schema: LOGIN }, async (request): Promise<AuthResponse> => {
-    limitAttempts(request);
-    const current = session(request);
-    return replaceSession(current, await accounts.login(request.body));
+  app.post<{ Body: LoginRequest }>(`${API_PREFIX}/auth/login`, { schema: LOGIN }, (request): Promise<AuthResponse> => {
+    startSignIn(request);
+    return accounts.login(request.body);
   });
 
   const identityRoute = (provider: IdentityProvider) =>
     app.post<{ Body: IdentitySignInRequest }>(
       `${API_PREFIX}/auth/${provider}`,
       { schema: IDENTITY },
-      async (request): Promise<AuthResponse> => {
-        limitAttempts(request);
-        const current = session(request);
-        return replaceSession(current, await accounts.signInWithIdentity(current?.user ?? null, provider, request.body.token));
+      (request): Promise<AuthResponse> => {
+        startSignIn(request);
+        return accounts.signInWithIdentity(provider, request.body.token);
       },
     );
   identityRoute('google');
@@ -143,14 +134,6 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
 
   app.get(`${API_PREFIX}/me`, (request): AccountResponse => ({ account: accounts.account(requireSession(request).user) }));
-
-  app.patch<{ Body: UpdateAccountRequest }>(
-    `${API_PREFIX}/me`,
-    { schema: UPDATE_ACCOUNT },
-    (request): AccountResponse => ({
-      account: accounts.updateUsername(requireSession(request).user, request.body.username),
-    }),
-  );
 
   return app;
 }

@@ -22,8 +22,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { state: auth } = useAuth();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
-  const accountLabel =
-    auth.status === 'signed-in' ? auth.account.username : t(auth.status === 'offline' ? 'account.offline' : 'account.connecting');
+  const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
   const rules = [
     t('home.ruleTurn', { seconds: DEFAULT_RULES.turnSeconds }),
     t('home.ruleLine'),

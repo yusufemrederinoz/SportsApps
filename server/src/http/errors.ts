@@ -9,6 +9,7 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   'invalid-credentials': 401,
   'invalid-identity-token': 401,
   'not-found': 404,
+  'already-signed-in': 409,
   'email-taken': 409,
   'username-taken': 409,
   'rate-limited': 429,

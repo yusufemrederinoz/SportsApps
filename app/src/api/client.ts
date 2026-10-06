@@ -69,12 +69,11 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     configured: baseUrl !== null,
     guest: () => request<AuthResponse>('POST', '/auth/guest'),
     me: (token: string) => request<AccountResponse>('GET', '/me', { token }),
-    register: (input: RegisterRequest, token: string | null) => request<AuthResponse>('POST', '/auth/register', { body: input, token }),
-    login: (input: LoginRequest, token: string | null) => request<AuthResponse>('POST', '/auth/login', { body: input, token }),
-    signInWithIdentity: (provider: IdentityProvider, identityToken: string, token: string | null) =>
-      request<AuthResponse>('POST', `/auth/${provider}`, { body: { token: identityToken }, token }),
+    register: (input: RegisterRequest) => request<AuthResponse>('POST', '/auth/register', { body: input }),
+    login: (input: LoginRequest) => request<AuthResponse>('POST', '/auth/login', { body: input }),
+    signInWithIdentity: (provider: IdentityProvider, identityToken: string) =>
+      request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
-    updateAccount: (username: string, token: string) => request<AccountResponse>('PATCH', '/me', { body: { username }, token }),
   };
 }
 

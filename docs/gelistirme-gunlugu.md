@@ -247,6 +247,34 @@ Ders: testlerin geçmesi sunucunun açıldığını göstermez. Sunucu her dilim
 
 Doğrulama: 20 sunucu, 31 uygulama, 24 kural motoru testi; tip denetimi, lint ve Android paketleme geçiyor. Hesap ekranı telefonda henüz denenmedi.
 
+### Adım 5A — Giriş akışının yeniden yazılması
+
+Hesap ekranı telefonda denendi ve yedi düzeltme istendi. Hepsi uygulandı.
+
+| İstek | Yapılan |
+|---|---|
+| Google ve Apple girişi sonraya | Uygulama tarafı ertelendi; sunucu tarafı duruyor |
+| Şifre alanı klavyenin altında kalıyor, içerik düzgün değil | Giriş ve kayıt ayrı form ekranlarına taşındı. Form, klavye yüksekliği kadar alt boşluk ekliyor ve odaklanan alanı yukarı kaydırıyor |
+| İlk açılışta misafir ya da giriş seçeneği çıksın | Sormadan misafir açma kaldırıldı; karşılama ekranı eklendi |
+| Misafir, çıkış yapmadan hesap açamasın | Misafirin yerinde dönüşmesi kaldırıldı. Sunucu, oturum açıkken gelen kayıt ve giriş isteklerini reddediyor |
+| Kullanıcı adı güncellenemesin | Değiştirme ucu ve formu kaldırıldı |
+| Şifre için kalıp olsun | En az 8 karakter, büyük harf, küçük harf, rakam. Kayıt ekranında kurallar yazdıkça işaretleniyor |
+| Açılışta tanıtım ekranı olsun | Üç sayfalık tanıtım eklendi; bir kez gösteriliyor |
+
+Aynı oturumda gelen ek kural: misafir her açılışta giriş ekranını görür ve "misafir olarak devam et" dediğinde aynı misafir hesabı açılır; e-postayla giren bir daha giriş ekranı görmez.
+
+Bunun için cihazda iki ayrı jeton tutuluyor: misafir jetonu kalıcı, üye jetonu yalnızca giriş yapılmışken var. Misafirin "çıkışı" sunucudaki misafir oturumunu kapatmıyor, yalnızca karşılama ekranına döndürüyor.
+
+Tasarım notları:
+
+- Şifre kuralı varsayılanını ben seçtim (özel karakter şartı yok); kural tek yerde, ortak pakette duruyor.
+- Klavye için hazır kütüphane kullanılmadı, çünkü Expo Go içinde gelmiyor ve uygulama şu an Expo Go ile deneniyor.
+- Ekranların açılıp kapanması Expo Router'ın korumalı yığınına bırakıldı; elle yönlendirme yok.
+
+Geri alınan iş: bir önceki dilimde yazılan "misafir kayıt olunca yerinde kalıcı hesaba dönüşür" davranışı ve kullanıcı adı değiştirme. İkisi de istenmeden eklenmişti. Sonucu: misafirken oynanan maçlar üye hesabına taşınmayacak.
+
+Doğrulama: 19 sunucu ve 40 uygulama testi, tip denetimi, lint, Android paketleme geçiyor. Sunucu çalıştırılıp kurallar canlı denendi: misafirken kayıt 409, zayıf şifre 400, çıkış yapılmış kayıt 200, misafir jetonu sonrasında hâlâ geçerli, kullanıcı adı değiştirme 404. Yeni ekranlar telefonda henüz denenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -266,3 +294,4 @@ Doğrulama: 20 sunucu, 31 uygulama, 24 kural motoru testi; tip denetimi, lint ve
 | `ed57182` | 7 Ekim | Gece stadyumu tasarım dili: zemin, sayaç, animasyon, titreşim, ses |
 | `c25712e` | 7 Ekim | Arayüzün metalik oyuncu kartları etrafında yeniden tasarımı |
 | `0b2b056` | 7 Ekim | Hesap sunucusu: misafir, şifre, Google ve Apple doğrulaması |
+| `829de6d` | 7 Ekim | Uygulamada hesap istemcisi ve hesap ekranı |
