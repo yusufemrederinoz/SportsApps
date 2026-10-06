@@ -17,6 +17,12 @@ COUNTRY_HEADER_WEIGHTS = (0.5, 0.35, 0.15)
 SCHEMA = """
 DROP TABLE IF EXISTS grid_headers;
 DROP TABLE IF EXISTS grids;
+DROP TABLE IF EXISTS grid_levels;
+CREATE TABLE grid_levels (
+    difficulty INTEGER PRIMARY KEY,
+    minimum_fame INTEGER NOT NULL,
+    minimum_answers INTEGER NOT NULL
+);
 CREATE TABLE grids (
     id INTEGER PRIMARY KEY,
     market TEXT NOT NULL REFERENCES markets (code),
@@ -201,6 +207,9 @@ def generate(connection, market, level, generator, taken):
 def write(database_path=DATABASE_PATH):
     connection = sqlite3.connect(database_path)
     connection.executescript(SCHEMA)
+    connection.executemany(
+        "INSERT INTO grid_levels VALUES (?, ?, ?)", [(level.difficulty, level.fame, level.answers) for level in LEVELS]
+    )
     generator = random.Random(SEED)
     summaries = []
     grid_id = 0

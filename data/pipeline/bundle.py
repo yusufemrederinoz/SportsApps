@@ -58,6 +58,11 @@ CREATE VIRTUAL TABLE player_search USING fts5 (
     prefix = '2 3',
     detail = 'none'
 );
+CREATE TABLE grid_levels (
+    difficulty INTEGER PRIMARY KEY,
+    minimum_fame INTEGER NOT NULL,
+    minimum_answers INTEGER NOT NULL
+);
 CREATE TABLE grids (
     id INTEGER PRIMARY KEY,
     market TEXT NOT NULL,
@@ -88,6 +93,7 @@ COPIES = (
     "AND player_id IN (SELECT id FROM players)",
     "INSERT INTO player_search (normalized, player_id) SELECT DISTINCT normalized, player_id FROM source.player_names "
     "WHERE player_id IN (SELECT id FROM players)",
+    "INSERT INTO grid_levels SELECT difficulty, minimum_fame, minimum_answers FROM source.grid_levels",
     "INSERT INTO grids SELECT id, market, difficulty FROM source.grids",
     "INSERT INTO grid_headers SELECT grid_id, axis, position, kind, reference_id FROM source.grid_headers",
     "INSERT INTO countries SELECT id, code FROM source.countries WHERE id IN (SELECT country_id FROM players) "
