@@ -28,6 +28,7 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Hamle süresi | 20 saniye |
 | Maç formatı | Tek oyun |
 | Üçlü olmazsa | Daha çok hücre alan kazanır; hücre sayısı eşitse beraberlik |
+| Veri isteklerinde kimlik | Wikipedia ve diğer veri kaynaklarına giden isteklerde iletişim bilgisi olarak depo adresi gönderilir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 
 ## Rakiplerden çıkan dersler
@@ -62,6 +63,8 @@ Temizlenmesi gerekenler:
 - Çok branşlı kulüp kaydına bağlanmış futbolcular (78 oyuncu futbol takımı yerine "Galatasaray SK" kaydına bağlı).
 - Tarihî uyruk değerleri ("Osmanlı İmparatorluğu" gibi).
 - Kiralık dönemler, altyapı ve B takımlarının "oynadı" sayılıp sayılmayacağı.
+
+Transfermarkt veri seti de eksiksiz değildir (örneğin Mandžukić'in Atlético Madrid sezonu yok); bu boşlukları Wikidata doldurur. Wikidata'da ise doğrulanmamış güncel transfer söylentileri bulunur; bunlar atılır.
 
 Izgaralar rastgele seçilemez. Tanınmış oyuncu şartıyla en büyük 8 Türk kulübünden rastgele kurulan ızgaraların %35'inde, 16 kulüpte %1'inde her hücrede en az 3 cevap çıkıyor. Geçerli ızgaralar önceden hesaplanır.
 

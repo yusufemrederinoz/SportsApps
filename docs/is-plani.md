@@ -15,7 +15,7 @@ Bitti sayılır: Yönelim belgesinde "Açık kararlar" bölümü boşalır.
 
 ## Adım 1 — Depo ve veri hattı
 
-Durum: tamamlandı (6 Ekim 2026). Veritabanında 73.065 oyuncu, 219 kulüp ve 140.805 oyuncu-kulüp kaydı var; yedi bilinen cevap testi geçiyor.
+Durum: tamamlandı (6 Ekim 2026). Veritabanında 72.435 oyuncu, 219 kulüp ve 139.771 oyuncu-kulüp kaydı var.
 
 Çalıştırma: `data` klasöründe `python -m pipeline build`, ardından `python -m unittest discover -s tests -t .`. Veritabanı ve kalite raporu `data/build/` altına yazılır; bu klasör depoya girmez.
 
@@ -39,9 +39,21 @@ Bitti sayılır: Süper Lig ve beş büyük lig için veritabanı üretilir. Bil
 
 ## Adım 2 — Bilinirlik puanı ve ızgara üretici
 
-Durum: sürüyor (7 Ekim 2026). Bilinirlik puanı ve ızgara üreticinin kodu yazıldı; Türkçe Vikipedi okunma sayıları çekiliyor. Kalanlar: şemayı dil ve pazar boyutlu hâle getirmek, eşikleri ayarlamak, ızgaraları üretmek.
+Durum: tamamlandı (7 Ekim 2026). Türkiye pazarı için üç zorluk seviyesinde 1.500'er, toplam 4.500 ızgara üretildi; 18 veri testi geçiyor.
 
-- Her oyuncuya bir bilinirlik puanı verilir (Vikipedi dil sayısı, en yüksek piyasa değeri, millî maç sayısı).
+Sonuçlar:
+
+- Bilinirlik puanının %65'i yerel ilgiden (pazarın dilindeki Vikipedi'de son 60 günlük okunma), %35'i dünya çapı bilinirlikten (Vikipedi dil sayısı, en yüksek piyasa değeri, millî maç sayısı) gelir.
+- Kolay seviye: puanı 50 ve üzeri oyuncular; 4 yerli kulüp, 20 yabancı kulüp, 10 ülke.
+- Orta seviye: puanı 42 ve üzeri; 12 yerli kulüp, 45 yabancı kulüp, 14 ülke.
+- Zor seviye: puanı 32 ve üzeri; 30 yerli kulüp, 130 yabancı kulüp, 30 ülke.
+- Her hücrede en az üç tanınmış cevap vardır. Bir başlık, bir seviyedeki ızgaraların en çok %30'unda yer alır.
+- Wikidata'daki doğrulanmamış güncel yıl kayıtları (söylenti transferleri) veritabanına alınmaz. Tarihsiz kayıtlar cevap olarak kabul edilir ama ızgara kurarken sayılmaz.
+- Şema dil ve pazar bağımsızdır: kulüp ve ülke adları dil sütunlu tablolarda, bilinirlik ve ızgaralar pazar bazında tutulur.
+
+İşler:
+
+- Her oyuncuya bir bilinirlik puanı verilir (yerel Vikipedi okunma sayısı, Vikipedi dil sayısı, en yüksek piyasa değeri, millî maç sayısı).
 - Izgara başlık türleri tanımlanır: önce kulüp ve uyruk; sonra teknik direktör, kupa, takım arkadaşı.
 - Geçerlilik kuralı: her hücrede en az üç tanınmış cevap.
 - Üç zorluk seviyesinde geçerli ızgaralar önceden hesaplanıp tabloya yazılır.
