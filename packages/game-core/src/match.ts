@@ -88,6 +88,13 @@ function hasLine(cells: readonly (Mark | null)[], side: Side): boolean {
   return LINES.some((line) => line.every((index) => cells[index]?.side === side));
 }
 
+export function completesLine(state: MatchState, position: CellPosition, side: Side): boolean {
+  const target = cellIndex(position);
+  return LINES.some(
+    (line) => line.includes(target) && line.every((index) => index === target || state.cells[index]?.side === side),
+  );
+}
+
 function settleByCells(state: MatchState): MatchResult {
   const x = countCells(state, 'x');
   const o = countCells(state, 'o');

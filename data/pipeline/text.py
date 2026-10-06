@@ -23,5 +23,6 @@ _FOLDS = str.maketrans(
 
 def normalize(value):
     decomposed = unicodedata.normalize("NFKD", value.translate(_FOLDS).lower())
-    kept = "".join(char if char.isalnum() else " " for char in decomposed if not unicodedata.combining(char))
+    unmarked = (char for char in decomposed if not unicodedata.category(char).startswith("M"))
+    kept = "".join(char if char.isalnum() else " " for char in unmarked)
     return " ".join(kept.split())

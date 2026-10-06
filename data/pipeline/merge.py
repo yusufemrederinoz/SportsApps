@@ -89,7 +89,8 @@ def localized_names(labels, fallback):
 def display_name(variants):
     key = normalize(variants[0])
     spellings = [variant for variant in variants if normalize(variant) == key]
-    return max(spellings, key=lambda variant: sum(ord(char) > 127 for char in variant))
+    name = max(spellings, key=lambda variant: sum(ord(char) > 127 for char in variant))
+    return name.title() if name == name.lower() else name
 
 
 def resolve_clubs(leagues, refresh):
