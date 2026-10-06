@@ -10,7 +10,8 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 
 | Konu | Karar |
 |---|---|
-| Pazar ve dil | Türkiye, Türkçe |
+| Pazar | İlk pazar Türkiye. Uygulama yurt dışında da çalışacak şekilde kurulur |
+| Dil desteği | Baştan çok dilli. İlk diller Türkçe ve İngilizce; cihaz diline göre seçilir, yedek dil İngilizce. Veride adlar dil, bilinirlik ve ızgaralar pazar boyutuyla tutulur |
 | Platform | Android ve iOS birlikte; React Native + Expo |
 | Çekirdek deneyim | Online 1'e 1 düello. Offline mod da desteklenir |
 | Rakip bulunamazsa | Rakip bot olur |
@@ -21,7 +22,13 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Veri kaynağı | transfermarkt-datasets ile Wikidata birleştirilir |
 | İlk sürümün lig kapsamı | Süper Lig ve beş büyük lig (İngiltere, İspanya, İtalya, Almanya, Fransa) |
 | Sunucu | Kendi sunucumuz: Node.js ve WebSocket |
-| Kod dili | Kodda Türkçe ifade kullanılmaz. Oyuncuya görünen Türkçe metinler çeviri dosyasında durur |
+| Kod dili | Kodda ve veritabanı adlarında Türkçe tanım kullanılmaz. Oyuncuya görünen Türkçe metinler çeviri dosyasında durur |
+| "Oynadı" kuralı | Kadroda olması yeter. Kiralık dönemler dahil her resmî kulüp kaydı sayılır |
+| Uyruk kuralı | Yalnızca ana uyruk geçerlidir. İkinci vatandaşlıklar sayılmaz |
+| Hamle süresi | 20 saniye |
+| Maç formatı | Tek oyun |
+| Üçlü olmazsa | Daha çok hücre alan kazanır; hücre sayısı eşitse beraberlik |
+| Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 
 ## Rakiplerden çıkan dersler
 
@@ -94,7 +101,9 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 2. Fotoğrafı olmayan oyuncular yedek kartla mı gösterilecek?
 3. Gelir modeli: ödüllü reklam ve reklamsız paket mi?
 4. Bot açıkça bot olarak mı gösterilecek, sıralama puanını nasıl etkileyecek?
-5. Maç kuralları: hamle süresi, tek maç ya da üç maçlık seri, beraberlik, joker.
+5. Joker olacak mı, olacaksa hangileri?
+6. Uygulamanın adı. Şimdilik çalışma adı olarak "Futbol XOX" kullanılıyor.
+7. Tıkanan oyun ne zaman biter? Şimdilik art arda dört turda hücre alınamazsa oyun biter ve hücre sayısına bakılır.
 
 ## Riskler
 

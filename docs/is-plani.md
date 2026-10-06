@@ -22,7 +22,6 @@ Durum: tamamlandı (6 Ekim 2026). Veritabanında 73.065 oyuncu, 219 kulüp ve 14
 Açık kalanlar:
 
 - Oyuncu kimlikleri kaynak kimliklerinden türetiliyor. Yayından önce kalıcı bir kimlik kaydına geçilmeli; yoksa bir oyuncunun kimliği sonradan değişebilir.
-- Kiralık dönemler ve hiç maça çıkmadan geçen sözleşmeler de "oynadı" sayılıyor. 2012 sonrası için maç sayısı tabloda duruyor; kural Adım 2'de netleşir.
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Wikidata sorguları QLever aynasına bağlı; ayna kapanırsa resmî sorgu servisine dönülmeli.
 
@@ -39,6 +38,8 @@ Açık kalanlar:
 Bitti sayılır: Süper Lig ve beş büyük lig için veritabanı üretilir. Bilinen cevaplar testi geçer (örnek: dört büyüklerin dördünde de oynayanlar Sergen Yalçın ve Burak Yılmaz çıkar).
 
 ## Adım 2 — Bilinirlik puanı ve ızgara üretici
+
+Durum: sürüyor (7 Ekim 2026). Bilinirlik puanı ve ızgara üreticinin kodu yazıldı; Türkçe Vikipedi okunma sayıları çekiliyor. Kalanlar: şemayı dil ve pazar boyutlu hâle getirmek, eşikleri ayarlamak, ızgaraları üretmek.
 
 - Her oyuncuya bir bilinirlik puanı verilir (Vikipedi dil sayısı, en yüksek piyasa değeri, millî maç sayısı).
 - Izgara başlık türleri tanımlanır: önce kulüp ve uyruk; sonra teknik direktör, kupa, takım arkadaşı.
@@ -57,6 +58,10 @@ Bitti sayılır: Her zorluk seviyesinde en az 1.000 geçerli ızgara vardır (ö
 Bitti sayılır: Tarz ve araç seçilir, görsel başına maliyet bilinir.
 
 ## Adım 4 — Uygulama iskeleti ve offline XOX
+
+Durum: başladı (7 Ekim 2026). Expo projesi (SDK 57), uygulama ve sunucunun ortak kullanacağı kural motoru (13 test) ve çok dilli altyapı (Türkçe, İngilizce) hazır. Kalanlar: veritabanını gömmek, oyuncu arama, ızgara ekranı, offline modlar.
+
+Çalıştırma: depo kökünde `npm install`, ardından `app` klasöründe `npx expo start`. Testler için kökte `npm test`.
 
 - Expo projesi kurulur (TypeScript). Kart ve ızgara bileşenleri tasarlanır.
 - SQLite dosyası uygulamaya gömülür.
