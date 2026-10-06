@@ -4,10 +4,12 @@ import urllib.parse
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from . import transfermarkt, wikidata
-from .config import OVERRIDES_DIR, TRANSFERMARKT_ONLY_ID_OFFSET, TRANSFERMARKT_POSITIONS
+from . import fame, transfermarkt, wikidata, wikipedia
+from .config import DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_ONLY_ID_OFFSET, TRANSFERMARKT_POSITIONS
 from .text import normalize
-from .wikidata import entity_id, entity_number
+from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_id, entity_number
+
+NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
 
 CURRENT_YEAR = datetime.date.today().year
 
@@ -33,6 +35,14 @@ class Spell:
     @property
     def last_year(self):
         return max(self.ends) if self.ends else None
+
+    @property
+    def is_confirmed(self):
+        return "tm" in self.sources or bool(self.starts or self.ends)
+
+    @property
+    def is_rumor(self):
+        return self.sources == {"wd"} and self.first_year is not None and self.first_year >= CURRENT_YEAR
 
 
 def read_override(name):
@@ -69,6 +79,17 @@ def position_from_labels(labels):
         if any(word in text for word in ("forward", "striker", "wing")):
             return "FW"
     return None
+
+
+def localized_names(labels, fallback):
+    default = labels.get(DEFAULT_LANGUAGE) or labels.get(NEUTRAL_LANGUAGE) or fallback
+    return {language: labels.get(language) or default for language in LANGUAGES}
+
+
+def display_name(variants):
+    key = normalize(variants[0])
+    spellings = [variant for variant in variants if normalize(variant) == key]
+    return max(spellings, key=lambda variant: sum(ord(char) > 127 for char in variant))
 
 
 def resolve_clubs(leagues, refresh):
@@ -130,9 +151,7 @@ def resolve_clubs(leagues, refresh):
     for row in wikidata.labels(canonical_ids, refresh) if canonical_ids else []:
         names[entity_id(row["item"])][row["language"]] = row["label"]
     for club in clubs.values():
-        club_names = names.get(club["wikidata_id"], {})
-        club["name_en"] = club_names.get("en") or club_names.get("mul") or club["transfermarkt_name"]
-        club["name_tr"] = club_names.get("tr") or club["name_en"]
+        club["names"] = localized_names(names.get(club["wikidata_id"], {}), club["transfermarkt_name"])
 
     return clubs, club_by_wikidata_id, membership_rows
 
@@ -141,25 +160,24 @@ def load_countries(refresh):
     extras = {row["wikidata_id"]: row for row in read_override("countries.csv")}
     aliases = {row["alias_id"]: row["wikidata_id"] for row in read_override("country_aliases.csv")}
     countries = {}
+    labels = defaultdict(dict)
     for row in wikidata.countries(set(extras), refresh):
         identifier = entity_id(row["country"])
         country = countries.setdefault(identifier, {"id": entity_number(identifier), "wikidata_id": identifier, "code": None})
         country["code"] = row.get("code") or country["code"]
-        country[row["language"]] = row["label"]
+        labels[identifier][row["language"]] = row["label"]
+    for row in read_override("country_display_names.csv"):
+        labels[row["wikidata_id"]][row["language"]] = row["name"]
     for identifier, extra in extras.items():
-        country = countries.get(identifier)
-        if country:
-            country["code"] = extra["code"] or country["code"]
-            country["en"] = extra["name_en"] or country.get("en") or country.get("mul")
-            country["tr"] = extra["name_tr"] or country.get("tr")
+        if identifier in countries:
+            countries[identifier]["code"] = extra["code"] or countries[identifier]["code"]
     for alias in aliases:
         countries.pop(alias, None)
     by_name = {}
     for identifier in sorted(countries, key=entity_number):
-        english = countries[identifier].get("en") or countries[identifier].get("mul")
-        if english:
-            by_name.setdefault(normalize(english), identifier)
-    for row in read_override("country_names.csv"):
+        countries[identifier]["names"] = localized_names(labels[identifier], identifier)
+        by_name.setdefault(normalize(countries[identifier]["names"][DEFAULT_LANGUAGE]), identifier)
+    for row in read_override("transfermarkt_countries.csv"):
         if row["wikidata_id"] in countries:
             by_name[normalize(row["name"])] = row["wikidata_id"]
     return countries, by_name, aliases
@@ -246,6 +264,8 @@ def load_wikidata_players(scopes, refresh):
                 "sitelinks": None,
                 "image": None,
                 "transfermarkt": None,
+                "female": False,
+                "articles": {},
                 "sport_countries": [],
                 "citizenships": [],
                 "positions": [],
@@ -259,6 +279,7 @@ def load_wikidata_players(scopes, refresh):
         if row.get("image") and not target["image"]:
             target["image"] = urllib.parse.unquote(row["image"].rsplit("/", 1)[1])
         target["transfermarkt"] = target["transfermarkt"] or integer_or_none(row.get("transfermarkt"))
+        target["female"] = target["female"] or row.get("gender", "").endswith(FEMALE)
     for row in attributes["labels"]:
         record(row)["labels"].setdefault(row["language"], row["label"])
     for row in attributes["aliases"]:
@@ -325,6 +346,13 @@ def build(refresh=False):
     extra_ids = {wikidata_by_transfermarkt[key] for key in transfermarkt_spells if key in wikidata_by_transfermarkt} - scope_ids
     scopes = [wikidata.club_scope(set(club_by_wikidata_id))] + wikidata.player_scopes(extra_ids)
     wikidata_players = load_wikidata_players(scopes, refresh)
+    markets = read_override("markets.csv")
+    for language in sorted({market["language"] for market in markets}):
+        for row in wikidata.player_articles(scopes, language, refresh):
+            if entity_id(row["player"]) in wikidata_players:
+                wikidata_players[entity_id(row["player"])]["articles"][language] = row["title"]
+    women = {identifier for identifier in scope_ids if wikidata_players.get(identifier, {}).get("female")}
+    scope_ids -= women
 
     unlinked_ids = [key for key in transfermarkt_spells if key not in wikidata_by_transfermarkt]
     fuzzy_links = link_by_birth_and_name(unlinked_ids, transfermarkt_players, wikidata_players, scope_ids)
@@ -345,13 +373,14 @@ def build(refresh=False):
     player_clubs = []
     unmapped_countries = Counter()
     nameless = 0
+    rumors = 0
 
     for transfermarkt_id, wikidata_id in entities:
         source = transfermarkt_players.get(transfermarkt_id) if transfermarkt_id else None
         entry = wikidata_players.get(wikidata_id) if wikidata_id else None
         labels = entry["labels"] if entry else {}
         variants = [source["name"] if source else None]
-        variants += [labels.get(language) for language in ("tr", "en", "mul", "es", "it", "fr", "de")]
+        variants += [labels.get(language) for language in NAME_LANGUAGES]
         variants += entry["aliases"] if entry else []
         variants = [variant.strip() for variant in variants if variant and variant.strip()]
         if not variants:
@@ -386,13 +415,14 @@ def build(refresh=False):
         players.append(
             {
                 "id": player_id,
-                "name": variants[0],
+                "name": display_name(variants),
                 "birth_date": birth or (entry["birth"] if entry else None),
                 "position": position or (position_from_labels(entry["positions"]) if entry else None),
                 "sitelinks": (entry["sitelinks"] if entry else None) or 0,
                 "highest_market_value_eur": integer_or_none(source["highest_market_value_in_eur"]) if source else None,
                 "international_caps": integer_or_none(source["international_caps"]) if source else None,
                 "commons_file": entry["image"] if entry else None,
+                "articles": entry["articles"] if entry else {},
                 "transfermarkt_id": transfermarkt_id,
                 "wikidata_id": wikidata_id,
                 "has_nationality": bool(nationality_ids),
@@ -408,9 +438,31 @@ def build(refresh=False):
                 target.appearances += spell.appearances
                 target.sources |= spell.sources
         for club_id, spell in merged.items():
+            if spell.is_rumor:
+                rumors += 1
+                continue
             player_clubs.append(
-                (player_id, club_id, spell.first_year, spell.last_year, spell.appearances, "+".join(sorted(spell.sources)))
+                (
+                    player_id,
+                    club_id,
+                    spell.first_year,
+                    spell.last_year,
+                    spell.appearances,
+                    "+".join(sorted(spell.sources)),
+                    int(spell.is_confirmed),
+                )
             )
+
+    player_fame = []
+    for market in markets:
+        language = market["language"]
+        views = wikipedia.recent_views(
+            language, [player["articles"][language] for player in players if language in player["articles"]], refresh
+        )
+        for player in players:
+            local_views = views.get(player["articles"].get(language), 0)
+            score = fame.score(local_views, player["sitelinks"], player["highest_market_value_eur"], player["international_caps"])
+            player_fame.append((player["id"], market["code"], score, local_views))
 
     stats = {
         "transfermarkt_players_in_scope": len(transfermarkt_spells),
@@ -420,9 +472,13 @@ def build(refresh=False):
         "transfermarkt_only": sum(1 for key, identifier in entities if key and not identifier),
         "wikidata_only": sum(1 for key, identifier in entities if identifier and not key),
         "players_without_name": nameless,
+        "women_excluded": len(women),
+        "rumor_spells_dropped": rumors,
         "unmapped_countries": unmapped_countries.most_common(),
     }
     return {
+        "markets": markets,
+        "player_fame": player_fame,
         "leagues": leagues,
         "countries": countries,
         "clubs": clubs,

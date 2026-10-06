@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -9,7 +10,11 @@ REPORT_PATH = BUILD_DIR / "report.md"
 
 TRANSFERMARKT_BASE_URL = "https://pub-e682421888d945d684bcae8890b0ec20.r2.dev/data"
 WIKIDATA_SPARQL_URL = "https://qlever.dev/api/wikidata"
-USER_AGENT = "SportAppsDataPipeline/0.1 (football trivia dataset build)"
+CONTACT = os.environ.get("PIPELINE_CONTACT", "https://github.com/yusufemrederinoz/SportsApps").strip()
+USER_AGENT = f"SportAppsDataPipeline/0.1 ({CONTACT or 'football trivia dataset build'})"
+
+LANGUAGES = ("en", "tr")
+DEFAULT_LANGUAGE = "en"
 
 TRANSFERMARKT_POSITIONS = {"Goalkeeper": "GK", "Defender": "DF", "Midfield": "MF", "Attack": "FW"}
 TRANSFERMARKT_ONLY_ID_OFFSET = 1_000_000_000

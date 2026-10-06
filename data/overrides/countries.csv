@@ -1,12 +1,12 @@
-wikidata_id,code,name_en,name_tr
-Q21,GB-ENG,,
-Q22,GB-SCT,,
-Q25,GB-WLS,,
-Q26,GB-NIR,,
-Q55,NL,Netherlands,Hollanda
-Q148,CN,China,Çin
-Q15180,,Soviet Union,Sovyetler Birliği
-Q36704,,Yugoslavia,Yugoslavya
-Q33946,,Czechoslovakia,Çekoslovakya
-Q16957,,East Germany,Doğu Almanya
-Q37024,,Serbia and Montenegro,Sırbistan-Karadağ
+wikidata_id,code
+Q21,GB-ENG
+Q22,GB-SCT
+Q25,GB-WLS
+Q26,GB-NIR
+Q55,NL
+Q148,CN
+Q15180,
+Q36704,
+Q33946,
+Q16957,
+Q37024,

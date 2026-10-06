@@ -1,6 +1,6 @@
 import sqlite3
 
-from .config import DATABASE_PATH, REPORT_PATH
+from .config import DATABASE_PATH, DEFAULT_LANGUAGE, REPORT_PATH
 
 
 def percent(part, whole):
@@ -52,6 +52,8 @@ def write(dataset):
         ("Transfermarkt only", stats["transfermarkt_only"]),
         ("Wikidata only", stats["wikidata_only"]),
         ("Dropped without a name", stats["players_without_name"]),
+        ("Women excluded", stats["women_excluded"]),
+        ("Unconfirmed current-year spells dropped", stats["rumor_spells_dropped"]),
     ]
     sections += ["## Player linking", table(["Metric", "Value"], linking)]
 
@@ -67,13 +69,39 @@ def write(dataset):
     ]
     sections += ["## Field coverage", table(["Field", "Players", "Share"], [(name, count, percent(count, players)) for name, count in coverage])]
 
+    fame_rows = connection.execute(
+        "SELECT market, SUM(fame >= 80), SUM(fame >= 70), SUM(fame >= 60), SUM(fame >= 50), SUM(recent_views > 0) "
+        "FROM player_fame GROUP BY market ORDER BY market"
+    ).fetchall()
+    sections += [
+        "## Fame by market",
+        table(["Market", "Fame 80+", "Fame 70+", "Fame 60+", "Fame 50+", "With recent local views"], fame_rows),
+    ]
+
+    grid_rows = [
+        (
+            summary["market"],
+            summary["difficulty"],
+            summary["grids"],
+            summary["pool"],
+            summary["headers_used"],
+            f"{100 * summary['busiest_header_share']:.0f}%",
+            summary["attempts"],
+        )
+        for summary in dataset.get("grid_summaries", [])
+    ]
+    sections += [
+        "## Grids",
+        table(["Market", "Difficulty", "Grids", "Header pool", "Headers used", "Busiest header share", "Attempts"], grid_rows),
+    ]
+
     clubs = dataset["clubs"].values()
     unmatched = [(club["id"], club["transfermarkt_name"], club["league"]) for club in clubs if not club["wikidata_id"]]
     sections += ["## Clubs without a Wikidata item", table(["Transfermarkt id", "Name", "League"], unmatched) if unmatched else "None."]
 
     aliases = [
-        (club["name_en"], club["wikidata_id"], alias, members)
-        for club in sorted(clubs, key=lambda item: item["name_en"])
+        (club["names"][DEFAULT_LANGUAGE], club["wikidata_id"], alias, members)
+        for club in sorted(clubs, key=lambda item: item["names"][DEFAULT_LANGUAGE])
         for alias, members in club["aliases"]
     ]
     sections += [
