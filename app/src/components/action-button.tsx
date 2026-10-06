@@ -1,8 +1,13 @@
 import { Pressable, StyleSheet } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
-import { Spacing } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
+import { Colors, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
+import { haptics } from '@/feedback/haptics';
+import { useUppercase } from '@/i18n/uppercase';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const PRESSED_SCALE = 0.97;
 
 interface ActionButtonProps {
   label: string;
@@ -11,20 +16,30 @@ interface ActionButtonProps {
 }
 
 export function ActionButton({ label, onPress, variant = 'primary' }: ActionButtonProps) {
-  const theme = useTheme();
+  const uppercase = useUppercase();
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.get() }] }));
   const primary = variant === 'primary';
+
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        { backgroundColor: primary ? theme.sideX : theme.backgroundElement, opacity: pressed ? 0.8 : 1 },
-      ]}>
-      <ThemedText type="smallBold" style={{ color: primary ? theme.onAccent : theme.text }}>
-        {label}
+      accessibilityLabel={label}
+      onPressIn={() => {
+        scale.set(withTiming(PRESSED_SCALE, { duration: Motion.quick }));
+      }}
+      onPressOut={() => {
+        scale.set(withSpring(1));
+      }}
+      onPress={() => {
+        haptics.select();
+        onPress();
+      }}
+      style={[styles.button, primary ? styles.primary : styles.secondary, animatedStyle]}>
+      <ThemedText type="label" style={styles.label} themeColor={primary ? 'onAccent' : 'text'}>
+        {uppercase(label)}
       </ThemedText>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -32,8 +47,26 @@ const styles = StyleSheet.create({
   button: {
     alignSelf: 'stretch',
     alignItems: 'center',
-    borderRadius: Spacing.three,
+    justifyContent: 'center',
+    minHeight: MinimumTouchSize + Spacing.two,
+    borderRadius: Radius.medium,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
+  },
+  primary: {
+    backgroundColor: Colors.pitch,
+    shadowColor: Colors.pitch,
+    shadowOpacity: 0.55,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 8,
+  },
+  secondary: {
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  label: {
+    fontSize: 18,
+    lineHeight: 22,
   },
 });

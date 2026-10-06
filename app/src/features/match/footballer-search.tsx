@@ -5,13 +5,14 @@ import { FlatList, Modal, Pressable, StyleSheet, TextInput, View } from 'react-n
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Spacing } from '@/constants/theme';
+import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
 import { searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
-import { useTheme } from '@/hooks/use-theme';
+import { haptics } from '@/feedback/haptics';
+import { useUppercase } from '@/i18n/uppercase';
 
 import { flagEmoji } from './flags';
+import { URGENT_SECONDS } from './use-match-effects';
 
 interface FootballerSearchProps {
   title: string;
@@ -22,12 +23,10 @@ interface FootballerSearchProps {
   onClose: () => void;
 }
 
-const URGENT_SECONDS = 5;
-
 export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSelect, onClose }: FootballerSearchProps) {
   const database = useSQLiteContext();
-  const theme = useTheme();
   const { t } = useTranslation();
+  const uppercase = useUppercase();
   const [text, setText] = useState('');
   const [found, setFound] = useState<{ text: string; footballers: FootballerSummary[] }>({ text: '', footballers: [] });
 
@@ -48,30 +47,33 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
 
   return (
     <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <ThemedView style={styles.container}>
+      <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
-            <ThemedText type="smallBold" style={styles.title} numberOfLines={2}>
-              {title}
+            <ThemedText type="label" style={styles.title} numberOfLines={2}>
+              {uppercase(title)}
             </ThemedText>
-            <ThemedText type="smallBold" themeColor={secondsLeft <= URGENT_SECONDS ? 'negative' : 'textSecondary'}>
-              {t('match.secondsLeft', { seconds: secondsLeft })}
+            <ThemedText type="score" themeColor={secondsLeft <= URGENT_SECONDS ? 'negative' : 'floodlight'}>
+              {secondsLeft}
             </ThemedText>
           </View>
           <TextInput
             autoFocus
             autoCorrect={false}
             autoCapitalize="words"
+            accessibilityLabel={t('search.placeholder')}
             value={text}
             onChangeText={setText}
             placeholder={t('search.placeholder')}
-            placeholderTextColor={theme.textSecondary}
-            style={[styles.input, { color: theme.text, backgroundColor: theme.backgroundElement }]}
+            placeholderTextColor={Colors.textSecondary}
+            selectionColor={Colors.pitch}
+            style={styles.input}
           />
           <FlatList
             data={results}
             keyExtractor={(footballer) => String(footballer.id)}
             keyboardShouldPersistTaps="handled"
+            ItemSeparatorComponent={() => <View style={styles.separator} />}
             ListEmptyComponent={
               <ThemedText type="small" themeColor="textSecondary" style={styles.empty}>
                 {searched ? t('search.empty') : t('search.hint')}
@@ -80,8 +82,12 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
             renderItem={({ item }) => (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => onSelect(item)}
-                style={({ pressed }) => [styles.result, pressed && { backgroundColor: theme.backgroundElement }]}>
+                accessibilityLabel={item.birthYear ? `${item.name}, ${item.birthYear}` : item.name}
+                onPress={() => {
+                  haptics.select();
+                  onSelect(item);
+                }}
+                style={({ pressed }) => [styles.result, pressed && styles.resultPressed]}>
                 <ThemedText style={styles.resultFlag}>{flagEmoji(item.countryCode) ?? ''}</ThemedText>
                 <ThemedText style={styles.resultName} numberOfLines={1}>
                   {item.name}
@@ -93,12 +99,12 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
             )}
           />
           <Pressable accessibilityRole="button" onPress={onClose} style={styles.cancel}>
-            <ThemedText type="smallBold" themeColor="textSecondary">
-              {t('search.cancel')}
+            <ThemedText type="label" themeColor="textSecondary">
+              {uppercase(t('search.cancel'))}
             </ThemedText>
           </Pressable>
         </SafeAreaView>
-      </ThemedView>
+      </View>
     </Modal>
   );
 }
@@ -106,6 +112,7 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.background,
   },
   safeArea: {
     flex: 1,
@@ -121,12 +128,23 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
+    fontSize: 18,
+    lineHeight: 22,
   },
   input: {
-    borderRadius: Spacing.three,
+    minHeight: MinimumTouchSize + Spacing.two,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.pitch,
+    backgroundColor: Colors.surface,
+    color: Colors.text,
+    fontFamily: Fonts.body,
+    fontSize: 18,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.three,
-    fontSize: 16,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.border,
   },
   empty: {
     textAlign: 'center',
@@ -136,18 +154,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
+    minHeight: MinimumTouchSize + Spacing.two,
     paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.three,
-    borderRadius: Spacing.two,
+    borderRadius: Radius.small,
+  },
+  resultPressed: {
+    backgroundColor: Colors.surfaceRaised,
   },
   resultFlag: {
     width: 28,
   },
   resultName: {
     flex: 1,
+    fontSize: 17,
   },
   cancel: {
     alignItems: 'center',
-    paddingVertical: Spacing.three,
+    justifyContent: 'center',
+    minHeight: MinimumTouchSize,
   },
 });

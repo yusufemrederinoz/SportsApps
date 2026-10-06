@@ -71,7 +71,7 @@ Bitti sayılır: Tarz ve araç seçilir, görsel başına maliyet bilinir.
 
 ## Adım 4 — Uygulama iskeleti ve offline XOX
 
-Durum: kod tamam, cihazda deneme bekliyor (7 Ekim 2026).
+Durum: tamamlandı (7 Ekim 2026). Uygulama telefonda denendi, hata görülmedi.
 
 Yapılanlar:
 
@@ -81,10 +81,6 @@ Yapılanlar:
 - Ana ekran ve maç ekranı: zorluk seçimi, bota karşı, aynı cihazda iki kişi, 20 saniyelik sayaç, sonuç.
 - 22 uygulama testi, tip denetimi, lint ve Android paketleme geçiyor.
 
-Kalanlar:
-
-- Uygulamayı gerçek cihazda açıp bir maçı baştan sona oynamak. Bu yapılmadan adım bitmiş sayılmaz.
-- Cihazda görülen hataları düzeltmek.
 
 Çalıştırma: depo kökünde `npm install`, ardından `app` klasöründe `npx expo start`. Testler için kökte `npm test`.
 
@@ -98,7 +94,20 @@ Bitti sayılır: Android ve iOS'ta internetsiz bir maç baştan sona oynanır.
 
 ## Adım 4B — Tasarım dili ve oyun hissi
 
-Durum: başlamadı. Görsel yön "gece stadyumu" olarak seçildi, teknoloji seti onaylandı (7 Ekim 2026). Başlamadan önce Adım 4'ün cihaz denemesi yapılmalı.
+Durum: ilk sürüm yazıldı, cihazda inceleme bekliyor (7 Ekim 2026). Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
+
+Yapılanlar:
+
+- Renk, tipografi, boşluk ve hareket değerleri tek dosyada toplandı; uygulama yalnızca koyu görünümle çalışıyor.
+- Barlow yazı tipleri, Skia ile çizilen stadyum zemini ve sayaç halkası eklendi.
+- Ana ekran, maç ekranı ve arama penceresi yeni dille yeniden yapıldı.
+- Hücre alma, sonuç ve kazanma animasyonları, dokunsal geri bildirim ve sesler eklendi.
+
+Kalanlar:
+
+- Cihazda inceleme ve buna göre renk, boyut, hız ayarı.
+- Gerçek ses tasarımı, vektör bayraklar, ikon seti, ses ve titreşim ayarı.
+- Oyuncu kartı bileşeni (Adım 3'teki görsellerle birlikte).
 
 - Seçilen görsel yön için renk, tipografi, boşluk ve bileşen kuralları yazılır.
 - Skia, Lottie, expo-haptics ve expo-audio projeye eklenir.

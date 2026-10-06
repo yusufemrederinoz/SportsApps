@@ -144,6 +144,30 @@ Arayüzün iddialı olması istendi. Şu anki ekranlar işlevsel bir iskelet; g�
 
 Yapılan işlerin düzenli belgelenmesi istendi. `docs` altına belge dizini, teknik mimari ve bu günlük eklendi; her adımda güncellenecek.
 
+### Adım 4'ün cihaz denemesi
+
+Uygulama telefonda Expo Go ile açıldı ve denendi; hata görülmedi. Adım 4 tamamlandı.
+
+### Adım 4B — Gece stadyumu tasarım dili, ilk sürüm
+
+- Tasarım kuralları `tasarim-dili.md` belgesine yazıldı: renkler, tipografi, bileşenler, hareket, titreşim, ses, erişilebilirlik.
+- Yazı tipi olarak Barlow Condensed (başlık) ve Barlow (gövde) seçildi; spor ve skor tabelası havası veriyor, Türkçe karakterleri destekliyor.
+- Taraf renkleri mavi ve kehribar seçildi. Kırmızı bilerek taraf rengi yapılmadı; hata ve süre uyarısına ayrıldı.
+- Açık tema kaldırıldı; uygulama yalnızca koyu görünümle çalışıyor.
+- Stadyum zemini ve sayaç halkası Skia ile çizildi. Hücre alma, sonuç ve kazanma animasyonları Reanimated ile yapıldı.
+- Sesler şimdilik kodla üretildi (düdük, doğru, yanlış, tik, kazanma). Yer tutucudur.
+
+Sorunlar ve çözümleri:
+
+| Sorun | Çözüm |
+|---|---|
+| Lint, animasyon değerine doğrudan atamayı hata saydı | Reanimated'in `.get()` ve `.set()` yöntemlerine geçildi |
+| React Native'in yeni sürümünde `absoluteFillObject` yok | `absoluteFill` kullanıldı |
+| Skia belgelerinin adresleri değişmişti | Kurulu paketin tip tanımları okunarak API doğrulandı |
+| npm, Skia'nın kurulum betiğini çalıştırmadı | Expo Go için gerekmiyor; yerel derleme öncesi onay gerektiği belgeye yazıldı |
+
+Doğrulama: tip denetimi, lint, 22 uygulama testi ve Android paketleme geçiyor. Görünüm cihazda henüz incelenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

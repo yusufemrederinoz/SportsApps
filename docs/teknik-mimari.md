@@ -8,11 +8,13 @@ Son güncelleme: 7 Ekim 2026
 SportApps/
 ├── app/                  Expo uygulaması (React Native, TypeScript)
 │   ├── assets/data/      Uygulamaya gömülen veritabanı ve sürüm dosyası
+│   ├── assets/sounds/    Efekt sesleri
 │   └── src/
 │       ├── app/          Ekranlar (Expo Router): ana ekran, maç ekranı
 │       ├── components/   Ortak arayüz bileşenleri
 │       ├── constants/    Tema: renkler, boşluklar
 │       ├── data/         Veritabanı sağlayıcısı ve sorgular
+│       ├── feedback/     Dokunsal geri bildirim ve ses
 │       ├── features/     Özellik kodları (şimdilik yalnızca maç)
 │       ├── hooks/        Tema kancaları
 │       └── i18n/         Çok dilli altyapı ve çeviri dosyaları
@@ -204,6 +206,12 @@ Expo SDK 57, React Native 0.86, React 19, TypeScript 6, Expo Router.
 | `src/features/match/session.ts` | Maç oturumu: kural motorunu geri bildirim ve süreyle sarar |
 | `src/features/match/use-match.ts` | Izgarayı yükler, süreyi işletir, bot hamlelerini oynatır |
 | `src/features/match/board.tsx` | Izgara bileşeni |
+| `src/features/match/scoreboard.tsx` | İki tarafın skor paneli |
+| `src/features/match/turn-timer.tsx` | Skia ile çizilen sayaç halkası |
+| `src/features/match/win-burst.tsx` | Kazanma anındaki parçacık patlaması |
+| `src/features/match/use-match-effects.ts` | Maç olaylarını ses ve titreşime bağlar |
+| `src/components/stadium-background.tsx` | Skia ile çizilen stadyum zemini |
+| `src/feedback/` | Dokunsal geri bildirim ve ses çalma |
 | `src/features/match/footballer-search.tsx` | Futbolcu arama penceresi |
 | `src/data/queries.ts` | Veritabanı sorguları: pazar, ızgara, arama, cevap doğrulama, bot seçenekleri |
 | `src/data/database-provider.tsx` | Gömülü veritabanını açar |
@@ -213,6 +221,9 @@ Expo SDK 57, React Native 0.86, React 19, TypeScript 6, Expo Router.
 - **Dil.** Cihaz dili desteklenenler arasındaysa o, değilse İngilizce kullanılır. Şu an Türkçe ve İngilizce var. Kulüp ve ülke adları veritabanından aynı dilde gelir.
 - **Pazar.** Uygulama dilinin pazarı varsa o, yoksa ilk pazar kullanılır. Şu an yalnızca Türkiye pazarı var.
 - **Arama.** En az iki harf yazılınca çalışır, bilinirliğe göre sıralar. Izgarada kullanılmış futbolcular listede gösterilmez.
+- **Görünüm.** Tek tema: gece stadyumu. Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
+- **Arayüz paketleri.** React Native Skia (çizim), Reanimated (animasyon), expo-haptics (titreşim), expo-audio (ses), Barlow yazı tipleri.
+- **Animasyon değerleri.** Reanimated değerleri `.get()` ve `.set()` ile okunur ve yazılır; React Compiler doğrudan `.value` atamasını hata sayar.
 
 ## Testler
 
@@ -227,7 +238,8 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 ## Bilinen eksikler
 
 - Uygulama gerçek cihazda ya da tarayıcıda görülerek denenmedi; paketleme, tip denetimi, lint ve testlerle doğrulandı.
-- Arayüz işlevsel bir iskelettir; görsel kimlik, animasyon, ses ve dokunsal geri bildirim henüz yok.
+- Yeni görünüm cihazda henüz incelenmedi; sesler yer tutucu, bayraklar emoji.
+- npm, onaylanmamış paketlerin kurulum betiklerini çalıştırmıyor. Skia'nın kurulum betiği bu yüzden çalışmadı. Expo Go ile sorun olmaz; ilk yerel derlemeden önce `npm approve-scripts @shopify/react-native-skia` gerekir.
 - Oyuncu kimlikleri kaynak kimliklerinden türetiliyor; yayından önce kalıcı bir kimlik kaydına geçilmeli.
 - Tarihsiz Wikidata kayıtları cevap olarak kabul edildiği için hatalı kabuller olabilir (örnek: bir kulüp başkanının oyuncu olarak görünmesi).
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.

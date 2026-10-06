@@ -1,56 +1,31 @@
 import '@/global.css';
 
-import { Platform } from 'react-native';
-
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-    sideX: '#1F6FEB',
-    sideO: '#D9730D',
-    positive: '#1A7F37',
-    negative: '#CF222E',
-    onAccent: '#ffffff',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-    sideX: '#58A6FF',
-    sideO: '#F0883E',
-    positive: '#3FB950',
-    negative: '#F85149',
-    onAccent: '#000000',
-  },
+  background: '#060A18',
+  backgroundDeep: '#02040B',
+  surface: '#0F1730',
+  surfaceRaised: '#18223F',
+  border: '#2A3760',
+  text: '#F4F8FF',
+  textSecondary: '#A9B5D1',
+  floodlight: '#CFE6FF',
+  pitch: '#2EE59D',
+  sideX: '#3DD6FF',
+  sideO: '#FFB020',
+  positive: '#2EE59D',
+  negative: '#FF5A6E',
+  gold: '#FFD166',
+  onAccent: '#06101F',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ThemeColor = keyof typeof Colors;
 
-export const Fonts = Platform.select({
-  ios: {
-    sans: 'system-ui',
-    serif: 'ui-serif',
-    rounded: 'ui-rounded',
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export const Fonts = {
+  display: 'BarlowCondensed_700Bold',
+  displayMedium: 'BarlowCondensed_600SemiBold',
+  body: 'Barlow_500Medium',
+  bodyBold: 'Barlow_700Bold',
+} as const;
 
 export const Spacing = {
   half: 2,
@@ -62,5 +37,17 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const Radius = {
+  small: 8,
+  medium: 14,
+  large: 22,
+} as const;
+
+export const Motion = {
+  quick: 120,
+  base: 220,
+  slow: 420,
+} as const;
+
+export const MinimumTouchSize = 48;
+export const MaxContentWidth = 560;

@@ -3,20 +3,21 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
+import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { MaxContentWidth, Spacing } from '@/constants/theme';
+import { Colors, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import type { MatchMode } from '@/features/match/use-match';
-import { useTheme } from '@/hooks/use-theme';
+import { haptics } from '@/feedback/haptics';
+import { useUppercase } from '@/i18n/uppercase';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const theme = useTheme();
+  const uppercase = useUppercase();
   const router = useRouter();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const rules = [
@@ -28,75 +29,75 @@ export default function HomeScreen() {
     router.push({ pathname: '/match', params: { mode, difficulty: String(difficulty) } });
 
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.heroSection}>
-          <ThemedText type="title" style={styles.centered}>
-            {t('home.title')}
-          </ThemedText>
-          <ThemedText themeColor="textSecondary" style={styles.centered}>
-            {t('home.subtitle')}
-          </ThemedText>
-        </View>
+    <Screen contentStyle={styles.content}>
+      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.hero}>
+        <ThemedText type="display" style={styles.title} accessibilityRole="header">
+          {uppercase(t('home.title'))}
+        </ThemedText>
+        <ThemedText themeColor="textSecondary" style={styles.centered}>
+          {t('home.subtitle')}
+        </ThemedText>
+      </Animated.View>
 
-        <View style={styles.section}>
-          <ThemedText type="smallBold">{t('home.difficulty')}</ThemedText>
-          <View style={styles.difficultyRow}>
-            {DIFFICULTIES.map((option) => {
-              const selected = option === difficulty;
-              return (
-                <Pressable
-                  key={option}
-                  accessibilityRole="button"
-                  accessibilityState={{ selected }}
-                  onPress={() => setDifficulty(option)}
-                  style={[
-                    styles.difficultyOption,
-                    { backgroundColor: selected ? theme.backgroundSelected : theme.backgroundElement },
-                  ]}>
-                  <ThemedText type="smallBold" themeColor={selected ? 'text' : 'textSecondary'}>
-                    {t(DIFFICULTY_LABELS[option])}
-                  </ThemedText>
-                </Pressable>
-              );
-            })}
-          </View>
-          <ActionButton label={t('home.playBot')} onPress={() => start('bot')} />
-          <ActionButton label={t('home.playLocal')} onPress={() => start('local')} variant="secondary" />
+      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(80)} style={styles.section}>
+        <ThemedText type="label" themeColor="textSecondary">
+          {uppercase(t('home.difficulty'))}
+        </ThemedText>
+        <View style={styles.difficultyRow} accessibilityRole="radiogroup">
+          {DIFFICULTIES.map((option) => {
+            const selected = option === difficulty;
+            return (
+              <Pressable
+                key={option}
+                accessibilityRole="radio"
+                accessibilityState={{ selected }}
+                onPress={() => {
+                  haptics.select();
+                  setDifficulty(option);
+                }}
+                style={[styles.difficultyOption, selected && styles.difficultySelected]}>
+                <ThemedText type="label" themeColor={selected ? 'pitch' : 'textSecondary'}>
+                  {uppercase(t(DIFFICULTY_LABELS[option]))}
+                </ThemedText>
+              </Pressable>
+            );
+          })}
         </View>
+        <ActionButton label={t('home.playBot')} onPress={() => start('bot')} />
+        <ActionButton label={t('home.playLocal')} onPress={() => start('local')} variant="secondary" />
+      </Animated.View>
 
-        <ThemedView type="backgroundElement" style={styles.rulesCard}>
-          <ThemedText type="smallBold">{t('home.rulesTitle')}</ThemedText>
-          {rules.map((rule) => (
-            <ThemedText key={rule} type="small" themeColor="textSecondary">
-              {rule}
-            </ThemedText>
-          ))}
-        </ThemedView>
-      </SafeAreaView>
-    </ThemedView>
+      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(160)} style={styles.rulesCard}>
+        <ThemedText type="label" themeColor="floodlight">
+          {uppercase(t('home.rulesTitle'))}
+        </ThemedText>
+        {rules.map((rule) => (
+          <ThemedText key={rule} type="small" themeColor="textSecondary">
+            {rule}
+          </ThemedText>
+        ))}
+      </Animated.View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    paddingBottom: Spacing.four,
+  content: {
     alignItems: 'center',
     gap: Spacing.four,
-    maxWidth: MaxContentWidth,
+    paddingHorizontal: Spacing.four,
   },
-  heroSection: {
+  hero: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.three,
+  },
+  title: {
+    textAlign: 'center',
+    textShadowColor: Colors.floodlight,
+    textShadowRadius: 18,
+    textShadowOffset: { width: 0, height: 0 },
   },
   centered: {
     textAlign: 'center',
@@ -112,14 +113,25 @@ const styles = StyleSheet.create({
   difficultyOption: {
     flex: 1,
     alignItems: 'center',
-    borderRadius: Spacing.three,
-    paddingVertical: Spacing.three,
+    justifyContent: 'center',
+    minHeight: MinimumTouchSize,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
+  },
+  difficultySelected: {
+    borderColor: Colors.pitch,
+    backgroundColor: Colors.surfaceRaised,
   },
   rulesCard: {
     alignSelf: 'stretch',
     gap: Spacing.two,
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+    paddingVertical: Spacing.three,
+    borderRadius: Radius.large,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: Colors.surface,
   },
 });
