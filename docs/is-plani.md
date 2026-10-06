@@ -4,7 +4,7 @@ Son güncelleme: 7 Ekim 2026
 
 Adımlar bağımlılık sırasına göre dizilmiştir. Süre tahmini yoktur; Adım 0'daki kararlar kapandıktan sonra eklenir. Kararların gerekçesi [proje-yonelimi.md](proje-yonelimi.md) içindedir.
 
-Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 6 → 8 → 9 → 10. Adım 3, Adım 2 ile aynı anda yürüyebilir. Adım 7, Adım 3 bittikten sonra herhangi bir zamanda yapılabilir.
+Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 6 → 8 → 9 → 10. Adım 3 ertelendi; Adım 7 ondan sonra herhangi bir zamanda yapılabilir.
 
 ## Adım 0 — Açık kararları kapat
 
@@ -62,6 +62,8 @@ Bitti sayılır: Her zorluk seviyesinde en az 1.000 geçerli ızgara vardır (ö
 
 ## Adım 3 — Görsel hattı pilotu
 
+Durum: ertelendi (7 Ekim 2026). Önce sunucu tarafı yapılacak.
+
 - 20–30 oyuncu için Commons fotoğrafı ile yazar ve lisans bilgisi çekilir.
 - Yüz kırpılır; yerel ekran kartında çalışan yapay zekâ ile klasik filtre yan yana denenir.
 - Yöntem; benzerlik, tutarlılık ve görsel başına maliyete göre seçilir.
@@ -94,7 +96,7 @@ Bitti sayılır: Android ve iOS'ta internetsiz bir maç baştan sona oynanır.
 
 ## Adım 4B — Tasarım dili ve oyun hissi
 
-Durum: ikinci sürüm yazıldı, ekran görüntüsüyle inceleme bekliyor (7 Ekim 2026). Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
+Durum: tamamlandı (7 Ekim 2026). İkinci sürüm incelendi ve "bu şekilde kalabilir" denerek kabul edildi. Kurallar [tasarim-dili.md](tasarim-dili.md) içinde.
 
 Birinci sürüm yetersiz bulundu: oyun gibi değil, animasyonlar zayıf, ızgara çekici değil, renk ve yazı oturmamış. Hedef çıta EA FC Ultimate Team olarak belirlendi ve arayüz baştan tasarlandı.
 
@@ -106,29 +108,56 @@ Birinci sürüm yetersiz bulundu: oyun gibi değil, animasyonlar zayıf, ızgara
 - Sonuç artık ekranı kaplayan bir perde: dönen ışık hüzmeleri, çarpan başlık, konfeti.
 - Ana ekran metalik mod kartlarıyla, arama penceresi mevki rozetli satırlarla yeniden yapıldı.
 
-Kalanlar:
+Sonraya kalanlar:
 
-- Ekran görüntüleriyle inceleme ve buna göre boyut, renk, hız ayarı.
 - Kartın ortasına oyuncu görseli (Adım 3).
 - Gerçek ses tasarımı, vektör bayraklar, ikon seti, ses ve titreşim ayarı.
-- Oyuncu kartı bileşeni (Adım 3'teki görsellerle birlikte).
-
-- Seçilen görsel yön için renk, tipografi, boşluk ve bileşen kuralları yazılır.
-- Skia, Lottie, expo-haptics ve expo-audio projeye eklenir.
-- Izgara, hücre alma, sıra geçişi, sayaç ve sonuç ekranı hareket, ses ve dokunsal geri bildirimle yeniden yapılır.
-- Oyuncu kartı bileşeni tasarlanır; Adım 3'teki görsellerle birlikte çalışacak şekilde.
-
-Bitti sayılır: Bir maç, baştan sona seçilen görsel dille, animasyon ve sesle oynanır; ekranlar iskelet görünümünden çıkar.
 
 ## Adım 5 — Online altyapı ve bot
 
-- Sunucu Node.js ve WebSocket ile yazılır; barındırma ve veritabanı seçilir.
-- Kimlik: misafir girişi, Google ve Apple ile giriş.
-- Eşleştirme kuyruğu ve oda koduyla arkadaş daveti.
-- Sunucuda maç durumu, cevap doğrulama, hamle süresi, kopan bağlantıya geri dönüş.
-- Bekleme süresi dolunca bot devreye girer; bot zorluğu oyuncunun seviyesine göre ayarlanır.
+Durum: sürüyor. Dört dilime ayrıldı.
+
+### 5A — Hesaplar
+
+Durum: kod tamam, cihazda deneme bekliyor (7 Ekim 2026).
+
+Yapılanlar:
+
+- Sunucu iskeleti: Node.js, Fastify, SQLite. Çalıştırma: `server` klasöründe `npm run dev`.
+- Misafir hesap, e-posta ve şifreyle kayıt ve giriş, çıkış, kullanıcı adı değiştirme.
+- Google ve Apple kimlik jetonlarının sunucuda doğrulanması.
+- Misafirin kayıt olunca yerinde kalıcı hesaba dönüşmesi.
+- Uygulamada otomatik misafir girişi, güvenli jeton saklama, hesap ekranı.
+- 20 sunucu testi ve uygulama tarafında 9 yeni test geçiyor.
+
+Kalanlar:
+
+- Hesap ekranını telefonda denemek.
+- Google ve Apple düğmeleri. Bunun için Google Cloud'da OAuth istemci kimlikleri, Apple geliştirici hesabı ve özel derleme gerekiyor.
+- Şifre sıfırlama, e-posta doğrulama ve hesap silme.
+
+### 5B — Online maç
+
+Durum: başlamadı.
+
+- Uygulama ile sunucu arasındaki canlı bağlantı (WebSocket) ve mesaj sözleşmesi.
+- Sunucuda maç odası: durum, cevap doğrulama, hamle süresi, kopan bağlantıya geri dönüş.
+- Eşleştirme kuyruğu; aynı oyuncunun iki maça düşmesini engelleyen tek sıra.
+- Bekleme süresi dolunca bot. Bot gerçek oyuncu gibi görünür ve seviyesi oyuncuya göre ayarlanır.
 
 Bitti sayılır: İki gerçek cihaz bir maçı tamamlar. Bağlantı kopması, süre dolması, beraberlik ve aynı anda iki eşleşme senaryoları testle doğrulanır.
+
+### 5C — Arkadaş daveti
+
+Durum: başlamadı.
+
+- Oda koduyla özel maç.
+
+### 5D — Barındırma
+
+Durum: başlamadı. Yer henüz seçilmedi.
+
+- Sunucunun internete açılması, TLS, yedekleme.
 
 ## Adım 6 — Sıralama ve günlük bulmaca
 

@@ -33,6 +33,11 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Arayüz teknolojisi | Skia, Reanimated, Lottie, expo-haptics, expo-audio. Oyun motoru kullanılmaz |
 | Görsel yön | Gece stadyumu: koyu zemin, projektör ışığı, metalik oyuncu kartları |
 | Arayüz hedef çıtası | EA FC Ultimate Team: metalik kartlar, sinematik geçişler, premium futbol havası |
+| Tasarım durumu | İkinci sürüm kabul edildi; bu hâliyle kalıyor |
+| Sunucu veritabanı | SQLite. Futbol verisi de SQLite olduğu için tek tür veritabanı; ileride PostgreSQL'e geçilebilir |
+| Giriş yöntemleri | Misafir, e-posta ve şifre, Google, Apple. Dördü de ilk sürümde olacak |
+| Botun görünümü | Online'da rakip bulunamayınca gelen bot gerçek oyuncu gibi görünür, rastgele bir oyuncu adı taşır |
+| Sıradaki iş | Oyuncu görselleri (Adım 3) ertelendi; önce sunucu tarafı |
 | Arayüz incelemesi | Geliştirme makinesinde emülatör yok. Görünüm, telefondan atılan ekran görüntüleriyle incelenir |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
@@ -127,10 +132,10 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 
 ## Açık kararlar
 
-1. Sunucu barındırma: nerede çalışacak ve veritabanı ne olacak?
+1. Sunucu barındırma: nerede çalışacak?
 2. Fotoğrafı olmayan oyuncular yedek kartla mı gösterilecek?
 3. Gelir modeli: ödüllü reklam ve reklamsız paket mi?
-4. Bot açıkça bot olarak mı gösterilecek, sıralama puanını nasıl etkileyecek?
+4. Bot maçları sıralama puanını nasıl etkileyecek?
 5. Joker olacak mı, olacaksa hangileri?
 6. Uygulamanın adı. Şimdilik çalışma adı olarak "Futbol XOX" kullanılıyor.
 7. Tıkanan oyun ne zaman biter? Şimdilik art arda dört turda hücre alınamazsa oyun biter ve hücre sayısına bakılır.
@@ -144,4 +149,7 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 | Wikidata'nın son yıllarda eksik olması | 2012 sonrası için transfermarkt-datasets |
 | transfermarkt-datasets yayınının durması | Her güncellemede son kopyayı saklamak |
 | Online modda rakip bulunamaması | Bot, oda koduyla arkadaş daveti |
+| Botun gerçek oyuncu gibi görünmesi oyuncuyu yanıltır; fark edilirse güven kaybettirir | Karar bilerek verildi. Bot adları ve davranışı inandırıcı olmalı; şikâyet gelirse etiketli bota dönülebilir |
+| Google ve Apple girişi dış hesap ve özel derleme ister | Sunucu tarafı hazır; düğmeler geliştirici hesapları açılınca eklenir |
+| Hesap açılan uygulamada mağazalar hesap silmeyi şart koşar | Yayından önce hesap silme eklenecek |
 | Sunucu barındırma maliyeti ve bakım yükü | Sıra tabanlı hafif trafik tek küçük sunucuya sığar; barındırma Adım 5'ten önce seçilir |

@@ -193,6 +193,60 @@ Yapılanlar:
 
 Doğrulama: tip denetimi, lint, 22 uygulama testi, 24 kural motoru testi ve Android paketleme geçiyor. Görünüm henüz incelenmedi.
 
+### Tasarımın kabulü ve yön değişikliği
+
+- İkinci tasarım sürümü incelendi ve "bu şekilde kalabilir" denerek kabul edildi. Adım 4B kapandı.
+- Oyuncu görselleri (Adım 3) ertelendi. Sıradaki iş sunucu tarafı: hesaplar, online maç, maç geçmişi.
+
+Bu oturumda verilen kararlar:
+
+| Konu | Karar | Diğer seçenekler |
+|---|---|---|
+| Sunucu veritabanı | SQLite | PostgreSQL |
+| Giriş yöntemleri | Misafir, e-posta ve şifre, Google, Apple; hepsi | Yalnızca misafir ve e-posta; yalnızca misafir ve Google/Apple; kullanıcı adı ve şifre |
+| Botun görünümü | Gerçek oyuncu gibi, rastgele adla | Bot olduğu belli olsun |
+
+Botun gerçek oyuncu gibi görünmesi için "oyuncuyu yanıltır, fark edilirse güven kaybettirir" uyarısı yapıldı; karar bu bilinerek verildi.
+
+### Adım 5A — Hesaplar
+
+Sunucu:
+
+- `server` çalışma alanı kuruldu: Node.js 24, Fastify, Node'un kendi SQLite modülü. Derleme adımı yok; TypeScript `tsx` ile çalışıyor.
+- Uygulama ile sunucunun paylaştığı tipler ve doğrulama kuralları `packages/protocol` paketine alındı.
+- Misafir, kayıt, giriş, çıkış, hesap bilgisi ve kullanıcı adı değiştirme uçları yazıldı.
+- Google ve Apple kimlik jetonları `jose` ile, sağlayıcının açık anahtarlarına karşı doğrulanıyor.
+- Sunucu gerçekten çalıştırılıp denendi: misafir açıldı, kayıtla yerinde dönüştü, eski oturum düştü.
+
+Uygulama:
+
+- Açılışta saklanan oturum denenir; yoksa ya da geçersizse yeni misafir açılır; sunucu yoksa uygulama çevrimdışı kalır ve offline oyun çalışır.
+- Jeton cihazın güvenli deposunda saklanır.
+- Ana ekranın sağ üstüne hesap rozeti, ayrıca kayıt ve giriş formlu bir hesap ekranı eklendi.
+- Geliştirme sırasında sunucu adresi Expo'nun çalıştığı bilgisayardan kendiliğinden bulunur.
+
+Tasarım tercihleri ve gerekçeleri:
+
+| Tercih | Gerekçe |
+|---|---|
+| Oturum için imzalı jeton (JWT) yerine rastgele jeton | Tek jeton türü, yenileme akışı yok, anında iptal edilebiliyor; bu ölçekte veritabanı sorgusu yük değil |
+| Şifre için scrypt | Node'un içinde geliyor; yerel derleme gerektiren ek paket yok |
+| Kullanıcı adında aksan gözetmeyen benzersizlik | "Çağrı" ile "Cagri" gibi karıştırılabilecek adları engeller |
+| Misafirin yerinde dönüşmesi | Kayıt olan oyuncu geçmişini ve puanını kaybetmez |
+| Doğrulama şeması için ek kütüphane kullanılmadı | Fastify'ın kendi şema doğrulaması yetiyor; bağımlılık az kalıyor |
+
+Sorunlar ve çözümleri:
+
+| Sorun | Çözüm |
+|---|---|
+| Testler geçtiği hâlde sunucu açılmadı: ortak paketten dışa aktarılan adlar bulunamadı | Ortak paketler modül türünü belirtmiyordu; test aracı bunu hoş görüyor, Node görmüyor. Paketlere modül türü eklendi |
+| Uygulama testleri kısa yol takma adını (`@/`) tanımadı | Test aracına takma ad ayarı eklendi |
+| Kabukta, içinde ters tırnak geçen çok satırlı komutlar ayrıştırılamadı | Bu tür içerik dosya düzenleme aracıyla yazıldı |
+
+Ders: testlerin geçmesi sunucunun açıldığını göstermez. Sunucu her dilimde gerçekten çalıştırılıp bir istekle denenmeli.
+
+Doğrulama: 20 sunucu, 31 uygulama, 24 kural motoru testi; tip denetimi, lint ve Android paketleme geçiyor. Hesap ekranı telefonda henüz denenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -210,3 +264,5 @@ Doğrulama: tip denetimi, lint, 22 uygulama testi, 24 kural motoru testi ve Andr
 | `32b76f9` | 7 Ekim | Belgeler: günlük, teknik mimari, belge dizini |
 | `2afe0d8` | 7 Ekim | Arayüz teknolojisi ve görsel yön kararları |
 | `ed57182` | 7 Ekim | Gece stadyumu tasarım dili: zemin, sayaç, animasyon, titreşim, ses |
+| `c25712e` | 7 Ekim | Arayüzün metalik oyuncu kartları etrafında yeniden tasarımı |
+| `0b2b056` | 7 Ekim | Hesap sunucusu: misafir, şifre, Google ve Apple doğrulaması |

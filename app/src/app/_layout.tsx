@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { AuthProvider } from '@/auth/auth-provider';
 import { Colors } from '@/constants/theme';
 import { DatabaseProvider } from '@/data/database-provider';
 
@@ -51,9 +52,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={NIGHT_STADIUM_THEME}>
       <StatusBar style="light" />
-      <DatabaseProvider>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
-      </DatabaseProvider>
+      <AuthProvider>
+        <DatabaseProvider>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
+        </DatabaseProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

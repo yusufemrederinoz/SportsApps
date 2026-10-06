@@ -11,7 +11,8 @@
     "rulesTitle": "How it works",
     "ruleTurn": "You have {{seconds}} seconds for each move.",
     "ruleLine": "Three cells in a line win the game.",
-    "ruleCells": "If nobody completes a line, the side with more cells wins."
+    "ruleCells": "If nobody completes a line, the side with more cells wins.",
+    "account": "Account"
   },
   "difficulty": {
     "easy": "Easy",
@@ -53,5 +54,43 @@
     "hint": "Type at least two letters.",
     "empty": "No footballer found.",
     "cancel": "Cancel"
+  },
+  "account": {
+    "title": "Account",
+    "back": "Back",
+    "connecting": "Connecting…",
+    "offline": "Offline",
+    "offlineHint": "The server could not be reached. Offline play still works.",
+    "retry": "Try again",
+    "guestBadge": "Guest",
+    "memberBadge": "Member",
+    "guestHint": "You are playing as a guest. Save your account to keep your progress on any phone.",
+    "loginHint": "Sign in to continue with your saved account.",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "register": "Save account",
+    "login": "Sign in",
+    "haveAccount": "I already have an account",
+    "needAccount": "Create a new account",
+    "saveUsername": "Save username",
+    "logout": "Sign out",
+    "saved": "Saved."
+  },
+  "errors": {
+    "network": "The server could not be reached. Check your connection.",
+    "unconfigured": "Online play is not set up in this build.",
+    "validation": "Please fill in every field.",
+    "unauthorized": "Your session has ended. Please sign in again.",
+    "invalidCredentials": "The email or password is wrong.",
+    "emailTaken": "This email already has an account. Sign in instead.",
+    "usernameTaken": "This username is taken.",
+    "invalidUsername": "Usernames are 3 to 16 letters, digits or underscores.",
+    "invalidEmail": "Enter a valid email address.",
+    "invalidPassword": "Passwords need at least 8 characters.",
+    "providerUnavailable": "This sign-in method is not available yet.",
+    "invalidIdentityToken": "Sign-in could not be verified. Try again.",
+    "rateLimited": "Too many attempts. Wait a minute and try again.",
+    "internal": "Something went wrong. Try again."
   }
 }

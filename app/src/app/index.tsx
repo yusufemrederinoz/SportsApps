@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
+import { useAuth } from '@/auth/auth-provider';
 import { ModeCard } from '@/components/mode-card';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -19,7 +20,10 @@ export default function HomeScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
+  const { state: auth } = useAuth();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
+  const accountLabel =
+    auth.status === 'signed-in' ? auth.account.username : t(auth.status === 'offline' ? 'account.offline' : 'account.connecting');
   const rules = [
     t('home.ruleTurn', { seconds: DEFAULT_RULES.turnSeconds }),
     t('home.ruleLine'),
@@ -30,6 +34,25 @@ export default function HomeScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
+      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${t('home.account')}: ${accountLabel}`}
+          onPress={() => {
+            haptics.select();
+            router.push('/account');
+          }}
+          style={({ pressed }) => [styles.accountChip, pressed && styles.accountChipPressed]}>
+          <View style={[styles.accountDot, auth.status === 'signed-in' ? styles.accountOnline : styles.accountOffline]} />
+          <ThemedText type="label" numberOfLines={1} style={styles.accountName}>
+            {accountLabel}
+          </ThemedText>
+          <ThemedText type="label" themeColor="volt">
+            ›
+          </ThemedText>
+        </Pressable>
+      </Animated.View>
+
       <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
         <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
           <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
@@ -102,6 +125,39 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.four,
     paddingHorizontal: Spacing.four,
+  },
+  accountRow: {
+    alignItems: 'flex-end',
+  },
+  accountChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+    minHeight: MinimumTouchSize,
+    maxWidth: 240,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.large,
+    borderWidth: 1.5,
+    borderColor: Colors.strokeBright,
+    backgroundColor: Colors.panel,
+  },
+  accountChipPressed: {
+    borderColor: Colors.volt,
+    backgroundColor: Colors.panelRaised,
+  },
+  accountDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  accountOnline: {
+    backgroundColor: Colors.positive,
+  },
+  accountOffline: {
+    backgroundColor: Colors.strokeBright,
+  },
+  accountName: {
+    flexShrink: 1,
   },
   hero: {
     flex: 1,

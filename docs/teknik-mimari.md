@@ -18,7 +18,13 @@ SportApps/
 │       ├── features/     Özellik kodları (şimdilik yalnızca maç)
 │       ├── hooks/        Tema kancaları
 │       └── i18n/         Çok dilli altyapı ve çeviri dosyaları
+├── server/               Sunucu (Node.js, Fastify, SQLite)
+│   ├── src/accounts/     Hesaplar: şifre, oturum, kimlik doğrulama, veri erişimi
+│   ├── src/http/         Uç noktalar, hata biçimi, istek sınırlama
+│   ├── tests/            Sunucu testleri
+│   └── data/             Sunucu veritabanı (depoya girmez)
 ├── packages/
+│   ├── protocol/         Uygulama ile sunucu arasındaki ortak tipler ve doğrulama kuralları
 │   └── game-core/        Uygulama ve sunucunun ortak kural motoru
 ├── data/                 Veri hattı (Python)
 │   ├── pipeline/         Hattın kodu
@@ -29,7 +35,7 @@ SportApps/
 └── docs/                 Belgeler
 ```
 
-Depo npm çalışma alanı (workspaces) olarak kuruludur: kökteki `package.json`, `app` ve `packages/*` klasörlerini birbirine bağlar. Sunucu yazıldığında `server/` olarak eklenecek.
+Depo npm çalışma alanı (workspaces) olarak kuruludur: kökteki `package.json`; `app`, `server` ve `packages/*` klasörlerini birbirine bağlar.
 
 ## Komutlar
 
@@ -37,6 +43,9 @@ Depo npm çalışma alanı (workspaces) olarak kuruludur: kökteki `package.json
 |---|---|---|
 | Bağımlılıkları kurmak | depo kökü | `npm install` |
 | Uygulamayı çalıştırmak | `app` | `npx expo start` |
+| Sunucuyu geliştirme kipinde çalıştırmak | `server` | `npm run dev` |
+| Sunucuyu çalıştırmak | `server` | `npm start` |
+| Sunucu testleri | `server` | `npm test` |
 | Uygulama ve kural motoru testleri | depo kökü | `npm test` |
 | Tip denetimi | depo kökü | `npm run typecheck` |
 | Lint | `app` | `npx expo lint` |
@@ -225,13 +234,87 @@ Expo SDK 57, React Native 0.86, React 19, TypeScript 6, Expo Router.
 - **Arayüz paketleri.** React Native Skia (çizim), Reanimated (animasyon), expo-haptics (titreşim), expo-audio (ses), Barlow yazı tipleri.
 - **Animasyon değerleri.** Reanimated değerleri `.get()` ve `.set()` ile okunur ve yazılır; React Compiler doğrudan `.value` atamasını hata sayar.
 
+## Sunucu
+
+Konum: `server`. Node.js 24, Fastify, SQLite (Node'un kendi `node:sqlite` modülü). TypeScript dosyaları `tsx` ile doğrudan çalışır; derleme adımı yoktur.
+
+### Ayarlar
+
+Ortam değişkenleriyle verilir; hepsinin varsayılanı vardır.
+
+| Değişken | Varsayılan | Anlamı |
+|---|---|---|
+| `HOST` | `0.0.0.0` | Dinlenen adres. Varsayılan, aynı ağdaki telefonun bağlanmasına izin verir |
+| `PORT` | `4000` | Kapı |
+| `DATABASE_PATH` | `server/data/sportapps.sqlite` | Sunucu veritabanı dosyası |
+| `SESSION_DAYS` | `90` | Oturum ömrü |
+| `GOOGLE_CLIENT_IDS` | boş | Kabul edilen Google istemci kimlikleri, virgülle ayrılır |
+| `APPLE_CLIENT_IDS` | boş | Kabul edilen Apple uygulama kimlikleri, virgülle ayrılır |
+
+Google ya da Apple kimliği verilmemişse o giriş yöntemi kapalıdır ve "kullanılamıyor" cevabı döner.
+
+### Uç noktalar
+
+Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton>` başlığıyla taşınır.
+
+| Yöntem ve yol | İşlevi |
+|---|---|
+| `GET /health` | Sunucu ayakta mı |
+| `POST /auth/guest` | Misafir hesap ve oturum açar |
+| `POST /auth/register` | E-posta, şifre ve kullanıcı adıyla kayıt. İstek bir misafir oturumuyla gelirse o misafir yerinde kalıcı hesaba dönüşür |
+| `POST /auth/login` | E-posta ve şifreyle giriş |
+| `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş. Kimlik yeniyse ve istek misafir oturumuyla geldiyse misafir yerinde dönüşür |
+| `POST /auth/logout` | Oturumu kapatır |
+| `GET /me` | Oturumdaki hesabı döndürür |
+| `PATCH /me` | Kullanıcı adını değiştirir |
+
+Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların tam listesi `packages/protocol` içindedir; uygulama her kodu kendi dilindeki mesaja çevirir.
+
+### Sunucu veritabanı
+
+| Tablo | İçerik |
+|---|---|
+| `users` | Kimlik, kullanıcı adı, benzersizlik anahtarı, misafir mi |
+| `credentials` | E-posta ve şifre özeti |
+| `identities` | Google ve Apple kimlikleri |
+| `sessions` | Oturum jetonunun özeti, son kullanım ve bitiş zamanı |
+| `schema_migrations` | Uygulanmış şema sürümleri |
+
+Şema değişiklikleri `server/src/database.ts` içindeki sıralı listeye eklenir; sunucu açılırken eksik olanları uygular.
+
+### Hesap kuralları
+
+- **Misafir.** Uygulama ilk açılışta sormadan misafir hesap açar. Kullanıcı adı `guest` ve altı rakamdır.
+- **Yerinde dönüşüm.** Misafir kayıt olur ya da Google/Apple ile girerse hesabın kimliği değişmez; maç geçmişi ve puanı korunur.
+- **Kullanıcı adı.** 3–16 karakter; harf, rakam ve alt çizgi. Benzersizlik büyük-küçük harf ve aksan farkı gözetmez: "Çağrı_10" varken "cagri10" alınamaz.
+- **Şifre.** En az 8 karakter. scrypt ile özetlenir, düz hâli hiçbir yerde saklanmaz.
+- **Oturum.** Rastgele 256 bitlik jeton; veritabanında yalnızca özeti durur. Kullanıldıkça ömrü uzar. Kayıt ya da giriş sonrası eski oturum kapatılır.
+- **Yanlış giriş.** Bilinmeyen e-posta ile yanlış şifre aynı cevabı ve aynı süreyi verir; hangi e-postaların kayıtlı olduğu anlaşılmaz.
+- **İstek sınırı.** Giriş ve kayıt uçları adres başına dakikada 30 istekle sınırlıdır.
+- **Google ve Apple.** Sunucu, sağlayıcının imzaladığı jetonu sağlayıcının açık anahtarlarıyla doğrular ve yalnızca bizim istemci kimliklerimize kesilmiş jetonları kabul eder.
+
+## Uygulamada hesap
+
+| Konum | İçerik |
+|---|---|
+| `src/api/` | Sunucu adresi çözümü ve istek istemcisi |
+| `src/auth/session.ts` | Oturum akışı: saklanan jetonu dene, geçersizse yeni misafir aç, sunucu yoksa çevrimdışı kal |
+| `src/auth/storage.ts` | Jetonu cihazın güvenli deposunda saklar |
+| `src/auth/auth-provider.tsx` | Hesap durumunu tüm ekranlara verir |
+| `src/app/account.tsx` | Hesap ekranı: kayıt, giriş, kullanıcı adı, çıkış |
+
+- **Sunucu adresi.** `EXPO_PUBLIC_API_URL` verilmişse o kullanılır. Verilmemişse geliştirme sırasında Expo'nun çalıştığı bilgisayarın adresi ve 4000 kapısı kendiliğinden kullanılır; ayar gerekmez.
+- **Çevrimdışı.** Sunucuya ulaşılamazsa uygulama çevrimdışı kalır; bota karşı ve iki kişilik oyun çalışmaya devam eder.
+- **Henüz yok.** Google ve Apple düğmeleri uygulamada yok; geliştirici hesapları ve özel derleme gerektiriyor. Sunucu tarafı hazır.
+
 ## Testler
 
 | Paket | Test sayısı | Neyi denetler |
 |---|---|---|
 | Veri hattı | 23 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme |
 | Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
-| Uygulama | 22 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak |
+| Sunucu | 20 | Misafir, kayıt, giriş, çıkış, oturum süresi, kullanıcı adı, Google jetonu doğrulama, istek sınırı |
+| Uygulama | 31 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, hesap oturumu |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -245,3 +328,8 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Uygulama veritabanı (13 MB) depoya ikili dosya olarak giriyor; her veri güncellemesi depo geçmişini büyütür.
 - Web hedefi kurulmadı; veritabanı kütüphanesinin web desteği ek ayar ister.
+- Hesap ekranı cihazda henüz denenmedi.
+- Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
+- Hesap silme yok; mağazalar hesap açılan uygulamalarda bunu şart koşuyor.
+- İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.
+- Sunucu şifresiz HTTP ile çalışıyor; yayında önüne TLS sonlandıran bir katman gerekir.

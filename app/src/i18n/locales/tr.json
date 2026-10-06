@@ -11,7 +11,8 @@
     "rulesTitle": "Nasıl oynanır",
     "ruleTurn": "Her hamle için {{seconds}} saniyen var.",
     "ruleLine": "Aynı hizada üç hücreyi alan oyunu kazanır.",
-    "ruleCells": "Kimse üçlü yapamazsa daha çok hücre alan kazanır."
+    "ruleCells": "Kimse üçlü yapamazsa daha çok hücre alan kazanır.",
+    "account": "Hesap"
   },
   "difficulty": {
     "easy": "Kolay",
@@ -53,5 +54,43 @@
     "hint": "En az iki harf yaz.",
     "empty": "Futbolcu bulunamadı.",
     "cancel": "Vazgeç"
+  },
+  "account": {
+    "title": "Hesap",
+    "back": "Geri",
+    "connecting": "Bağlanıyor…",
+    "offline": "Çevrimdışı",
+    "offlineHint": "Sunucuya ulaşılamadı. Çevrimdışı oyun çalışmaya devam eder.",
+    "retry": "Tekrar dene",
+    "guestBadge": "Misafir",
+    "memberBadge": "Üye",
+    "guestHint": "Misafir olarak oynuyorsun. İlerlemeni her telefonda korumak için hesabını kaydet.",
+    "loginHint": "Kayıtlı hesabınla devam etmek için giriş yap.",
+    "username": "Kullanıcı adı",
+    "email": "E-posta",
+    "password": "Şifre",
+    "register": "Hesabı kaydet",
+    "login": "Giriş yap",
+    "haveAccount": "Zaten hesabım var",
+    "needAccount": "Yeni hesap oluştur",
+    "saveUsername": "Kullanıcı adını kaydet",
+    "logout": "Çıkış yap",
+    "saved": "Kaydedildi."
+  },
+  "errors": {
+    "network": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",
+    "unconfigured": "Bu sürümde çevrimiçi oyun ayarlanmamış.",
+    "validation": "Lütfen tüm alanları doldur.",
+    "unauthorized": "Oturumun sona erdi. Lütfen yeniden giriş yap.",
+    "invalidCredentials": "E-posta ya da şifre yanlış.",
+    "emailTaken": "Bu e-postayla bir hesap zaten var. Giriş yapmayı dene.",
+    "usernameTaken": "Bu kullanıcı adı alınmış.",
+    "invalidUsername": "Kullanıcı adı 3-16 karakter olmalı; harf, rakam ya da alt çizgi içerebilir.",
+    "invalidEmail": "Geçerli bir e-posta adresi yaz.",
+    "invalidPassword": "Şifre en az 8 karakter olmalı.",
+    "providerUnavailable": "Bu giriş yöntemi henüz kullanılamıyor.",
+    "invalidIdentityToken": "Giriş doğrulanamadı. Tekrar dene.",
+    "rateLimited": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar dene.",
+    "internal": "Bir şeyler ters gitti. Tekrar dene."
   }
 }
