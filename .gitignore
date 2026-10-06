@@ -1,0 +1,9 @@
+data/.cache/
+data/build/
+__pycache__/
+*.pyc
+node_modules/
+.expo/
+dist/
+.env
+.env.*
