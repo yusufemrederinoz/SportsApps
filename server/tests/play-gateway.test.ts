@@ -181,6 +181,10 @@ beforeEach(async () => {
         botBidMilliseconds: { minimum: 10, maximum: 10 },
         botNameMilliseconds: { minimum: 10, maximum: 10 },
       },
+      topTenTiming: {
+        revealMilliseconds: 10,
+        botThinkMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -519,6 +523,33 @@ describe.skipIf(!available)('play gateway', () => {
     }
     expect(view.result?.reason).toBe('score');
     expect(Math.max(view.scores.x, view.scores.o)).toBe(view.roundsToWin);
+    human.socket.close();
+  });
+
+  it('ranks real footballers in top ten lists against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'top-ten' });
+    const { session } = await human.next('session');
+    if (session.game !== 'top-ten') {
+      throw new Error('not a top ten');
+    }
+    const { side } = session;
+    let view = session.view;
+    while (view.phase !== 'finished') {
+      if (view.phase === 'playing' && view.turn === side) {
+        const ranking = football.ranking(view.list, 10);
+        expect(ranking).toHaveLength(10);
+        const open = ranking.find((row, index) => view.entries[index]?.foundBy === null);
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'name', footballerId: open?.id ?? 1 } });
+      }
+      const message = await human.next('view');
+      if (message.game !== 'top-ten') {
+        throw new Error('not a top ten');
+      }
+      view = message.view;
+    }
+    expect(view.result?.reason).toBe('score');
+    expect(view.scores[side]).toBeGreaterThan(0);
     human.socket.close();
   });
 

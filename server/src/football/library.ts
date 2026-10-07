@@ -29,14 +29,18 @@ import {
   rareAnswersStatement,
   sharedClubStatement,
   toGrid,
+  topClubGoalsStatement,
+  topCountryGoalsStatement,
+  topValuesStatement,
   type DraftCandidateRow,
   type DraftEntryRow,
   type GridHeaderRow,
   type MetricRow,
+  type RankedRow,
   type Statement,
 } from '@sportapps/football-data';
 import type { BotOption, CellPosition, Grid, Header } from '@sportapps/game-core';
-import type { DuelConcept } from '@sportapps/protocol';
+import type { DuelConcept, TopTenListView } from '@sportapps/protocol';
 
 const VERSION_FILE = 'version.json';
 const KNOWN_ANSWER_LIMIT = 8;
@@ -60,6 +64,8 @@ export interface FootballLibrary {
   fameOf(market: string, footballerId: number): number;
   answerCount(market: string, row: Header, column: Header, minimumFame: number): number;
   answersFor(market: string, row: Header, column: Header, minimumFame: number, limit: number): number[];
+  topTenLists(market: string): readonly TopTenListView[];
+  ranking(list: TopTenListView, limit: number): RankedRow[];
   duelConcepts(market: string): readonly DuelConcept[];
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
   conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
@@ -101,6 +107,7 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
   const concepts = new Map<string, readonly DuelConcept[]>();
   const draftClubs = new Map<string, readonly number[]>();
   const chainSeeds = new Map<string, readonly number[]>();
+  const topTenLists = new Map<string, readonly TopTenListView[]>();
   const ids = (statement: Statement) => all<{ id: number }>(statement).map((row) => row.id);
 
   const loadConcepts = (market: string): DuelConcept[] => {
@@ -179,6 +186,33 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     answersFor(market, row, column, minimumFame, limit) {
       return ids(knownAnswersStatement(market, row, column, minimumFame, limit));
+    },
+
+    topTenLists(market) {
+      const known = topTenLists.get(market);
+      if (known) {
+        return known;
+      }
+      const countries = markets.has(market) ? ids(countryConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)) : [];
+      const clubs = markets.has(market) ? ids(clubConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)) : [];
+      const loaded: TopTenListView[] = [
+        ...countries.map((countryId): TopTenListView => ({ kind: 'value', countryId })),
+        ...countries.map((countryId): TopTenListView => ({ kind: 'goals', countryId })),
+        ...clubs.map((clubId): TopTenListView => ({ kind: 'clubGoals', clubId })),
+      ];
+      topTenLists.set(market, loaded);
+      return loaded;
+    },
+
+    ranking(list, limit) {
+      switch (list.kind) {
+        case 'value':
+          return all<RankedRow>(topValuesStatement(list.countryId, limit));
+        case 'goals':
+          return all<RankedRow>(topCountryGoalsStatement(list.countryId, limit));
+        case 'clubGoals':
+          return all<RankedRow>(topClubGoalsStatement(list.clubId, limit));
+      }
     },
 
     fameOf(market, footballerId) {
