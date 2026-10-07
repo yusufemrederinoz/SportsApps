@@ -28,7 +28,7 @@ import { TURN_GRACE_MILLISECONDS } from './room';
 
 const SECOND = 1000;
 const POOL_SIZE = 400;
-const QUESTION_ATTEMPTS = 60;
+const PAIR_ATTEMPTS = 20;
 const POOL_FAME: Record<PlayDifficulty, number> = { 1: 55, 2: 45, 3: 35 };
 const MINIMUM_RATIO: Record<PlayDifficulty, number> = { 1: 1.5, 2: 1.25, 3: 1.1 };
 const MINIMUM_YEARS: Record<PlayDifficulty, number> = { 1: 5, 2: 3, 3: 1 };
@@ -54,6 +54,23 @@ function pick<T>(items: readonly T[], random: () => number): T {
   return items[Math.min(items.length - 1, Math.floor(random() * items.length))] as T;
 }
 
+function shuffle<T>(items: readonly T[], random: () => number): T[] {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const other = Math.min(index, Math.floor(random() * (index + 1)));
+    [shuffled[index], shuffled[other]] = [shuffled[other] as T, shuffled[index] as T];
+  }
+  return shuffled;
+}
+
+export function metricOrder(asked: readonly HigherMetric[], random: () => number): HigherMetric[] {
+  const last = asked.at(-1);
+  const uses = (metric: HigherMetric) => asked.filter((entry) => entry === metric).length;
+  return shuffle(HIGHER_METRICS, random).sort(
+    (first, second) => Number(first === last) - Number(second === last) || uses(first) - uses(second),
+  );
+}
+
 export function separated(metric: HigherMetric, first: number, second: number, difficulty: PlayDifficulty): boolean {
   if (metric === 'older' || metric === 'younger') {
     return Math.abs(first - second) >= MINIMUM_YEARS[difficulty];
@@ -74,23 +91,25 @@ export function streakAt(answers: readonly { side: Side; inning: number; correct
 export function createQuestion(
   rows: readonly MetricRow[],
   used: ReadonlySet<number>,
+  asked: readonly HigherMetric[],
   difficulty: PlayDifficulty,
   random: () => number,
 ): HigherQuestion<HigherMetric> | null {
-  for (let attempt = 0; attempt < QUESTION_ATTEMPTS; attempt += 1) {
-    const metric = pick(HIGHER_METRICS, random);
+  for (const metric of metricOrder(asked, random)) {
     const known = rows.filter((row) => !used.has(row.id) && metricValue(row, metric) !== null);
     if (known.length < 2) {
       continue;
     }
-    const first = pick(known, random);
-    const second = pick(
-      known.filter((row) => row.id !== first.id),
-      random,
-    );
-    const values = [metricValue(first, metric) as number, metricValue(second, metric) as number] as const;
-    if (separated(metric, values[0], values[1], difficulty)) {
-      return { metric, prefer: METRIC_PREFERENCES[metric], cards: [first.id, second.id], values };
+    for (let attempt = 0; attempt < PAIR_ATTEMPTS; attempt += 1) {
+      const first = pick(known, random);
+      const second = pick(
+        known.filter((row) => row.id !== first.id),
+        random,
+      );
+      const values = [metricValue(first, metric) as number, metricValue(second, metric) as number] as const;
+      if (separated(metric, values[0], values[1], difficulty)) {
+        return { metric, prefer: METRIC_PREFERENCES[metric], cards: [first.id, second.id], values };
+      }
     }
   }
   return null;
@@ -113,7 +132,8 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
     const { id, kind, market, difficulty, seats, now, random } = context;
     const rows = poolFor(market, difficulty);
     const used = new Set<number>();
-    const firstQuestion = createQuestion(rows, used, difficulty, random);
+    const asked: HigherMetric[] = [];
+    const firstQuestion = createQuestion(rows, used, asked, difficulty, random);
     if (!firstQuestion) {
       return null;
     }
@@ -129,7 +149,10 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
     let phaseTimer: Timer | null = null;
     let botTimer: Timer | null = null;
 
-    const remember = (current: HigherQuestion<HigherMetric>) => current.cards.forEach((card) => used.add(card));
+    const remember = (current: HigherQuestion<HigherMetric>) => {
+      current.cards.forEach((card) => used.add(card));
+      asked.push(current.metric);
+    };
     remember(question);
 
     const view = (): HigherView => {
@@ -228,7 +251,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
         finish({ winner: higherWinner(state), reason: 'score' });
         return;
       }
-      const next = createQuestion(rows, used, difficulty, random);
+      const next = createQuestion(rows, used, asked, difficulty, random);
       if (!next) {
         finish({ winner: higherWinner(state), reason: 'score' });
         return;

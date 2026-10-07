@@ -1,5 +1,12 @@
 import { metricValue, type MetricRow } from '@sportapps/football-data';
-import type { GameView, HigherView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
+import {
+  HIGHER_METRICS,
+  type GameView,
+  type HigherMetric,
+  type HigherView,
+  type ServerMessage,
+  type SessionSnapshot,
+} from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -9,6 +16,7 @@ import {
   DEFAULT_HIGHER_TIMING,
   createHigherRoomFactory,
   createQuestion,
+  metricOrder,
   separated,
   type HigherLibrary,
   type HigherTiming,
@@ -159,14 +167,33 @@ describe('questions', () => {
   it('never reuses a footballer within a match', () => {
     const used = new Set<number>();
     for (let index = 0; index < 15; index += 1) {
-      const question = createQuestion(ROWS, used, 3, random);
+      const question = createQuestion(ROWS, used, [], 3, random);
       expect(question).not.toBeNull();
       question?.cards.forEach((card) => {
         expect(used.has(card)).toBe(false);
         used.add(card);
       });
     }
-    expect(createQuestion([rowOf(1)], new Set(), 3, random)).toBeNull();
+    expect(createQuestion([rowOf(1)], new Set(), [], 3, random)).toBeNull();
+  });
+
+  it('runs through every question before one comes back and never asks one twice in a row', () => {
+    const used = new Set<number>();
+    const asked: HigherMetric[] = [];
+    for (let index = 0; index < HIGHER_METRICS.length * 2; index += 1) {
+      const question = createQuestion(ROWS, used, asked, 3, random);
+      expect(question).not.toBeNull();
+      question?.cards.forEach((card) => used.add(card));
+      asked.push(question?.metric as HigherMetric);
+    }
+    expect(new Set(asked.slice(0, HIGHER_METRICS.length)).size).toBe(HIGHER_METRICS.length);
+    expect(asked.every((metric, index) => index === 0 || metric !== asked[index - 1])).toBe(true);
+  });
+
+  it('puts the least asked questions first', () => {
+    const order = metricOrder(['goals', 'assists', 'goals'], random);
+    expect(order.at(-1)).toBe('goals');
+    expect(order.slice(0, HIGHER_METRICS.length - 2)).not.toContain('assists');
   });
 });
 
