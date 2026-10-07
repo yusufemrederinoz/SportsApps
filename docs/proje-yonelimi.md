@@ -44,8 +44,12 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Şifre kuralı | En az 8 karakter, bir büyük harf, bir küçük harf, bir rakam |
 | Tanıtım | İlk açılışta oyunu anlatan üç sayfalık tanıtım gösterilir |
 | Botun görünümü | Online'da rakip bulunamayınca gelen bot gerçek oyuncu gibi görünür, rastgele bir oyuncu adı taşır |
-| Sıradaki iş | Oyuncu görselleri (Adım 3) ertelendi; önce sunucu tarafı |
-| Arayüz incelemesi | Geliştirme makinesinde emülatör yok. Görünüm, telefondan atılan ekran görüntüleriyle incelenir |
+| Online maçın sahibi | Sunucu. Cevabı sunucu doğrular, süreyi sunucu sayar; uygulamaya güvenilmez |
+| Eşleştirme | Sıra pazar ve zorluk başına. 6–11 saniyede rakip çıkmazsa bot gelir |
+| Bot seviyesi | Seçilen zorlukla başlar; oyuncunun son online sonuçlarına göre bir seviye güçlenir ya da zayıflar |
+| Kopan bağlantı | Oyuncu 30 saniye içinde dönerse maç sürer, dönmezse hükmen kaybeder. Maçtan çıkan da hükmen kaybeder |
+| Arkadaş daveti | Beş karakterli oda kodu, on dakika geçerli |
+| Arayüz incelemesi | Geliştirme makinesine Android emülatörü kuruldu (7 Ekim 2026). Görünüm önce emülatörde, sonra telefonda incelenir |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
 

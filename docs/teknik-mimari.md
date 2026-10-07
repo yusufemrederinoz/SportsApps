@@ -10,22 +10,26 @@ SportApps/
 │   ├── assets/data/      Uygulamaya gömülen veritabanı ve sürüm dosyası
 │   ├── assets/sounds/    Efekt sesleri
 │   └── src/
-│       ├── app/          Ekranlar (Expo Router): ana ekran, maç ekranı
+│       ├── app/          Ekranlar (Expo Router): tanıtım, karşılama, giriş, kayıt, ana ekran, maç, arkadaş odası, hesap
 │       ├── components/   Ortak arayüz bileşenleri
 │       ├── constants/    Tema: renkler, boşluklar
 │       ├── data/         Veritabanı sağlayıcısı ve sorgular
 │       ├── feedback/     Dokunsal geri bildirim ve ses
-│       ├── features/     Özellik kodları (şimdilik yalnızca maç)
+│       ├── features/     Özellik kodları: maç (yerel ve online), hesap
+│       ├── online/       Sunucuyla canlı bağlantı istemcisi
 │       ├── hooks/        Tema kancaları
 │       └── i18n/         Çok dilli altyapı ve çeviri dosyaları
 ├── server/               Sunucu (Node.js, Fastify, SQLite)
 │   ├── src/accounts/     Hesaplar: şifre, oturum, kimlik doğrulama, veri erişimi
 │   ├── src/http/         Uç noktalar, hata biçimi, istek sınırlama
+│   ├── src/football/     Futbol veritabanına erişim (cevap doğrulama, ızgara seçimi)
+│   ├── src/play/         Online maç: bağlantı, eşleştirme, maç odası, bot, maç kaydı
 │   ├── tests/            Sunucu testleri
 │   └── data/             Sunucu veritabanı (depoya girmez)
 ├── packages/
 │   ├── protocol/         Uygulama ile sunucu arasındaki ortak tipler ve doğrulama kuralları
-│   └── game-core/        Uygulama ve sunucunun ortak kural motoru
+│   ├── game-core/        Uygulama ve sunucunun ortak kural motoru
+│   └── football-data/    Uygulama ve sunucunun ortak kullandığı veritabanı sorguları
 ├── data/                 Veri hattı (Python)
 │   ├── pipeline/         Hattın kodu
 │   ├── overrides/        Elle düzeltme tabloları
@@ -262,6 +266,7 @@ Ortam değişkenleriyle verilir; hepsinin varsayılanı vardır.
 | `HOST` | `0.0.0.0` | Dinlenen adres. Varsayılan, aynı ağdaki telefonun bağlanmasına izin verir |
 | `PORT` | `4000` | Kapı |
 | `DATABASE_PATH` | `server/data/sportapps.sqlite` | Sunucu veritabanı dosyası |
+| `FOOTBALL_DATABASE_PATH` | `app/assets/data/football.db` | Cevapların doğrulandığı futbol veritabanı. Dosya yoksa sunucu açılır ama online maç kapalı kalır |
 | `SESSION_DAYS` | `90` | Oturum ömrü |
 | `GOOGLE_CLIENT_IDS` | boş | Kabul edilen Google istemci kimlikleri, virgülle ayrılır |
 | `APPLE_CLIENT_IDS` | boş | Kabul edilen Apple uygulama kimlikleri, virgülle ayrılır |
@@ -281,6 +286,8 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş |
 | `POST /auth/logout` | Oturumu kapatır |
 | `GET /me` | Oturumdaki hesabı döndürür |
+| `GET /matches` | Oturumdaki oyuncunun son online maçları |
+| `GET /play` (WebSocket) | Online maçın canlı bağlantısı |
 
 Giriş ve kayıt uçları, geçerli bir oturumla gelen isteği "zaten giriş yapılmış" hatasıyla reddeder; önce çıkış yapılmalıdır. Kullanıcı adını değiştiren bir uç yoktur.
 
@@ -294,6 +301,7 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 | `credentials` | E-posta ve şifre özeti |
 | `identities` | Google ve Apple kimlikleri |
 | `sessions` | Oturum jetonunun özeti, son kullanım ve bitiş zamanı |
+| `matches` | Biten online maçlar: taraflar, kullanıcı adları, kazanan, bitiş nedeni, hücre sayıları, hamle sayısı, süre |
 | `schema_migrations` | Uygulanmış şema sürümleri |
 
 Şema değişiklikleri `server/src/database.ts` içindeki sıralı listeye eklenir; sunucu açılırken eksik olanları uygular.
@@ -308,6 +316,79 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 - **Yanlış giriş.** Bilinmeyen e-posta ile yanlış şifre aynı cevabı ve aynı süreyi verir; hangi e-postaların kayıtlı olduğu anlaşılmaz.
 - **İstek sınırı.** Giriş ve kayıt uçları adres başına dakikada 30 istekle sınırlıdır.
 - **Google ve Apple.** Sunucu, sağlayıcının imzaladığı jetonu sağlayıcının açık anahtarlarıyla doğrular ve yalnızca bizim istemci kimliklerimize kesilmiş jetonları kabul eder.
+
+## Online maç
+
+Maçın sahibi sunucudur: durumu sunucu tutar, her cevabı kendi futbol veritabanında doğrular, süreyi kendi sayar. Uygulama yalnızca hamle gönderir ve sunucudan gelen hamleleri ekrana işler; cevabın doğru olduğuna uygulama karar vermez.
+
+### Bağlantı ve mesajlar
+
+Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipleri `packages/protocol/src/play.ts` içindedir.
+
+İlk mesaj selamlamadır: oturum jetonu, protokol sürümü ve uygulamadaki veri sürümü. Veri sürümü sunucununkinden farklıysa bağlantı "uygulamayı güncelle" hatasıyla kapanır; böylece iki tarafın oyuncu ve ızgara kimlikleri hep aynıdır. Jeton adres satırında değil mesajın içinde taşınır.
+
+| Uygulamadan sunucuya | Anlamı |
+|---|---|
+| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü |
+| `queue` | Rastgele rakip sırasına gir (pazar, zorluk) |
+| `create-room` | Arkadaş odası kur |
+| `join-room` | Kodla odaya katıl |
+| `cancel` | Sıradan ya da kurulan odadan çık |
+| `answer` | Hamle: maç, sıra numarası, hücre, oyuncu kimliği |
+| `leave` | Maçtan ayrıl (hükmen kaybeder) |
+| `ping` | Bağlantıyı canlı tut |
+
+| Sunucudan uygulamaya | Anlamı |
+|---|---|
+| `ready` | Selamlama kabul edildi |
+| `queued`, `room`, `idle` | Sırada, oda kuruldu (kod), boşta |
+| `match` | Maçın tam durumu: ızgara, taraflar, kullanıcı adları, hamle listesi, kalan süre. Maç başında ve yeniden bağlanınca gelir |
+| `move` | Bir hamle: cevap (alındı, yanlış, daha önce kullanıldı) ya da süre dolması; yanında yeni sıranın kalan süresi |
+| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, hükmen) |
+| `opponent` | Rakibin bağlantısı koptu ya da geri geldi |
+| `error` | Hata kodu |
+
+Sunucu, sıranın kalan süresini milisaniye olarak gönderir; uygulama bunu kendi saatine ekler. İki cihazın saatinin farklı olması sayacı bozmaz.
+
+### Sunucu parçaları
+
+| Dosya | Görevi |
+|---|---|
+| `src/play/gateway.ts` | Bağlantıyı kabul eder, selamlamayı ve jetonu denetler, mesajları ayrıştırır, bağlantı başına mesaj sınırı uygular |
+| `src/play/messages.ts` | Gelen mesajın biçimini doğrular |
+| `src/play/lobby.ts` | Eşleştirme sırası, arkadaş odaları, oyuncu durumu, kopma ve geri dönüş |
+| `src/play/room.ts` | Tek bir maç: durum, cevap doğrulama, sıra süresi, sonuç |
+| `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
+| `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler |
+| `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar |
+
+Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-data` paketindedir. Kural motoru da ortaktır (`packages/game-core`).
+
+### Kurallar
+
+- **Eşleştirme.** Sıra pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyen biri varsa onunla eşleşir. Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
+- **Tek bağlantı.** Aynı hesap ikinci bir cihazdan bağlanırsa eski bağlantı kapatılır ve yeni bağlantı kaldığı yerden devam eder.
+- **Bot.** Sırada 6–11 saniye içinde rakip çıkmazsa maç bota karşı başlar. Bot, protokolde hiçbir yerde işaretlenmez; gerçek oyuncu gibi kullanıcı adı taşır (pazara göre ad havuzu, bir kısmı misafir adı biçiminde) ve hamlelerini 2,5–9 saniye düşünerek yapar. Bilemediği sırada bazen yanlış ama akla yatkın bir oyuncu söyler (satıra uyan, sütuna uymayan), bazen süreyi doldurur.
+- **Bot seviyesi.** Seçilen zorlukla başlar. Oyuncunun son beş online maçında en az üç sonuç varsa: galibiyet oranı %70 ve üzerindeyse bir seviye güçlenir, %30 ve altındaysa bir seviye zayıflar.
+- **Sıra süresi.** 20 saniye. Sunucu, ağ gecikmesi için 1,5 saniye pay bırakır; süre dolunca sırayı kendisi geçirir.
+- **Kopma.** Maçtaki oyuncunun bağlantısı koparsa rakibe bildirilir ve maç sürer. 30 saniye içinde dönerse maçın tam durumu gönderilir. Dönmezse hükmen kaybeder. Uygulama kopunca kendiliğinden yeniden bağlanmayı dener (artan aralıklarla, yaklaşık 20 saniye).
+- **Ayrılma.** Maç ekranından çıkan oyuncu hükmen kaybeder.
+- **Arkadaş odası.** Oda kuran oyuncuya beş karakterli bir kod verilir (karışabilecek 0, O, 1, I harfleri yoktur). Kod on dakika geçerlidir. Oda sahibi genel sırayla eşleşmez.
+- **Maç kaydı.** Her biten maç `matches` tablosuna yazılır. Oyuncu kendi maçlarını `GET /matches` ile alır; rakibin bot olup olmadığı kayıtta da tutulmaz.
+
+### Uygulama parçaları
+
+| Dosya | Görevi |
+|---|---|
+| `src/online/play-client.ts` | Bağlantı istemcisi: selamlama, canlı tutma, kopunca yeniden bağlanma |
+| `src/features/match/online.ts` | Sunucu mesajlarını maç oturumuna çevirir (yerel oyunla aynı oturum yapısı) |
+| `src/features/match/use-online-match.ts` | Online maçın kancası: arama, oda, oynama, hata durumları |
+| `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
+| `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
+| `src/app/friend.tsx` | Oda kurma ve kodla katılma ekranı |
+| `src/features/account/match-history.tsx` | Hesap ekranındaki son maçlar listesi |
+
+Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ulaşılamıyorsa online kartlar açıklayıcı bir hata ekranı gösterir; bota karşı ve iki kişilik yerel oyun etkilenmez.
 
 ## Uygulamada hesap
 
@@ -353,8 +434,8 @@ Açılış akışı:
 |---|---|---|
 | Veri hattı | 23 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme |
 | Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
-| Sunucu | 19 | Misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, oturum açıkken girişin reddi, Google jetonu doğrulama, istek sınırı |
-| Uygulama | 44 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı |
+| Sunucu | 57 | Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (38): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı |
+| Uygulama | 60 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -375,4 +456,9 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
 - Hesap silme yok; mağazalar hesap açılan uygulamalarda bunu şart koşuyor.
 - İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.
+- Maçlar ve eşleştirme sırası da bellekte; sunucu yeniden başlarsa süren maçlar kaybolur ve tek sunucudan fazlası çalıştırılamaz.
+- Online maç iki gerçek telefonla henüz denenmedi; emülatör ile betikle bağlanan ikinci oyuncu arasında baştan sona oynandı.
+- Bot, rakibe bot olduğunu söylemiyor. Bu bilinçli bir ürün kararı; mağaza kuralları ya da kullanıcı tepkisi gerektirirse kullanım koşullarında belirtilmeli.
+- Sıralama puanı yok; bot seviyesi yalnızca son maç sonuçlarına bakıyor.
+- Uygulama arka plana alınınca bağlantı kopar; 30 saniyeden uzun kalınırsa maç hükmen kaybedilir.
 - Sunucu şifresiz HTTP ile çalışıyor; yayında önüne TLS sonlandıran bir katman gerekir.

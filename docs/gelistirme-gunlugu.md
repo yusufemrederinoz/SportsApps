@@ -321,6 +321,35 @@ Emülatörde doğrulanan akış: tanıtım, karşılama, hesap oluşturma (klavy
 
 Not: emülatör pencereli ve donanım hızlandırmalı çalışırken ekran kartı bağlamı kaybolunca çöktü. Gözetimsiz çalışmada penceresiz ve yazılım tabanlı çizimle başlatılıyor.
 
+### Adım 5B ve 5C — Online maç ve arkadaş odası
+
+Online maç baştan sona yazıldı. Ayrıntılar [teknik-mimari.md](teknik-mimari.md) içindeki "Online maç" bölümünde.
+
+Kararlar (soru sormadan, en az riskli seçenekle verildi):
+
+| Konu | Karar | Neden |
+|---|---|---|
+| Maçın sahibi | Sunucu | Uygulamaya güvenilirse hile kolaylaşır; sunucu cevabı kendi veritabanında doğruluyor |
+| Bağlantı | WebSocket, Fastify eklentisiyle | Ücretsiz, sunucuya ek servis gerektirmiyor |
+| Ortak sorgular | Yeni `packages/football-data` paketi | Uygulama ile sunucu aynı SQL ile doğruluyor; iki ayrı kopya zamanla ayrışırdı |
+| Eşleştirme sırası | Pazar ve zorluk başına | Farklı zorluk seçenleri aynı ızgarada buluşturmak haksız olurdu |
+| Bot bekleme süresi | 6–11 saniye, rastgele | Kısa bekleme; sabit süre botu ele verirdi |
+| Bot adı | Pazara göre ad havuzu; üçte biri misafir adı biçiminde | Gerçek oyuncuların çoğu misafir adı taşıyor, bot arada kaybolmalı |
+| Botun kaçırdığı sıra | Çoğunlukla yanlış ama akla yatkın bir cevap, bazen süre dolması | Her seferinde süreyi dolduran rakip inandırıcı değil |
+| Kopma payı | 30 saniye | Kısa ağ kesintisini affeder, rakibi uzun bekletmez |
+| Arkadaş odası kodu | Beş karakter, karışan harfler yok | Sesli söylenip yazılabilir |
+| Maç geçmişi | Bu adımda yapıldı | Bot seviyesini oyuncuya göre ayarlamak için sonuçlara ihtiyaç vardı |
+
+Emülatörde doğrulananlar: rakip arama ekranı, bota karşı online maç ("canaslan", "muratcimbom" gibi adlarla), oda koduyla ikinci bir oyuncuya karşı maç (emülatör arayüzden üç doğru cevap verip kazandı), ağ kesilince "yeniden bağlanılıyor" uyarısı ve ağ gelince maçın sürmesi, hesap ekranında maç geçmişi.
+
+Yan değişiklikler:
+
+- Ana ekran kaydırılabilir oldu; "nasıl oynanır" bölümü kaldırıldı (tanıtım ekranı aynı işi görüyor), yerine online ve arkadaş kartları geldi.
+- Maç ekranı, yerel ve online maçın ortak kullandığı bir görünüme ayrıldı.
+- Türkçede "ONLİNE" yazımı yerine başlıklarda "ONLINE" kullanıldı.
+
+Dikkat: yeni çalışma alanı paketi eklendiği için çalışan Expo sunucusu yeniden başlatılmalı (`npx expo start`); yoksa "Unable to resolve @sportapps/football-data" hatası verir.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -344,3 +373,7 @@ Not: emülatör pencereli ve donanım hızlandırmalı çalışırken ekran kart
 | `a00409b` | 7 Ekim | Giriş akışının yeniden yazılması: tanıtım, karşılama, ayrı hesaplar |
 | `d4e1dd0` | 7 Ekim | Açılışta takılmanın giderilmesi: ekran kapısı, hataya dayanıklı oturum yükleme |
 | `82f0857` | 7 Ekim | Emülatörde bulunan hatalar: giriş sonrası takılma, kırpılan düğme yazıları, Skia uyarıları |
+| `2a39651` | 7 Ekim | Belgeler: emülatör kurulumu ve açılış hatasının kök nedeni |
+| `5a5203a` | 7 Ekim | Ortak futbol sorguları paketi |
+| `fc6cf3d` | 7 Ekim | Sunucuda online maç: maç odası, eşleştirme, bot, maç kaydı |
+| `2011c7c` | 7 Ekim | Uygulamada online maç, arkadaş odası ve maç geçmişi |

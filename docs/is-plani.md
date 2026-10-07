@@ -115,7 +115,7 @@ Sonraya kalanlar:
 
 ## Adım 5 — Online altyapı ve bot
 
-Durum: sürüyor. Dört dilime ayrıldı.
+Durum: sürüyor. Dört dilime ayrıldı; hesaplar, online maç ve arkadaş daveti tamamlandı, barındırma kaldı.
 
 ### 5A — Hesaplar
 
@@ -150,20 +150,30 @@ Ertelenenler:
 
 ### 5B — Online maç
 
-Durum: başlamadı.
+Durum: tamamlandı (7 Ekim 2026). Emülatör ile ikinci bir oyuncu arasında baştan sona oynandı; iki gerçek telefonla deneme bekliyor.
 
-- Uygulama ile sunucu arasındaki canlı bağlantı (WebSocket) ve mesaj sözleşmesi.
-- Sunucuda maç odası: durum, cevap doğrulama, hamle süresi, kopan bağlantıya geri dönüş.
-- Eşleştirme kuyruğu; aynı oyuncunun iki maça düşmesini engelleyen tek sıra.
-- Bekleme süresi dolunca bot. Bot gerçek oyuncu gibi görünür ve seviyesi oyuncuya göre ayarlanır.
+Yapılanlar:
 
-Bitti sayılır: İki gerçek cihaz bir maçı tamamlar. Bağlantı kopması, süre dolması, beraberlik ve aynı anda iki eşleşme senaryoları testle doğrulanır.
+- Uygulama ile sunucu arasında canlı bağlantı (WebSocket) ve mesaj sözleşmesi.
+- Sunucuda maç odası: durumu sunucu tutar, cevabı sunucu doğrular, süreyi sunucu sayar.
+- Eşleştirme sırası; bir oyuncu aynı anda yalnızca bir maçta olabilir.
+- 6–11 saniyede rakip çıkmazsa bot. Bot gerçek oyuncu gibi görünür; seviyesi zorluğa ve oyuncunun son sonuçlarına göre ayarlanır.
+- Kopan bağlantıya geri dönüş: 30 saniye içinde dönen oyuncu maça kaldığı yerden devam eder, dönmeyen hükmen kaybeder.
+- Uygulamada rakip arama ekranı, online maç ekranı, kopma ve yeniden bağlanma uyarıları.
+- Biten maçların kaydı ve hesap ekranında son maçlar listesi.
+
+Doğrulama: 38 sunucu testi (süre dolması, beraberlik, kopma, hükmen bitiş, aynı anda iki eşleşme dahil) ve 16 uygulama testi. Ayrıca emülatörde: bota karşı online maç, oda koduyla gerçek rakibe karşı maç (üç doğru cevapla galibiyet), ağ kesilip gelince maçın sürmesi.
+
+Kalanlar:
+
+- İki gerçek telefonla deneme.
 
 ### 5C — Arkadaş daveti
 
-Durum: başlamadı.
+Durum: tamamlandı (7 Ekim 2026).
 
-- Oda koduyla özel maç.
+- Oda kuran oyuncu beş karakterli kod alır; arkadaşı kodu girince özel maç başlar.
+- Kod on dakika geçerlidir; oda sahibi genel sırayla eşleşmez.
 
 ### 5D — Barındırma
 
@@ -175,7 +185,7 @@ Durum: başlamadı. Yer henüz seçilmedi.
 
 - Sıralama puanı ve lider tablosu.
 - Herkesin aynı ızgarayı çözdüğü günlük bulmaca.
-- Maç geçmişi ve temel istatistikler.
+- Maç geçmişi (yapıldı: Adım 5B) ve temel istatistikler.
 
 Bitti sayılır: Bir maçın sonucu puana ve lider tablosuna yansır; günlük bulmaca her gün kendiliğinden değişir.
 
