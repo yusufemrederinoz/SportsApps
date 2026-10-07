@@ -113,7 +113,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     entry.kind === 'queue' || entry.kind === 'bot'
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
-  const quit = () => router.back();
+  const quit = () => router.dismissTo('/');
   const shared = {
     secondsLeft: online.liveSecondsLeft,
     canAct: online.canAct,
