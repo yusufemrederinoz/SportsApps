@@ -4,6 +4,8 @@ import { DatabaseSync } from 'node:sqlite';
 
 import {
   answerCountStatement,
+  careerCandidatesStatement,
+  careerPathStatement,
   chainCandidatesStatement,
   chainSeedsStatement,
   clubConceptsStatement,
@@ -32,6 +34,7 @@ import {
   topClubGoalsStatement,
   topCountryGoalsStatement,
   topValuesStatement,
+  type CareerStepRow,
   type DraftCandidateRow,
   type DraftEntryRow,
   type GridHeaderRow,
@@ -65,6 +68,8 @@ export interface FootballLibrary {
   answerCount(market: string, row: Header, column: Header, minimumFame: number): number;
   answersFor(market: string, row: Header, column: Header, minimumFame: number, limit: number): number[];
   topTenLists(market: string): readonly TopTenListView[];
+  careerCandidates(market: string, minimumFame: number, minimumClubs: number, limit: number): number[];
+  careerPath(footballerId: number): CareerStepRow[];
   ranking(list: TopTenListView, limit: number): RankedRow[];
   duelConcepts(market: string): readonly DuelConcept[];
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
@@ -202,6 +207,14 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
       ];
       topTenLists.set(market, loaded);
       return loaded;
+    },
+
+    careerCandidates(market, minimumFame, minimumClubs, limit) {
+      return ids(careerCandidatesStatement(market, minimumFame, minimumClubs, limit));
+    },
+
+    careerPath(footballerId) {
+      return all<CareerStepRow>(careerPathStatement(footballerId));
     },
 
     ranking(list, limit) {

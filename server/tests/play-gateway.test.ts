@@ -185,6 +185,10 @@ beforeEach(async () => {
         revealMilliseconds: 10,
         botThinkMilliseconds: { minimum: 10, maximum: 10 },
       },
+      careerTiming: {
+        revealMilliseconds: 10,
+        botThinkMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -550,6 +554,37 @@ describe.skipIf(!available)('play gateway', () => {
     }
     expect(view.result?.reason).toBe('score');
     expect(view.scores[side]).toBeGreaterThan(0);
+    human.socket.close();
+  });
+
+  it('walks real career paths against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'career' });
+    const { session } = await human.next('session');
+    if (session.game !== 'career') {
+      throw new Error('not a career path');
+    }
+    const { side } = session;
+    let view = session.view;
+    const answers: number[] = [];
+    while (view.phase !== 'finished') {
+      if (view.phase === 'reveal' && view.answer !== null && answers.at(-1) !== view.answer) {
+        answers.push(view.answer);
+        const path = football.careerPath(view.answer);
+        expect(path.map((step) => step.clubId)).toEqual(view.clues.map((clue) => clue.clubId));
+        expect(path.every((step, index) => index === 0 || step.firstYear >= (path[index - 1]?.firstYear ?? 0))).toBe(true);
+      }
+      if (view.phase === 'playing' && view.turn === side) {
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'name', footballerId: 1 } });
+      }
+      const message = await human.next('view');
+      if (message.game !== 'career') {
+        throw new Error('not a career path');
+      }
+      view = message.view;
+    }
+    expect(answers.length).toBeGreaterThanOrEqual(3);
+    expect(view.result?.reason).toBe('score');
     human.socket.close();
   });
 
