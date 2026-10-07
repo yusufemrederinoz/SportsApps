@@ -63,6 +63,14 @@ export function separated(metric: HigherMetric, first: number, second: number, d
   return high > 0 && (low === 0 || high / low >= MINIMUM_RATIO[difficulty]);
 }
 
+export function streakAt(answers: readonly { side: Side; inning: number; correct: boolean }[]): number {
+  const last = answers.at(-1);
+  if (!last) {
+    return 0;
+  }
+  return answers.filter((answer) => answer.inning === last.inning && answer.correct).length;
+}
+
 export function createQuestion(
   rows: readonly MetricRow[],
   used: ReadonlySet<number>,
@@ -129,9 +137,9 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
       return {
         phase: stage,
         turn: state.turn,
-        inning: Math.min(state.inning + 1, state.innings),
+        inning: stage === 'reveal' && last ? last.inning + 1 : Math.min(state.inning + 1, state.innings),
         totalInnings: state.innings,
-        streak: state.streak,
+        streak: stage === 'reveal' && last ? streakAt(state.answers) : state.streak,
         streakLimit: state.streakLimit,
         question:
           stage === 'answering'

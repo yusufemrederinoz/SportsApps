@@ -210,7 +210,7 @@ describe('higher or lower matches', () => {
     vi.advanceTimersByTime(TIMING.revealMilliseconds);
     expect(first.view().turn).not.toBe(side);
     vi.advanceTimersByTime(ANSWER_TIMEOUT);
-    expect(first.view()).toMatchObject({ phase: 'reveal', last: { choice: null, correct: false } });
+    expect(first.view()).toMatchObject({ phase: 'reveal', inning: 2, last: { choice: null, correct: false } });
     vi.advanceTimersByTime(TIMING.revealMilliseconds);
     expect(first.view()).toMatchObject({ turn: side, inning: 3 });
   });
