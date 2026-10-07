@@ -172,6 +172,10 @@ beforeEach(async () => {
         revealMilliseconds: 10,
         botThinkMilliseconds: { minimum: 10, maximum: 10 },
       },
+      rareTiming: {
+        revealMilliseconds: 10,
+        botAnswerMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -448,6 +452,36 @@ describe.skipIf(!available)('play gateway', () => {
     expect(view.chain.every((link, index) => index === 0 || link.clubId !== null)).toBe(true);
     expect(view.result?.reason).toBe('score');
     expect(Math.max(view.scores.x, view.scores.o)).toBe(view.roundsToWin);
+    human.socket.close();
+  });
+
+  it('plays least known from real grids against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 1, game: 'rare' });
+    const { session } = await human.next('session');
+    if (session.game !== 'rare') {
+      throw new Error('not least known');
+    }
+    const { side } = session;
+    let view = session.view;
+    let answeredRounds = 0;
+    while (view.phase !== 'finished') {
+      if (view.phase === 'answering' && view.criteria && view.own === null && view.round > answeredRounds) {
+        const { row, column } = view.criteria;
+        const [least] = football.rareAnswers('tr', row, column, 0, 1);
+        expect(least).toBeDefined();
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'name', footballerId: least?.id } });
+        answeredRounds = view.round;
+      }
+      const message = await human.next('view');
+      if (message.game !== 'rare') {
+        throw new Error('not least known');
+      }
+      view = message.view;
+    }
+    expect(view.rounds).toHaveLength(5);
+    expect(view.rounds.every((round) => round.answers[side].correct)).toBe(true);
+    expect(view.result?.reason).toBe('score');
     human.socket.close();
   });
 

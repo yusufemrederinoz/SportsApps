@@ -30,6 +30,8 @@ const library: FootballLibrary = {
       return { position, footballerIds: [base, base + 100] };
     }),
   nearMisses: () => [999],
+  rareAnswers: () => [],
+  fameOf: () => 0,
   duelConcepts: () => [],
   conceptPlayers: () => [],
   conceptMembers: () => [],
