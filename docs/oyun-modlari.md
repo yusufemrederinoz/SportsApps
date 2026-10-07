@@ -25,7 +25,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | `rare` | En Az Bilinen | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `auction` | Açık Artırma | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `career` | Kariyer Yolu | Öneri | Sırada |
-| `top-ten` | İlk 10 | Öneri | Sırada |
+| `top-ten` | İlk 10 | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 
 ### Kart Düellosu (`duel`)
 
@@ -129,6 +129,14 @@ Gizli bir futbolcunun kulüpleri kariyer sırasıyla tek tek açılır. Oyuncula
 
 Bir liste sorulur ("Süper Lig'de en çok gol atan 10 yabancı"). Oyuncular sırayla ad söyler. Listede olan ad sırasına göre puan getirir, olmayan ad can götürür. Canı biten ya da liste bitince puanı az olan kaybeder.
 
+Uygulanan hâli (7 Ekim 2026):
+
+- **Listeler.** "En yüksek piyasa değerine ulaşmış 10 {ülke} futbolcusu", "Kariyerinde en çok gol atan 10 {ülke} futbolcusu", "{kulüp} forması giymiş, kariyerinde en çok gol atan 10 futbolcu". Ülkeler ve kulüpler Kart Düellosu konseptleriyle aynı (yeterince tanınmış oyuncusu olanlar). Maç iki listeyle oynanır.
+- **Millî maç listeleri yok.** Millî maç sayısı kaynağı 2012 sonrası aktif oyuncuları kapsıyor; "en çok millî maça çıkan Türkler" listesinde Rüştü Reçber ve Hakan Şükür çıkmıyordu. Bu yüzden kullanılmadı.
+- **Puan.** Listede bulunan isim sırası kadar puan getirir (10. sıra 10 puan, 1. sıra 1 puan); böylece az bilinen alt sıralar değerli. Yanlış, tekrar ya da süresi dolan tahmin bir can götürür. Her oyuncunun her listede 3 canı var; canı biten oyuncunun sırası atlanır, diğeri tek başına devam eder. Liste tamamlanınca ya da iki oyuncunun da canı bitince bütün liste değerleriyle açılır (6 saniye).
+- **Süre.** Tahmin başına 20 saniye.
+- **Bot.** Listenin zorluğa göre %30, %50 ya da %70'ini bilir, bildiklerini rastgele sırayla söyler; bildikleri bitince listenin hemen altındaki (11.–30. sıra) akla yatkın bir adı söyleyip can kaybeder.
+
 ## Veri
 
 ### İstatistik kaynağı
@@ -176,6 +184,6 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 3. Kadro Kur. (Tamam)
 4. Hangisi Yüksek, Zincir. (Tamam)
 5. En Az Bilinen, Açık Artırma. (Tamam)
-6. Kariyer Yolu, İlk 10.
+6. İlk 10 (Tamam), Kariyer Yolu.
 
 Her mod için bitti sayılma ölçütü: kural testleri, sunucu testleri (bot ve süre dolması dahil), emülatörde baştan sona bir maç.

@@ -490,6 +490,16 @@ Doğrulama: gerçek ızgaralarla sunucu testinde bota karşı tam maç; emülat�
 
 Düzeltilen sorunlar: bot bildiğinden fazla teklif verince ispatta isimleri bitiyor ve süre dolana kadar bekliyordu, artık hemen pes ediyor; kendi teklifinde "SEN SÖYLEDİ" yazıyordu, artık "SENİN TEKLİFİN".
 
+### İlk 10
+
+Kural motoru, sunucu odası, bot ve uygulama ekranı eklendi. Ekran: liste başlığı ("KARİYERİNDE EN ÇOK GOL ATAN 10 HOLLANDA FUTBOLCUSU"), iki tarafın canları, sırası ve sahibinin rengiyle dolan 10 satırlık liste, son tahminin sonucu ("Robin van Persie: 7. sırada!").
+
+Veri kararı: millî maç listeleri, kaynağın 2012 öncesi kariyerleri kapsamaması yüzünden yanıltıcı çıktığı için kullanılmadı (Türkiye listesinde Rüştü Reçber ve Hakan Şükür yoktu).
+
+Doğrulama: gerçek veritabanıyla sunucu testinde bota karşı tam maç; emülatörde bota karşı maç (Hollanda listesinde Robin van Persie 274 golle 7. sırada bulundu).
+
+Aynı oturumda düzeltilen bir sorun: durum satırlarında yabancı futbolcu adları Türkçe kuralla büyütülüyordu ("ROBİN VAN PERSİE"); İlk 10, Zincir ve Kadro Kur'da adlar artık yerli/yabancı ayrımına göre büyütülüyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -562,3 +572,9 @@ Düzeltilen sorunlar: bot bildiğinden fazla teklif verince ispatta isimleri bit
 | `df47a2d` | 7 Ekim | Açık Artırma mesajları ve ortak veri ifadeleri |
 | `1aece96` | 7 Ekim | Sunucuda Açık Artırma odası ve botu |
 | `e46e6d3` | 7 Ekim | Uygulamada Açık Artırma ekranı |
+| `9d5b609` | 7 Ekim | Belgeler: Açık Artırma |
+| `3a74d81` | 7 Ekim | İlk 10 kuralları (kural motoru) |
+| `bb99de2` | 7 Ekim | İlk 10 mesajları ve liste sorguları |
+| `7eeddd6` | 7 Ekim | Sunucuda İlk 10 odası ve botu |
+| `fe49019` | 7 Ekim | Uygulamada İlk 10 ekranı |
+| `756ed64` | 7 Ekim | Zincir ve Kadro Kur mesajlarında adların doğru büyütülmesi |
