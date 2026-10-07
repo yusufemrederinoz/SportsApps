@@ -46,8 +46,11 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Tanıtım | İlk açılışta oyunu anlatan üç sayfalık tanıtım gösterilir |
 | Botun görünümü | Online'da rakip bulunamayınca gelen bot gerçek oyuncu gibi görünür, rastgele bir oyuncu adı taşır |
 | Online maçın sahibi | Sunucu. Cevabı sunucu doğrular, süreyi sunucu sayar; uygulamaya güvenilmez |
-| Eşleştirme | Sıra pazar ve zorluk başına. 6–11 saniyede rakip çıkmazsa bot gelir |
+| Eşleştirme | Sıra oyun, pazar ve zorluk başına. O oyundaki puana en yakın rakip seçilir; bekledikçe kabul edilen puan farkı büyür. 6–11 saniyede rakip çıkmazsa bot gelir |
 | Bot seviyesi | Seçilen zorlukla başlar; oyuncunun son online sonuçlarına göre bir seviye güçlenir ya da zayıflar |
+| Puan ve seviye | Her oyunun kendi puanı ve bunların toplamı olan toplam puan var. Seviye toplam puandan gelir. Puan yalnızca online sıra maçlarında (rakip çıkmayınca gelen gizli bot dahil) değişir; "Bota karşı" ve arkadaş odası puansızdır (7 Ekim 2026) |
+| Gol | Puandan ayrı, oyun içi para birimi ve gelir kanalı. Her yeni hesaba 15 gol hediye; günlük giriş ödülü art arda günlerde 1, 2, 2, 3, 3, 4, 5 gol (7. günden sonra her gün 5); puanlı galibiyet 1 gol. İleride uygulama içi satın alma ve ödüllü reklamla da kazanılacak (7 Ekim 2026) |
+| Maçtan çıkış | Süren maçtan çıkmadan önce onay istenir: "Maçı terk edersen mağlup sayılırsın". Android geri tuşu da aynı onayı açar |
 | Kopan bağlantı | Oyuncu 30 saniye içinde dönerse maç sürer, dönmezse hükmen kaybeder. Maçtan çıkan da hükmen kaybeder |
 | Arkadaş daveti | Beş karakterli oda kodu, on dakika geçerli |
 | Oyuncu görselleri | 1.232 oyuncu için üretildi (cevap olabilen oyuncuların %65'i). Fotoğrafı uygun olmayan oyuncuda kart görselsiz kalır |
@@ -150,11 +153,12 @@ Sunucu kendi yazdığımız bir Node.js ve WebSocket uygulamasıdır.
 1. Sunucu barındırma: nerede çalışacak?
 2. Fotoğrafı olmayan oyuncular yedek kartla mı gösterilecek?
 3. Gelir modeli: ödüllü reklam ve reklamsız paket mi?
-4. Bot maçları sıralama puanını nasıl etkileyecek?
+4. Gol neye harcanacak (ör. joker, ipucu, kart görünümü)?
 5. Joker olacak mı, olacaksa hangileri?
 6. Uygulamanın adı. Şimdilik çalışma adı olarak "Futbol XOX" kullanılıyor.
 7. Tıkanan oyun ne zaman biter? Şimdilik art arda dört turda hücre alınamazsa oyun biter ve hücre sayısına bakılır.
 8. Uygulama veritabanı depoda mı kalsın, yoksa derleme sırasında mı indirilsin?
+9. Gol satın alma: paketler ve fiyatlar; misafir hesap satın alma yapabilsin mi (cihaz değişince misafirin golü kaybolur)?
 
 ## Riskler
 

@@ -198,9 +198,21 @@ Kalanlar:
 
 ## Adım 6 — Sıralama ve günlük bulmaca
 
-- Sıralama puanı ve lider tablosu.
+Durum: puan, seviye ve gol kısmı yapıldı (7 Ekim 2026).
+
+Yapılanlar:
+
+- Her oyunun ayrı puanı, toplam puan ve toplam puandan seviye. Puan online sıra maçlarında değişir; eşleştirme puana yakın rakip arar.
+- Gol: hoş geldin hediyesi, artan günlük giriş ödülü, puanlı galibiyet golü; her hareket kayıt defterinde.
+- Maç sonunda kazanılan ya da kaybedilen puan, kazanılan gol ve seviye atlama.
+- Ayrıntılı geçmiş ve istatistik ekranı: genel sayılar, oyun oyun puan ve sonuçlar, oyuna göre süzülen ve sayfalanan maç listesi, gol hareketleri.
+- Süren maçtan çıkarken onay.
+
+Kalanlar:
+
+- Lider tablosu.
 - Herkesin aynı ızgarayı çözdüğü günlük bulmaca.
-- Maç geçmişi (yapıldı: Adım 5B) ve temel istatistikler.
+- Golün harcanacağı yerler (açık karar).
 
 Bitti sayılır: Bir maçın sonucu puana ve lider tablosuna yansır; günlük bulmaca her gün kendiliğinden değişir.
 
@@ -248,7 +260,7 @@ Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; he
 
 ## Adım 8 — Gelir modeli ve mağaza hazırlığı
 
-- Reklam ve uygulama içi satın alma eklenir.
+- Ödüllü reklam (AdMob) ve uygulama içi gol satın alma eklenir. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.
 - Mağaza sayfaları, ekran görüntüleri ve Türkçe açıklamalar hazırlanır.
 - Geliştirici hesapları açılır: Apple yıllık 99 dolar, Google Play tek seferlik 25 dolar.

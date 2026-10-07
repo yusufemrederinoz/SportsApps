@@ -77,6 +77,11 @@ Kurallar:
 |---|---|
 | Metal plaka (`MetalPlate`) | Köşesi kesik metalik yüzey. Kaplama verilirse metalik, verilmezse koyu çelik. Skor panelleri ve mod kartları bundan yapılır |
 | Mod kartı | Ana ekrandaki büyük girişler: online maç neon, arkadaş odası çelik, bota karşı altın kaplama |
+| İlerleme rozeti | Ana ekranın sol üstünde: neon zeminde seviye ("SV 3"), toplam puan ve sonraki seviyeye ince çubuk, yanında gol simgesi ve gol sayısı. Dokununca geçmiş ekranı açılır |
+| Gol simgesi | Skia ile çizilmiş futbol topu (emoji değil). Gol miktarları altın renkle yazılır |
+| Günlük ödül penceresi | Dönerek gelen büyük top, altın "+3", "3. GÜN", yedi günlük seri kutuları (bugün altın dolu), "Topla" düğmesi; açılışta başarı titreşimi ve ses |
+| Onay penceresi | Karartılmış zemin üstünde metal levha: kırmızı başlık, açıklama, birincil "Maça devam et", ikincil "Maçı terk et". Güvenli seçenek birincildir |
+| Maç sonu ödülü | Sonuç ekranında skorun altında: yeşil ya da kırmızı "+25 PUAN", altın çerçeveli "+1" gol, "Bu oyundaki puanın"; seviye atlanınca eğik neon "Yeni seviye" damgası |
 | Zorluk seçici | Üç dilim; seçili olan volt dolgu ve ışıma |
 | Izgara zemini | Tek bir Skia tuvali: başlık plakaları, boş yuvalar ve köşedeki üç renkli marka işareti |
 | Başlık plakası | Koyu çelik, ince kenar, ızgaraya bakan kenarında volt çizgi |

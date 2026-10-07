@@ -523,6 +523,22 @@ Kullanıcının dokuz modu denedikten sonraki listesi:
 
 Doğrulama: 152 sunucu ve 88 uygulama testi; betikle 27 bot maçının hemen kurulması; emülatörde ana ekran (ortalama, her modda Bota karşı kartı), düelloda bota karşı maçın beklemeden açılması, bayraksız arama satırı ve kart tepsisi, XOX'ta "Sıra sende". Emülatör bu oturumda birkaç kez kendiliğinden kapandı; tepsinin dolu hâli ve Açık Artırma'nın yeni metinleri ekranda görülemedi.
 
+### Puan, seviye, gol ve geçmiş ekranı
+
+Kullanıcının isteği: rekabet hissi için her oyuncunun puanı, puana yakın rakiple eşleşme, puandan seviye, her gün girişte ödül, ayrıntılı geçmiş ve istatistik ekranı, maçtan çıkarken uyarı. İş ortasında mekanizma netleşti: puanın yanında ayrı bir para birimi olarak **gol** olacak; günlük ödül ve galibiyet gol verir, ileride satın alma ve ödüllü reklamla da gol kazanılacak. Kararlar (seçenekli sorularla):
+
+- Her oyunun ayrı puanı ve bir toplam puan; seviye toplam puandan.
+- Yalnızca online sıra maçları puanlı (gizli bot dahil); "Bota karşı" ve arkadaş odası puansız.
+- Yeni hesaba 15 gol; günlük ödül 1'den 5'e artan seri; puanlı galibiyet 1 gol.
+
+Sunucu: Elo biçiminde puan değişimi (zorluk kazancı artırır, puan sıfırın altına inmez), oyun başına puan tablosu, gol cüzdanı ve kayıt defteri (aynı maç ya da gün için ikinci kez gol yazılamaz), günlük seri, puana yakın rakip seçen ve bekledikçe aralığı genişleyen eşleştirme, `GET /progress`, `POST /daily`, `GET /wallet`, süzülüp sayfalanan `GET /matches`. Maç bitince her oyuncuya kendi puan değişimi, yeni seviyesi ve kazandığı gol gider.
+
+Uygulama: ana ekranda seviye, toplam puan ve gol rozeti, seçili oyundaki puan, günde bir kez günlük ödül penceresi; maç sonunda puan değişimi, gol ve seviye atlama; geçmiş ve istatistik ekranı; süren maçtan çıkarken (çık düğmesi ya da Android geri tuşu) "Maçı terk edersen mağlup sayılırsın" onayı. Puanlı maçta uyarıya "bu oyundaki puanın düşer" eklenir.
+
+Doğrulama: 168 sunucu ve 90 uygulama testi; geliştirme sunucusunda yeni hesapla günlük ödül ve cüzdan; emülatörde günlük ödül penceresi, ana ekran rozeti, XOX'ta ve puanlı düelloda çıkış onayı (Android geri tuşu dahil), puanlı düellonun sonuç ekranı ("0 PUAN", "Bu oyundaki puanın: 0"), geçmiş ekranının tüm bölümleri. Galibiyette görünen gol rozeti ve seviye atlama damgası emülatörde görülmedi; sunucu testleri kapsıyor.
+
+Bu sırada yaşanan bir sorun: geliştirme sunucusu dosya değişince kendini yeniden başlattığı için yeni veritabanı geçişinin yarım bir ara hâlini yerel geliştirme veritabanına uyguladı. Geçiş henüz gönderilmemişti; yerel veritabanının yedeği alınıp yalnızca o adım geri alındı ve tam hâli yeniden uygulandı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -619,3 +635,9 @@ Doğrulama: 152 sunucu ve 88 uygulama testi; betikle 27 bot maçının hemen kur
 | `9df0f31` | 7 Ekim | Kart Düellosu'nda yedi farklı soru |
 | `6094ce4` | 7 Ekim | Hangisi Yüksek'te soru türlerinin sırayla dönmesi |
 | `c200157` | 7 Ekim | Bağlantı hatasında Tekrar dene |
+| `90df859` | 7 Ekim | Belgeler: ilk geri bildirim düzeltmeleri |
+| `014ce9b` | 7 Ekim | Puan, seviye, gol ve günlük ödül mesajları |
+| `c34ab18` | 7 Ekim | Sunucuda puanlı maçlar, gol cüzdanı ve puana göre eşleştirme |
+| `830ec2b` | 7 Ekim | Maçtan çıkış onayı, maç sonunda puan ve gol |
+| `1ee955d` | 7 Ekim | Ana ekranda seviye, gol ve günlük ödül |
+| `9d089ee` | 7 Ekim | Geçmiş ve istatistik ekranı |

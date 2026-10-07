@@ -345,7 +345,10 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş |
 | `POST /auth/logout` | Oturumu kapatır |
 | `GET /me` | Oturumdaki hesabı döndürür |
-| `GET /matches` | Oturumdaki oyuncunun son online maçları |
+| `GET /matches` | Oyuncunun maçları; `game`, `before` (bitiş zamanı) ve `limit` ile süzülür, sayfalanır. Cevapta `more` daha eski maç olup olmadığını söyler |
+| `GET /progress` | Toplam puan, seviye, gol, günlük seri, genel sonuçlar ve oyun oyun puan |
+| `POST /daily` | Günün ödülünü verir; gün içinde ikinci istekte ödül boş döner |
+| `GET /wallet` | Gol bakiyesi ve son 50 gol hareketi |
 | `GET /portraits/<kimlik>.webp` | Oyuncu görseli |
 | `GET /play` (WebSocket) | Online maçın canlı bağlantısı |
 
@@ -361,7 +364,11 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 | `credentials` | E-posta ve şifre özeti |
 | `identities` | Google ve Apple kimlikleri |
 | `sessions` | Oturum jetonunun özeti, son kullanım ve bitiş zamanı |
-| `matches` | Biten online maçlar: taraflar, kullanıcı adları, kazanan, bitiş nedeni, hücre sayıları, hamle sayısı, süre |
+| `matches` | Biten online maçlar: tür (sıra, bot, oda), taraflar, kullanıcı adları, kazanan, bitiş nedeni, hücre sayıları, hamle sayısı, süre, iki tarafın puan değişimi |
+| `ratings` | Oyuncu ve oyun başına puan, en yüksek puan, puanlı maç sayısı |
+| `daily_rewards` | Günlük ödül serisi, en uzun seri, son ödül günü |
+| `wallets` | Gol bakiyesi (eksiye düşemez) |
+| `goal_ledger` | Her gol hareketi: miktar, sonraki bakiye, neden (`welcome`, `daily`, `win`, `purchase`, `ad`), dayanak (maç kimliği, gün ya da makbuz). Aynı oyuncu, neden ve dayanak ikinci kez yazılamaz |
 | `schema_migrations` | Uygulanmış şema sürümleri |
 
 Şema değişiklikleri `server/src/database.ts` içindeki sıralı listeye eklenir; sunucu açılırken eksik olanları uygular.
@@ -426,7 +433,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | `move` | Bir hamle: cevap (alındı, yanlış, daha önce kullanıldı) ya da süre dolması; yanında yeni sıranın kalan süresi |
 | `session` | Yeni modlarda maçın tam durumu: mod, taraflar, kullanıcı adları ve oyuncunun görünümü. Maç başında ve yeniden bağlanınca gelir |
 | `view` | Yeni modlarda her değişiklikten sonra oyuncunun görebildiği durum; mod alanıyla birlikte gelir. Gizli bilgi (rakibin eli, açılmamış soru, gelecek turların kulübü) içinde yoktur |
-| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, puan, hükmen) |
+| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, puan, hükmen). Puanlı maçta her oyuncuya kendi puan değişimi, yeni puanı, toplamı, seviyesi ve kazandığı gol de gelir |
 | `opponent` | Rakibin bağlantısı koptu ya da geri geldi |
 | `error` | Hata kodu |
 
@@ -451,14 +458,17 @@ Sunucu, sıranın kalan süresini milisaniye olarak gönderir; uygulama bunu ken
 | `src/play/top-ten-room.ts` | İlk 10 oda üreticisi: liste seçimi, sıralama ve yakın ıskalar, canlar, bot |
 | `src/play/career-room.ts` | Kariyer Yolu oda üreticisi: gizli futbolcu seçimi, yıllara göre kulüp sırası, puan, bot |
 | `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
-| `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler |
+| `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler (oyuna göre süzme, sayfalama, maçtan kazanılan gol) |
+| `src/progress/points.ts` | Puan değişimi hesabı ve gün sınırı |
+| `src/progress/store.ts` | Puanlı maçın sonucunu puana ve gole çevirir; ilerleme özeti; günlük ödül |
+| `src/progress/wallet.ts` | Gol bakiyesi ve kayıt defteri; ilk açılışta hoş geldin hediyesi |
 | `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar, düello konseptleri ve kart değerleri |
 
 Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-data` paketindedir. Kural motoru da ortaktır (`packages/game-core`).
 
 ### Kurallar
 
-- **Eşleştirme.** Sıra mod, pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyen biri varsa onunla eşleşir. Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
+- **Eşleştirme.** Sıra mod, pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyenlerden o oyundaki puanı kendisine en yakın olanla eşleşir; ancak fark, bekleyenin kabul aralığı içinde olmalıdır (150 puan, beklenen her saniye 75 puan genişler). Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
 - **Tek bağlantı.** Aynı hesap ikinci bir cihazdan bağlanırsa eski bağlantı kapatılır ve yeni bağlantı kaldığı yerden devam eder.
 - **Bot.** Sırada 6–11 saniye içinde rakip çıkmazsa maç bota karşı başlar. Bot, protokolde hiçbir yerde işaretlenmez; gerçek oyuncu gibi kullanıcı adı taşır (pazara göre ad havuzu, bir kısmı misafir adı biçiminde) ve hamlelerini 2,5–9 saniye düşünerek yapar. Bilemediği sırada bazen yanlış ama akla yatkın bir oyuncu söyler (satıra uyan, sütuna uymayan), bazen süreyi doldurur. Oyuncu ana ekranda "Bota karşı" seçerse uygulama `play-bot` gönderir; sunucu sıraya hiç sokmadan aynı botla maçı hemen açar. Bu maçta botun adı "Bot"tur ve maç kaydında türü `bot` olarak tutulur.
 - **Bot seviyesi.** Seçilen zorlukla başlar. Oyuncunun son beş online maçında en az üç sonuç varsa: galibiyet oranı %70 ve üzerindeyse bir seviye güçlenir, %30 ve altındaysa bir seviye zayıflar.
@@ -488,9 +498,26 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
 | `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
 | `src/app/friend.tsx` | Oda kurma ve kodla katılma ekranı |
-| `src/features/account/match-history.tsx` | Hesap ekranındaki son maçlar listesi |
+| `src/features/account/match-history.tsx` | Hesap ekranındaki son beş maç ve geçmiş ekranına bağlantı |
+| `src/features/account/match-row.tsx` | Maç satırı: oyun, rakip, tür, sonuç, skor, puan değişimi, kazanılan gol |
+| `src/app/history.tsx` | Geçmiş ve istatistik ekranı |
+| `src/features/progress/*` | İlerleme kancası (açılışta günlük ödülü ister), ana ekran rozeti, günlük ödül penceresi |
+| `src/features/match/leave-guard.tsx` | Süren maçtan çıkışı yakalar (çık düğmesi ve Android geri tuşu) ve onay ister |
+| `src/features/match/match-reward.ts` | Maç sonu puan ve gol bilgisini sonuç ekranına taşıyan bağlam |
 
 Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ulaşılamıyorsa online kartlar açıklayıcı bir hata ekranı ve "Tekrar dene" düğmesi gösterir; XOX'un internetsiz bot maçı etkilenmez.
+
+## Puan, seviye ve gol
+
+Kurallar (7 Ekim 2026):
+
+- **Hangi maçlar sayılır.** Yalnızca online sıra maçları (`kind = queue`), rakip çıkmayınca gelen gizli bot dahil. "Bota karşı" (`bot`) ve arkadaş odası (`room`) puan ve gol vermez. Gizli botun puanı oyuncunun puanının ±60 yakınından seçilir.
+- **Puan değişimi.** Elo biçimi: beklenen sonuç `1 / (1 + 10^((rakip − sen) / 400))`. Galibiyet `40 × (1 − beklenen) + 5` (en az 10), mağlubiyet `40 × beklenen`, beraberlik `40 × (0,5 − beklenen)`. Kazanılan puan zorluğa göre 1 / 1,2 / 1,4 ile çarpılır; kayıp çarpılmaz. Eşit puanlı iki oyuncuda kolayda galibiyet +25, mağlubiyet −20. Puan sıfırın altına inmez; herkes sıfırdan başlar. Maçtan ayrılmak ya da kopup dönmemek mağlubiyettir.
+- **Toplam ve seviye.** Toplam puan dokuz oyunun puanlarının toplamıdır. Seviye `n`'nin alt sınırı `50 × n × (n − 1)`: 1. seviye 0, 2. seviye 100, 3. seviye 300, 4. seviye 600, 5. seviye 1.000.
+- **Gol.** Her hesabın cüzdanı ilk kez açıldığında 15 gol hediye yazılır (eski hesaplar dahil). Puanlı galibiyet 1 gol. Günlük ödül art arda günlerde 1, 2, 2, 3, 3, 4, 5 gol; 7. günden sonra her gün 5. Bir gün kaçırılırsa seri 1'den başlar. Gün sınırı sunucunun `TIME_ZONE` ayarındaki saat dilimine göredir (varsayılan Europe/Istanbul).
+- **Kayıt defteri.** Bakiye yalnızca kayıt defterine yazılan hareketle değişir; aynı dayanakla ikinci kez gol yazılamaz. Satın alma ve reklam ödülü geldiğinde yalnızca yeni bir neden eklenecek.
+
+Uygulamada: ana ekranın sol üstünde seviye, toplam puan ve gol; oyun seçiminin yanında seçili oyundaki puan. Ana ekran her açılışta (günde bir kez) günlük ödülü ister; ödül varsa pencere çıkar. Maç sonunda puan değişimi, kazanılan gol ve seviye atlama gösterilir. Geçmiş ekranı genel sayıları, oyun oyun puan ve sonuçları, oyuna göre süzülen maç listesini ve gol hareketlerini gösterir.
 
 ## Uygulamada hesap
 
@@ -536,8 +563,8 @@ Açılış akışı:
 |---|---|---|
 | Veri hattı | 49 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (9): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları, kulüp yıllarının uygulama veritabanında tutarlılığı |
 | Kural motoru | 66 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş. En Az Bilinen (3): tur kazananı, gizli cevap, bitiş. Açık Artırma (5): teklif sırası ve sınırları, ispat, süre dolması, en yüksek teklif, bitiş. İlk 10 (4): sıraya göre puan, can kaybı, canı biten oyuncunun atlanması, bitiş. Kariyer Yolu (4): puanın açık ipucuna göre azalması, yeni ipucu ve sıra geçişi, son tahmin hakkı, bitiş |
-| Sunucu | 152 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (42): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, sıraya girmeden bot maçı, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (20): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (11), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; altısı için de gerçek veritabanıyla bota karşı tam maç |
-| Uygulama | 88 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1) |
+| Sunucu | 168 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (42): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, sıraya girmeden bot maçı, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (20): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (11), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; altısı için de gerçek veritabanıyla bota karşı tam maç. Puan, seviye ve gol (16): puan hesabı, seviye eşikleri, gün sınırı, cüzdan ve hoş geldin hediyesi, aynı dayanağa ikinci gol yazılmaması, günlük seri, puanlı maçta puan ve gol, seviye atlama, hükmen kayıp, gizli botun puanı, puansız maçlar, puana yakın eşleştirme ve bekledikçe genişleyen aralık, ilerleme özeti, uç noktalar |
+| Uygulama | 90 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi (geçmiş süzgeci, günlük ödül, ilerleme ve cüzdan istekleri dahil), giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1) |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 

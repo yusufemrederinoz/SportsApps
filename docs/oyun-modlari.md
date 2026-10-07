@@ -6,6 +6,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 
 ## Ortak ilkeler
 
+- Her modun kendi puanı vardır. Puan yalnızca online sıra maçlarında değişir (gizli bot dahil); "Bota karşı" ve arkadaş odası puansızdır. Puanlı galibiyet 1 gol getirir. Ayrıntı [teknik-mimari.md](teknik-mimari.md) belgesinde "Puan, seviye ve gol" bölümünde.
 - Her mod iki kişiliktir ve online oynanır; rakip çıkmazsa gerçek oyuncu gibi görünen bot gelir. Arkadaş odası her modda çalışır. Ana ekrandaki "Bota karşı" girişi her modda beklemeden "Bot" adlı rakiple maç açar (XOX'ta bu maç internetsiz, telefonda oynanır).
 - Maçın sahibi sunucudur: cevabı, istatistiği ve süreyi sunucu belirler. Uygulama yalnızca hamle gönderir ve sunucunun gönderdiği görünümü çizer.
 - Gizli bilgi (rakibin eli, henüz açılmamış soru) uygulamaya hiç gönderilmez.
