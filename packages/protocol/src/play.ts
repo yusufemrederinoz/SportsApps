@@ -1,4 +1,5 @@
 import type { AuctionAction, AuctionView } from './auction';
+import type { CareerView } from './career';
 import type { ChainAction, ChainView } from './chain';
 import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
@@ -14,7 +15,7 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
-export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain', 'rare', 'auction', 'top-ten'] as const;
+export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain', 'rare', 'auction', 'top-ten', 'career'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
@@ -62,7 +63,8 @@ export type GameView =
   | { game: 'chain'; view: ChainView }
   | { game: 'rare'; view: RareView }
   | { game: 'auction'; view: AuctionView }
-  | { game: 'top-ten'; view: TopTenView };
+  | { game: 'top-ten'; view: TopTenView }
+  | { game: 'career'; view: CareerView };
 
 export type GameAction = DuelAction | DraftAction | HigherAction | ChainAction | RareAction | AuctionAction;
 
