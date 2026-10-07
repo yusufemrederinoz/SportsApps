@@ -26,7 +26,7 @@ import type { OnlineChain } from '@/features/match/use-online-match';
 import type { PlayedFootballer } from '@/features/match/session';
 import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
-import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
+import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
 import { chainCardIds, chainClubIds } from './online';
 
@@ -163,6 +163,7 @@ export function ChainMatchView({
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const nameUppercase = useNameUppercase();
+  const uppercaseAround = useUppercaseAround();
   const { height } = useWindowDimensions();
   const [searching, setSearching] = useState<number | null>(null);
   const strip = useRef<ScrollView>(null);
@@ -193,15 +194,18 @@ export function ChainMatchView({
   const status = (): { text: string; color: ThemeColor } => {
     const miss = view.miss;
     if (miss) {
-      const said = miss.footballerId === null ? null : chain.cards[miss.footballerId]?.name;
+      const said = miss.footballerId === null ? null : (chain.cards[miss.footballerId] ?? null);
+      const local = said?.countryCode === chain.market.code.toUpperCase();
       const reason =
         miss.reason === 'timeout'
-          ? t('chain.timeout')
-          : t(miss.reason === 'used' ? 'chain.used' : 'chain.wrong', { name: said ?? '?' });
-      const taker = miss.side === side ? t('chain.roundToRival') : t('chain.roundToYou');
+          ? uppercase(t('chain.timeout'))
+          : uppercaseAround(t(miss.reason === 'used' ? 'chain.used' : 'chain.wrong', { name: NAME_SLOT }), said?.name ?? '?', local);
+      const taker = uppercase(miss.side === side ? t('chain.roundToRival') : t('chain.roundToYou'));
       return { text: `${reason} · ${taker}`, color: miss.side === side ? 'negative' : 'positive' };
     }
-    return myTurn ? { text: t('chain.yourTurn'), color: 'volt' } : { text: t('chain.opponentTurn'), color: 'textSecondary' };
+    return myTurn
+      ? { text: uppercase(t('chain.yourTurn')), color: 'volt' }
+      : { text: uppercase(t('chain.opponentTurn')), color: 'textSecondary' };
   };
   const statusLine = status();
 
@@ -306,7 +310,7 @@ export function ChainMatchView({
 
       <View style={styles.status}>
         <ThemedText key={`${turnKey}-${statusLine.text}`} type="subtitle" themeColor={statusLine.color} style={styles.centered} accessibilityLiveRegion="polite">
-          {uppercase(statusLine.text)}
+          {statusLine.text}
         </ThemedText>
         {notice && !result ? (
           <ThemedText type="small" themeColor="gold" style={styles.centered}>

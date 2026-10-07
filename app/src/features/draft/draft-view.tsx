@@ -19,7 +19,7 @@ import { Scoreboard } from '@/features/match/scoreboard';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineDraft } from '@/features/match/use-online-match';
-import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
+import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
 import { draftCardIds } from './online';
 import { LineupBoard } from './lineup-board';
@@ -77,6 +77,7 @@ export function DraftMatchView({
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const nameUppercase = useNameUppercase();
+  const uppercaseAround = useUppercaseAround();
   const { height } = useWindowDimensions();
   const [searching, setSearching] = useState<number | null>(null);
   const { view, side } = draft;
@@ -97,23 +98,30 @@ export function DraftMatchView({
   const won = result?.winner === side;
   const roundKey = `${view.round}-${view.phase}`;
   const rivalPick = view.lineups[rival].find((slot) => slot.round === view.round - 1 && slot.footballerId !== null);
-  const rivalName = rivalPick?.footballerId ? draft.cards[rivalPick.footballerId]?.name : undefined;
+  const rivalFootballer = rivalPick?.footballerId ? (draft.cards[rivalPick.footballerId] ?? null) : null;
 
   const status = (): { text: string; color: ThemeColor } => {
     if (view.phase === 'pause') {
-      return { text: t('draft.roundOver'), color: 'textSecondary' };
+      return { text: uppercase(t('draft.roundOver')), color: 'textSecondary' };
     }
     if (ownPicked) {
       const own = view.lineups[side].some((slot) => slot.round === view.round - 1);
       if (!own) {
-        return { text: t('draft.passed'), color: 'negative' };
+        return { text: uppercase(t('draft.passed')), color: 'negative' };
       }
-      return { text: t(view.picked[rival] ? 'draft.roundOver' : 'draft.waitingOpponent'), color: 'textSecondary' };
+      return { text: uppercase(t(view.picked[rival] ? 'draft.roundOver' : 'draft.waitingOpponent')), color: 'textSecondary' };
     }
-    if (rivalName) {
-      return { text: t('draft.opponentPicked', { name: rivalName }), color: 'gold' };
+    if (rivalFootballer) {
+      return {
+        text: uppercaseAround(
+          t('draft.opponentPicked', { name: NAME_SLOT }),
+          rivalFootballer.name,
+          rivalFootballer.countryCode === draft.market.code.toUpperCase(),
+        ),
+        color: 'gold',
+      };
     }
-    return { text: t('draft.pickHint'), color: 'volt' };
+    return { text: uppercase(t('draft.pickHint')), color: 'volt' };
   };
   const current = status();
 
@@ -197,7 +205,7 @@ export function DraftMatchView({
 
       <View style={styles.status}>
         <ThemedText key={`${roundKey}-${current.text}`} type="subtitle" themeColor={current.color} style={styles.centered} accessibilityLiveRegion="polite">
-          {uppercase(current.text)}
+          {current.text}
         </ThemedText>
         {notice && !result ? (
           <ThemedText type="small" themeColor="gold" style={styles.centered} accessibilityLiveRegion="polite">
