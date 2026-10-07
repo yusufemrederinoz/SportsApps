@@ -89,6 +89,8 @@
     "secondsLeft": "{{seconds}} seconds left",
     "stampCorrect": "Correct!",
     "stampWrong": "Wrong!",
+    "stampRivalCorrect": "Rival got it",
+    "stampRivalWrong": "Rival missed",
     "stampAlreadyUsed": "Already used!",
     "stampTimeout": "Time is up!",
     "stampBotPassed": "Bot passed",

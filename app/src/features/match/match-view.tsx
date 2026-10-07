@@ -140,7 +140,7 @@ export function MatchView({
 
       <View style={styles.status}>
         {feedback && !result ? (
-          <FeedbackStamp key={match.turnNumber} feedback={feedback} homeCountryCode={marketCode.toUpperCase()} />
+          <FeedbackStamp key={match.turnNumber} feedback={feedback} opponentSide={opponentSide} homeCountryCode={marketCode.toUpperCase()} />
         ) : !result ? (
           <ThemedText type="subtitle" style={[styles.turn, { color: Finishes[match.turn].base }]}>
             {uppercase(turnLabel)}

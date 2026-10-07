@@ -89,6 +89,8 @@
     "secondsLeft": "{{seconds}} saniye kaldı",
     "stampCorrect": "Doğru!",
     "stampWrong": "Yanlış!",
+    "stampRivalCorrect": "Rakip bildi",
+    "stampRivalWrong": "Rakip bilemedi",
     "stampAlreadyUsed": "Kullanıldı!",
     "stampTimeout": "Süre doldu!",
     "stampBotPassed": "Bot pas geçti",
