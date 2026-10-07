@@ -207,12 +207,12 @@ Yapılanlar:
 - Maç sonunda kazanılan ya da kaybedilen puan, kazanılan gol ve seviye atlama.
 - Ayrıntılı geçmiş ve istatistik ekranı: genel sayılar, oyun oyun puan ve sonuçlar, oyuna göre süzülen ve sayfalanan maç listesi, gol hareketleri.
 - Süren maçtan çıkarken onay.
+- Maç içi jokerler: dokuz modun her birinde iki joker; joker 3 gol, maçta en çok 2; puanlı maçlarda da geçerli.
 
 Kalanlar:
 
 - Lider tablosu.
 - Herkesin aynı ızgarayı çözdüğü günlük bulmaca.
-- Maç içi jokerler: her modda iki joker, joker 3 gol, maçta en çok 2 (karar verildi, yapılıyor).
 
 Bitti sayılır: Bir maçın sonucu puana ve lider tablosuna yansır; günlük bulmaca her gün kendiliğinden değişir.
 

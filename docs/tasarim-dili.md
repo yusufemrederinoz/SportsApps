@@ -81,6 +81,7 @@ Kurallar:
 | Gol simgesi | Skia ile çizilmiş futbol topu (emoji değil). Gol miktarları altın renkle yazılır |
 | Günlük ödül penceresi | Dönerek gelen büyük top, altın "+3", "3. GÜN", yedi günlük seri kutuları (bugün altın dolu), "Topla" düğmesi; açılışta başarı titreşimi ve ses |
 | Onay penceresi | Karartılmış zemin üstünde metal levha: kırmızı başlık, açıklama, birincil "Maça devam et", ikincil "Maçı terk et". Güvenli seçenek birincildir |
+| Joker çubuğu | Skor tablosunun altında: solda "JOKER" ve kalan hak ("2 HAK", neon), yanında modun iki jokeri; her düğme altın çerçeveli, sağında küçük top ve fiyat ("3"). Kullanılamayan joker sönük. Altında açılan bilgi neon ("Uyruk: İngiltere"), rakibin jokeri altın satır, hata kırmızı. XOX'ta arama penceresinin altında, Kart Düellosu'nda elin altında durur |
 | Maç sonu ödülü | Sonuç ekranında skorun altında: yeşil ya da kırmızı "+25 PUAN", altın çerçeveli "+1" gol, "Bu oyundaki puanın"; seviye atlanınca eğik neon "Yeni seviye" damgası |
 | Zorluk seçici | Üç dilim; seçili olan volt dolgu ve ışıma |
 | Izgara zemini | Tek bir Skia tuvali: başlık plakaları, boş yuvalar ve köşedeki üç renkli marka işareti |

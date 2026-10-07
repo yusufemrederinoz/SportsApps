@@ -17,7 +17,9 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 
 ## Jokerler
 
-Kararlar (7 Ekim 2026): her modun kendine özgü iki jokeri var. Joker 3 gol tutar ve oyuncunun gol bakiyesinden düşer. Bir oyuncu bir maçta en çok 2 joker kullanır (iki farklı ya da aynı jokeri iki kez). Puanlı maçlarda da kullanılır. Joker kullanılınca rakibin ekranında "Rakip joker kullandı" görünür; jokerin verdiği bilgi yalnızca kullanana gider. Jokerin geçerli olup olmadığına ve etkisine sunucu karar verir.
+Kararlar (7 Ekim 2026): her modun kendine özgü iki jokeri var. Joker 3 gol tutar ve oyuncunun gol bakiyesinden düşer. Bir oyuncu bir maçta en çok 2 joker kullanır (iki farklı ya da aynı jokeri iki kez). Puanlı maçlarda da kullanılır. Joker kullanılınca rakibin ekranında "Rakip joker kullandı" görünür; jokerin verdiği bilgi yalnızca kullanana gider. Jokerin geçerli olup olmadığına ve etkisine sunucu karar verir. Joker yalnızca online maçlarda var (XOX'un internetsiz bot maçında yok). Açılan bilgi o tur ya da soru boyunca ekranda kalır.
+
+Ne zaman kullanılabilir: sıra tabanlı modlarda kendi sıranda (Zincir, Hangisi Yüksek, XOX); aynı anda oynanan modlarda kendi cevabını vermeden önce (Kadro Kur, En Az Bilinen, Kart Düellosu'nda kart oynamadan önce); Kariyer Yolu ve İlk 10'da liste ya da futbolcu açıkken; Açık Artırma'da "Sayıyı gör" teklif ve ispat sırasında, "Ek süre" yalnızca ispat eden oyuncuya. XOX'ta jokerler hücreye dokununca açılan arama penceresindedir; ipucu o hücre içindir. Kart Düellosu'nda "Kart değiştir" için önce eldeki kart seçilir.
 
 | Mod | Joker | Etkisi |
 |---|---|---|

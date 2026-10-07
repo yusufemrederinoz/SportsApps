@@ -539,6 +539,16 @@ Doğrulama: 168 sunucu ve 90 uygulama testi; geliştirme sunucusunda yeni hesapl
 
 Bu sırada yaşanan bir sorun: geliştirme sunucusu dosya değişince kendini yeniden başlattığı için yeni veritabanı geçişinin yarım bir ara hâlini yerel geliştirme veritabanına uyguladı. Geçiş henüz gönderilmemişti; yerel veritabanının yedeği alınıp yalnızca o adım geri alındı ve tam hâli yeniden uygulandı.
 
+### Gol kararları ve jokerler
+
+Kullanıcıya seçenekli sorularla soruldu ve karara bağlandı: gol yalnızca maç içi jokerde harcanır; misafir hesap gol satın alamaz, önce hesap açar; ödüllü reklam başına 2 gol, günde en çok 5; paket fiyatları mağaza hazırlığına kaldı. Jokerler moda özel; joker 3 gol, maçta en çok 2, puanlı maçlarda da geçerli. Önerilen dokuz modluk joker listesi onaylandı (liste [oyun-modlari.md](oyun-modlari.md) belgesinde).
+
+Sunucu: protokolde joker tipleri ve `joker` mesajları; lobide sıra, bakiye ve iki joker sınırı denetimi; gol ancak oda jokeri uyguladıktan sonra düşer; dokuz odanın her birinde iki joker (süre uzatma, can, pas, kart değişimi ve gizli bilgiler). Kariyer Yolu için futbolcunun uyruk, mevki ve doğum yılını veren ortak bir sorgu eklendi.
+
+Uygulama: her online maçta skorun altında joker çubuğu (XOX'ta arama penceresinde, Kart Düellosu'nda elin altında); açılan bilgi yerel veritabanından adlarla metne çevrilir (ipucunda yalnızca baş harfler) ve o tur boyunca görünür; rakibin jokeri ayrı satırda; Kadro Kur'da "Asistleri gör" sonrası arama sonuçlarında asist sayıları.
+
+Doğrulama: 180 sunucu ve 92 uygulama testi; emülatörde puanlı Kariyer Yolu maçında "Uyruk: İngiltere" ve "Mevki: Forvet · 2000 doğumlu" (hak 0'a indi, gol 16'dan 10'a düştü), puanlı XOX maçında arama penceresinde "+15 saniye eklendi" ve "İpucu: L. P. · 1994". Emülatörde açılan bilginin bir sonraki futbolcuda da kalacağı görüldü; bilgi o tur ya da soruya bağlandı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -641,3 +651,13 @@ Bu sırada yaşanan bir sorun: geliştirme sunucusu dosya değişince kendini ye
 | `830ec2b` | 7 Ekim | Maçtan çıkış onayı, maç sonunda puan ve gol |
 | `1ee955d` | 7 Ekim | Ana ekranda seviye, gol ve günlük ödül |
 | `9d089ee` | 7 Ekim | Geçmiş ve istatistik ekranı |
+| `ac4a1f7` | 7 Ekim | Belgeler: puan, seviye, gol ve geçmiş ekranı |
+| `0e84e2a` | 7 Ekim | Belgeler: gol harcama, satın alma, reklam ve joker kararları |
+| `a39cab5` | 7 Ekim | Joker mesajları |
+| `80bdec1` | 7 Ekim | Joker için gol düşme ve maçta iki joker sınırı |
+| `1089009` | 7 Ekim | Kariyer Yolu, İlk 10 ve Açık Artırma jokerleri |
+| `bee12d7` | 7 Ekim | En Az Bilinen ve Zincir jokerleri |
+| `07c04f6` | 7 Ekim | Hangisi Yüksek ve Kadro Kur jokerleri |
+| `516da65` | 7 Ekim | Kart Düellosu ve XOX jokerleri |
+| `d273bf6` | 7 Ekim | Yeniden bağlanınca gönderilen jokerlerin işaretlenmesi |
+| `26088cb` | 7 Ekim | Uygulamada joker çubuğu |
