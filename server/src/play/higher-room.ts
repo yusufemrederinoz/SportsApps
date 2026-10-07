@@ -123,7 +123,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
     let state = createHigher<HigherMetric>(random() < 0.5 ? 'x' : 'o');
     let question: HigherQuestion<HigherMetric> = firstQuestion;
     let stage: HigherViewPhase = 'answering';
-    let deadline = startedAt;
+    let deadline = startedAt + timing.answerMilliseconds;
     let result: PlayResult | null = null;
     let finishedAt: number | null = null;
     let phaseTimer: Timer | null = null;

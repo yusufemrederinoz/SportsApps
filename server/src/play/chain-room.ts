@@ -73,7 +73,7 @@ export function createChainRoomFactory(library: ChainLibrary, timing: ChainTimin
 
     let state = createChain(pickSeed(), random() < 0.5 ? 'x' : 'o');
     let stage: ChainViewPhase = 'playing';
-    let deadline = startedAt;
+    let deadline = startedAt + chainTurnSeconds(state) * SECOND;
     let lastMiss: ChainMissView | null = null;
     let result: PlayResult | null = null;
     let finishedAt: number | null = null;

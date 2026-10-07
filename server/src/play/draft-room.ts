@@ -102,7 +102,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
     const botSides = SIDES.filter((side) => seats[side].userId === null);
     let state = createDraft(shuffle(pool, random).slice(0, DRAFT_FORMATION.length));
     let stage: DraftViewPhase = 'playing';
-    let deadline = startedAt;
+    let deadline = startedAt + timing.pickMilliseconds;
     let result: PlayResult | null = null;
     let finishedAt: number | null = null;
     let phaseTimer: Timer | null = null;
