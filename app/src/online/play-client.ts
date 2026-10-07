@@ -29,6 +29,8 @@ export interface PlayClientOptions {
 
 const FATAL_ERRORS: readonly PlayErrorCode[] = ['unauthorized', 'outdated-client', 'replaced'];
 const RETRY_DELAYS = [400, 800, 1600, 3200, 5000, 5000, 5000];
+const FIRST_CONNECTION_RETRY_DELAYS = [400, 1200];
+const CONNECT_TIMEOUT = 8000;
 const PING_INTERVAL = 20000;
 
 export function playUrl(apiUrl: string): string {
@@ -50,10 +52,19 @@ export function createPlayClient(options: PlayClientOptions) {
   const createSocket = options.createSocket ?? ((url: string) => new WebSocket(url) as unknown as SocketLike);
   let socket: SocketLike | null = null;
   let ready = false;
+  let connected = false;
   let stopped = false;
   let attempt = 0;
   let retry: ReturnType<typeof setTimeout> | null = null;
   let ping: ReturnType<typeof setInterval> | null = null;
+  let connecting: ReturnType<typeof setTimeout> | null = null;
+
+  const stopConnecting = () => {
+    if (connecting) {
+      clearTimeout(connecting);
+      connecting = null;
+    }
+  };
 
   const stopPing = () => {
     if (ping) {
@@ -66,9 +77,33 @@ export function createPlayClient(options: PlayClientOptions) {
     socket?.send(JSON.stringify(message));
   };
 
+  const handleClose = (current: SocketLike) => {
+    if (socket !== current) {
+      return;
+    }
+    socket = null;
+    ready = false;
+    stopPing();
+    stopConnecting();
+    const delay = (connected ? RETRY_DELAYS : FIRST_CONNECTION_RETRY_DELAYS)[attempt];
+    if (stopped || delay === undefined) {
+      stopped = true;
+      options.onStatus('closed');
+      return;
+    }
+    attempt += 1;
+    options.onStatus('reconnecting');
+    retry = setTimeout(open, delay);
+  };
+
   const open = () => {
     const current = createSocket(options.url);
     socket = current;
+    stopConnecting();
+    connecting = setTimeout(() => {
+      handleClose(current);
+      current.close();
+    }, CONNECT_TIMEOUT);
 
     current.onopen = () => {
       current.send(
@@ -88,7 +123,9 @@ export function createPlayClient(options: PlayClientOptions) {
       }
       if (message.type === 'ready') {
         ready = true;
+        connected = true;
         attempt = 0;
+        stopConnecting();
         stopPing();
         ping = setInterval(() => transmit({ type: 'ping' }), PING_INTERVAL);
         options.onStatus('ready');
@@ -103,23 +140,7 @@ export function createPlayClient(options: PlayClientOptions) {
 
     current.onerror = () => undefined;
 
-    current.onclose = () => {
-      if (socket !== current) {
-        return;
-      }
-      socket = null;
-      ready = false;
-      stopPing();
-      const delay = RETRY_DELAYS[attempt];
-      if (stopped || delay === undefined) {
-        stopped = true;
-        options.onStatus('closed');
-        return;
-      }
-      attempt += 1;
-      options.onStatus('reconnecting');
-      retry = setTimeout(open, delay);
-    };
+    current.onclose = () => handleClose(current);
   };
 
   open();
@@ -136,6 +157,7 @@ export function createPlayClient(options: PlayClientOptions) {
     close(): void {
       stopped = true;
       stopPing();
+      stopConnecting();
       if (retry) {
         clearTimeout(retry);
         retry = null;

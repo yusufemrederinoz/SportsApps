@@ -119,6 +119,32 @@ describe('createPlayClient', () => {
     expect(sockets).toHaveLength(opened);
   });
 
+  it('gives up soon when the server was never reached', () => {
+    const { sockets, statuses } = setup();
+    sockets[0]?.onclose?.();
+    vi.advanceTimersByTime(400);
+    sockets[1]?.onclose?.();
+    vi.advanceTimersByTime(1200);
+    sockets[2]?.onclose?.();
+    expect(sockets).toHaveLength(3);
+    expect(statuses).toEqual(['reconnecting', 'reconnecting', 'closed']);
+  });
+
+  it('drops a connection that never becomes ready', () => {
+    const { sockets, statuses } = setup();
+    sockets[0]?.onopen?.();
+    vi.advanceTimersByTime(7999);
+    expect(statuses).toEqual([]);
+    vi.advanceTimersByTime(1);
+    expect(sockets[0]?.closed).toBe(true);
+    expect(statuses).toEqual(['reconnecting']);
+    vi.advanceTimersByTime(400);
+    sockets[1]?.onopen?.();
+    sockets[1]?.receive({ type: 'ready' });
+    vi.advanceTimersByTime(60000);
+    expect(statuses).toEqual(['reconnecting', 'ready']);
+  });
+
   it('does not reconnect after the server turned the player away', () => {
     const { sockets, statuses, messages } = setup();
     sockets[0]?.onopen?.();
