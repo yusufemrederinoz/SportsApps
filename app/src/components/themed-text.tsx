@@ -1,4 +1,5 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+import type { ReactNode } from 'react';
+import { Platform, StyleSheet, Text, type TextProps } from 'react-native';
 
 import { Colors, Fonts, type ThemeColor } from '@/constants/theme';
 
@@ -7,8 +8,20 @@ export type ThemedTextProps = TextProps & {
   themeColor?: ThemeColor;
 };
 
-export function ThemedText({ style, type = 'default', themeColor = 'text', ...rest }: ThemedTextProps) {
-  return <Text style={[{ color: Colors[themeColor] }, styles[type], style]} {...rest} />;
+function keepLastWordOnItalicLine(children: ReactNode, fontFamily: string | undefined): ReactNode {
+  if (Platform.OS !== 'android' || fontFamily !== Fonts.display || typeof children !== 'string' || !/\S\s+\S/.test(children)) {
+    return children;
+  }
+  return `${children} `;
+}
+
+export function ThemedText({ style, type = 'default', themeColor = 'text', children, ...rest }: ThemedTextProps) {
+  const fontFamily = StyleSheet.flatten([styles[type], style])?.fontFamily;
+  return (
+    <Text style={[{ color: Colors[themeColor] }, styles[type], style]} {...rest}>
+      {keepLastWordOnItalicLine(children, fontFamily)}
+    </Text>
+  );
 }
 
 const styles = StyleSheet.create({
