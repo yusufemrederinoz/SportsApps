@@ -1,6 +1,7 @@
 import {
   conceptCondition,
   correctAnswerStatement,
+  draftEligible,
   gridAtOffsetStatement,
   gridCountStatement,
   gridOffset,
@@ -12,6 +13,7 @@ import { nameTokens, type BotOption, type CellPosition, type Grid, type Header }
 import type { DuelConcept } from '@sportapps/protocol';
 
 import type {
+  ClubLabel,
   ConceptLabel,
   Difficulty,
   FootballerSummary,
@@ -19,6 +21,7 @@ import type {
   HeaderView,
   Market,
   PortraitCredit,
+  QueryParameter,
   QueryRunner,
 } from './types';
 
@@ -113,43 +116,18 @@ export async function loadGrid(database: QueryRunner, gridId: number, language: 
   return { grid, rows, columns };
 }
 
-export async function searchFootballers(
+async function searchWhere(
   database: QueryRunner,
   market: string,
   text: string,
-  limit = 20,
+  condition: { sql: string; parameters: QueryParameter[] },
+  limit: number,
 ): Promise<FootballerSummary[]> {
   const tokens = nameTokens(text);
   if (tokens.join('').length < MINIMUM_SEARCH_LENGTH) {
     return [];
   }
   const match = tokens.map((token) => `"${token}"*`).join(' ');
-  const rows = await database.getAllAsync<FootballerRow>(
-    `SELECT ${FOOTBALLER_COLUMNS}
-     FROM (SELECT DISTINCT player_id FROM player_search WHERE player_search MATCH ?) s
-     JOIN players p ON p.id = s.player_id
-     LEFT JOIN countries c ON c.id = p.country_id
-     LEFT JOIN player_fame f ON f.player_id = p.id AND f.market = ?
-     ORDER BY COALESCE(f.fame, 0) DESC, p.name
-     LIMIT ?`,
-    [match, market, limit],
-  );
-  return rows.map(toFootballer);
-}
-
-export async function searchConceptFootballers(
-  database: QueryRunner,
-  market: string,
-  concept: DuelConcept,
-  text: string,
-  limit = 20,
-): Promise<FootballerSummary[]> {
-  const tokens = nameTokens(text);
-  if (tokens.join('').length < MINIMUM_SEARCH_LENGTH) {
-    return [];
-  }
-  const match = tokens.map((token) => `"${token}"*`).join(' ');
-  const condition = conceptCondition(concept, market, 'p.id');
   const rows = await database.getAllAsync<FootballerRow>(
     `SELECT ${FOOTBALLER_COLUMNS}
      FROM (SELECT DISTINCT player_id FROM player_search WHERE player_search MATCH ?) s
@@ -162,6 +140,63 @@ export async function searchConceptFootballers(
     [match, market, ...condition.parameters, limit],
   );
   return rows.map(toFootballer);
+}
+
+export function searchFootballers(
+  database: QueryRunner,
+  market: string,
+  text: string,
+  limit = 20,
+): Promise<FootballerSummary[]> {
+  return searchWhere(database, market, text, { sql: '1', parameters: [] }, limit);
+}
+
+export function searchConceptFootballers(
+  database: QueryRunner,
+  market: string,
+  concept: DuelConcept,
+  text: string,
+  limit = 20,
+): Promise<FootballerSummary[]> {
+  return searchWhere(database, market, text, conceptCondition(concept, market, 'p.id'), limit);
+}
+
+export function searchDraftFootballers(
+  database: QueryRunner,
+  market: string,
+  clubId: number,
+  positions: readonly string[],
+  excludedIds: readonly number[],
+  text: string,
+  limit = 20,
+): Promise<FootballerSummary[]> {
+  const wanted = positions.length > 0 ? positions : [''];
+  const excluded = excludedIds.length > 0 ? excludedIds : [0];
+  return searchWhere(
+    database,
+    market,
+    text,
+    {
+      sql: `p.position IN (${wanted.map(() => '?').join(', ')})
+            AND p.id NOT IN (${excluded.map(() => '?').join(', ')})
+            AND ${draftEligible('p.id', '?')}`,
+      parameters: [...wanted, ...excluded, clubId],
+    },
+    limit,
+  );
+}
+
+export async function loadClubLabel(database: QueryRunner, clubId: number, market: string, language: string): Promise<ClubLabel> {
+  const row = await database.getFirstAsync<{ name: string | null; local: number }>(
+    `SELECT COALESCE(
+              (SELECT name FROM club_names WHERE club_id = c.id AND language = ?),
+              (SELECT name FROM club_names WHERE club_id = c.id AND language = '${FALLBACK_LANGUAGE}')
+            ) AS name,
+            EXISTS (SELECT 1 FROM markets m WHERE m.code = ? AND m.home_league_code = c.league_code) AS local
+     FROM clubs c WHERE c.id = ?`,
+    [language, market, clubId],
+  );
+  return { id: clubId, name: row?.name ?? '', local: row?.local === 1 };
 }
 
 export async function loadConceptLabel(

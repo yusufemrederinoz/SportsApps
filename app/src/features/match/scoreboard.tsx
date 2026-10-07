@@ -13,6 +13,7 @@ interface ScoreboardProps {
   scores: Record<Side, number>;
   activeSide: Side | null;
   center: ReactNode;
+  compact?: boolean;
 }
 
 interface SidePanelProps {
@@ -20,9 +21,10 @@ interface SidePanelProps {
   name: string;
   score: number;
   active: boolean;
+  compact: boolean;
 }
 
-function SidePanel({ side, name, score, active }: SidePanelProps) {
+function SidePanel({ side, name, score, active, compact }: SidePanelProps) {
   const uppercase = useUppercase();
   const finish = Finishes[side];
   const bump = useSharedValue(1);
@@ -49,7 +51,7 @@ function SidePanel({ side, name, score, active }: SidePanelProps) {
           {uppercase(name)}
         </ThemedText>
         <Animated.View style={bumpStyle}>
-          <ThemedText type="score" style={{ color: textColor }}>
+          <ThemedText type="score" style={[{ color: textColor }, compact && styles.compactScore]}>
             {score}
           </ThemedText>
         </Animated.View>
@@ -58,12 +60,12 @@ function SidePanel({ side, name, score, active }: SidePanelProps) {
   );
 }
 
-export function Scoreboard({ names, scores, activeSide, center }: ScoreboardProps) {
+export function Scoreboard({ names, scores, activeSide, center, compact = false }: ScoreboardProps) {
   return (
     <View style={styles.container}>
-      <SidePanel side="x" name={names.x} score={scores.x} active={activeSide === 'x'} />
+      <SidePanel side="x" name={names.x} score={scores.x} active={activeSide === 'x'} compact={compact} />
       <View style={styles.center}>{center}</View>
-      <SidePanel side="o" name={names.o} score={scores.o} active={activeSide === 'o'} />
+      <SidePanel side="o" name={names.o} score={scores.o} active={activeSide === 'o'} compact={compact} />
     </View>
   );
 }
@@ -106,5 +108,9 @@ const styles = StyleSheet.create({
   center: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  compactScore: {
+    fontSize: 26,
+    lineHeight: 28,
   },
 });

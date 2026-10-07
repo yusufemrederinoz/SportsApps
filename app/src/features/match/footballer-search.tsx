@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
-import { searchConceptFootballers, searchFootballers } from '@/data/queries';
+import { searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
@@ -18,12 +18,30 @@ import { URGENT_SECONDS } from './use-match-effects';
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const NO_ROLE = '-';
 
+export type SearchFilter =
+  | { kind: 'concept'; concept: DuelConcept }
+  | { kind: 'draft'; clubId: number; positions: readonly string[]; excludedIds: readonly number[] };
+
+function runSearch(
+  database: Parameters<typeof searchFootballers>[0],
+  market: string,
+  filter: SearchFilter | null,
+  text: string,
+) {
+  if (!filter) {
+    return searchFootballers(database, market, text);
+  }
+  return filter.kind === 'concept'
+    ? searchConceptFootballers(database, market, filter.concept, text)
+    : searchDraftFootballers(database, market, filter.clubId, filter.positions, filter.excludedIds, text);
+}
+
 interface FootballerSearchProps {
   title: string;
   market: string;
   secondsLeft: number;
   excludedIds: readonly number[];
-  concept?: DuelConcept | null;
+  filter?: SearchFilter | null;
   emptyLabel?: string;
   closeLabel?: string;
   onSelect: (footballer: FootballerSummary) => void;
@@ -35,7 +53,7 @@ export function FootballerSearch({
   market,
   secondsLeft,
   excludedIds,
-  concept = null,
+  filter = null,
   emptyLabel,
   closeLabel,
   onSelect,
@@ -46,13 +64,11 @@ export function FootballerSearch({
   const uppercase = useUppercase();
   const [text, setText] = useState('');
   const [found, setFound] = useState<{ text: string; footballers: FootballerSummary[] }>({ text: '', footballers: [] });
+  const filterKey = JSON.stringify(filter);
 
   useEffect(() => {
     let cancelled = false;
-    const searching = concept
-      ? searchConceptFootballers(database, market, concept, text)
-      : searchFootballers(database, market, text);
-    void searching.then((footballers) => {
+    void runSearch(database, market, JSON.parse(filterKey) as SearchFilter | null, text).then((footballers) => {
       if (!cancelled) {
         setFound({ text, footballers });
       }
@@ -60,7 +76,7 @@ export function FootballerSearch({
     return () => {
       cancelled = true;
     };
-  }, [database, market, concept, text]);
+  }, [database, market, filterKey, text]);
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const searched = found.text === text && text.trim().length >= 2;

@@ -50,7 +50,9 @@
     "modeFriendHint": "Kodla özel oda aç.",
     "game": "Oyun",
     "titleAccentDuel": "Düello",
-    "subtitleDuel": "Yedi kart seç. Her turda sorulan soruda kartı üstün gelen puanı alır."
+    "subtitleDuel": "Yedi kart seç. Her turda sorulan soruda kartı üstün gelen puanı alır.",
+    "titleAccentDraft": "Kadro",
+    "subtitleDraft": "Her turda bir kulüp çıkar. O kulüpte oynamış bir futbolcuyu kadrona al; kariyer asist toplamı yüksek kadro kazanır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -172,7 +174,8 @@
   },
   "games": {
     "grid": "XOX",
-    "duel": "Kart Düellosu"
+    "duel": "Kart Düellosu",
+    "draft": "Kadro Kur"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -232,5 +235,20 @@
     "roundLost": "Tur rakibin",
     "roundDrawn": "Tur berabere",
     "byScore": "Yedi tur tamamlandı"
+  },
+  "draft": {
+    "round": "Tur {{round}}/{{total}}",
+    "clubLabel": "Bu turun kulübü",
+    "target": "Hedef: kadronun kariyer asist toplamı",
+    "pickHint": "Bu kulüpte oynamış birini seç",
+    "choose": "Futbolcu seç",
+    "waitingOpponent": "Rakip seçiyor…",
+    "opponentPicked": "Rakip aldı: {{name}}",
+    "passed": "Bu turu kaçırdın",
+    "roundOver": "Tur bitti",
+    "searchEmpty": "Boş yuvalarına uyan futbolcu bulunamadı. Yalnızca asist verisi olan oyuncular listelenir.",
+    "emptySlot": "Boş {{position}} yuvası",
+    "slotLabel": "{{position}}: {{name}}, {{value}} asist",
+    "byScore": "Kadrolar tamamlandı"
   }
 }

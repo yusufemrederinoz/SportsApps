@@ -12,7 +12,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { AccentFinishes, Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
-import { GAMES, GAME_LABELS } from '@/features/games';
+import { GAMES, GAME_ACCENTS, GAME_LABELS, GAME_SUBTITLES } from '@/features/games';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import type { MatchMode } from '@/features/match/use-match';
 import { haptics } from '@/feedback/haptics';
@@ -26,7 +26,7 @@ function HomeScreen() {
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const [game, setGame] = useState<GameId>('grid');
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
-  const accent = t(game === 'duel' ? 'home.titleAccentDuel' : 'home.titleAccent');
+  const accent = t(GAME_ACCENTS[game]);
   const start = (mode: MatchMode) =>
     router.push({ pathname: '/match', params: { mode, difficulty: String(difficulty) } });
   const startOnline = () =>
@@ -66,7 +66,7 @@ function HomeScreen() {
             <View style={styles.slash} />
           </Animated.View>
           <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
-            <ThemedText themeColor="textSecondary">{t(game === 'duel' ? 'home.subtitleDuel' : 'home.subtitle')}</ThemedText>
+            <ThemedText themeColor="textSecondary">{t(GAME_SUBTITLES[game])}</ThemedText>
           </Animated.View>
         </View>
 
@@ -74,7 +74,12 @@ function HomeScreen() {
           <ThemedText type="label" themeColor="textSecondary">
             {uppercase(t('home.game'))}
           </ThemedText>
-          <View style={styles.difficultyRow} accessibilityRole="radiogroup">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.gameScroller}
+            contentContainerStyle={styles.gameRow}
+            accessibilityRole="radiogroup">
             {GAMES.map((option) => {
               const selected = option === game;
               return (
@@ -86,14 +91,14 @@ function HomeScreen() {
                     haptics.select();
                     setGame(option);
                   }}
-                  style={[styles.difficultyOption, selected && styles.difficultySelected]}>
+                  style={[styles.difficultyOption, styles.gameOption, selected && styles.difficultySelected]}>
                   <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
                     {uppercase(t(GAME_LABELS[option]))}
                   </ThemedText>
                 </Pressable>
               );
             })}
-          </View>
+          </ScrollView>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(300)} style={styles.section}>
@@ -256,6 +261,17 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 0 },
     elevation: 8,
+  },
+  gameScroller: {
+    flexGrow: 0,
+  },
+  gameRow: {
+    gap: Spacing.two,
+    paddingVertical: Spacing.two,
+  },
+  gameOption: {
+    flex: 0,
+    paddingHorizontal: Spacing.four,
   },
   difficultyLabel: {
     fontFamily: Fonts.heading,

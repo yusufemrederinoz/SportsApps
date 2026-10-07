@@ -50,7 +50,9 @@
     "modeFriendHint": "Open a private room with a code.",
     "game": "Game",
     "titleAccentDuel": "Duel",
-    "subtitleDuel": "Pick seven cards. Each round, the better card for the question scores."
+    "subtitleDuel": "Pick seven cards. Each round, the better card for the question scores.",
+    "titleAccentDraft": "Draft",
+    "subtitleDraft": "Each round reveals a club. Add a footballer who played there to your lineup; the lineup with more career assists wins."
   },
   "difficulty": {
     "easy": "Easy",
@@ -172,7 +174,8 @@
   },
   "games": {
     "grid": "XOX",
-    "duel": "Card Duel"
+    "duel": "Card Duel",
+    "draft": "Lineup Draft"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -232,5 +235,20 @@
     "roundLost": "Round lost",
     "roundDrawn": "Round drawn",
     "byScore": "Seven rounds played"
+  },
+  "draft": {
+    "round": "Round {{round}}/{{total}}",
+    "clubLabel": "This round's club",
+    "target": "Goal: your lineup's career assists",
+    "pickHint": "Pick someone who played here",
+    "choose": "Pick a footballer",
+    "waitingOpponent": "Your opponent is picking…",
+    "opponentPicked": "Your opponent took {{name}}",
+    "passed": "You missed this round",
+    "roundOver": "Round over",
+    "searchEmpty": "No footballer fits your open slots. Only players with assist data are listed.",
+    "emptySlot": "Empty {{position}} slot",
+    "slotLabel": "{{position}}: {{name}}, {{value}} assists",
+    "byScore": "Lineups complete"
   }
 }

@@ -39,6 +39,12 @@ export interface FootballerSummary {
   hasPortrait: boolean;
 }
 
+export interface ClubLabel {
+  id: number;
+  name: string;
+  local: boolean;
+}
+
 export interface ConceptLabel {
   name: string | null;
   leagueCode: string | null;

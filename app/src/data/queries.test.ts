@@ -9,6 +9,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   isCorrectAnswer,
   loadBotOptions,
+  loadClubLabel,
   loadConceptLabel,
   loadFootballer,
   loadGrid,
@@ -16,6 +17,7 @@ import {
   pickGridId,
   resolveMarket,
   searchConceptFootballers,
+  searchDraftFootballers,
   searchFootballers,
 } from './queries';
 import type { Difficulty, QueryRunner } from './types';
@@ -117,6 +119,29 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     expect(await names({ kind: 'country', countryId: TURKEY.referenceId }, 'icardi')).toEqual([]);
     expect(await names({ kind: 'league', leagueCode: 'IT1' }, 'calhanoglu')).toContain('Hakan Çalhanoğlu');
     expect(await names({ kind: 'league', leagueCode: 'IT1' }, 'c')).toEqual([]);
+  });
+
+  it('searches only the club footballers that fit an open slot and are not taken', async () => {
+    const names = async (positions: string[], excluded: number[], text: string) =>
+      (await searchDraftFootballers(runner, 'tr', GALATASARAY.referenceId, positions, excluded, text)).map(
+        (footballer) => footballer.name,
+      );
+    const icardi = await footballerId('mauro icardi');
+
+    expect(await names(['FW'], [], 'icardi')).toContain('Mauro Icardi');
+    expect(await names(['GK', 'DF'], [], 'icardi')).toEqual([]);
+    expect(await names(['FW'], [icardi], 'icardi')).toEqual([]);
+    expect(await names([], [], 'icardi')).toEqual([]);
+    expect((await searchDraftFootballers(runner, 'tr', REAL_MADRID.referenceId, ['FW'], [], 'icardi')).length).toBe(0);
+  });
+
+  it('names a club in the language of the player and knows whether it is local', async () => {
+    expect(await loadClubLabel(runner, GALATASARAY.referenceId, 'tr', 'tr')).toEqual({
+      id: GALATASARAY.referenceId,
+      name: 'Galatasaray',
+      local: true,
+    });
+    expect((await loadClubLabel(runner, REAL_MADRID.referenceId, 'tr', 'tr')).local).toBe(false);
   });
 
   it('describes a duel concept with names in the language of the player', async () => {

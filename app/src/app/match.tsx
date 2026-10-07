@@ -9,6 +9,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
+import { DraftMatchView } from '@/features/draft/draft-view';
 import { DuelMatchView } from '@/features/duel/duel-view';
 import { parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
@@ -72,7 +73,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   const { t } = useTranslation();
   const router = useRouter();
   const online = useOnlineMatch(entry, difficulty, game);
-  const { setup, session, duel } = online;
+  const { setup, session, live } = online;
   const notice = online.reconnecting
     ? t('online.reconnecting')
     : online.opponentConnected
@@ -84,11 +85,26 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
 
-  if (online.phase === 'playing' && duel) {
+  if (online.phase === 'playing' && live?.game === 'draft') {
+    return (
+      <DraftMatchView
+        draft={live}
+        secondsLeft={online.liveSecondsLeft}
+        canAct={online.canAct}
+        notice={notice}
+        playAgainLabel={playAgainLabel}
+        onAct={online.act}
+        onPlayAgain={playAgain}
+        onQuit={() => router.back()}
+      />
+    );
+  }
+
+  if (online.phase === 'playing' && live?.game === 'duel') {
     return (
       <DuelMatchView
-        duel={duel}
-        secondsLeft={online.duelSecondsLeft}
+        duel={live}
+        secondsLeft={online.liveSecondsLeft}
         canAct={online.canAct}
         notice={notice}
         playAgainLabel={playAgainLabel}

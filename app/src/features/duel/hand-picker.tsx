@@ -136,7 +136,7 @@ export function HandPicker({
         <FootballerSearch
           title={title}
           market={marketCode}
-          concept={concept}
+          filter={{ kind: 'concept', concept }}
           secondsLeft={secondsLeft}
           excludedIds={pickedIds}
           emptyLabel={t('duel.searchEmpty')}

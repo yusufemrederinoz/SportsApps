@@ -1,5 +1,13 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
-import type { DuelAction, DuelView, GameId, PlayErrorCode, ServerMessage } from '@sportapps/protocol';
+import type {
+  DraftView,
+  DuelView,
+  GameAction,
+  GameId,
+  GameView,
+  PlayErrorCode,
+  ServerMessage,
+} from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +17,7 @@ import version from '@/assets/data/version.json';
 import { useAuth } from '@/auth/auth-provider';
 import { loadFootballer, loadGrid, resolveMarket } from '@/data/queries';
 import type { Difficulty, FootballerSummary, GridView, Market } from '@/data/types';
-import { duelCardIds, finishDuelView } from '@/features/duel/online';
+import { gameCardIds, finishGameView } from '@/features/games';
 import { createPlayClient, playUrl, type PlayClient } from '@/online/play-client';
 
 import {
@@ -34,16 +42,19 @@ export interface OnlineSetup {
   usernames: Record<Side, string>;
 }
 
-export interface OnlineDuel {
+interface OnlineSessionBase {
   matchId: string;
   market: Market;
   difficulty: Difficulty;
   side: Side;
   usernames: Record<Side, string>;
-  view: DuelView;
   deadlineAt: number;
   cards: Readonly<Record<number, PlayedFootballer>>;
 }
+
+export type OnlineGame = OnlineSessionBase & GameView;
+export type OnlineDuel = OnlineSessionBase & { game: 'duel'; view: DuelView };
+export type OnlineDraft = OnlineSessionBase & { game: 'draft'; view: DraftView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [
@@ -68,7 +79,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [setup, setSetup] = useState<OnlineSetup | null>(null);
   const [session, setSession] = useState<MatchSession | null>(null);
-  const [duel, setDuel] = useState<OnlineDuel | null>(null);
+  const [live, setLive] = useState<OnlineGame | null>(null);
   const [opponentConnected, setOpponentConnected] = useState(true);
   const [reconnecting, setReconnecting] = useState(false);
   const [sentTurn, setSentTurn] = useState<number | null>(null);
@@ -111,8 +122,8 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
       }
     };
 
-    const cardsOf = async (view: DuelView) => {
-      const ids = duelCardIds(view);
+    const cardsOf = async (state: GameView) => {
+      const ids = gameCardIds(state);
       await remember(ids);
       return Object.fromEntries(ids.map((id) => [id, lookup(id)]));
     };
@@ -193,20 +204,16 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             fail('outdated-client');
             return;
           }
-          const cards = await cardsOf(snapshot.view);
+          const cards = await cardsOf(snapshot);
           if (disposed) {
             return;
           }
           matchId = snapshot.matchId;
           playing = snapshot.view.result === null;
           finished = snapshot.view.result !== null;
-          setDuel({
-            matchId: snapshot.matchId,
+          setLive({
+            ...snapshot,
             market,
-            difficulty: snapshot.difficulty,
-            side: snapshot.side,
-            usernames: snapshot.usernames,
-            view: snapshot.view,
             deadlineAt: receivedAt + snapshot.view.deadlineIn,
             cards,
           });
@@ -220,19 +227,20 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
           if (message.matchId !== matchId) {
             return;
           }
-          const { view } = message;
-          const cards = await cardsOf(view);
+          const cards = await cardsOf(message);
           if (disposed) {
             return;
           }
-          setDuel(
-            (current) =>
-              current && {
-                ...current,
-                view,
-                deadlineAt: receivedAt + view.deadlineIn,
-                cards: { ...current.cards, ...cards },
-              },
+          setLive((current) =>
+            current && current.game === message.game
+              ? ({
+                  ...current,
+                  game: message.game,
+                  view: message.view,
+                  deadlineAt: receivedAt + message.view.deadlineIn,
+                  cards: { ...current.cards, ...cards },
+                } as OnlineGame)
+              : current,
           );
           setActing(false);
           return;
@@ -257,7 +265,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             playing = false;
             finished = true;
             setSession((current) => current && finishSession(current, message.result));
-            setDuel((current) => current && { ...current, view: finishDuelView(current.view, message.result) });
+            setLive((current) => current && ({ ...current, ...finishGameView(current, message.result) } as OnlineGame));
           }
           return;
         case 'opponent':
@@ -331,8 +339,8 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
 
   const unavailable: OnlineFailure | null = !token ? 'signed-out' : !apiUrl ? 'offline' : null;
   const gridActive = session !== null && session.match.result === null;
-  const duelActive = duel !== null && duel.view.result === null;
-  const active = phase === 'playing' && (gridActive || duelActive);
+  const liveActive = live !== null && live.view.result === null;
+  const active = phase === 'playing' && (gridActive || liveActive);
 
   useEffect(() => {
     if (!active) {
@@ -344,7 +352,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
 
   const ownTurn = active && setup !== null && session !== null && session.match.turn === setup.side;
   const canPlay = ownTurn && !reconnecting && sentTurn !== session.match.turnNumber;
-  const canAct = active && duelActive && !reconnecting && !acting;
+  const canAct = active && liveActive && !reconnecting && !acting;
 
   const answer = (position: CellPosition, footballer: FootballerSummary) => {
     if (!canPlay || !setup || !session) {
@@ -363,11 +371,11 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     }
   };
 
-  const act = (action: DuelAction) => {
-    if (!canAct || !duel) {
+  const act = (action: GameAction) => {
+    if (!canAct || !live) {
       return;
     }
-    if (client.current?.send({ type: 'act', matchId: duel.matchId, action })) {
+    if (client.current?.send({ type: 'act', matchId: live.matchId, action })) {
       setActing(true);
     }
   };
@@ -375,7 +383,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const playAgain = () => {
     setSession(null);
     setSetup(null);
-    setDuel(null);
+    setLive(null);
     setRoomCode(null);
     setFailure(null);
     setSentTurn(null);
@@ -392,11 +400,11 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     roomCode,
     setup,
     session,
-    duel,
+    live,
     opponentConnected,
     reconnecting,
     secondsLeft: session ? secondsLeft(session, now) : 0,
-    duelSecondsLeft: duel ? Math.max(0, Math.ceil((duel.deadlineAt - now) / 1000)) : 0,
+    liveSecondsLeft: live ? Math.max(0, Math.ceil((live.deadlineAt - now) / 1000)) : 0,
     canPlay,
     canAct,
     answer,
