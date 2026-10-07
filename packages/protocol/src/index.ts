@@ -6,3 +6,4 @@ export * from './duel';
 export * from './higher';
 export * from './play';
 export * from './rare';
+export * from './top-ten';
