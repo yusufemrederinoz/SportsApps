@@ -412,7 +412,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | `join-room` | Kodla odaya katıl |
 | `cancel` | Sıradan ya da kurulan odadan çık |
 | `answer` | XOX hamlesi: maç, sıra numarası, hücre, oyuncu kimliği |
-| `act` | Yeni modların hamlesi: maç ve moda özgü eylem (düelloda el gönderme ya da kart oynama, Kadro Kur'da futbolcu seçme) |
+| `act` | Yeni modların hamlesi: maç ve moda özgü eylem (düelloda el gönderme ya da kart oynama, Kadro Kur'da futbolcu seçme, Hangisi Yüksek'te kart seçme, Zincir'de futbolcu söyleme) |
 | `leave` | Maçtan ayrıl (hükmen kaybeder) |
 | `ping` | Bağlantıyı canlı tut |
 
@@ -442,6 +442,8 @@ Sunucu, sıranın kalan süresini milisaniye olarak gönderir; uygulama bunu ken
 | `src/play/room.ts` | Tek bir XOX maçı: durum, cevap doğrulama, sıra süresi, sonuç |
 | `src/play/duel-room.ts` | Kart Düellosu oda üreticisi: konsept seçimi, el doğrulama ve tamamlama, soru seçimi, tur ve açılış süreleri, bot |
 | `src/play/draft-room.ts` | Kadro Kur oda üreticisi: kulüp sırası, seçim doğrulama (kulüp, mevki, asist verisi), tur süresi ve ara, bot |
+| `src/play/higher-room.ts` | Hangisi Yüksek oda üreticisi: soru havuzu (zorluk başına önbellekte), değer farkı kuralı, eller, bot |
+| `src/play/chain-room.ts` | Zincir oda üreticisi: başlangıç futbolcuları, ortak kulüp denetimi, kısalan süre, turlar, bot |
 | `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
 | `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler |
 | `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar, düello konseptleri ve kart değerleri |
@@ -470,6 +472,8 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/features/match/use-online-match.ts` | Online maçın kancası: arama, oda, oynama, hata durumları; XOX ve düello mesajlarını birlikte işler |
 | `src/features/duel/*` | Kart Düellosu: görünüm (`duel-view`), kart seçimi (`hand-picker`), tur masası (`duel-table`), kapalı kart, sesler ve titreşim, konsept başlıkları ve değer biçimleri (`labels`) |
 | `src/features/draft/*` | Kadro Kur: görünüm (`draft-view`), saha dizilişli kadro (`lineup-board`), sesler ve titreşim |
+| `src/features/higher/*` | Hangisi Yüksek: görünüm, sesler ve titreşim |
+| `src/features/chain/*` | Zincir: görünüm (halka şeridi, son halka, bağlayan kulüp), sesler ve titreşim |
 | `src/features/games.ts` | Oyun listesi, adları ve ana ekran metinleri; mod görünümlerinin ortak yardımcıları |
 | `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
 | `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
@@ -521,9 +525,9 @@ Açılış akışı:
 | Paket | Test sayısı | Neyi denetler |
 |---|---|---|
 | Veri hattı | 48 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (8): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları |
-| Kural motoru | 40 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş |
-| Sunucu | 92 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç |
-| Uygulama | 75 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları |
+| Kural motoru | 50 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş |
+| Sunucu | 110 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (9) ve Zincir (9): soru üretimi ve değer farkı, sıra, açılış, süre dolması, bitiş ve kayıt, bot; ikisi için de gerçek veritabanıyla bota karşı tam maç |
+| Uygulama | 79 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek (2) ve Zincir (2): görünüm yardımcıları |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -556,4 +560,6 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Kart Düellosu yalnızca online; bota karşı internetsiz oynanamıyor. Turnuva konseptleri ("Dünya Kupası'nda oynamış") veri olmadığı için yok.
 - Düelloda Vikiveri kaynaklı oyuncuların sayıları yalnızca lig maçlarını kapsıyor; diğerleri bütün resmî maçları. Aynı soruda karşılaşabiliyorlar.
 - Kadro Kur'da asist verisi olmayan futbolcular seçilemiyor; bu, eski yıldızların bir kısmını dışarıda bırakıyor.
+- Zincir'de yalnızca veritabanındaki kulüpler (Süper Lig ve beş büyük lig) bağlantı sayılıyor; gerçekte başka bir kulüpte birlikte oynamış iki futbolcu yanlış sayılır.
+- Geliştirme ortamında sıcak yenileme ikinci bir bağlantı açıp maçı "başka cihaz" hatasıyla düşürebiliyor.
 - Görsel üretimi yüzü her zaman korumuyor: örnek olarak Messi'nin çizimi kaynak fotoğraftaki yüze yeterince benzemiyor. Kaynak kırpma doğru; sapma çizime dönüştürme adımında.

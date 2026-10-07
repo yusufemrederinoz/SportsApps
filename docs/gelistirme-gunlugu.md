@@ -456,6 +456,24 @@ Emülatörde bulunan ve düzeltilen sorunlar: dört basamaklı skorlar rakibin a
 
 Görsel bulgusu: Messi'nin kartındaki çizim kaynak fotoğraftaki yüzü yeterince korumuyor (kaynak kırpma doğru; çizime dönüştürme yüzü değiştiriyor). Bu, dönüştürme gücünün bütün görsellerde yarattığı genel bir risk; tanınmış oyuncuların görselleri elle gözden geçirilmeli, gerekirse kimliği koruyan bir yöntem denenmeli.
 
+### Hangisi Yüksek ve Zincir
+
+İki mod daha kural motoru, sunucu odası, bot ve uygulama ekranıyla eklendi; ana ekrandaki oyun sırası beşe çıktı.
+
+- **Hangisi Yüksek.** Belgedeki "doğruysa devam eder" kuralı tek oyuncunun maçı tutabilmesine yol açacağı için eller sınırlandı: her oyuncuya 3 el, bir elde en çok 5 doğru. Ekran: soru levhası, seri göstergesi, iki büyük kart; cevaptan sonra değerler kartların altında açılıyor, doğru kart parlıyor, diğeri soluklaşıyor.
+- **Zincir.** Ekran: kural levhası, geçmiş halkaların yatay şeridi (aralarında bağlayan kulüp), büyük "son halka" kartı ve "Bağlantı: Fenerbahçe" satırı. Arama penceresi açık; doğruluk sunucuda denetleniyor.
+
+Doğrulama: ikisi için de gerçek veritabanıyla sunucu testinde bota karşı tam maç ve emülatörde bota karşı maç (Hangisi Yüksek'te soru, açılış, süre dolması, rakip sırası; Zincir'de Alpay Özalan → Rüştü Reçber → Talisca, Fenerbahçe bağlantılarıyla, sonuç ekranına kadar). Zincirin tur sırası betikle ayrıca doğrulandı.
+
+Bulunan ve düzeltilen sorunlar:
+
+- Zincir botu pes ederken süreyi dolduruyordu; insan oyuncu 20 saniye boşuna bekliyordu. Bot artık yanlış bir ad söyleyerek pes ediyor.
+- Kadro Kur, Hangisi Yüksek ve Zincir'de maç açılışındaki ilk görünümde kalan süre 0 geliyordu; ilk süre artık selamlamada doğru gidiyor.
+- Yeni bir görünüm geldiğinde sayaç bir an bir saniye fazla gösterebiliyordu; uygulama saatini görünüm gelince tazeliyor.
+- Hangisi Yüksek'te cevap açılırken etiket bir sonraki eli gösteriyordu; artık cevaplanan eli ve o elin serisini gösteriyor. Kartlardaki X/O filigranı bu modda kaldırıldı.
+
+Geliştirme ortamına özgü bir gözlem: dosya değiştirince uygulama sıcak yenilenirken bazen ikinci bir bağlantı açıyor ve ekran "Başka bir cihazda oynuyorsun" hatasına düşüyor. Yayın sürümünde sıcak yenileme olmadığı için kullanıcıyı etkilemez; yine de bağlantının bir kez kurulmasını garanti etmek üzere izlenecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -507,3 +525,14 @@ Görsel bulgusu: Messi'nin kartındaki çizim kaynak fotoğraftaki yüzü yeteri
 | `71a9a5e` | 7 Ekim | Kadro Kur mesajları ve ortak veri ifadeleri; çok modlu oturum mesajları |
 | `428499b` | 7 Ekim | Sunucuda Kadro Kur odası ve botu |
 | `4f8682f` | 7 Ekim | Uygulamada Kadro Kur ekranı ve kaydırılabilir oyun seçimi |
+| `d514ad6` | 7 Ekim | Belgeler: Kadro Kur |
+| `181cb42` | 7 Ekim | Hangisi Yüksek kuralları (kural motoru) |
+| `54669f3` | 7 Ekim | Hangisi Yüksek mesajları |
+| `4ac9a1a` | 7 Ekim | Sunucuda Hangisi Yüksek odası ve botu |
+| `1896ad5` | 7 Ekim | Hangisi Yüksek'te açılış sırasında doğru el ve seri |
+| `7f32ffb` | 7 Ekim | Uygulamada Hangisi Yüksek ekranı |
+| `9efe187` | 7 Ekim | Zincir kuralları (kural motoru) |
+| `3fcda0a` | 7 Ekim | Zincir mesajları ve ortak veri ifadeleri |
+| `32b5af9` | 7 Ekim | Sunucuda Zincir odası ve botu |
+| `0051e46` | 7 Ekim | Yeni modlarda ilk sürenin selamlamada doğru gitmesi |
+| `b14068f` | 7 Ekim | Uygulamada Zincir ekranı |

@@ -20,8 +20,8 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | `grid` | Futbol XOX | İlk mod | Yayında |
 | `duel` | Kart Düellosu | Kullanıcının istediği (yarışma programı biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
 | `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
-| `higher` | Hangisi Yüksek | Öneri | Sırada |
-| `chain` | Zincir | Öneri | Sırada |
+| `higher` | Hangisi Yüksek | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
+| `chain` | Zincir | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `rare` | En Az Bilinen | Öneri | Sırada |
 | `auction` | Açık Artırma | Öneri | Sırada |
 | `career` | Kariyer Yolu | Öneri | Sırada |
@@ -80,9 +80,24 @@ Uygulanan hâli (7 Ekim 2026):
 
 İki futbolcu ve bir ölçüt gösterilir (piyasa değeri, millî maç, gol). Sıradaki oyuncu hangisinin yüksek olduğunu söyler; doğruysa puan alır ve devam eder, yanlışsa sıra geçer. Belirli sayıda sorudan sonra puanı çok olan kazanır.
 
+Uygulanan hâli (7 Ekim 2026):
+
+- **Eller.** Her oyuncunun 3 eli var (toplam 6). Bir el, oyuncu bilemeyene ya da üst üste 5 doğruya ulaşana kadar sürer; böylece iki taraf da eşit sayıda el oynar ve tek bir oyuncu maçı baştan sona tutamaz.
+- **Sorular.** Kariyer golü, asist, maç, en yüksek piyasa değeri, millî maç, kim daha yaşlı, kim daha genç. İki futbolcu da o ölçütte değeri bilinen, bilinirliği zorluğa göre (55, 45, 35 ve üzeri) olan oyunculardan seçilir. Değerler arasında zorluğa göre fark aranır: oranla 1,5 / 1,25 / 1,1 kat; yaşta 5 / 3 / 1 yıl. Bir futbolcu aynı maçta iki kez çıkmaz.
+- **Süre.** Cevap 10 saniye; cevaptan sonra değerler 2,5 saniye açık kalır. Süre dolarsa yanlış sayılır.
+- **Bot.** Zorluğa göre %62, %75 ya da %88 olasılıkla doğru kartı seçer; 2–6 saniye düşünür.
+
 ### Zincir (`chain`)
 
 Bir futbolcuyla başlanır. Sıradaki oyuncu, bir öncekiyle aynı kulüpte oynamış bir futbolcu söyler. Söylenen ad tekrar kullanılamaz. Süresi dolan ya da yanlış söyleyen turu kaybeder; üç turu alan maçı kazanır.
+
+Uygulanan hâli (7 Ekim 2026):
+
+- **Başlangıç.** Her tur, tanınmış (bilinirliği 55 ve üzeri) ve veritabanında en az 3 kulübü olan bir futbolcuyla açılır; aynı maçta başlangıç futbolcusu tekrarlanmaz. Turu başlatan oyuncu her turda değişir.
+- **Ortak kulüp.** Veritabanındaki kulüpler Süper Lig ve Avrupa'nın beş büyük liginden; bu liglerin dışındaki bir kulüpte birlikte oynamak bağlantı sayılmaz. Ekranda bu yazıyor ve her bağlantının hangi kulüpten kurulduğu gösteriliyor (iki futbolcunun birden fazla ortak kulübü varsa önce yerli lig kulübü).
+- **Tekrar.** Bir ad aynı turda iki kez söylenemez; arama penceresi zincirdekileri zaten göstermiyor.
+- **Süre.** Zincir uzadıkça kısalır: 20 saniyeyle başlar, her iki halkada 2 saniye azalır, en az 8 saniye. Tur sonu 3 saniye gösterilir.
+- **Bot.** Ortak kulüplü tanınmış futbolculardan seçer. Zorluğa göre ve zincir uzadıkça artan bir olasılıkla pes eder; pes ederken süreyi doldurmak yerine yanlış bir ad söyler (insan oyuncu boşuna beklemesin diye).
 
 ### En Az Bilinen (`rare`)
 
@@ -145,7 +160,7 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 1. İstatistik aktarımı ve ortak oturum altyapısı. (Tamam)
 2. Kart Düellosu. (Tamam)
 3. Kadro Kur. (Tamam)
-4. Hangisi Yüksek, Zincir.
+4. Hangisi Yüksek, Zincir. (Tamam)
 5. En Az Bilinen, Açık Artırma.
 6. Kariyer Yolu, İlk 10.
 
