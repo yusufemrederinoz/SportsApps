@@ -31,7 +31,7 @@ function OnboardingScreen() {
 
   const header = (name: string) => (
     <MetalPlate finish={null} radius={Radius.medium} style={styles.headerPlate}>
-      <ThemedText style={styles.headerText}>{uppercase(name)}</ThemedText>
+      <ThemedText style={styles.headerText}>{name.toUpperCase()}</ThemedText>
     </MetalPlate>
   );
 

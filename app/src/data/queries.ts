@@ -43,9 +43,10 @@ function toFootballer(row: FootballerRow): FootballerSummary {
   return { ...row, hasPortrait: row.hasPortrait === 1 };
 }
 
-interface HeaderRow extends HeaderView {
+interface HeaderRow extends Omit<HeaderView, 'local'> {
   axis: 'row' | 'column';
   position: number;
+  local: number;
 }
 
 function isTriple<T>(items: T[]): items is [T, T, T] {
@@ -77,15 +78,23 @@ export async function pickGridId(
 export async function loadGrid(database: QueryRunner, gridId: number, language: string): Promise<GridView | null> {
   const headers = await database.getAllAsync<HeaderRow>(
     `SELECT h.axis, h.position, h.kind, h.reference_id AS referenceId, ${HEADER_NAME} AS name,
-            CASE h.kind WHEN 'country' THEN (SELECT code FROM countries WHERE id = h.reference_id) END AS countryCode
+            CASE h.kind WHEN 'country' THEN (SELECT code FROM countries WHERE id = h.reference_id) END AS countryCode,
+            CASE h.kind
+              WHEN 'country' THEN 1
+              ELSE EXISTS (
+                SELECT 1 FROM clubs c JOIN markets m ON m.home_league_code = c.league_code
+                WHERE c.id = h.reference_id AND m.language = ?
+              )
+            END AS local
      FROM grid_headers h WHERE h.grid_id = ? ORDER BY h.axis, h.position`,
-    [language, language, gridId],
+    [language, language, language, gridId],
   );
-  const toView = ({ kind, referenceId, name, countryCode }: HeaderRow): HeaderView => ({
+  const toView = ({ kind, referenceId, name, countryCode, local }: HeaderRow): HeaderView => ({
     kind,
     referenceId,
     name,
     countryCode,
+    local: local === 1,
   });
   const rows = headers.filter((header) => header.axis === 'row').map(toView);
   const columns = headers.filter((header) => header.axis === 'column').map(toView);

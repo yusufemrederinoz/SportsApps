@@ -8,7 +8,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, MinimumTouchSize, Motion, Spacing } from '@/constants/theme';
 import type { FootballerSummary, GridView, HeaderView } from '@/data/types';
-import { useUppercase } from '@/i18n/uppercase';
+import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
 
 import { Board } from './board';
 import { FeedbackStamp } from './feedback-stamp';
@@ -58,6 +58,7 @@ export function MatchView({
 }: MatchViewProps) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
+  const nameUppercase = useNameUppercase();
   const [selection, setSelection] = useState<{ turnNumber: number; position: CellPosition } | null>(null);
 
   useMatchEffects(session, secondsLeft, opponentSide);
@@ -68,8 +69,9 @@ export function MatchView({
   const urgent = !result && secondsLeft <= URGENT_SECONDS;
   const scores = { x: countCells(match, 'x'), o: countCells(match, 'o') };
   const resultTone = !result?.winner ? 'draw' : result.winner === opponentSide ? 'loss' : 'win';
+  const headerTitle = (header: HeaderView) => nameUppercase(header.name, header.local);
   const selectedTitle = selected
-    ? `${(gridView.rows[selected.row] as HeaderView).name} × ${(gridView.columns[selected.column] as HeaderView).name}`
+    ? `${headerTitle(gridView.rows[selected.row] as HeaderView)} × ${headerTitle(gridView.columns[selected.column] as HeaderView)}`
     : '';
 
   return (
@@ -133,7 +135,7 @@ export function MatchView({
 
       <View style={styles.status}>
         {feedback && !result ? (
-          <FeedbackStamp key={match.turnNumber} feedback={feedback} />
+          <FeedbackStamp key={match.turnNumber} feedback={feedback} homeCountryCode={marketCode.toUpperCase()} />
         ) : !result ? (
           <ThemedText type="subtitle" style={[styles.turn, { color: Finishes[match.turn].base }]}>
             {uppercase(turnLabel)}

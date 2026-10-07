@@ -18,6 +18,7 @@ export interface Feedback {
   kind: FeedbackKind;
   side: Side;
   footballerName: string | null;
+  footballerCountryCode: string | null;
 }
 
 export interface PlayedFootballer {
@@ -84,7 +85,7 @@ export function reduceSession(session: MatchSession, action: SessionAction): Mat
     return {
       ...session,
       match: skipTurn(match, side),
-      feedback: { kind: action.reason, side, footballerName: null },
+      feedback: { kind: action.reason, side, footballerName: null, footballerCountryCode: null },
       turnEndsAt,
     };
   }
@@ -97,7 +98,12 @@ export function reduceSession(session: MatchSession, action: SessionAction): Mat
       footballers: claimed
         ? { ...session.footballers, [action.footballer.id]: action.footballer }
         : session.footballers,
-      feedback: { kind: claimed ? 'correct' : outcome, side, footballerName: action.footballer.name },
+      feedback: {
+        kind: claimed ? 'correct' : outcome,
+        side,
+        footballerName: action.footballer.name,
+        footballerCountryCode: action.footballer.countryCode,
+      },
       lastClaim: claimed ? { index: cellIndex(action.position), side, turnNumber: match.turnNumber } : session.lastClaim,
       turnEndsAt,
     };

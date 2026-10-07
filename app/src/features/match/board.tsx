@@ -16,7 +16,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, Radius } from '@/constants/theme';
 import type { GridView, HeaderView } from '@/data/types';
 import { haptics } from '@/feedback/haptics';
-import { useUppercase } from '@/i18n/uppercase';
+import { useNameUppercase } from '@/i18n/uppercase';
 
 import { ClaimBurst } from './claim-burst';
 import { flagEmoji } from './flags';
@@ -38,7 +38,7 @@ interface BoardProps {
 }
 
 export function Board({ gridView, session, disabled, selected, onSelectCell }: BoardProps) {
-  const uppercase = useUppercase();
+  const nameUppercase = useNameUppercase();
   const [boardSize, setBoardSize] = useState(0);
   const pulse = useSharedValue(0);
   const shake = useSharedValue(0);
@@ -83,7 +83,7 @@ export function Board({ gridView, session, disabled, selected, onSelectCell }: B
         <ThemedText style={styles.flag}>{flagEmoji(header.countryCode)}</ThemedText>
       ) : null}
       <ThemedText style={styles.headerLabel} numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.65}>
-        {uppercase(header.name)}
+        {nameUppercase(header.name, header.local)}
       </ThemedText>
     </View>
   );

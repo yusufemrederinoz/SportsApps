@@ -46,7 +46,12 @@ describe('reduceSession', () => {
     expect(session.footballers).toEqual({
       7: { id: 7, name: 'Footballer 7', countryCode: 'TR', role: 'MF', hasPortrait: false },
     });
-    expect(session.feedback).toEqual({ kind: 'correct', side: 'x', footballerName: 'Footballer 7' });
+    expect(session.feedback).toEqual({
+      kind: 'correct',
+      side: 'x',
+      footballerName: 'Footballer 7',
+      footballerCountryCode: 'TR',
+    });
     expect(session.lastClaim).toEqual({ index: 0, side: 'x', turnNumber: 1 });
     expect(session.turnEndsAt).toBe(25_000);
     expect(session.match.turn).toBe('o');
@@ -81,7 +86,12 @@ describe('reduceSession', () => {
 
   it('passes the turn on a timeout', () => {
     const session = reduceSession(startSession(grid, 'x', 0), { type: 'skip', turnNumber: 1, reason: 'timeout', now: 20_000 });
-    expect(session.feedback).toEqual({ kind: 'timeout', side: 'x', footballerName: null });
+    expect(session.feedback).toEqual({
+      kind: 'timeout',
+      side: 'x',
+      footballerName: null,
+      footballerCountryCode: null,
+    });
     expect(session.match.turn).toBe('o');
     expect(session.turnEndsAt).toBe(40_000);
   });

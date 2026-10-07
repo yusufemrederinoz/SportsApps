@@ -60,7 +60,12 @@ describe('applyMove', () => {
     const session = applyMove(startSession(grid, 'x', 0), claimed(1, 'x', 0, 0, 7), lookup, 90_000);
     expect(session.match.cells[0]).toEqual({ side: 'x', footballerId: 7 });
     expect(session.footballers[7]?.name).toBe('Footballer 7');
-    expect(session.feedback).toEqual({ kind: 'correct', side: 'x', footballerName: 'Footballer 7' });
+    expect(session.feedback).toEqual({
+      kind: 'correct',
+      side: 'x',
+      footballerName: 'Footballer 7',
+      footballerCountryCode: 'TR',
+    });
     expect(session.match.turn).toBe('o');
     expect(session.turnEndsAt).toBe(90_000);
   });
@@ -75,7 +80,12 @@ describe('applyMove', () => {
 
   it('passes the turn on a timeout', () => {
     const session = applyMove(startSession(grid, 'x', 0), { kind: 'timeout', turnNumber: 1, side: 'x' }, lookup, 5_000);
-    expect(session.feedback).toEqual({ kind: 'timeout', side: 'x', footballerName: null });
+    expect(session.feedback).toEqual({
+      kind: 'timeout',
+      side: 'x',
+      footballerName: null,
+      footballerCountryCode: null,
+    });
     expect(session.match.turn).toBe('o');
     expect(session.match.consecutiveMisses).toBe(1);
   });

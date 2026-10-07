@@ -4,7 +4,7 @@ import Animated, { FadeOut, Keyframe } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, Motion, type ThemeColor } from '@/constants/theme';
-import { useUppercase } from '@/i18n/uppercase';
+import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
 
 import type { Feedback } from './session';
 
@@ -31,9 +31,10 @@ const SLAM = new Keyframe({
   100: { opacity: 1, transform: [{ scale: 1 }, { rotate: '-4deg' }] },
 }).duration(Motion.slow);
 
-export function FeedbackStamp({ feedback }: { feedback: Feedback }) {
+export function FeedbackStamp({ feedback, homeCountryCode }: { feedback: Feedback; homeCountryCode: string }) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
+  const nameUppercase = useNameUppercase();
   const color = Colors[STAMP_COLORS[feedback.kind]];
 
   return (
@@ -45,7 +46,7 @@ export function FeedbackStamp({ feedback }: { feedback: Feedback }) {
       <ThemedText style={[styles.stamp, { color, textShadowColor: color }]}>{uppercase(t(STAMP_KEYS[feedback.kind]))}</ThemedText>
       {feedback.footballerName ? (
         <ThemedText type="label" themeColor="textSecondary" numberOfLines={1}>
-          {uppercase(feedback.footballerName)}
+          {nameUppercase(feedback.footballerName, feedback.footballerCountryCode === homeCountryCode)}
         </ThemedText>
       ) : null}
     </Animated.View>

@@ -19,6 +19,7 @@ export interface HeaderView {
   referenceId: number;
   name: string;
   countryCode: string | null;
+  local: boolean;
 }
 
 export interface GridView {
