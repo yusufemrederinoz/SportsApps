@@ -216,6 +216,16 @@ describe('client message parsing', () => {
       matchId: 'm',
       action: { kind: 'name', footballerId: 4 },
     });
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"bid","amount":3}}')).toEqual({
+      type: 'act',
+      matchId: 'm',
+      action: { kind: 'bid', amount: 3 },
+    });
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"challenge"}}')).toEqual({
+      type: 'act',
+      matchId: 'm',
+      action: { kind: 'challenge' },
+    });
     expect(
       parseClientMessage('{"type":"answer","matchId":"m","turnNumber":3,"cell":{"row":1,"column":2},"footballerId":9}'),
     ).toEqual({ type: 'answer', matchId: 'm', turnNumber: 3, cell: { row: 1, column: 2 }, footballerId: 9 });

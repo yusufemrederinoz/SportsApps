@@ -22,6 +22,7 @@ import { createAccountService, type AuthenticatedSession } from '../accounts/ser
 import type { ServerConfig } from '../config';
 import type { Database } from '../database';
 import type { FootballLibrary } from '../football/library';
+import { DEFAULT_AUCTION_TIMING, createAuctionRoomFactory, type AuctionTiming } from '../play/auction-room';
 import { DEFAULT_BOT_TIMING, type BotTiming } from '../play/bot';
 import { DEFAULT_CHAIN_TIMING, createChainRoomFactory, type ChainTiming } from '../play/chain-room';
 import { DEFAULT_DRAFT_TIMING, createDraftRoomFactory, type DraftTiming } from '../play/draft-room';
@@ -56,6 +57,7 @@ export interface AppDependencies {
     higherTiming?: Partial<HigherTiming>;
     chainTiming?: Partial<ChainTiming>;
     rareTiming?: Partial<RareTiming>;
+    auctionTiming?: Partial<AuctionTiming>;
   };
   now?: () => number;
   logger?: boolean;
@@ -95,7 +97,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
 
   if (dependencies.football) {
     const { football } = dependencies;
-    const { botTiming, duelTiming, draftTiming, higherTiming, chainTiming, rareTiming, ...lobbyOptions } =
+    const { botTiming, duelTiming, draftTiming, higherTiming, chainTiming, rareTiming, auctionTiming, ...lobbyOptions } =
       dependencies.play ?? {};
     const lobby = createLobby({
       now,
@@ -109,6 +111,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
         higher: createHigherRoomFactory(football, { ...DEFAULT_HIGHER_TIMING, ...higherTiming }),
         chain: createChainRoomFactory(football, { ...DEFAULT_CHAIN_TIMING, ...chainTiming }),
         rare: createRareRoomFactory(football, { ...DEFAULT_RARE_TIMING, ...rareTiming }),
+        auction: createAuctionRoomFactory(football, { ...DEFAULT_AUCTION_TIMING, ...auctionTiming }),
       },
       hasMarket: football.hasMarket,
       history,

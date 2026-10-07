@@ -176,6 +176,11 @@ beforeEach(async () => {
         revealMilliseconds: 10,
         botAnswerMilliseconds: { minimum: 10, maximum: 10 },
       },
+      auctionTiming: {
+        revealMilliseconds: 10,
+        botBidMilliseconds: { minimum: 10, maximum: 10 },
+        botNameMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -482,6 +487,38 @@ describe.skipIf(!available)('play gateway', () => {
     expect(view.rounds).toHaveLength(5);
     expect(view.rounds.every((round) => round.answers[side].correct)).toBe(true);
     expect(view.result?.reason).toBe('score');
+    human.socket.close();
+  });
+
+  it('auctions answers of real grid cells against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 1, game: 'auction' });
+    const { session } = await human.next('session');
+    if (session.game !== 'auction') {
+      throw new Error('not an auction');
+    }
+    const { side } = session;
+    let view = session.view;
+    while (view.phase !== 'finished') {
+      if (view.criteria && view.phase === 'bidding' && view.turn === side) {
+        if (view.bidder === null) {
+          human.send({ type: 'act', matchId: session.matchId, action: { kind: 'bid', amount: 1 } });
+        } else {
+          human.send({ type: 'act', matchId: session.matchId, action: { kind: 'challenge' } });
+        }
+      } else if (view.criteria && view.phase === 'proving' && view.bidder === side) {
+        const { row, column } = view.criteria;
+        const answers = football.answersFor('tr', row, column, 0, 20).filter((id) => !view.named.includes(id));
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'name', footballerId: answers[0] } });
+      }
+      const message = await human.next('view');
+      if (message.game !== 'auction') {
+        throw new Error('not an auction');
+      }
+      view = message.view;
+    }
+    expect(view.result?.reason).toBe('score');
+    expect(Math.max(view.scores.x, view.scores.o)).toBe(view.roundsToWin);
     human.socket.close();
   });
 

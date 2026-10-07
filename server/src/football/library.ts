@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
 import {
+  answerCountStatement,
   chainCandidatesStatement,
   chainSeedsStatement,
   clubConceptsStatement,
@@ -57,6 +58,8 @@ export interface FootballLibrary {
   nearMisses(market: string, matching: Header, missing: Header, minimumFame: number, limit: number): number[];
   rareAnswers(market: string, row: Header, column: Header, minimumFame: number, limit: number): { id: number; fame: number }[];
   fameOf(market: string, footballerId: number): number;
+  answerCount(market: string, row: Header, column: Header, minimumFame: number): number;
+  answersFor(market: string, row: Header, column: Header, minimumFame: number, limit: number): number[];
   duelConcepts(market: string): readonly DuelConcept[];
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
   conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
@@ -168,6 +171,14 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     rareAnswers(market, row, column, minimumFame, limit) {
       return all<{ id: number; fame: number }>(rareAnswersStatement(market, row, column, minimumFame, limit));
+    },
+
+    answerCount(market, row, column, minimumFame) {
+      return first<{ total: number }>(answerCountStatement(market, row, column, minimumFame))?.total ?? 0;
+    },
+
+    answersFor(market, row, column, minimumFame, limit) {
+      return ids(knownAnswersStatement(market, row, column, minimumFame, limit));
     },
 
     fameOf(market, footballerId) {
