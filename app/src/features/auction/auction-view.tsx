@@ -11,6 +11,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing, type ThemeColor } from '@/constants/theme';
 import { shortName } from '@/features/draft/lineup-board';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { flagEmoji } from '@/features/match/flags';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
@@ -218,6 +219,8 @@ export function AuctionMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={view.round} available={(joker) => (joker === 'extra-time' ? proving && view.bidder === side : running)} />
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>

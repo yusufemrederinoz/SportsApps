@@ -1,4 +1,5 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
+import { EXTRA_TIME_SECONDS } from '@sportapps/protocol';
 import type {
   AuctionView,
   CareerView,
@@ -11,6 +12,9 @@ import type {
   TopTenView,
   GameId,
   GameView,
+  JokerId,
+  JokerTarget,
+  JokerUse,
   PlayErrorCode,
   PointsChange,
   ServerMessage,
@@ -99,7 +103,12 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const [sentTurn, setSentTurn] = useState<number | null>(null);
   const [acting, setActing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
+  const [jokerUses, setJokerUses] = useState<JokerUse[]>([]);
+  const [goals, setGoals] = useState<number | null>(null);
+  const [jokerPending, setJokerPending] = useState<JokerId | null>(null);
+  const [jokerError, setJokerError] = useState<PlayErrorCode | null>(null);
   const client = useRef<PlayClient | null>(null);
+  const jokerWaiting = useRef(false);
 
   useEffect(() => {
     if (!token || !apiUrl) {
@@ -195,6 +204,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             return;
           }
           matchId = snapshot.matchId;
+          setJokerUses([]);
           playing = snapshot.result === null;
           finished = snapshot.result !== null;
           setSetup({
@@ -212,6 +222,23 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
           setPhase('playing');
           return;
         }
+        case 'joker':
+          if (message.matchId !== matchId) {
+            return;
+          }
+          setJokerUses((current) => [...current, { side: message.side, joker: message.joker, reveal: message.reveal }]);
+          if (message.goals !== undefined) {
+            setGoals(message.goals);
+          }
+          if (!message.replay && message.reveal !== null) {
+            jokerWaiting.current = false;
+            setJokerPending(null);
+          }
+          if (!message.replay && message.joker === 'extra-time' && game === 'grid') {
+            const extra = (EXTRA_TIME_SECONDS.grid ?? 0) * 1000;
+            setSession((current) => current && { ...current, turnEndsAt: current.turnEndsAt + extra });
+          }
+          return;
         case 'session': {
           const snapshot = message.session;
           if (!market) {
@@ -223,6 +250,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             return;
           }
           matchId = snapshot.matchId;
+          setJokerUses([]);
           playing = snapshot.view.result === null;
           finished = snapshot.view.result !== null;
           setLive({
@@ -290,6 +318,11 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
           }
           return;
         case 'error':
+          if (jokerWaiting.current) {
+            jokerWaiting.current = false;
+            setJokerPending(null);
+            setJokerError(message.code);
+          }
           if (BLOCKING_ERRORS.includes(message.code)) {
             fail(message.code);
           } else {
@@ -396,7 +429,23 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     }
   };
 
+  const useJoker = (joker: JokerId, target: JokerTarget = {}) => {
+    const matchId = live?.matchId ?? setup?.matchId ?? null;
+    if (!matchId || jokerWaiting.current) {
+      return;
+    }
+    setJokerError(null);
+    if (client.current?.send({ type: 'joker', matchId, joker, target })) {
+      jokerWaiting.current = true;
+      setJokerPending(joker);
+    }
+  };
+
   const playAgain = () => {
+    setJokerUses([]);
+    setJokerPending(null);
+    setJokerError(null);
+    jokerWaiting.current = false;
     setSession(null);
     setSetup(null);
     setLive(null);
@@ -421,6 +470,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     opponentConnected,
     reconnecting,
     reward,
+    jokers: { uses: jokerUses, goals, pending: jokerPending, error: jokerError, use: useJoker },
     secondsLeft: session ? secondsLeft(session, now) : 0,
     liveSecondsLeft: live ? Math.max(0, Math.ceil((live.deadlineAt - now) / 1000)) : 0,
     canPlay,

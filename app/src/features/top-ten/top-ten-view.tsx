@@ -14,6 +14,7 @@ import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing, typ
 import { loadHeaderLabel } from '@/data/queries';
 import type { HeaderView } from '@/data/types';
 import { metricValueText } from '@/features/duel/labels';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
@@ -226,6 +227,8 @@ export function TopTenMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={view.round} available={(joker) => view.phase === 'playing' && (joker !== 'extra-life' || view.lives[side] > 0)} />
 
       <View style={styles.lives}>
         {SIDES.map((lifeSide) => (

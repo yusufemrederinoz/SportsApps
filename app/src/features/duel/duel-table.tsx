@@ -1,6 +1,6 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import type { DuelRoundView, DuelView } from '@sportapps/protocol';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, {
@@ -42,6 +42,7 @@ interface DuelTableProps {
   canAct: boolean;
   arenaSize: number;
   handCardSize: number;
+  jokers?: (selected: number | null) => ReactNode;
   onPlay: (footballerId: number) => void;
 }
 
@@ -87,7 +88,7 @@ function emphasisOf(round: DuelRoundView, side: Side): CardEmphasis {
   return round.winner === side ? 'winner' : 'dimmed';
 }
 
-export function DuelTable({ view, side, cards, canAct, arenaSize, handCardSize, onPlay }: DuelTableProps) {
+export function DuelTable({ view, side, cards, canAct, arenaSize, handCardSize, jokers, onPlay }: DuelTableProps) {
   const { t, i18n } = useTranslation();
   const uppercase = useUppercase();
   const [selection, setSelection] = useState<{ round: number; footballerId: number } | null>(null);
@@ -221,6 +222,8 @@ export function DuelTable({ view, side, cards, canAct, arenaSize, handCardSize, 
           />
         ))}
       </Animated.View>
+
+      {jokers ? jokers(selected) : null}
 
       <View style={styles.action}>
         {selected !== null ? <ActionButton label={t('duel.play')} onPress={() => onPlay(selected)} /> : null}

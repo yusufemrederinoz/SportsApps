@@ -1,5 +1,5 @@
 import { countCells, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -33,6 +33,7 @@ interface MatchViewProps {
   resultDetail: string;
   playAgainLabel: string;
   notice?: string | null;
+  searchFooter?: (cell: CellPosition) => ReactNode;
   onAnswer: (position: CellPosition, footballer: FootballerSummary) => void;
   onPlayAgain: () => void;
   onQuit: () => void;
@@ -52,6 +53,7 @@ export function MatchView({
   resultDetail,
   playAgainLabel,
   notice = null,
+  searchFooter,
   onAnswer,
   onPlayAgain,
   onQuit,
@@ -154,6 +156,7 @@ export function MatchView({
           market={marketCode}
           secondsLeft={secondsLeft}
           excludedIds={usedFootballerIds(match)}
+          footer={searchFooter ? searchFooter(selected) : undefined}
           onClose={() => setSelection(null)}
           onSelect={(footballer) => {
             setSelection(null);

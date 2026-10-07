@@ -1,7 +1,7 @@
 import { opponentOf, openPositions, type DraftSlot, type Side } from '@sportapps/game-core';
 import { DRAFT_PICK_SECONDS, type DraftAction } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -13,6 +13,8 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
 import { loadClubLabel } from '@/data/queries';
 import type { ClubLabel } from '@/data/types';
+import { JokerBar } from '@/features/jokers/joker-bar';
+import { JokerContext, ownReveals } from '@/features/jokers/joker-context';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
@@ -89,6 +91,10 @@ export function DraftMatchView({
 
   const { result } = view;
   const running = view.phase === 'playing';
+  const jokers = use(JokerContext);
+  const showAssists =
+    jokers !== null &&
+    ownReveals(jokers).some((entry) => entry.reveal?.kind === 'assists' && entry.reveal.round === view.round);
   const ownPicked = view.picked[side];
   const canPick = running && !ownPicked && canAct;
   const urgent = running && !ownPicked && secondsLeft <= URGENT_SECONDS;
@@ -175,6 +181,8 @@ export function DraftMatchView({
         />
       </Animated.View>
 
+      <JokerBar scope={view.round} available={() => running && !view.picked[side]} />
+
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
           <ThemedText type="label" themeColor="volt">
@@ -231,6 +239,7 @@ export function DraftMatchView({
             excludedIds: draftCardIds(view),
           }}
           emptyLabel={t('draft.searchEmpty')}
+          showAssists={showAssists}
           onSelect={(footballer) => {
             setSearching(null);
             onAct({ kind: 'pick', footballerId: footballer.id });

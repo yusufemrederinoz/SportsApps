@@ -12,6 +12,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MaxContentWidth, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import { loadConceptLabel } from '@/data/queries';
 import type { ConceptLabel } from '@/data/types';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
 import { TurnTimer } from '@/features/match/turn-timer';
@@ -219,6 +220,14 @@ export function DuelMatchView({
           canAct={canAct}
           arenaSize={arenaSize}
           handCardSize={handCardSize}
+          jokers={(selected) => (
+            <JokerBar
+              scope={view.rounds.length}
+              available={() => view.phase === 'playing' && view.played === null}
+              target={(joker) => (joker !== 'swap-card' ? {} : selected === null ? null : { footballerId: selected })}
+              metric={view.question?.metric ?? null}
+            />
+          )}
           onPlay={(footballerId) => onAct({ kind: 'play', footballerId })}
         />
       ) : view.hand ? (

@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
-import { searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
+import { loadAssists, searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
@@ -44,6 +44,7 @@ interface FootballerSearchProps {
   emptyLabel?: string;
   closeLabel?: string;
   footer?: ReactNode;
+  showAssists?: boolean;
   onSelect: (footballer: FootballerSummary) => void;
   onClose: () => void;
 }
@@ -57,6 +58,7 @@ export function FootballerSearch({
   emptyLabel,
   closeLabel,
   footer,
+  showAssists = false,
   onSelect,
   onClose,
 }: FootballerSearchProps) {
@@ -80,6 +82,26 @@ export function FootballerSearch({
   }, [database, market, filterKey, text]);
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
+  const resultKey = results.map((footballer) => footballer.id).join(',');
+  const [assists, setAssists] = useState<{ key: string; values: Record<number, number> }>({ key: '', values: {} });
+
+  useEffect(() => {
+    if (!showAssists || resultKey === '') {
+      return undefined;
+    }
+    let cancelled = false;
+    void loadAssists(database, resultKey.split(',').map(Number)).then((values) => {
+      if (!cancelled) {
+        setAssists({ key: resultKey, values });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [database, showAssists, resultKey]);
+
+  const assistsOf = (footballerId: number) =>
+    showAssists && assists.key === resultKey ? (assists.values[footballerId] ?? null) : null;
   const searched = found.text === text && text.trim().length >= 2;
   const urgent = secondsLeft <= URGENT_SECONDS;
 
@@ -136,9 +158,15 @@ export function FootballerSearch({
                 <ThemedText style={styles.resultName} numberOfLines={1}>
                   {item.name}
                 </ThemedText>
-                <ThemedText type="label" themeColor="textSecondary">
-                  {item.birthYear ?? ''}
-                </ThemedText>
+                {assistsOf(item.id) !== null ? (
+                  <ThemedText type="label" themeColor="volt">
+                    {uppercase(t('jokers.assistsValue', { value: assistsOf(item.id) }))}
+                  </ThemedText>
+                ) : (
+                  <ThemedText type="label" themeColor="textSecondary">
+                    {item.birthYear ?? ''}
+                  </ThemedText>
+                )}
               </Pressable>
             )}
           />

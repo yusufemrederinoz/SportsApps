@@ -14,6 +14,7 @@ import { Colors, Finishes, Fonts, MaxContentWidth, MinimumTouchSize, Motion, Rad
 import { loadHeaderLabel } from '@/data/queries';
 import type { HeaderView } from '@/data/types';
 import { EmptySlot } from '@/features/duel/card-back';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { flagEmoji } from '@/features/match/flags';
 import { FootballerCard } from '@/features/match/footballer-card';
 import { FootballerSearch } from '@/features/match/footballer-search';
@@ -277,6 +278,8 @@ export function RareMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={view.round} available={() => answering && !view.answered[side]} />
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>

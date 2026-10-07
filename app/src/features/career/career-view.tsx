@@ -11,6 +11,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing, type ThemeColor } from '@/constants/theme';
 import { useClubLabels } from '@/features/chain/chain-view';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { FootballerCard } from '@/features/match/footballer-card';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
@@ -199,6 +200,8 @@ export function CareerMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={view.round} available={() => view.phase === 'playing'} />
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>

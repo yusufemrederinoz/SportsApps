@@ -288,6 +288,18 @@ export async function loadFootballer(database: QueryRunner, footballerId: number
   return row ? toFootballer(row) : null;
 }
 
+export async function loadAssists(database: QueryRunner, footballerIds: readonly number[]): Promise<Record<number, number>> {
+  if (footballerIds.length === 0) {
+    return {};
+  }
+  const rows = await database.getAllAsync<{ id: number; assists: number }>(
+    `SELECT player_id AS id, assists FROM player_stats
+     WHERE assists IS NOT NULL AND player_id IN (${footballerIds.map(() => '?').join(', ')})`,
+    [...footballerIds],
+  );
+  return Object.fromEntries(rows.map((row) => [row.id, row.assists]));
+}
+
 export async function loadPortraitCredits(database: QueryRunner): Promise<PortraitCredit[]> {
   return database.getAllAsync<PortraitCredit>(
     `SELECT pp.player_id AS playerId, p.name, pp.author, pp.license, pp.source_url AS sourceUrl

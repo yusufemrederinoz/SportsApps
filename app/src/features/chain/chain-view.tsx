@@ -16,6 +16,7 @@ import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeC
 import { loadClubLabel } from '@/data/queries';
 import type { ClubLabel } from '@/data/types';
 import { shortName } from '@/features/draft/lineup-board';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { FootballerCard } from '@/features/match/footballer-card';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
@@ -258,6 +259,8 @@ export function ChainMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={`${view.round}-${view.chain.length}`} available={() => myTurn} />
 
       <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
         <ThemedText style={styles.rule}>{uppercase(t('chain.rule'))}</ThemedText>

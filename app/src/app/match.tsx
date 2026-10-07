@@ -19,6 +19,8 @@ import { HigherMatchView } from '@/features/higher/higher-view';
 import { RareMatchView } from '@/features/rare/rare-view';
 import { TopTenMatchView } from '@/features/top-ten/top-ten-view';
 import { parseGame } from '@/features/games';
+import { JokerBar } from '@/features/jokers/joker-bar';
+import { JokerContext, type MatchJokers } from '@/features/jokers/joker-context';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { useLeaveGuard } from '@/features/match/leave-guard';
 import { MatchRewardContext } from '@/features/match/match-reward';
@@ -26,6 +28,7 @@ import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
 import { BOT_SIDE, useMatch } from '@/features/match/use-match';
 import { useOnlineMatch, type OnlineEntry } from '@/features/match/use-online-match';
+import { useProgress } from '@/features/progress/use-progress';
 import { useUppercase } from '@/i18n/uppercase';
 
 function BotMatch({ difficulty }: { difficulty: Difficulty }) {
@@ -79,7 +82,23 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   const { t } = useTranslation();
   const router = useRouter();
   const online = useOnlineMatch(entry, difficulty, game);
+  const { progress } = useProgress();
   const { setup, session, live } = online;
+  const jokerSide = live?.side ?? setup?.side ?? null;
+  const jokerMarket = live?.market.code ?? setup?.market.code ?? null;
+  const jokers: MatchJokers | null =
+    jokerSide && jokerMarket
+      ? {
+          game: live?.game ?? 'grid',
+          side: jokerSide,
+          market: jokerMarket,
+          uses: online.jokers.uses,
+          goals: online.jokers.goals ?? progress?.goals ?? null,
+          pending: online.jokers.pending,
+          error: online.jokers.error,
+          use: online.jokers.use,
+        }
+      : null;
   const running =
     online.phase === 'playing' &&
     (live ? live.view.result === null : session !== null && session.match.result === null);
@@ -165,6 +184,13 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
         resultDetail={resultDetail}
         playAgainLabel={playAgainLabel}
         notice={notice}
+        searchFooter={(cell) => (
+          <JokerBar
+            scope={match.turnNumber}
+            available={() => match.turn === setup.side && result === null}
+            target={(joker) => (joker === 'hint' ? { cell: { row: cell.row, column: cell.column } } : {})}
+          />
+        )}
         onAnswer={online.answer}
         onPlayAgain={playAgain}
         onQuit={quit}
@@ -174,8 +200,10 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
 
   return (
     <MatchRewardContext value={online.reward}>
-      {content()}
-      {leaveDialog}
+      <JokerContext value={jokers}>
+        {content()}
+        {leaveDialog}
+      </JokerContext>
     </MatchRewardContext>
   );
 }

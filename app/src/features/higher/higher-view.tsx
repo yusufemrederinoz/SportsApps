@@ -10,6 +10,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MaxContentWidth, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
 import { METRIC_KEYS, metricValueText } from '@/features/duel/labels';
+import { JokerBar } from '@/features/jokers/joker-bar';
 import { FootballerCard, type CardEmphasis } from '@/features/match/footballer-card';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
@@ -206,6 +207,8 @@ export function HigherMatchView({
           }
         />
       </Animated.View>
+
+      <JokerBar scope={view.question?.cards.join('-') ?? 'reveal'} available={() => myTurn} metric={view.question?.metric ?? null} />
 
       <Animated.View key={shown ? shown.cards.join('-') : 'none'} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
