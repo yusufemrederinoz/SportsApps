@@ -474,6 +474,14 @@ Bulunan ve düzeltilen sorunlar:
 
 Geliştirme ortamına özgü bir gözlem: dosya değiştirince uygulama sıcak yenilenirken bazen ikinci bir bağlantı açıyor ve ekran "Başka bir cihazda oynuyorsun" hatasına düşüyor. Yayın sürümünde sıcak yenileme olmadığı için kullanıcıyı etkilemez; yine de bağlantının bir kez kurulmasını garanti etmek üzere izlenecek.
 
+### En Az Bilinen
+
+Kural motoru, sunucu odası, bot ve uygulama ekranı eklendi. Ekran: ölçüt levhası (bayraklı ve büyük harf kuralına uygun "CHELSEA FC × LIVERPOOL FC"), beş turun sonuç noktaları, gizli kalan kendi cevabın, açılışta iki cevap yan yana (doğru/yanlış ve bilinirlik çubuğu).
+
+Doğrulama: gerçek ızgaralarla sunucu testinde bota karşı tam maç (her turda en az bilinen doğru cevap); emülatörde bota karşı tam maç (Chelsea × Liverpool turunda Sturridge, bilinirlik 50, botun 73 bilinirlikli cevabına karşı turu aldı; sonuç ekranına kadar).
+
+Düzeltilen sorun: bot bilemediği turlarda hiç cevap vermiyor, insan oyuncu 30 saniye bekliyordu; artık akla yatkın yanlış bir cevap veriyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -536,3 +544,8 @@ Geliştirme ortamına özgü bir gözlem: dosya değiştirince uygulama sıcak y
 | `32b5af9` | 7 Ekim | Sunucuda Zincir odası ve botu |
 | `0051e46` | 7 Ekim | Yeni modlarda ilk sürenin selamlamada doğru gitmesi |
 | `b14068f` | 7 Ekim | Uygulamada Zincir ekranı |
+| `36b1d1f` | 7 Ekim | Belgeler: Hangisi Yüksek ve Zincir |
+| `5f80220` | 7 Ekim | En Az Bilinen kuralları (kural motoru) |
+| `ed7dba7` | 7 Ekim | En Az Bilinen mesajları ve ortak veri ifadeleri |
+| `79eb598` | 7 Ekim | Sunucuda En Az Bilinen odası ve botu |
+| `eeef981` | 7 Ekim | Uygulamada En Az Bilinen ekranı |

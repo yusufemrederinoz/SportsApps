@@ -22,7 +22,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
 | `higher` | Hangisi Yüksek | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `chain` | Zincir | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
-| `rare` | En Az Bilinen | Öneri | Sırada |
+| `rare` | En Az Bilinen | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `auction` | Açık Artırma | Öneri | Sırada |
 | `career` | Kariyer Yolu | Öneri | Sırada |
 | `top-ten` | İlk 10 | Öneri | Sırada |
@@ -103,6 +103,13 @@ Uygulanan hâli (7 Ekim 2026):
 
 Bir ölçüt çıkar ("Galatasaray'da oynamış Fransız"). İki oyuncu gizlice birer cevap yazar. Doğru cevaplardan bilinirlik puanı düşük olan turu alır; yanlış cevap turu kaybettirir. Beş tur oynanır.
 
+Uygulanan hâli (7 Ekim 2026):
+
+- **Ölçütler.** Seçilen zorluktaki hazır ızgaralardan biri çekilir; beş tur, o ızgaranın beş farklı hücresidir (her hücrenin en az 3 bilinen cevabı olduğu ızgara üreticisinde zaten garanti).
+- **Gizli cevap.** Her oyuncu turda bir kez cevap verir; rakip yalnızca cevap verilip verilmediğini görür. İki cevap gelince ya da 30 saniye dolunca cevaplar açılır (4,5 saniye).
+- **Puan.** İkisi de doğruysa bilinirlik puanı düşük olan turu alır (eşitse kimse almaz); yalnızca biri doğruysa o alır; ikisi de yanlışsa kimse almaz. Bilinirlik puanı olmayan doğru cevap 0 sayılır, yani en az bilinen odur.
+- **Bot.** Hücrenin bilinen cevaplarını bilinirliğe göre dizer; zorluğa göre listenin üst, orta ya da alt kısmından seçer. Zorluğa göre %30, %15 ya da %7 olasılıkla bilemez; bilemediğinde boş bırakmak yerine satıra uyan ama sütuna uymayan akla yatkın yanlış bir ad yazar (insan oyuncu süre dolana kadar beklemesin diye).
+
 ### Açık Artırma (`auction`)
 
 Bir ölçüt çıkar. Oyuncular sırayla "kaç tane sayarım" diye artırır. Pes eden, rakibine "say bakalım" demiş olur. Rakip söylediği sayı kadar doğru cevabı süre içinde sayarsa turu alır, sayamazsa kaybeder.
@@ -161,7 +168,7 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 2. Kart Düellosu. (Tamam)
 3. Kadro Kur. (Tamam)
 4. Hangisi Yüksek, Zincir. (Tamam)
-5. En Az Bilinen, Açık Artırma.
+5. En Az Bilinen (Tamam), Açık Artırma.
 6. Kariyer Yolu, İlk 10.
 
 Her mod için bitti sayılma ölçütü: kural testleri, sunucu testleri (bot ve süre dolması dahil), emülatörde baştan sona bir maç.
