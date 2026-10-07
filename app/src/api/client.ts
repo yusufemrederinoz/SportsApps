@@ -6,6 +6,7 @@ import {
   type AuthResponse,
   type IdentityProvider,
   type LoginRequest,
+  type MatchHistoryResponse,
   type RegisterRequest,
 } from '@sportapps/protocol';
 
@@ -74,6 +75,7 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     signInWithIdentity: (provider: IdentityProvider, identityToken: string) =>
       request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
+    matches: (token: string) => request<MatchHistoryResponse>('GET', '/matches', { token }),
   };
 }
 

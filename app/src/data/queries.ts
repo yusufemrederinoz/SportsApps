@@ -9,15 +9,7 @@ import {
 } from '@sportapps/football-data';
 import { nameTokens, type BotOption, type CellPosition, type Grid, type Header } from '@sportapps/game-core';
 
-import type {
-  Difficulty,
-  FootballerSummary,
-  GridView,
-  HeaderView,
-  Market,
-  QueryParameter,
-  QueryRunner,
-} from './types';
+import type { Difficulty, FootballerSummary, GridView, HeaderView, Market, QueryRunner } from './types';
 
 const FALLBACK_LANGUAGE = 'en';
 const MINIMUM_SEARCH_LENGTH = 2;

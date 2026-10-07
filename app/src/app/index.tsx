@@ -1,8 +1,7 @@
-import { DEFAULT_RULES } from '@sportapps/game-core';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
@@ -10,7 +9,7 @@ import { EntryGate } from '@/auth/entry-gate';
 import { ModeCard } from '@/components/mode-card';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
+import { AccentFinishes, Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import type { MatchMode } from '@/features/match/use-match';
@@ -24,99 +23,97 @@ function HomeScreen() {
   const { state: auth } = useAuth();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
-  const rules = [
-    t('home.ruleTurn', { seconds: DEFAULT_RULES.turnSeconds }),
-    t('home.ruleLine'),
-    t('home.ruleCells'),
-  ];
   const start = (mode: MatchMode) =>
     router.push({ pathname: '/match', params: { mode, difficulty: String(difficulty) } });
+  const startOnline = () =>
+    router.push({ pathname: '/match', params: { mode: 'online', entry: 'queue', difficulty: String(difficulty) } });
+  const openFriend = () => router.push({ pathname: '/friend', params: { difficulty: String(difficulty) } });
 
   return (
-    <Screen contentStyle={styles.content}>
-      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={`${t('home.account')}: ${accountLabel}`}
-          onPress={() => {
-            haptics.select();
-            router.push('/account');
-          }}
-          style={({ pressed }) => [styles.accountChip, pressed && styles.accountChipPressed]}>
-          <View style={[styles.accountDot, auth.status === 'signed-in' ? styles.accountOnline : styles.accountOffline]} />
-          <ThemedText type="label" numberOfLines={1} style={styles.accountName}>
-            {accountLabel}
-          </ThemedText>
-          <ThemedText type="label" themeColor="volt">
-            ›
-          </ThemedText>
-        </Pressable>
-      </Animated.View>
-
-      <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
-        <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
-          <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
-        </Animated.View>
-        <Animated.View entering={FadeInLeft.duration(Motion.slow).delay(110)} style={styles.accentRow}>
-          <ThemedText type="display" style={styles.accent}>
-            {uppercase(t('home.titleAccent'))}
-          </ThemedText>
-          <View style={styles.slash} />
-        </Animated.View>
-        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
-          <ThemedText themeColor="textSecondary">{t('home.subtitle')}</ThemedText>
-        </Animated.View>
-      </View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(300)} style={styles.section}>
-        <ThemedText type="label" themeColor="textSecondary">
-          {uppercase(t('home.difficulty'))}
-        </ThemedText>
-        <View style={styles.difficultyRow} accessibilityRole="radiogroup">
-          {DIFFICULTIES.map((option) => {
-            const selected = option === difficulty;
-            return (
-              <Pressable
-                key={option}
-                accessibilityRole="radio"
-                accessibilityState={{ selected }}
-                onPress={() => {
-                  haptics.select();
-                  setDifficulty(option);
-                }}
-                style={[styles.difficultyOption, selected && styles.difficultySelected]}>
-                <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
-                  {uppercase(t(DIFFICULTY_LABELS[option]))}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(380)} style={styles.section}>
-        <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={() => start('bot')} />
-        <ModeCard
-          title={t('home.modeLocalTitle')}
-          hint={t('home.modeLocalHint')}
-          finish={Finishes.o}
-          onPress={() => start('local')}
-        />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(460)} style={styles.rules}>
-        <ThemedText type="label" themeColor="volt">
-          {uppercase(t('home.rulesTitle'))}
-        </ThemedText>
-        {rules.map((rule, index) => (
-          <View key={rule} style={styles.rule}>
-            <ThemedText style={styles.ruleNumber}>{`0${index + 1}`}</ThemedText>
-            <ThemedText type="small" themeColor="textSecondary" style={styles.ruleText}>
-              {rule}
+    <Screen contentStyle={styles.screen}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${t('home.account')}: ${accountLabel}`}
+            onPress={() => {
+              haptics.select();
+              router.push('/account');
+            }}
+            style={({ pressed }) => [styles.accountChip, pressed && styles.accountChipPressed]}>
+            <View style={[styles.accountDot, auth.status === 'signed-in' ? styles.accountOnline : styles.accountOffline]} />
+            <ThemedText type="label" numberOfLines={1} style={styles.accountName}>
+              {accountLabel}
             </ThemedText>
+            <ThemedText type="label" themeColor="volt">
+              ›
+            </ThemedText>
+          </Pressable>
+        </Animated.View>
+
+        <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
+          <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
+            <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
+          </Animated.View>
+          <Animated.View entering={FadeInLeft.duration(Motion.slow).delay(110)} style={styles.accentRow}>
+            <ThemedText type="display" style={styles.accent}>
+              {uppercase(t('home.titleAccent'))}
+            </ThemedText>
+            <View style={styles.slash} />
+          </Animated.View>
+          <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
+            <ThemedText themeColor="textSecondary">{t('home.subtitle')}</ThemedText>
+          </Animated.View>
+        </View>
+
+        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(300)} style={styles.section}>
+          <ThemedText type="label" themeColor="textSecondary">
+            {uppercase(t('home.difficulty'))}
+          </ThemedText>
+          <View style={styles.difficultyRow} accessibilityRole="radiogroup">
+            {DIFFICULTIES.map((option) => {
+              const selected = option === difficulty;
+              return (
+                <Pressable
+                  key={option}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  onPress={() => {
+                    haptics.select();
+                    setDifficulty(option);
+                  }}
+                  style={[styles.difficultyOption, selected && styles.difficultySelected]}>
+                  <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
+                    {uppercase(t(DIFFICULTY_LABELS[option]))}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
           </View>
-        ))}
-      </Animated.View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(380)} style={styles.section}>
+          <ModeCard
+            title={t('home.modeOnlineTitle')}
+            hint={t('home.modeOnlineHint')}
+            finish={AccentFinishes.volt}
+            onPress={startOnline}
+          />
+          <ModeCard
+            title={t('home.modeFriendTitle')}
+            hint={t('home.modeFriendHint')}
+            finish={AccentFinishes.steel}
+            onPress={openFriend}
+          />
+          <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={() => start('bot')} />
+          <ModeCard
+            title={t('home.modeLocalTitle')}
+            hint={t('home.modeLocalHint')}
+            finish={Finishes.o}
+            onPress={() => start('local')}
+          />
+        </Animated.View>
+      </ScrollView>
     </Screen>
   );
 }
@@ -130,9 +127,14 @@ export default function HomeRoute() {
 }
 
 const styles = StyleSheet.create({
-  content: {
-    gap: Spacing.four,
+  screen: {
     paddingHorizontal: Spacing.four,
+    paddingBottom: 0,
+  },
+  content: {
+    flexGrow: 1,
+    gap: Spacing.four,
+    paddingBottom: Spacing.four,
   },
   accountRow: {
     alignItems: 'flex-end',
@@ -221,26 +223,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 20,
     letterSpacing: 1,
-  },
-  rules: {
-    gap: Spacing.two,
-    paddingTop: Spacing.three,
-    borderTopWidth: 1,
-    borderTopColor: Colors.stroke,
-  },
-  rule: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
-  ruleNumber: {
-    fontFamily: Fonts.display,
-    fontSize: 22,
-    lineHeight: 24,
-    color: Colors.volt,
-    width: 28,
-  },
-  ruleText: {
-    flex: 1,
   },
 });

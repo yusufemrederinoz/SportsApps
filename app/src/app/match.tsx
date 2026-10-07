@@ -1,39 +1,26 @@
-import { countCells, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
+import { normalizeRoomCode } from '@sportapps/protocol';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { StyleSheet } from 'react-native';
 
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Finishes, MinimumTouchSize, Motion, Spacing } from '@/constants/theme';
-import type { HeaderView } from '@/data/types';
-import { Board } from '@/features/match/board';
+import { Spacing } from '@/constants/theme';
+import type { Difficulty } from '@/data/types';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
-import { FeedbackStamp } from '@/features/match/feedback-stamp';
-import { FootballerSearch } from '@/features/match/footballer-search';
-import { ResultOverlay } from '@/features/match/result-overlay';
-import { Scoreboard } from '@/features/match/scoreboard';
-import { TurnTimer } from '@/features/match/turn-timer';
+import { MatchView } from '@/features/match/match-view';
+import { OnlineLobby } from '@/features/match/online-lobby';
 import { BOT_SIDE, useMatch, type MatchMode } from '@/features/match/use-match';
-import { URGENT_SECONDS, useMatchEffects } from '@/features/match/use-match-effects';
+import { useOnlineMatch, type OnlineEntry } from '@/features/match/use-online-match';
 import { useUppercase } from '@/i18n/uppercase';
 
-function MatchScreen() {
+function LocalMatch({ mode, difficulty }: { mode: MatchMode; difficulty: Difficulty }) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
-  const params = useLocalSearchParams<{ mode?: string; difficulty?: string }>();
-  const mode: MatchMode = params.mode === 'bot' ? 'bot' : 'local';
-  const difficulty = parseDifficulty(params.difficulty);
   const { unavailable, setup, session, secondsLeft, canPlay, answer, restart } = useMatch(mode, difficulty);
-  const [selection, setSelection] = useState<{ turnNumber: number; position: CellPosition } | null>(null);
-  const opponentSide = mode === 'bot' ? BOT_SIDE : null;
-
-  useMatchEffects(session, secondsLeft, opponentSide);
 
   if (unavailable || !setup || !session) {
     return (
@@ -46,164 +33,120 @@ function MatchScreen() {
     );
   }
 
-  const { match, feedback } = session;
-  const { gridView, market } = setup;
+  const { match } = session;
   const { result } = match;
-  const selected = selection && selection.turnNumber === match.turnNumber && canPlay ? selection.position : null;
-  const urgent = !result && secondsLeft <= URGENT_SECONDS;
-  const scores = { x: countCells(match, 'x'), o: countCells(match, 'o') };
-
-  const sideName = (side: Side) => {
-    if (mode === 'bot') {
-      return side === BOT_SIDE ? t('match.bot') : t('match.you');
-    }
-    return side === 'x' ? t('match.sideX') : t('match.sideO');
-  };
-
-  const resultTitle = () => {
-    if (!result?.winner) {
-      return t('match.draw');
-    }
-    if (mode === 'bot') {
-      return result.winner === BOT_SIDE ? t('match.youLose') : t('match.youWin');
-    }
-    return t('match.winner', { name: sideName(result.winner) });
-  };
-
-  const resultTone = !result?.winner ? 'draw' : result.winner === opponentSide ? 'loss' : 'win';
-  const selectedTitle = selected
-    ? `${(gridView.rows[selected.row] as HeaderView).name} × ${(gridView.columns[selected.column] as HeaderView).name}`
-    : '';
+  const names =
+    mode === 'bot'
+      ? { x: BOT_SIDE === 'x' ? t('match.bot') : t('match.you'), o: BOT_SIDE === 'o' ? t('match.bot') : t('match.you') }
+      : { x: t('match.sideX'), o: t('match.sideO') };
+  const resultTitle = !result?.winner
+    ? t('match.draw')
+    : mode === 'bot'
+      ? t(result.winner === BOT_SIDE ? 'match.youLose' : 'match.youWin')
+      : t('match.winner', { name: names[result.winner] });
 
   return (
-    <Screen
-      contentStyle={styles.content}
-      overlay={
-        result ? (
-          <ResultOverlay
-            title={resultTitle()}
-            detail={result.reason === 'line' ? t('match.byLine') : t('match.byCells')}
-            score={`${scores.x} – ${scores.o}`}
-            tone={resultTone}
-            playAgainLabel={t('match.playAgain')}
-            homeLabel={t('match.home')}
-            onPlayAgain={restart}
-            onHome={() => router.back()}
-          />
-        ) : null
-      }>
-      <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.topBar}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.quit} hitSlop={Spacing.two}>
-          <ThemedText type="label" themeColor="textSecondary">
-            {`‹ ${uppercase(t('match.quit'))}`}
-          </ThemedText>
-        </Pressable>
-        <View style={styles.difficultyTag}>
-          <ThemedText type="label" themeColor="onAccent">
-            {uppercase(t(DIFFICULTY_LABELS[difficulty]))}
-          </ThemedText>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
-        <Scoreboard
-          names={{ x: sideName('x'), o: sideName('o') }}
-          scores={scores}
-          activeSide={result ? null : match.turn}
-          center={
-            <TurnTimer
-              turnEndsAt={session.turnEndsAt}
-              totalSeconds={match.rules.turnSeconds}
-              secondsLeft={result ? 0 : secondsLeft}
-              color={urgent ? Colors.negative : result ? Colors.strokeBright : Finishes[match.turn].base}
-              running={!result}
-              urgent={urgent}
-              accessibilityLabel={t('match.secondsLeft', { seconds: secondsLeft })}
-            />
-          }
-        />
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow).delay(120)} style={styles.stretch}>
-        <Board
-          gridView={gridView}
-          session={session}
-          disabled={!canPlay}
-          selected={selected}
-          onSelectCell={(position) => setSelection({ turnNumber: match.turnNumber, position })}
-        />
-      </Animated.View>
-
-      <View style={styles.status}>
-        {feedback && !result ? (
-          <FeedbackStamp key={match.turnNumber} feedback={feedback} />
-        ) : !result ? (
-          <ThemedText type="subtitle" style={{ color: Finishes[match.turn].base }}>
-            {uppercase(t('match.turn', { name: sideName(match.turn) }))}
-          </ThemedText>
-        ) : null}
-      </View>
-
-      {selected ? (
-        <FootballerSearch
-          title={selectedTitle}
-          market={market.code}
-          secondsLeft={secondsLeft}
-          excludedIds={usedFootballerIds(match)}
-          onClose={() => setSelection(null)}
-          onSelect={(footballer) => {
-            setSelection(null);
-            void answer(selected, footballer);
-          }}
-        />
-      ) : null}
-    </Screen>
+    <MatchView
+      gridView={setup.gridView}
+      marketCode={setup.market.code}
+      session={session}
+      secondsLeft={secondsLeft}
+      canPlay={canPlay}
+      names={names}
+      opponentSide={mode === 'bot' ? BOT_SIDE : null}
+      tag={t(DIFFICULTY_LABELS[difficulty])}
+      turnLabel={t('match.turn', { name: names[match.turn] })}
+      resultTitle={resultTitle}
+      resultDetail={t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells')}
+      playAgainLabel={t('match.playAgain')}
+      onAnswer={(position, footballer) => void answer(position, footballer)}
+      onPlayAgain={restart}
+      onQuit={() => router.back()}
+    />
   );
 }
 
+function OnlineMatch({ entry, difficulty }: { entry: OnlineEntry; difficulty: Difficulty }) {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const online = useOnlineMatch(entry, difficulty);
+  const { setup, session } = online;
+
+  if (online.phase !== 'playing' || !setup || !session) {
+    return (
+      <OnlineLobby
+        phase={online.phase === 'playing' ? 'connecting' : online.phase}
+        failure={online.failure}
+        roomCode={online.roomCode}
+        onLeave={() => router.back()}
+      />
+    );
+  }
+
+  const { match } = session;
+  const { result } = match;
+  const rival = setup.side === 'x' ? 'o' : 'x';
+  const names = { [setup.side]: t('match.you'), [rival]: setup.usernames[rival] } as Record<'x' | 'o', string>;
+  const won = result?.winner === setup.side;
+  const resultTitle = !result?.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose');
+  const resultDetail =
+    result?.reason === 'forfeit'
+      ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
+      : t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells');
+  const notice = online.reconnecting
+    ? t('online.reconnecting')
+    : online.opponentConnected
+      ? null
+      : t('online.opponentAway');
+
+  return (
+    <MatchView
+      gridView={setup.gridView}
+      marketCode={setup.market.code}
+      session={session}
+      secondsLeft={online.secondsLeft}
+      canPlay={online.canPlay}
+      names={names}
+      opponentSide={rival}
+      tag={t(DIFFICULTY_LABELS[setup.difficulty])}
+      turnLabel={match.turn === setup.side ? t('match.turnYours') : t('match.turn', { name: names[rival] })}
+      resultTitle={resultTitle}
+      resultDetail={resultDetail}
+      playAgainLabel={t(entry.kind === 'queue' ? 'match.newOpponent' : 'match.playAgain')}
+      notice={notice}
+      onAnswer={online.answer}
+      onPlayAgain={entry.kind === 'queue' ? online.playAgain : () => router.replace('/friend')}
+      onQuit={() => router.back()}
+    />
+  );
+}
+
+function onlineEntry(entry: string | undefined, code: string | undefined): OnlineEntry {
+  if (entry === 'host') {
+    return { kind: 'host' };
+  }
+  return entry === 'join' ? { kind: 'join', code: normalizeRoomCode(code ?? '') } : { kind: 'queue' };
+}
+
 export default function MatchRoute() {
+  const params = useLocalSearchParams<{ mode?: string; difficulty?: string; entry?: string; code?: string }>();
+  const difficulty = parseDifficulty(params.difficulty);
+
   return (
     <EntryGate allow="app">
-      <MatchScreen />
+      {params.mode === 'online' ? (
+        <OnlineMatch entry={onlineEntry(params.entry, params.code)} difficulty={difficulty} />
+      ) : (
+        <LocalMatch mode={params.mode === 'bot' ? 'bot' : 'local'} difficulty={difficulty} />
+      )}
     </EntryGate>
   );
 }
 
 const styles = StyleSheet.create({
-  content: {
-    alignItems: 'center',
-    gap: Spacing.three,
-  },
   centeredContent: {
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.three,
-  },
-  stretch: {
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  topBar: {
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  quit: {
-    minHeight: MinimumTouchSize,
-    justifyContent: 'center',
-  },
-  difficultyTag: {
-    backgroundColor: Colors.volt,
-    borderRadius: 4,
-    paddingHorizontal: Spacing.two,
-    paddingVertical: Spacing.half,
-  },
-  status: {
-    flex: 1,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 80,
   },
 });

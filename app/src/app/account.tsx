@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
@@ -11,6 +11,7 @@ import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
+import { MatchHistory } from '@/features/account/match-history';
 import { useUppercase } from '@/i18n/uppercase';
 
 function AccountScreen() {
@@ -45,47 +46,51 @@ function AccountScreen() {
   );
 
   return (
-    <Screen contentStyle={styles.content}>
-      <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.back} hitSlop={Spacing.two}>
-        <ThemedText type="label" themeColor="textSecondary">
-          {`‹ ${uppercase(t('account.back'))}`}
-        </ThemedText>
-      </Pressable>
-      <ThemedText type="title" accessibilityRole="header">
-        {uppercase(t('account.title'))}
-      </ThemedText>
-
-      {account ? (
-        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.section}>
-          <MetalPlate finish={account.isGuest ? null : Finishes.x} cut="right" cutSize={22} radius={14} style={styles.identity}>
-            <View style={styles.identityContent}>
-              <ThemedText
-                style={[styles.identityName, { color: account.isGuest ? Colors.text : Finishes.x.ink }]}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.6}>
-                {account.username}
-              </ThemedText>
-              <ThemedText type="label" style={{ color: account.isGuest ? Colors.volt : Finishes.x.ink }}>
-                {uppercase(t(account.isGuest ? 'account.guestBadge' : 'account.memberBadge'))}
-              </ThemedText>
-            </View>
-          </MetalPlate>
-          <View style={styles.details}>
-            {detail(t('account.username'), account.username)}
-            {account.email ? detail(t('account.email'), account.email) : null}
-          </View>
-          {account.isGuest ? <ThemedText themeColor="textSecondary">{t('account.guestNote')}</ThemedText> : null}
-        </Animated.View>
-      ) : (
-        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.section}>
-          <ThemedText type="subtitle" themeColor="negative">
-            {uppercase(t('account.offline'))}
+    <Screen contentStyle={styles.screen}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.back} hitSlop={Spacing.two}>
+          <ThemedText type="label" themeColor="textSecondary">
+            {`‹ ${uppercase(t('account.back'))}`}
           </ThemedText>
-          <ThemedText themeColor="textSecondary">{t('account.offlineHint')}</ThemedText>
-          <ActionButton label={t('account.retry')} onPress={() => void run(retry)} />
-        </Animated.View>
-      )}
+        </Pressable>
+        <ThemedText type="title" accessibilityRole="header">
+          {uppercase(t('account.title'))}
+        </ThemedText>
+
+        {account ? (
+          <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.section}>
+            <MetalPlate finish={account.isGuest ? null : Finishes.x} cut="right" cutSize={22} radius={14} style={styles.identity}>
+              <View style={styles.identityContent}>
+                <ThemedText
+                  style={[styles.identityName, { color: account.isGuest ? Colors.text : Finishes.x.ink }]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                  minimumFontScale={0.6}>
+                  {account.username}
+                </ThemedText>
+                <ThemedText type="label" style={{ color: account.isGuest ? Colors.volt : Finishes.x.ink }}>
+                  {uppercase(t(account.isGuest ? 'account.guestBadge' : 'account.memberBadge'))}
+                </ThemedText>
+              </View>
+            </MetalPlate>
+            <View style={styles.details}>
+              {detail(t('account.username'), account.username)}
+              {account.email ? detail(t('account.email'), account.email) : null}
+            </View>
+            {account.isGuest ? <ThemedText themeColor="textSecondary">{t('account.guestNote')}</ThemedText> : null}
+            {state.status === 'signed-in' ? <MatchHistory token={state.token} /> : null}
+          </Animated.View>
+        ) : (
+          <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.section}>
+            <ThemedText type="subtitle" themeColor="negative">
+              {uppercase(t('account.offline'))}
+            </ThemedText>
+            <ThemedText themeColor="textSecondary">{t('account.offlineHint')}</ThemedText>
+            <ActionButton label={t('account.retry')} onPress={() => void run(retry)} />
+          </Animated.View>
+        )}
+
+      </ScrollView>
 
       <View style={styles.footer}>
         <ActionButton label={t('account.logout')} onPress={() => void run(leave)} variant="secondary" />
@@ -103,9 +108,16 @@ export default function AccountRoute() {
 }
 
 const styles = StyleSheet.create({
-  content: {
+  screen: {
     gap: Spacing.three,
     paddingHorizontal: Spacing.four,
+  },
+  scroll: {
+    flex: 1,
+  },
+  content: {
+    gap: Spacing.three,
+    paddingBottom: Spacing.three,
   },
   back: {
     minHeight: MinimumTouchSize,
@@ -148,7 +160,6 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   footer: {
-    flex: 1,
     justifyContent: 'flex-end',
   },
 });

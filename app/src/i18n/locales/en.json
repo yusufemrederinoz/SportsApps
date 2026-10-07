@@ -44,10 +44,10 @@
     "modeBotHint": "Play alone against the bot.",
     "modeLocalTitle": "Two players",
     "modeLocalHint": "Share one phone and take turns.",
-    "rulesTitle": "How it works",
-    "ruleTurn": "You have {{seconds}} seconds for each move.",
-    "ruleLine": "Three cells in a line win the game.",
-    "ruleCells": "If nobody completes a line, the side with more cells wins."
+    "modeOnlineTitle": "Online match",
+    "modeOnlineHint": "Play a real opponent.",
+    "modeFriendTitle": "Play a friend",
+    "modeFriendHint": "Open a private room with a code."
   },
   "difficulty": {
     "easy": "Easy",
@@ -82,7 +82,11 @@
     "byCells": "More cells",
     "playAgain": "Play again",
     "home": "Home",
-    "quit": "Quit"
+    "quit": "Quit",
+    "turnYours": "Your turn",
+    "byForfeitWin": "Your opponent left the match",
+    "byForfeitLoss": "You left the match",
+    "newOpponent": "New opponent"
   },
   "search": {
     "placeholder": "Type a footballer's name",
@@ -102,7 +106,12 @@
     "username": "Username",
     "email": "Email",
     "password": "Password",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "historyTitle": "Recent online matches",
+    "historyEmpty": "No online matches yet.",
+    "historyWin": "Win",
+    "historyLoss": "Loss",
+    "historyDraw": "Draw"
   },
   "errors": {
     "network": "The server could not be reached. Check your connection.",
@@ -120,5 +129,33 @@
     "invalidIdentityToken": "Sign-in could not be verified. Try again.",
     "rateLimited": "Too many attempts. Wait a minute and try again.",
     "internal": "Something went wrong. Try again."
+  },
+  "online": {
+    "connecting": "Connecting",
+    "searching": "Finding an opponent",
+    "searchingHint": "This usually takes a few seconds.",
+    "cancel": "Cancel",
+    "roomTitle": "Room code",
+    "roomHint": "Your friend enters this code to join.",
+    "opponentAway": "Your opponent lost connection. Waiting…",
+    "reconnecting": "Reconnecting…",
+    "failedTitle": "No match",
+    "failureOffline": "The server could not be reached.",
+    "failureSignedOut": "Online play needs a connection to your account. Try again when you are online.",
+    "failureOutdated": "Update the app to play online.",
+    "failureReplaced": "You are playing on another device.",
+    "failureRoomNotFound": "There is no room with this code.",
+    "failureRoomClosed": "The room was closed.",
+    "failureGeneric": "Online play is not available right now."
+  },
+  "friend": {
+    "title": "Play a friend",
+    "createTitle": "Create a room",
+    "createHint": "You get a code to share with your friend.",
+    "create": "Create room",
+    "joinTitle": "Join a room",
+    "codeLabel": "Room code",
+    "codeHint": "Five characters, from your friend.",
+    "join": "Join"
   }
 }

@@ -44,10 +44,10 @@
     "modeBotHint": "Tek başına, bota karşı oyna.",
     "modeLocalTitle": "İki kişi",
     "modeLocalHint": "Aynı telefonda sırayla oynayın.",
-    "rulesTitle": "Nasıl oynanır",
-    "ruleTurn": "Her hamle için {{seconds}} saniyen var.",
-    "ruleLine": "Aynı hizada üç hücreyi alan oyunu kazanır.",
-    "ruleCells": "Kimse üçlü yapamazsa daha çok hücre alan kazanır."
+    "modeOnlineTitle": "ONLINE maç",
+    "modeOnlineHint": "Gerçek bir rakiple oyna.",
+    "modeFriendTitle": "Arkadaşınla oyna",
+    "modeFriendHint": "Kodla özel oda aç."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -82,7 +82,11 @@
     "byCells": "Hücre üstünlüğü",
     "playAgain": "Tekrar oyna",
     "home": "Ana sayfa",
-    "quit": "Çık"
+    "quit": "Çık",
+    "turnYours": "Sıra sende",
+    "byForfeitWin": "Rakibin maçtan ayrıldı",
+    "byForfeitLoss": "Maçtan ayrıldın",
+    "newOpponent": "Yeni rakip"
   },
   "search": {
     "placeholder": "Futbolcu adı yaz",
@@ -102,7 +106,12 @@
     "username": "Kullanıcı adı",
     "email": "E-posta",
     "password": "Şifre",
-    "logout": "Çıkış yap"
+    "logout": "Çıkış yap",
+    "historyTitle": "Son ONLINE maçlar",
+    "historyEmpty": "Henüz online maç yok.",
+    "historyWin": "Galibiyet",
+    "historyLoss": "Mağlubiyet",
+    "historyDraw": "Beraberlik"
   },
   "errors": {
     "network": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",
@@ -120,5 +129,33 @@
     "invalidIdentityToken": "Giriş doğrulanamadı. Tekrar dene.",
     "rateLimited": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar dene.",
     "internal": "Bir şeyler ters gitti. Tekrar dene."
+  },
+  "online": {
+    "connecting": "Bağlanıyor",
+    "searching": "Rakip aranıyor",
+    "searchingHint": "Genellikle birkaç saniye sürer.",
+    "cancel": "Vazgeç",
+    "roomTitle": "Oda kodu",
+    "roomHint": "Arkadaşın katılmak için bu kodu girer.",
+    "opponentAway": "Rakibinin bağlantısı koptu. Bekleniyor…",
+    "reconnecting": "Yeniden bağlanılıyor…",
+    "failedTitle": "Maç kurulamadı",
+    "failureOffline": "Sunucuya ulaşılamadı.",
+    "failureSignedOut": "Online oyun için hesabına bağlanmak gerekiyor. Çevrimiçi olduğunda tekrar dene.",
+    "failureOutdated": "Online oynamak için uygulamayı güncelle.",
+    "failureReplaced": "Başka bir cihazda oynuyorsun.",
+    "failureRoomNotFound": "Bu kodla bir oda yok.",
+    "failureRoomClosed": "Oda kapandı.",
+    "failureGeneric": "Online oyun şu an kullanılamıyor."
+  },
+  "friend": {
+    "title": "Arkadaşınla oyna",
+    "createTitle": "Oda kur",
+    "createHint": "Arkadaşınla paylaşacağın bir kod alırsın.",
+    "create": "Oda kur",
+    "joinTitle": "Odaya katıl",
+    "codeLabel": "Oda kodu",
+    "codeHint": "Arkadaşından aldığın beş karakter.",
+    "join": "Katıl"
   }
 }

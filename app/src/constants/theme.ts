@@ -34,6 +34,11 @@ export const Finishes: Readonly<Record<Side, Finish>> = {
   o: { light: '#E3EEFF', base: '#5B9BFF', deep: '#1D3FAF', ink: '#06153F' },
 };
 
+export const AccentFinishes = {
+  volt: { light: '#F4FFCF', base: '#C8FF2E', deep: '#6FA500', ink: '#162200' },
+  steel: { light: '#F4F7FB', base: '#B4C0CF', deep: '#586576', ink: '#0E141B' },
+} as const satisfies Record<string, Finish>;
+
 export const Fonts = {
   display: 'BarlowCondensed_800ExtraBold_Italic',
   heading: 'BarlowCondensed_700Bold',
