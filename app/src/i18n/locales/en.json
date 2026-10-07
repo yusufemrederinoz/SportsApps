@@ -145,7 +145,7 @@
     "usernameTaken": "This username is taken.",
     "invalidUsername": "Usernames are 3 to 16 letters, digits or underscores.",
     "invalidEmail": "Enter a valid email address.",
-    "invalidPassword": "The password does not meet the rules below.",
+    "invalidPassword": "The password does not meet the rules.",
     "providerUnavailable": "This sign-in method is not available yet.",
     "invalidIdentityToken": "Sign-in could not be verified. Try again.",
     "rateLimited": "Too many attempts. Wait a minute and try again.",

@@ -22,10 +22,14 @@ function RegisterScreen() {
   const uppercase = useUppercase();
   const router = useRouter();
   const { register } = useAuth();
-  const { error, submit } = useSubmit();
+  const { error, submit, clearError } = useSubmit();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const edit = (set: (value: string) => void) => (value: string) => {
+    set(value);
+    clearError();
+  };
 
   const problem = (): RequestErrorCode | null => {
     if (!isValidUsername(username.trim())) {
@@ -43,7 +47,7 @@ function RegisterScreen() {
         label={t('account.username')}
         hint={t('register.usernameHint')}
         value={username}
-        onChangeText={setUsername}
+        onChangeText={edit(setUsername)}
         maxLength={USERNAME_MAX_LENGTH}
         textContentType="username"
         autoComplete="username-new"
@@ -52,7 +56,7 @@ function RegisterScreen() {
       <TextField
         label={t('account.email')}
         value={email}
-        onChangeText={setEmail}
+        onChangeText={edit(setEmail)}
         keyboardType="email-address"
         textContentType="emailAddress"
         autoComplete="email"
@@ -61,7 +65,7 @@ function RegisterScreen() {
       <TextField
         label={t('account.password')}
         value={password}
-        onChangeText={setPassword}
+        onChangeText={edit(setPassword)}
         secureTextEntry
         textContentType="newPassword"
         autoComplete="new-password"

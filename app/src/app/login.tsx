@@ -19,9 +19,13 @@ function LoginScreen() {
   const uppercase = useUppercase();
   const router = useRouter();
   const { login } = useAuth();
-  const { error, submit } = useSubmit();
+  const { error, submit, clearError } = useSubmit();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const edit = (set: (value: string) => void) => (value: string) => {
+    set(value);
+    clearError();
+  };
   const incomplete = email.trim().length === 0 || password.length === 0;
 
   return (
@@ -29,7 +33,7 @@ function LoginScreen() {
       <TextField
         label={t('account.email')}
         value={email}
-        onChangeText={setEmail}
+        onChangeText={edit(setEmail)}
         keyboardType="email-address"
         textContentType="emailAddress"
         autoComplete="email"
@@ -38,7 +42,7 @@ function LoginScreen() {
       <TextField
         label={t('account.password')}
         value={password}
-        onChangeText={setPassword}
+        onChangeText={edit(setPassword)}
         secureTextEntry
         textContentType="password"
         autoComplete="current-password"

@@ -145,7 +145,7 @@
     "usernameTaken": "Bu kullanıcı adı alınmış.",
     "invalidUsername": "Kullanıcı adı 3-16 karakter olmalı; harf, rakam ya da alt çizgi içerebilir.",
     "invalidEmail": "Geçerli bir e-posta adresi yaz.",
-    "invalidPassword": "Şifre aşağıdaki kurallara uymuyor.",
+    "invalidPassword": "Şifre kurallara uymuyor.",
     "providerUnavailable": "Bu giriş yöntemi henüz kullanılamıyor.",
     "invalidIdentityToken": "Giriş doğrulanamadı. Tekrar dene.",
     "rateLimited": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar dene.",
