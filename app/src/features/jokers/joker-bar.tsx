@@ -137,6 +137,14 @@ export function JokerBar({ scope, available, target, metric = null }: JokerBarPr
           {t('jokers.rivalUsed', { name: t(LABEL_KEYS[rivalLast.joker]) })}
         </ThemedText>
       ) : null}
+      {!affordable && left > 0 && !jokers.error ? (
+        <View style={styles.balance} accessible accessibilityLabel={t('jokers.needGoals', { price: JOKER_PRICE, goals: jokers.goals })}>
+          <GoalIcon size={14} />
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('jokers.needGoals', { price: JOKER_PRICE, goals: jokers.goals })}
+          </ThemedText>
+        </View>
+      ) : null}
       {jokers.error ? (
         <ThemedText type="small" themeColor="negative">
           {t(errorKey(jokers.error))}
@@ -147,6 +155,11 @@ export function JokerBar({ scope, available, target, metric = null }: JokerBarPr
 }
 
 const styles = StyleSheet.create({
+  balance: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
   container: {
     alignSelf: 'stretch',
     gap: Spacing.one,

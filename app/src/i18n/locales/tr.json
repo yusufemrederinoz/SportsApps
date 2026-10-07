@@ -491,6 +491,7 @@
     "selectCard": "Değiştirmek için önce bir kart seç",
     "errorLimit": "Bu maçta joker hakkın bitti.",
     "errorGoals": "Yeterli golün yok.",
+    "needGoals": "Joker {{price}} gol, sende {{goals}} gol var.",
     "errorUnavailable": "Bu joker şu an kullanılamaz.",
     "roleGK": "Kaleci",
     "roleDF": "Defans",

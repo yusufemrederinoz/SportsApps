@@ -491,6 +491,7 @@
     "selectCard": "Pick a card to swap first",
     "errorLimit": "You have used all your jokers in this match.",
     "errorGoals": "You do not have enough goals.",
+    "needGoals": "A joker costs {{price}} goals; you have {{goals}}.",
     "errorUnavailable": "This joker cannot be used right now.",
     "roleGK": "Goalkeeper",
     "roleDF": "Defender",
