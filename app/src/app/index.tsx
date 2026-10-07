@@ -14,6 +14,9 @@ import { AccentFinishes, Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radi
 import type { Difficulty } from '@/data/types';
 import { GAMES, GAME_ACCENTS, GAME_LABELS, GAME_SUBTITLES } from '@/features/games';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
+import { DailyRewardDialog } from '@/features/progress/daily-reward-dialog';
+import { ProgressChip } from '@/features/progress/progress-chip';
+import { useProgress } from '@/features/progress/use-progress';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
@@ -22,6 +25,7 @@ function HomeScreen() {
   const uppercase = useUppercase();
   const router = useRouter();
   const { state: auth } = useAuth();
+  const { progress, reward, dismissReward } = useProgress({ claimDaily: true });
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const [game, setGame] = useState<GameId>('grid');
   const gameScroller = useRef<ScrollView>(null);
@@ -29,6 +33,7 @@ function HomeScreen() {
   const chipFrames = useRef<Partial<Record<GameId, { x: number; width: number }>>>({});
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
   const accent = t(GAME_ACCENTS[game]);
+  const gamePoints = progress?.games.find((standing) => standing.game === game)?.points ?? null;
   const startBot = () =>
     game === 'grid'
       ? router.push({ pathname: '/match', params: { mode: 'bot', difficulty: String(difficulty) } })
@@ -50,6 +55,7 @@ function HomeScreen() {
     <Screen contentStyle={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
+          {progress ? <ProgressChip progress={progress} onPress={() => router.push('/history')} /> : <View />}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`${t('home.account')}: ${accountLabel}`}
@@ -84,9 +90,16 @@ function HomeScreen() {
         </View>
 
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(260)} style={styles.section}>
-          <ThemedText type="label" themeColor="textSecondary">
-            {uppercase(t('home.game'))}
-          </ThemedText>
+          <View style={styles.sectionHeader}>
+            <ThemedText type="label" themeColor="textSecondary">
+              {uppercase(t('home.game'))}
+            </ThemedText>
+            {gamePoints !== null ? (
+              <ThemedText type="label" themeColor="volt">
+                {uppercase(t('progress.gamePoints', { points: gamePoints }))}
+              </ThemedText>
+            ) : null}
+          </View>
           <ScrollView
             ref={gameScroller}
             horizontal
@@ -161,6 +174,7 @@ function HomeScreen() {
           <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={startBot} />
         </Animated.View>
       </ScrollView>
+      {reward ? <DailyRewardDialog reward={reward} onClose={dismissReward} /> : null}
     </Screen>
   );
 }
@@ -184,14 +198,18 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.four,
   },
   accountRow: {
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
   },
   accountChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.two,
     minHeight: MinimumTouchSize,
-    maxWidth: 240,
+    flexShrink: 1,
+    maxWidth: 200,
     paddingHorizontal: Spacing.three,
     borderRadius: Radius.large,
     borderWidth: 1.5,
@@ -241,6 +259,11 @@ const styles = StyleSheet.create({
   },
   section: {
     gap: Spacing.three,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   difficultyRow: {
     flexDirection: 'row',

@@ -4,10 +4,14 @@ import {
   type ApiErrorCode,
   type ApiErrorResponse,
   type AuthResponse,
+  type DailyRewardResponse,
+  type GameId,
   type IdentityProvider,
   type LoginRequest,
   type MatchHistoryResponse,
+  type ProgressResponse,
   type RegisterRequest,
+  type WalletResponse,
 } from '@sportapps/protocol';
 
 export type RequestErrorCode = ApiErrorCode | 'network' | 'unconfigured';
@@ -31,6 +35,19 @@ export function errorCodeOf(error: unknown): RequestErrorCode {
 interface RequestOptions {
   body?: object;
   token?: string | null;
+}
+
+export interface HistoryFilter {
+  game?: GameId;
+  before?: number;
+  limit?: number;
+}
+
+function query(filter: HistoryFilter): string {
+  const entries = Object.entries(filter).filter(([, value]) => value !== undefined);
+  return entries.length === 0
+    ? ''
+    : `?${entries.map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`).join('&')}`;
 }
 
 export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = fetch) {
@@ -75,7 +92,11 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     signInWithIdentity: (provider: IdentityProvider, identityToken: string) =>
       request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
-    matches: (token: string) => request<MatchHistoryResponse>('GET', '/matches', { token }),
+    matches: (token: string, filter: HistoryFilter = {}) =>
+      request<MatchHistoryResponse>('GET', `/matches${query(filter)}`, { token }),
+    progress: (token: string) => request<ProgressResponse>('GET', '/progress', { token }),
+    claimDaily: (token: string) => request<DailyRewardResponse>('POST', '/daily', { token }),
+    wallet: (token: string) => request<WalletResponse>('GET', '/wallet', { token }),
   };
 }
 
