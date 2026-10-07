@@ -62,6 +62,9 @@ const MIGRATIONS: readonly string[] = [
   CREATE INDEX matches_x_user ON matches (x_user_id, finished_at);
   CREATE INDEX matches_o_user ON matches (o_user_id, finished_at);
   `,
+  `
+  ALTER TABLE matches ADD COLUMN game TEXT NOT NULL DEFAULT 'grid';
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

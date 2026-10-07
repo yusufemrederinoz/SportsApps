@@ -7,21 +7,20 @@ import {
   isRoomCode,
   normalizeRoomCode,
   type ClientMessage,
+  type GameId,
   type PlayDifficulty,
   type PlayErrorCode,
-  type PlayMove,
   type PlayResult,
   type ServerMessage,
 } from '@sportapps/protocol';
 
-import type { FootballLibrary } from '../football/library';
-import { DEFAULT_BOT_TIMING, botLevelFor, createBotName, createBotPlayer, type BotPlayer, type BotTiming } from './bot';
+import { createBotName } from './bot';
 import type { MatchHistory } from './history';
-import { createMatchRoom, type MatchKind, type MatchRoom, type Seat } from './room';
+import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type WaitRange } from './live-room';
 
-const SIDES: readonly Side[] = ['x', 'o'];
 const ADAPTATION_MATCHES = 5;
 const DIFFICULTIES: readonly number[] = [1, 2, 3];
+const DEFAULT_GAME: GameId = 'grid';
 
 export interface Connection {
   send(message: ServerMessage): void;
@@ -33,19 +32,14 @@ export interface Player {
   username: string;
 }
 
-export interface WaitRange {
-  minimum: number;
-  maximum: number;
-}
-
 export interface LobbyOptions {
-  library: FootballLibrary;
+  games: Partial<Record<GameId, RoomFactory>>;
+  hasMarket: (market: string) => boolean;
   history: MatchHistory;
   now?: () => number;
   random?: () => number;
   isUsernameTaken?: (username: string) => boolean;
   botWaitMilliseconds?: WaitRange;
-  botTiming?: BotTiming;
   disconnectGraceMilliseconds?: number;
   roomLifetimeMilliseconds?: number;
   onError?: (error: unknown) => void;
@@ -65,34 +59,31 @@ interface Member {
 
 interface QueueEntry {
   userId: string;
-  market: string;
-  difficulty: PlayDifficulty;
   botTimer: ReturnType<typeof setTimeout>;
 }
 
 interface HostedRoom {
   code: string;
   hostId: string;
+  game: GameId;
   market: string;
   difficulty: PlayDifficulty;
   expiry: ReturnType<typeof setTimeout>;
 }
 
 interface ActiveMatch {
-  room: MatchRoom;
-  bots: BotPlayer[];
+  room: LiveRoom;
   forfeits: Map<string, ReturnType<typeof setTimeout>>;
 }
 
 const IDLE: Status = { kind: 'idle' };
 
 export function createLobby(options: LobbyOptions) {
-  const { library, history } = options;
+  const { games, history } = options;
   const now = options.now ?? Date.now;
   const random = options.random ?? Math.random;
   const isUsernameTaken = options.isUsernameTaken ?? (() => false);
   const botWait = options.botWaitMilliseconds ?? { minimum: 6000, maximum: 11000 };
-  const botTiming = options.botTiming ?? DEFAULT_BOT_TIMING;
   const disconnectGrace = options.disconnectGraceMilliseconds ?? 30000;
   const roomLifetime = options.roomLifetimeMilliseconds ?? 10 * 60 * 1000;
   const reportError = options.onError ?? (() => undefined);
@@ -163,13 +154,7 @@ export function createLobby(options: LobbyOptions) {
     }
   };
 
-  const onMove = (room: MatchRoom, move: PlayMove) => {
-    const message: ServerMessage = { type: 'move', matchId: room.id, move, turnEndsIn: room.turnEndsIn() };
-    SIDES.forEach((side) => send(room.seats[side].userId, message));
-    matches.get(room.id)?.bots.forEach((bot) => bot.takeTurn());
-  };
-
-  const onFinished = (room: MatchRoom, result: PlayResult) => {
+  const onFinished = (room: LiveRoom, result: PlayResult) => {
     const active = matches.get(room.id);
     SIDES.forEach((side) => send(room.seats[side].userId, { type: 'finished', matchId: room.id, result }));
     try {
@@ -177,7 +162,6 @@ export function createLobby(options: LobbyOptions) {
     } catch (error) {
       reportError(error);
     }
-    active?.bots.forEach((bot) => bot.stop());
     active?.forfeits.forEach((timer) => clearTimeout(timer));
     matches.delete(room.id);
     room.dispose();
@@ -191,21 +175,13 @@ export function createLobby(options: LobbyOptions) {
 
   const startMatch = (
     kind: MatchKind,
+    game: GameId,
     market: string,
     difficulty: PlayDifficulty,
     first: Player,
     second: Player | null,
   ) => {
     const humans = second ? [first, second] : [first];
-    const grid = library.pickGrid(market, difficulty, random);
-    if (!grid) {
-      humans.forEach((player) => {
-        settle(player.id);
-        fail(player.id, 'no-grid');
-        send(player.id, { type: 'idle' });
-      });
-      return;
-    }
     const firstSide: Side = random() < 0.5 ? 'x' : 'o';
     const taken = (username: string) =>
       username.toLowerCase() === first.username.toLowerCase() || isUsernameTaken(username);
@@ -216,32 +192,28 @@ export function createLobby(options: LobbyOptions) {
       [firstSide]: { userId: first.id, username: first.username },
       [opponentOf(firstSide)]: rival,
     } as Record<Side, Seat>;
-    const room = createMatchRoom({
-      id: randomUUID(),
-      kind,
-      market,
-      difficulty,
-      grid,
-      seats,
-      startingSide: random() < 0.5 ? 'x' : 'o',
-      library,
-      now,
-      onMove,
-      onFinished,
-    });
-    const bots = second
-      ? []
-      : [
-          createBotPlayer({
-            room,
-            side: opponentOf(firstSide),
-            level: botLevelFor(difficulty, history.recentOutcomes(first.id, ADAPTATION_MATCHES)),
-            library,
-            random,
-            timing: botTiming,
-          }),
-        ];
-    matches.set(room.id, { room, bots, forfeits: new Map() });
+    const room =
+      games[game]?.({
+        id: randomUUID(),
+        kind,
+        market,
+        difficulty,
+        seats,
+        rivalOutcomes: second ? [] : history.recentOutcomes(first.id, ADAPTATION_MATCHES),
+        now,
+        random,
+        send: (side, message) => send(seats[side].userId, message),
+        onFinished,
+      }) ?? null;
+    if (!room) {
+      humans.forEach((player) => {
+        settle(player.id);
+        fail(player.id, 'no-grid');
+        send(player.id, { type: 'idle' });
+      });
+      return;
+    }
+    matches.set(room.id, { room, forfeits: new Map() });
     humans.forEach((player) => {
       const member = members.get(player.id);
       if (member) {
@@ -249,11 +221,10 @@ export function createLobby(options: LobbyOptions) {
       }
       const side = room.sideOf(player.id);
       if (side) {
-        send(player.id, { type: 'match', match: room.snapshot(side, true) });
+        send(player.id, room.greeting(side, true));
       }
     });
     room.start();
-    bots.forEach((bot) => bot.takeTurn());
   };
 
   const roomCode = (): string => {
@@ -268,17 +239,17 @@ export function createLobby(options: LobbyOptions) {
     }
   };
 
-  const isSetup = (market: string, difficulty: number): difficulty is PlayDifficulty =>
-    library.hasMarket(market) && DIFFICULTIES.includes(difficulty);
+  const isSetup = (game: GameId, market: string, difficulty: number): difficulty is PlayDifficulty =>
+    games[game] !== undefined && options.hasMarket(market) && DIFFICULTIES.includes(difficulty);
 
-  const enqueue = (member: Member, market: string, difficulty: PlayDifficulty) => {
-    const key = `${market}:${difficulty}`;
+  const enqueue = (member: Member, game: GameId, market: string, difficulty: PlayDifficulty) => {
+    const key = `${game}:${market}:${difficulty}`;
     const entries = queues.get(key) ?? [];
     const waiting = entries.find((entry) => entry.userId !== member.player.id && isConnected(entry.userId));
     const rival = waiting ? members.get(waiting.userId) : undefined;
     if (waiting && rival) {
       leaveQueue(waiting.userId, key);
-      startMatch('queue', market, difficulty, rival.player, member.player);
+      startMatch('queue', game, market, difficulty, rival.player, member.player);
       return;
     }
     const wait = botWait.minimum + random() * Math.max(0, botWait.maximum - botWait.minimum);
@@ -286,15 +257,15 @@ export function createLobby(options: LobbyOptions) {
       const current = members.get(member.player.id);
       if (current?.status.kind === 'queued' && current.status.key === key) {
         leaveQueue(current.player.id, key);
-        startMatch('queue', market, difficulty, current.player, null);
+        startMatch('queue', game, market, difficulty, current.player, null);
       }
     }, wait);
-    queues.set(key, [...entries, { userId: member.player.id, market, difficulty, botTimer }]);
+    queues.set(key, [...entries, { userId: member.player.id, botTimer }]);
     member.status = { kind: 'queued', key };
     send(member.player.id, { type: 'queued' });
   };
 
-  const host = (member: Member, market: string, difficulty: PlayDifficulty) => {
+  const host = (member: Member, game: GameId, market: string, difficulty: PlayDifficulty) => {
     const code = roomCode();
     const userId = member.player.id;
     const expiry = setTimeout(() => {
@@ -305,7 +276,7 @@ export function createLobby(options: LobbyOptions) {
         send(userId, { type: 'idle' });
       }
     }, roomLifetime);
-    hosted.set(code, { code, hostId: userId, market, difficulty, expiry });
+    hosted.set(code, { code, hostId: userId, game, market, difficulty, expiry });
     member.status = { kind: 'hosting', code };
     send(userId, { type: 'room', code });
   };
@@ -319,7 +290,7 @@ export function createLobby(options: LobbyOptions) {
       return;
     }
     closeHosted(code);
-    startMatch('room', room.market, room.difficulty, hostMember.player, member.player);
+    startMatch('room', room.game, room.market, room.difficulty, hostMember.player, member.player);
   };
 
   const activeFor = (member: Member, matchId: string): { active: ActiveMatch; side: Side } | null => {
@@ -354,7 +325,7 @@ export function createLobby(options: LobbyOptions) {
         if (active && side) {
           clearForfeit(active, player.id);
           const rivalId = active.room.seats[opponentOf(side)].userId;
-          connection.send({ type: 'match', match: active.room.snapshot(side, isConnected(rivalId)) });
+          connection.send(active.room.greeting(side, isConnected(rivalId)));
           send(rivalId, { type: 'opponent', matchId: active.room.id, connected: true });
         }
       }
@@ -402,18 +373,19 @@ export function createLobby(options: LobbyOptions) {
           return;
         case 'queue':
         case 'create-room': {
+          const game = message.game ?? DEFAULT_GAME;
           if (member.status.kind !== 'idle') {
             fail(userId, 'busy');
             return;
           }
-          if (!isSetup(message.market, message.difficulty)) {
+          if (!isSetup(game, message.market, message.difficulty)) {
             fail(userId, 'invalid-message');
             return;
           }
           if (message.type === 'queue') {
-            enqueue(member, message.market, message.difficulty);
+            enqueue(member, game, message.market, message.difficulty);
           } else {
-            host(member, message.market, message.difficulty);
+            host(member, game, message.market, message.difficulty);
           }
           return;
         }
@@ -433,13 +405,14 @@ export function createLobby(options: LobbyOptions) {
           member.status = IDLE;
           send(userId, { type: 'idle' });
           return;
-        case 'answer': {
+        case 'answer':
+        case 'act': {
           const found = activeFor(member, message.matchId);
           if (!found) {
             fail(userId, 'not-in-match');
             return;
           }
-          const error = found.active.room.answer(found.side, message.turnNumber, message.cell, message.footballerId);
+          const error = found.active.room.handle(found.side, message);
           if (error) {
             fail(userId, error);
           }
@@ -472,7 +445,6 @@ export function createLobby(options: LobbyOptions) {
       hosted.forEach((room) => clearTimeout(room.expiry));
       hosted.clear();
       matches.forEach((active) => {
-        active.bots.forEach((bot) => bot.stop());
         active.forfeits.forEach((timer) => clearTimeout(timer));
         active.room.dispose();
       });

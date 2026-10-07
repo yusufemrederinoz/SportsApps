@@ -178,6 +178,23 @@ describe('client message parsing', () => {
       type: 'queue',
       market: 'tr',
       difficulty: 2,
+      game: 'grid',
+    });
+    expect(parseClientMessage('{"type":"create-room","market":"tr","difficulty":1,"game":"duel"}')).toEqual({
+      type: 'create-room',
+      market: 'tr',
+      difficulty: 1,
+      game: 'duel',
+    });
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"hand","footballerIds":[4,5]}}')).toEqual({
+      type: 'act',
+      matchId: 'm',
+      action: { kind: 'hand', footballerIds: [4, 5] },
+    });
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"play","footballerId":4}}')).toEqual({
+      type: 'act',
+      matchId: 'm',
+      action: { kind: 'play', footballerId: 4 },
     });
     expect(
       parseClientMessage('{"type":"answer","matchId":"m","turnNumber":3,"cell":{"row":1,"column":2},"footballerId":9}'),
@@ -191,5 +208,13 @@ describe('client message parsing', () => {
     expect(parseClientMessage('{"type":"answer","matchId":"m","turnNumber":"3","cell":{},"footballerId":9}')).toBeNull();
     expect(parseClientMessage(`{"type":"hello","token":"${'a'.repeat(600)}","protocol":1,"dataVersion":"1"}`)).toBeNull();
     expect(parseClientMessage('{"type":"shutdown"}')).toBeNull();
+    expect(parseClientMessage('{"type":"queue","market":"tr","difficulty":1,"game":"chess"}')).toBeNull();
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"hand","footballerIds":["4"]}}')).toBeNull();
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"fold"}}')).toBeNull();
+    expect(
+      parseClientMessage(
+        JSON.stringify({ type: 'act', matchId: 'm', action: { kind: 'hand', footballerIds: Array.from({ length: 40 }, (_, id) => id) } }),
+      ),
+    ).toBeNull();
   });
 });

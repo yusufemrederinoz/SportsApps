@@ -1,10 +1,11 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { emptyCells, headersAt, type Grid } from '@sportapps/game-core';
+import { DUEL_HAND_SIZE, emptyCells, headersAt, type Grid } from '@sportapps/game-core';
 import {
   PLAY_PROTOCOL_VERSION,
   type AuthResponse,
+  type DuelView,
   type MatchHistoryResponse,
   type MatchSnapshot,
   type ServerMessage,
@@ -115,6 +116,15 @@ async function ready(): Promise<Client> {
   return client;
 }
 
+async function viewWhere(client: Client, accept: (view: DuelView) => boolean): Promise<DuelView> {
+  for (;;) {
+    const { view } = await client.next('view');
+    if (accept(view)) {
+      return view;
+    }
+  }
+}
+
 function gridOf(snapshot: MatchSnapshot): Grid {
   const picked = football.pickGrid(snapshot.market, snapshot.difficulty, () => 0);
   if (!picked) {
@@ -133,6 +143,12 @@ beforeEach(async () => {
       random: () => 0,
       botWaitMilliseconds: { minimum: 40, maximum: 40 },
       botTiming: { minimumThinkMilliseconds: 10, maximumThinkMilliseconds: 10 },
+      duelTiming: {
+        revealMilliseconds: 10,
+        botPickMilliseconds: { minimum: 10, maximum: 10 },
+        botFollowMilliseconds: { minimum: 10, maximum: 10 },
+        botPlayMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -268,6 +284,41 @@ describe.skipIf(!available)('play gateway', () => {
     ).json() as MatchHistoryResponse;
     expect(history.matches).toMatchObject([{ opponent: rival, outcome: 'loss' }]);
     expect(JSON.stringify(history)).not.toContain('bot');
+    human.socket.close();
+  });
+
+  it('plays a card duel from real data against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'duel' });
+    const { session } = await human.next('session');
+    expect(session.game).toBe('duel');
+    expect(session.view.phase).toBe('picking');
+    expect(football.duelConcepts('tr')).toContainEqual(session.view.concept);
+
+    const [known] = football.conceptPlayers(session.view.concept, 'tr', 0, 1);
+    human.send({ type: 'act', matchId: session.matchId, action: { kind: 'hand', footballerIds: [known] } });
+    let view = await viewWhere(human, (current) => current.phase === 'playing');
+    expect(view.hand).toHaveLength(DUEL_HAND_SIZE);
+    expect(view.hand?.[0]).toBe(known);
+    expect(football.conceptMembers(session.view.concept, 'tr', view.hand ?? [])).toHaveLength(DUEL_HAND_SIZE);
+
+    for (let round = 1; round <= DUEL_HAND_SIZE; round += 1) {
+      human.send({ type: 'act', matchId: session.matchId, action: { kind: 'play', footballerId: view.remaining[0] } });
+      const revealed = await viewWhere(human, (current) => current.rounds.length === round);
+      const played = revealed.rounds[round - 1];
+      expect(played?.values.x).not.toBeNull();
+      expect(played?.values.o).not.toBeNull();
+      if (round < DUEL_HAND_SIZE) {
+        view = await viewWhere(human, (current) => current.phase === 'playing' && current.rounds.length === round);
+      }
+    }
+
+    const finished = await human.next('finished');
+    expect(finished.result.reason).toBe('score');
+    const history = (
+      await app.inject({ method: 'GET', url: '/v1/matches', headers: { authorization: `Bearer ${human.auth.token}` } })
+    ).json() as MatchHistoryResponse;
+    expect(history.matches).toMatchObject([{ game: 'duel', reason: 'score' }]);
     human.socket.close();
   });
 

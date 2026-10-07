@@ -3,23 +3,33 @@ import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
 import {
+  clubConceptsStatement,
+  conceptMembersStatement,
+  conceptPlayersStatement,
   correctAnswerStatement,
+  countryConceptsStatement,
   gridAtOffsetStatement,
   gridCountStatement,
   gridHeadersStatement,
   gridOffset,
   knownAnswersStatement,
+  leagueConceptsStatement,
   marketsStatement,
+  metricRowsStatement,
   minimumFameStatement,
   nearMissesStatement,
   toGrid,
   type GridHeaderRow,
+  type MetricRow,
   type Statement,
 } from '@sportapps/football-data';
 import type { BotOption, CellPosition, Grid, Header } from '@sportapps/game-core';
+import type { DuelConcept } from '@sportapps/protocol';
 
 const VERSION_FILE = 'version.json';
 const KNOWN_ANSWER_LIMIT = 8;
+const CONCEPT_FAME = 45;
+const CONCEPT_PLAYERS = 25;
 
 export interface FootballLibrary {
   readonly dataVersion: string;
@@ -29,6 +39,10 @@ export interface FootballLibrary {
   minimumFame(difficulty: number): number;
   knownAnswers(market: string, grid: Grid, positions: readonly CellPosition[], minimumFame: number): BotOption[];
   nearMisses(market: string, matching: Header, missing: Header, minimumFame: number, limit: number): number[];
+  duelConcepts(market: string): readonly DuelConcept[];
+  conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
+  conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
+  metricRows(footballerIds: readonly number[]): MetricRow[];
   close(): void;
 }
 
@@ -44,6 +58,29 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
   const all = <T>({ sql, parameters }: Statement) => database.prepare(sql).all(...parameters) as T[];
   const first = <T>({ sql, parameters }: Statement) => database.prepare(sql).get(...parameters) as T | undefined;
   const markets = new Set(all<{ code: string }>(marketsStatement()).map((market) => market.code));
+  const concepts = new Map<string, readonly DuelConcept[]>();
+  const ids = (statement: Statement) => all<{ id: number }>(statement).map((row) => row.id);
+
+  const loadConcepts = (market: string): DuelConcept[] => {
+    const candidates: DuelConcept[] = [
+      { kind: 'home-league-foreigners' },
+      { kind: 'home-nationals-abroad' },
+      ...all<{ code: string }>(leagueConceptsStatement()).map(
+        ({ code }): DuelConcept => ({ kind: 'league', leagueCode: code }),
+      ),
+    ];
+    return [
+      ...candidates.filter(
+        (concept) => ids(conceptPlayersStatement(concept, market, CONCEPT_FAME, CONCEPT_PLAYERS)).length >= CONCEPT_PLAYERS,
+      ),
+      ...ids(clubConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)).map(
+        (clubId): DuelConcept => ({ kind: 'club', clubId }),
+      ),
+      ...ids(countryConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)).map(
+        (countryId): DuelConcept => ({ kind: 'country', countryId }),
+      ),
+    ];
+  };
 
   return {
     dataVersion,
@@ -88,6 +125,28 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
       return all<{ id: number }>(nearMissesStatement(market, matching, missing, minimumFame, limit)).map(
         (row) => row.id,
       );
+    },
+
+    duelConcepts(market) {
+      const known = concepts.get(market);
+      if (known) {
+        return known;
+      }
+      const loaded = markets.has(market) ? loadConcepts(market) : [];
+      concepts.set(market, loaded);
+      return loaded;
+    },
+
+    conceptPlayers(concept, market, minimumFame, limit) {
+      return ids(conceptPlayersStatement(concept, market, minimumFame, limit));
+    },
+
+    conceptMembers(concept, market, footballerIds) {
+      return footballerIds.length > 0 ? ids(conceptMembersStatement(concept, market, footballerIds)) : [];
+    },
+
+    metricRows(footballerIds) {
+      return footballerIds.length > 0 ? all<MetricRow>(metricRowsStatement(footballerIds)) : [];
     },
 
     close() {

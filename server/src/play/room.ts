@@ -20,16 +20,10 @@ import type {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
+import type { MatchKind, Seat } from './live-room';
 
 export const TURN_GRACE_MILLISECONDS = 1500;
 const SECOND = 1000;
-
-export type MatchKind = 'queue' | 'room';
-
-export interface Seat {
-  userId: string | null;
-  username: string;
-}
 
 export interface RoomOptions {
   id: string;

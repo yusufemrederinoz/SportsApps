@@ -1,13 +1,21 @@
-import { countCells, opponentOf, type Side } from '@sportapps/game-core';
-import type { MatchOutcome, MatchSummary, PlayDifficulty, PlayFinishReason, PlayResult } from '@sportapps/protocol';
+import { opponentOf, type Side } from '@sportapps/game-core';
+import type {
+  GameId,
+  MatchOutcome,
+  MatchSummary,
+  PlayDifficulty,
+  PlayFinishReason,
+  PlayResult,
+} from '@sportapps/protocol';
 
 import type { Database } from '../database';
-import type { MatchRoom } from './room';
+import type { LiveRoom } from './live-room';
 
 const HISTORY_LIMIT = 50;
 
 interface MatchRow {
   id: string;
+  game: string;
   difficulty: number;
   x_user_id: string | null;
   x_username: string;
@@ -29,12 +37,12 @@ function outcomeFor(side: Side, winner: string | null): MatchOutcome {
 export function createMatchHistory(database: Database) {
   const insert = database.prepare(
     `INSERT INTO matches (
-       id, kind, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username,
+       id, kind, game, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username,
        winner, reason, x_cells, o_cells, move_count, started_at, finished_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   const selectForUser = database.prepare(
-    `SELECT id, difficulty, x_user_id, x_username, o_username, winner, reason, x_cells, o_cells, finished_at
+    `SELECT id, game, difficulty, x_user_id, x_username, o_username, winner, reason, x_cells, o_cells, finished_at
      FROM matches WHERE x_user_id = ? OR o_user_id = ?
      ORDER BY finished_at DESC, id LIMIT ?`,
   );
@@ -43,24 +51,25 @@ export function createMatchHistory(database: Database) {
     selectForUser.all(userId, userId, Math.max(1, Math.min(HISTORY_LIMIT, limit))) as unknown as MatchRow[];
 
   return {
-    record(room: MatchRoom, result: PlayResult, finishedAt: number): void {
-      const state = room.state();
+    record(room: LiveRoom, result: PlayResult, finishedAt: number): void {
+      const details = room.record();
       insert.run(
         room.id,
         room.kind,
-        room.market,
-        room.difficulty,
-        room.grid.id,
+        details.game,
+        details.market,
+        details.difficulty,
+        details.gridId,
         room.seats.x.userId,
         room.seats.o.userId,
         room.seats.x.username,
         room.seats.o.username,
         result.winner,
         result.reason,
-        countCells(state, 'x'),
-        countCells(state, 'o'),
-        room.moves().length,
-        room.startedAt,
+        details.scores.x,
+        details.scores.o,
+        details.moveCount,
+        details.startedAt,
         finishedAt,
       );
     },
@@ -73,6 +82,7 @@ export function createMatchHistory(database: Database) {
         const usernames = { x: row.x_username, o: row.o_username };
         return {
           id: row.id,
+          game: row.game as GameId,
           finishedAt: row.finished_at,
           difficulty: row.difficulty as PlayDifficulty,
           opponent: usernames[other],

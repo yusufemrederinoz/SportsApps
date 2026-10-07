@@ -22,7 +22,10 @@ import { createAccountService, type AuthenticatedSession } from '../accounts/ser
 import type { ServerConfig } from '../config';
 import type { Database } from '../database';
 import type { FootballLibrary } from '../football/library';
+import { DEFAULT_BOT_TIMING, type BotTiming } from '../play/bot';
+import { DEFAULT_DUEL_TIMING, createDuelRoomFactory, type DuelTiming } from '../play/duel-room';
 import { registerPlayGateway } from '../play/gateway';
+import { createGridRoomFactory } from '../play/grid-room';
 import { createMatchHistory } from '../play/history';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { ApiError } from './errors';
@@ -42,7 +45,10 @@ export interface AppDependencies {
   config: ServerConfig;
   verifiers?: IdentityVerifiers;
   football?: FootballLibrary;
-  play?: Partial<Omit<LobbyOptions, 'library' | 'history'>>;
+  play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
+    botTiming?: BotTiming;
+    duelTiming?: Partial<DuelTiming>;
+  };
   now?: () => number;
   logger?: boolean;
 }
@@ -80,15 +86,21 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const history = createMatchHistory(database);
 
   if (dependencies.football) {
+    const { football } = dependencies;
+    const { botTiming, duelTiming, ...lobbyOptions } = dependencies.play ?? {};
     const lobby = createLobby({
       now,
       isUsernameTaken: accounts.isUsernameTaken,
       onError: (error) => app.log.error(error),
-      ...dependencies.play,
-      library: dependencies.football,
+      ...lobbyOptions,
+      games: {
+        grid: createGridRoomFactory(football, botTiming ?? DEFAULT_BOT_TIMING),
+        duel: createDuelRoomFactory(football, { ...DEFAULT_DUEL_TIMING, ...duelTiming }),
+      },
+      hasMarket: football.hasMarket,
       history,
     });
-    registerPlayGateway(app, { accounts, lobby, dataVersion: dependencies.football.dataVersion, now });
+    registerPlayGateway(app, { accounts, lobby, dataVersion: football.dataVersion, now });
     app.addHook('onClose', () => lobby.shutdown());
   }
 

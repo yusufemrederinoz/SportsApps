@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAccountService } from '../src/accounts/service';
 import { openDatabase, type Database } from '../src/database';
 import type { FootballLibrary } from '../src/football/library';
+import { createGridRoomFactory } from '../src/play/grid-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
@@ -29,6 +30,10 @@ const library: FootballLibrary = {
       return { position, footballerIds: [base, base + 100] };
     }),
   nearMisses: () => [999],
+  duelConcepts: () => [],
+  conceptPlayers: () => [],
+  conceptMembers: () => [],
+  metricRows: () => [],
   close: () => undefined,
 };
 
@@ -121,7 +126,8 @@ beforeEach(() => {
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    library,
+    games: { grid: createGridRoomFactory(library) },
+    hasMarket: library.hasMarket,
     history,
     random,
     now: () => Date.now(),
