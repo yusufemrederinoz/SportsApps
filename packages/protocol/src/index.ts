@@ -5,6 +5,7 @@ export * from './chain';
 export * from './draft';
 export * from './duel';
 export * from './higher';
+export * from './jokers';
 export * from './play';
 export * from './progress';
 export * from './rare';

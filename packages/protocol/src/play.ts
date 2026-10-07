@@ -5,6 +5,7 @@ import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
 import type { HigherAction, HigherView } from './higher';
 import type { RareAction, RareView } from './rare';
+import type { JokerId, JokerTarget, JokerUse } from './jokers';
 import type { PointsChange } from './progress';
 import type { TopTenView } from './top-ten';
 
@@ -91,7 +92,10 @@ export type PlayErrorCode =
   | 'cell-taken'
   | 'room-not-found'
   | 'invalid-action'
-  | 'replaced';
+  | 'replaced'
+  | 'joker-unavailable'
+  | 'joker-limit'
+  | 'not-enough-goals';
 
 export type ClientMessage =
   | { type: 'hello'; token: string; protocol: number; dataVersion: string }
@@ -102,6 +106,7 @@ export type ClientMessage =
   | { type: 'cancel' }
   | { type: 'answer'; matchId: string; turnNumber: number; cell: PlayCell; footballerId: number }
   | { type: 'act'; matchId: string; action: GameAction }
+  | { type: 'joker'; matchId: string; joker: JokerId; target?: JokerTarget }
   | { type: 'leave'; matchId: string }
   | { type: 'ping' };
 
@@ -116,6 +121,7 @@ export type ServerMessage =
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
   | { type: 'finished'; matchId: string; result: PlayResult; points?: PointsChange }
   | { type: 'opponent'; matchId: string; connected: boolean }
+  | ({ type: 'joker'; matchId: string; used: number; goals?: number } & JokerUse)
   | { type: 'error'; code: PlayErrorCode }
   | { type: 'pong' };
 
