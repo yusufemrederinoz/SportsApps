@@ -7,4 +7,5 @@ export * from './higher';
 export * from './match';
 export * from './names';
 export * from './rare';
+export * from './top-ten';
 export * from './types';
