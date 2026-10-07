@@ -1,3 +1,4 @@
+export * from './auction';
 export * from './bot';
 export * from './chain';
 export * from './draft';
