@@ -58,7 +58,9 @@
     "titleAccentChain": "Chain",
     "subtitleChain": "Take turns naming someone who played at the same club as the last footballer. Miss or get it wrong and you lose the round; three rounds win.",
     "titleAccentRare": "Least Known",
-    "subtitleRare": "Name a footballer who fits both criteria, hidden from your opponent. The less known right answer takes the round."
+    "subtitleRare": "Name a footballer who fits both criteria, hidden from your opponent. The less known right answer takes the round.",
+    "titleAccentAuction": "Auction",
+    "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time."
   },
   "difficulty": {
     "easy": "Easy",
@@ -184,7 +186,8 @@
     "draft": "Lineup Draft",
     "higher": "Higher or Lower",
     "chain": "Club Chain",
-    "rare": "Least Known"
+    "rare": "Least Known",
+    "auction": "Answer Auction"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -313,5 +316,30 @@
     "roundLost": "Round lost",
     "roundDrawn": "Round drawn",
     "byScore": "Five rounds played"
+  },
+  "auction": {
+    "round": "Round {{round}} · first to {{target}}",
+    "criteria": "Criteria",
+    "rule": "How many footballers fitting both can you name? Your opponent raises or says \"Prove it\".",
+    "noBid": "No bid yet",
+    "lastBid": "{{name}} bid",
+    "bidLabel": "Bid {{bid}} names",
+    "progress": "{{named}}/{{bid}} right names",
+    "openBid": "Make the first bid",
+    "raiseOrChallenge": "Raise or say \"Prove it\"",
+    "opponentThinking": "Your opponent is thinking…",
+    "proveYours": "Name {{bid}}!",
+    "proveTheirs": "Your opponent must name {{bid}}",
+    "proved": "{{name}} proved it",
+    "failed": "{{name}} fell short",
+    "you": "You",
+    "less": "Lower",
+    "more": "Higher",
+    "raise": "I can name {{amount}}",
+    "challenge": "Prove it",
+    "name": "Name a footballer",
+    "searchDone": "Close ({{named}}/{{bid}})",
+    "byScore": "Two rounds won",
+    "lastBidYours": "Your bid"
   }
 }

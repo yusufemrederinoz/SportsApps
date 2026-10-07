@@ -58,7 +58,9 @@
     "titleAccentChain": "Zincir",
     "subtitleChain": "Sırayla, son futbolcuyla aynı kulüpte oynamış birini söyle. Bulamayan ya da yanlış söyleyen turu kaybeder; üç tur alan kazanır.",
     "titleAccentRare": "Az Bilinen",
-    "subtitleRare": "İki ölçüte uyan bir futbolcu yaz, rakibin görmesin. Doğru cevaplardan daha az tanınan turu alır."
+    "subtitleRare": "İki ölçüte uyan bir futbolcu yaz, rakibin görmesin. Doğru cevaplardan daha az tanınan turu alır.",
+    "titleAccentAuction": "Artırma",
+    "subtitleAuction": "Kaç isim sayabileceğini artırarak söyle. \"Say bakalım\" denen, söylediği kadar doğru ismi süre içinde yazarsa turu alır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -184,7 +186,8 @@
     "draft": "Kadro Kur",
     "higher": "Hangisi Yüksek",
     "chain": "Zincir",
-    "rare": "En Az Bilinen"
+    "rare": "En Az Bilinen",
+    "auction": "Açık Artırma"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -313,5 +316,30 @@
     "roundLost": "Tur rakibin",
     "roundDrawn": "Tur berabere",
     "byScore": "Beş tur tamamlandı"
+  },
+  "auction": {
+    "round": "Tur {{round}} · {{target}} tur alan kazanır",
+    "criteria": "Ölçüt",
+    "rule": "Bu ikisine uyan kaç futbolcu sayabilirsin? Rakibin artırır ya da \"Say bakalım\" der.",
+    "noBid": "Henüz teklif yok",
+    "lastBid": "{{name}} söyledi",
+    "bidLabel": "Teklif {{bid}} isim",
+    "progress": "{{named}}/{{bid}} doğru isim",
+    "openBid": "İlk teklifi ver",
+    "raiseOrChallenge": "Artır ya da \"Say bakalım\" de",
+    "opponentThinking": "Rakip düşünüyor…",
+    "proveYours": "{{bid}} isim say!",
+    "proveTheirs": "Rakip {{bid}} isim sayacak",
+    "proved": "{{name}} saydı",
+    "failed": "{{name}} sayamadı",
+    "you": "Sen",
+    "less": "Azalt",
+    "more": "Artır",
+    "raise": "{{amount}} isim sayarım",
+    "challenge": "Say bakalım",
+    "name": "Futbolcu yaz",
+    "searchDone": "Kapat ({{named}}/{{bid}})",
+    "byScore": "İki tur alındı",
+    "lastBidYours": "Senin teklifin"
   }
 }

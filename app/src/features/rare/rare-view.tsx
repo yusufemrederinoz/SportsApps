@@ -42,7 +42,7 @@ interface RareMatchViewProps {
   onQuit: () => void;
 }
 
-function useCriteriaLabels(criteria: RareCriteriaView | null, market: string): [HeaderView, HeaderView] | null {
+export function useCriteriaLabels(criteria: RareCriteriaView | null, market: string): [HeaderView, HeaderView] | null {
   const database = useSQLiteContext();
   const { i18n } = useTranslation();
   const language = i18n.language;
