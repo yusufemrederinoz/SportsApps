@@ -389,7 +389,28 @@ Yolda çözülen sorunlar:
 | Düşük çözünürlüklü kaynakta yüz başkasına benziyor | 300 pikselden küçük kaynaktan görsel üretilmiyor |
 | Kadrajda iki kişi, tam profil, kesik baş | Otomatik eleniyor |
 
-Sayılar (Türkiye pazarı, bilinirlik 32 ve üzeri): 1.889 oyuncunun 1.665'inde Commons fotoğrafı var; bunların 1.647'si serbest lisanslı. Otomatik elemeden sonra 1.322 fotoğraf kırpıldı. Görsel başına üretim süresi RTX 5080'de yaklaşık 8 saniye; maliyet yalnızca elektrik.
+Sonuç (Türkiye pazarı, bilinirlik 32 ve üzeri, 7 Ekim 2026): 1.889 oyuncudan 1.232'sinin görseli üretildi (%65). Toplam boyut 26 MB, görsel başına ortalama 18 KB. Üretim yaklaşık iki buçuk saat sürdü; hata veren görsel olmadı.
+
+| Aşama | Oyuncu |
+|---|---|
+| Izgaralarda cevap olabilen | 1.889 |
+| Commons fotoğrafı olan | 1.665 |
+| Serbest lisanslı | 1.647 |
+| Otomatik elemeden geçen | 1.322 |
+| Kaynağı yeterince büyük olan, görseli üretilen | 1.232 |
+
+Elenenler: yüz bulunamayan ya da çok küçük 119, başı kadrajdan taşan 88, tam profil 68, kadrajda ikinci kişi 50, düşük çözünürlük 90, serbest olmayan lisans 18.
+
+| Bilinirlik | Görseli olan |
+|---|---|
+| 60 ve üzeri | 277 / 378 (%73) |
+| 50–59 | 255 / 356 (%71) |
+| 42–49 | 267 / 427 (%62) |
+| 32–41 | 433 / 728 (%59) |
+
+Lisans dağılımı: CC BY-SA 4.0 427, CC BY-SA 3.0 322, CC BY 2.0 136, CC BY 3.0 88, CC BY 4.0 62, CC0 58; kalanı diğer CC BY, CC BY-SA sürümleri ve kamu malı.
+
+Kalite: 60 görsellik rastgele örneklemde 55 kadarı iyi, birkaçı (yarı profil ya da zayıf kaynak) vasat. Görseller tek tek elle gözden geçirilmedi. Görsel başına süre güç sınırlı çalışan RTX 5080 Laptop'ta yaklaşık 7–10 saniye; maliyet yalnızca elektrik.
 
 Uygulama tarafı: kart, görseli olan oyuncuda görseli metalik zeminin üstünde gösteriyor; görsel yoksa eski hâliyle kalıyor. Emülatörde gerçek bir maçta doğrulandı.
 
@@ -431,3 +452,7 @@ Aynı oturumda yapılan küçük düzeltmeler:
 | `2ed7bec` | 7 Ekim | Kartlarda görsel ve "Görsel kaynakları" ekranı |
 | `b52c4f6` | 7 Ekim | Adın diline göre büyük harf, kartta tam ad |
 | `7fc5278` | 7 Ekim | Görsel hattında kırpmanın sağlamlaştırılması |
+| `9f85847` | 7 Ekim | Belgeler: görsel hattı ve kararları |
+| `490dc7b` | 7 Ekim | Sunucu paketleme dosyası ve barındırma seçenekleri |
+| `51ef979` | 7 Ekim | Tek görsel hata verince üretimin sürmesi |
+| `7e61dc9` | 7 Ekim | Üretilen 1.232 görselin kaynak kayıtları (uygulama veritabanı) |

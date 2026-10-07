@@ -49,7 +49,7 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Bot seviyesi | Seçilen zorlukla başlar; oyuncunun son online sonuçlarına göre bir seviye güçlenir ya da zayıflar |
 | Kopan bağlantı | Oyuncu 30 saniye içinde dönerse maç sürer, dönmezse hükmen kaybeder. Maçtan çıkan da hükmen kaybeder |
 | Arkadaş daveti | Beş karakterli oda kodu, on dakika geçerli |
-| Oyuncu görselleri | Üretildi. Fotoğrafı uygun olmayan oyuncuda kart görselsiz kalır |
+| Oyuncu görselleri | 1.232 oyuncu için üretildi (cevap olabilen oyuncuların %65'i). Fotoğrafı uygun olmayan oyuncuda kart görselsiz kalır |
 | Arayüz incelemesi | Geliştirme makinesine Android emülatörü kuruldu (7 Ekim 2026). Görünüm önce emülatörde, sonra telefonda incelenir |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |

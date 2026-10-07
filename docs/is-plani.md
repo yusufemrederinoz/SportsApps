@@ -210,7 +210,7 @@ Durum: büyük kısmı tamamlandı (7 Ekim 2026).
 
 Yapılanlar:
 
-- Izgaralarda cevap olarak çıkabilen oyuncular için (Türkiye pazarı, bilinirlik 32 ve üzeri) toplu üretim.
+- Izgaralarda cevap olarak çıkabilen oyuncular için (Türkiye pazarı, bilinirlik 32 ve üzeri) toplu üretim: 1.889 oyuncunun 1.232'sinin görseli var (%65; en tanınmışlarda %73).
 - Görseller sunucudan veriliyor, uygulama cihazda saklıyor.
 - "Görsel kaynakları" ekranı yazar ve lisans verisinden kendiliğinden oluşuyor.
 

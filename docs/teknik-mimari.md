@@ -228,7 +228,7 @@ Hedef: Türkiye pazarında bilinirlik puanı 32 ve üzeri olan, yani ızgaralard
 - **Çözünürlük.** Kırpım kaynağı 300 pikselden küçükse görsel üretilmez; düşük çözünürlüklü kaynakta benzerlik kayboluyor.
 - **Ön temizlik.** Çizimden önce arka plan düz koyu renge, çene çizgisinin altındaki giysi tek renge çevrilir. Böylece sponsor panoları, kulüp armaları ve forma yazıları çizime geçmez.
 - **Çizim.** SDXL, görüntüden görüntüye kipte çalışır (güç 0,66; 24 adım). Yüz hatlarını korumak için ControlNet yalnızca baş bölgesindeki kenar çizgileriyle beslenir (ağırlık 0,8).
-- **Çıktı.** 512×512, saydam arka planlı WebP; ortalama 25 KB. `data/build/portraits/<oyuncu kimliği>.webp` olarak yazılır ve depoya girmez.
+- **Çıktı.** 512×512, saydam arka planlı WebP; ortalama 18 KB (1.232 görsel 26 MB). `data/build/portraits/<oyuncu kimliği>.webp` olarak yazılır ve depoya girmez.
 
 ### Modeller
 
