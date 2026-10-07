@@ -373,7 +373,7 @@ describe('jokers', () => {
     lobby.disconnect(first.player.id, first);
     first.received.length = 0;
     lobby.connect(first.player, first);
-    expect(first.of('joker')).toEqual([expect.objectContaining({ joker: 'hint', reveal: null, used: 1 })]);
+    expect(first.of('joker')).toEqual([expect.objectContaining({ joker: 'hint', reveal: null, used: 1, replay: true })]);
   });
 });
 

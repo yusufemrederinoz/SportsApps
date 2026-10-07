@@ -121,7 +121,7 @@ export type ServerMessage =
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
   | { type: 'finished'; matchId: string; result: PlayResult; points?: PointsChange }
   | { type: 'opponent'; matchId: string; connected: boolean }
-  | ({ type: 'joker'; matchId: string; used: number; goals?: number } & JokerUse)
+  | ({ type: 'joker'; matchId: string; used: number; goals?: number; replay?: boolean } & JokerUse)
   | { type: 'error'; code: PlayErrorCode }
   | { type: 'pong' };
 

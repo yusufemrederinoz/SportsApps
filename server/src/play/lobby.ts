@@ -420,7 +420,7 @@ export function createLobby(options: LobbyOptions) {
           clearForfeit(active, player.id);
           const rivalId = active.room.seats[opponentOf(side)].userId;
           connection.send(active.room.greeting(side, isConnected(rivalId)));
-          active.jokers.forEach((use) => connection.send(jokerMessage(active, use, side)));
+          active.jokers.forEach((use) => connection.send({ ...jokerMessage(active, use, side), replay: true }));
           send(rivalId, { type: 'opponent', matchId: active.room.id, connected: true });
         }
       }
