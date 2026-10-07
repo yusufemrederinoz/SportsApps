@@ -1,6 +1,6 @@
 import type { MetricRow } from '@sportapps/football-data';
 import { DUEL_HAND_SIZE } from '@sportapps/game-core';
-import type { DuelConcept, DuelMetric, DuelView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
+import type { DuelConcept, DuelMetric, DuelView, GameView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -49,6 +49,13 @@ const library: DuelLibrary = {
   metricRows: (footballerIds) => footballerIds.map(rowOf),
 };
 
+function duelOf(state: GameView): DuelView {
+  if (state.game !== 'duel') {
+    throw new Error('not a duel');
+  }
+  return state.view;
+}
+
 interface Client extends Connection {
   player: Player;
   received: ServerMessage[];
@@ -88,7 +95,7 @@ function attach(player: Player): Client {
       return last.session;
     },
     view() {
-      return client.of('view').at(-1)?.view ?? client.session().view;
+      return duelOf(client.of('view').at(-1) ?? client.session());
     },
   };
   lobby.connect(player, client);
@@ -373,8 +380,8 @@ describe('playing rounds', () => {
     const session = back.session();
     expect(session.opponentConnected).toBe(true);
     expect(session.view).toMatchObject({ phase: 'playing', deadlineIn: TIMING.playMilliseconds - 5000 });
-    expect(session.view.rounds).toHaveLength(1);
-    expect(session.view.hand).toEqual(FIRST_HAND);
+    expect(duelOf(session).rounds).toHaveLength(1);
+    expect(duelOf(session).hand).toEqual(FIRST_HAND);
     expect(second.of('opponent').at(-1)?.connected).toBe(true);
   });
 });

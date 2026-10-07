@@ -196,6 +196,11 @@ describe('client message parsing', () => {
       matchId: 'm',
       action: { kind: 'play', footballerId: 4 },
     });
+    expect(parseClientMessage('{"type":"act","matchId":"m","action":{"kind":"pick","footballerId":4}}')).toEqual({
+      type: 'act',
+      matchId: 'm',
+      action: { kind: 'pick', footballerId: 4 },
+    });
     expect(
       parseClientMessage('{"type":"answer","matchId":"m","turnNumber":3,"cell":{"row":1,"column":2},"footballerId":9}'),
     ).toEqual({ type: 'answer', matchId: 'm', turnNumber: 3, cell: { row: 1, column: 2 }, footballerId: 9 });

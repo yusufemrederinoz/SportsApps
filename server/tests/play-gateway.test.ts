@@ -1,10 +1,11 @@
 import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-import { DUEL_HAND_SIZE, emptyCells, headersAt, type Grid } from '@sportapps/game-core';
+import { DRAFT_FORMATION, DUEL_HAND_SIZE, emptyCells, headersAt, openPositions, type Grid } from '@sportapps/game-core';
 import {
   PLAY_PROTOCOL_VERSION,
   type AuthResponse,
+  type DraftView,
   type DuelView,
   type MatchHistoryResponse,
   type MatchSnapshot,
@@ -118,9 +119,18 @@ async function ready(): Promise<Client> {
 
 async function viewWhere(client: Client, accept: (view: DuelView) => boolean): Promise<DuelView> {
   for (;;) {
-    const { view } = await client.next('view');
-    if (accept(view)) {
-      return view;
+    const message = await client.next('view');
+    if (message.game === 'duel' && accept(message.view)) {
+      return message.view;
+    }
+  }
+}
+
+async function draftWhere(client: Client, accept: (view: DraftView) => boolean): Promise<DraftView> {
+  for (;;) {
+    const message = await client.next('view');
+    if (message.game === 'draft' && accept(message.view)) {
+      return message.view;
     }
   }
 }
@@ -148,6 +158,10 @@ beforeEach(async () => {
         botPickMilliseconds: { minimum: 10, maximum: 10 },
         botFollowMilliseconds: { minimum: 10, maximum: 10 },
         botPlayMilliseconds: { minimum: 10, maximum: 10 },
+      },
+      draftTiming: {
+        pauseMilliseconds: 10,
+        botPickMilliseconds: { minimum: 10, maximum: 10 },
       },
     },
   });
@@ -291,7 +305,9 @@ describe.skipIf(!available)('play gateway', () => {
     const human = await ready();
     human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'duel' });
     const { session } = await human.next('session');
-    expect(session.game).toBe('duel');
+    if (session.game !== 'duel') {
+      throw new Error('not a duel');
+    }
     expect(session.view.phase).toBe('picking');
     expect(football.duelConcepts('tr')).toContainEqual(session.view.concept);
 
@@ -319,6 +335,39 @@ describe.skipIf(!available)('play gateway', () => {
       await app.inject({ method: 'GET', url: '/v1/matches', headers: { authorization: `Bearer ${human.auth.token}` } })
     ).json() as MatchHistoryResponse;
     expect(history.matches).toMatchObject([{ game: 'duel', reason: 'score' }]);
+    human.socket.close();
+  });
+
+  it('drafts a lineup from real data against the bot', async () => {
+    expect(football.draftClubs('tr').length).toBeGreaterThanOrEqual(DRAFT_FORMATION.length);
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 1, game: 'draft' });
+    const { session } = await human.next('session');
+    if (session.game !== 'draft') {
+      throw new Error('not a draft');
+    }
+    const { side } = session;
+    let view: DraftView = session.view;
+
+    for (let round = 1; round <= DRAFT_FORMATION.length; round += 1) {
+      if (view.round !== round || view.phase !== 'playing') {
+        view = await draftWhere(human, (current) => current.phase === 'playing' && current.round === round);
+      }
+      const club = view.clubs.at(-1) as number;
+      const taken = [...view.lineups.x, ...view.lineups.o].flatMap((slot) => (slot.footballerId ? [slot.footballerId] : []));
+      const [candidate] = football.draftCandidates('tr', club, openPositions(view.lineups[side]), taken, 1);
+      expect(candidate).toBeDefined();
+      expect(football.draftEntry(candidate?.id ?? 0, club)).toMatchObject({ id: candidate?.id });
+      human.send({ type: 'act', matchId: session.matchId, action: { kind: 'pick', footballerId: candidate?.id } });
+      view = await draftWhere(human, (current) => current.round === round && current.picked[side]);
+    }
+
+    const finished = await human.next('finished');
+    expect(finished.result.reason).toBe('score');
+    const history = (
+      await app.inject({ method: 'GET', url: '/v1/matches', headers: { authorization: `Bearer ${human.auth.token}` } })
+    ).json() as MatchHistoryResponse;
+    expect(history.matches).toMatchObject([{ game: 'draft', reason: 'score' }]);
     human.socket.close();
   });
 

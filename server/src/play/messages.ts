@@ -1,4 +1,4 @@
-import { GAME_IDS, type ClientMessage, type DuelAction, type GameId, type PlayDifficulty } from '@sportapps/protocol';
+import { GAME_IDS, type ClientMessage, type GameAction, type GameId, type PlayDifficulty } from '@sportapps/protocol';
 
 const TOKEN_MAX_LENGTH = 512;
 const SHORT_TEXT_MAX_LENGTH = 64;
@@ -31,13 +31,16 @@ function game(value: unknown): value is GameId | undefined {
   return value === undefined || (GAME_IDS as readonly unknown[]).includes(value);
 }
 
-function action(value: unknown): DuelAction | null {
+function action(value: unknown): GameAction | null {
   if (typeof value !== 'object' || value === null) {
     return null;
   }
   const fields = value as Fields;
   if (fields.kind === 'play' && integer(fields.footballerId)) {
     return { kind: 'play', footballerId: fields.footballerId };
+  }
+  if (fields.kind === 'pick' && integer(fields.footballerId)) {
+    return { kind: 'pick', footballerId: fields.footballerId };
   }
   if (
     fields.kind === 'hand' &&

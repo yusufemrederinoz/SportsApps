@@ -23,6 +23,7 @@ import type { ServerConfig } from '../config';
 import type { Database } from '../database';
 import type { FootballLibrary } from '../football/library';
 import { DEFAULT_BOT_TIMING, type BotTiming } from '../play/bot';
+import { DEFAULT_DRAFT_TIMING, createDraftRoomFactory, type DraftTiming } from '../play/draft-room';
 import { DEFAULT_DUEL_TIMING, createDuelRoomFactory, type DuelTiming } from '../play/duel-room';
 import { registerPlayGateway } from '../play/gateway';
 import { createGridRoomFactory } from '../play/grid-room';
@@ -48,6 +49,7 @@ export interface AppDependencies {
   play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
     botTiming?: BotTiming;
     duelTiming?: Partial<DuelTiming>;
+    draftTiming?: Partial<DraftTiming>;
   };
   now?: () => number;
   logger?: boolean;
@@ -87,7 +89,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
 
   if (dependencies.football) {
     const { football } = dependencies;
-    const { botTiming, duelTiming, ...lobbyOptions } = dependencies.play ?? {};
+    const { botTiming, duelTiming, draftTiming, ...lobbyOptions } = dependencies.play ?? {};
     const lobby = createLobby({
       now,
       isUsernameTaken: accounts.isUsernameTaken,
@@ -96,6 +98,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       games: {
         grid: createGridRoomFactory(football, botTiming ?? DEFAULT_BOT_TIMING),
         duel: createDuelRoomFactory(football, { ...DEFAULT_DUEL_TIMING, ...duelTiming }),
+        draft: createDraftRoomFactory(football, { ...DEFAULT_DRAFT_TIMING, ...draftTiming }),
       },
       hasMarket: football.hasMarket,
       history,

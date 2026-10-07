@@ -177,7 +177,8 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
       };
     };
 
-    const broadcast = () => SIDES.forEach((side) => context.send(side, { type: 'view', matchId: id, view: view(side) }));
+    const broadcast = () =>
+      SIDES.forEach((side) => context.send(side, { type: 'view', matchId: id, game: 'duel', view: view(side) }));
 
     const stopBots = () => {
       botTimers.forEach((timer) => clearTimeout(timer));
@@ -364,7 +365,14 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
           return 'invalid-message';
         }
         const { action } = message;
-        return action.kind === 'hand' ? lockHand(side, action.footballerIds) : play(side, action.footballerId);
+        switch (action.kind) {
+          case 'hand':
+            return lockHand(side, action.footballerIds);
+          case 'play':
+            return play(side, action.footballerId);
+          default:
+            return 'invalid-action';
+        }
       },
 
       forfeit(side) {

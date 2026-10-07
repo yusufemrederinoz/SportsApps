@@ -8,6 +8,9 @@ import {
   conceptPlayersStatement,
   correctAnswerStatement,
   countryConceptsStatement,
+  draftCandidatesStatement,
+  draftClubsStatement,
+  draftEntryStatement,
   gridAtOffsetStatement,
   gridCountStatement,
   gridHeadersStatement,
@@ -19,6 +22,8 @@ import {
   minimumFameStatement,
   nearMissesStatement,
   toGrid,
+  type DraftCandidateRow,
+  type DraftEntryRow,
   type GridHeaderRow,
   type MetricRow,
   type Statement,
@@ -30,6 +35,8 @@ const VERSION_FILE = 'version.json';
 const KNOWN_ANSWER_LIMIT = 8;
 const CONCEPT_FAME = 45;
 const CONCEPT_PLAYERS = 25;
+const DRAFT_FAME = 32;
+const DRAFT_PER_POSITION = 4;
 
 export interface FootballLibrary {
   readonly dataVersion: string;
@@ -43,6 +50,15 @@ export interface FootballLibrary {
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
   conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
   metricRows(footballerIds: readonly number[]): MetricRow[];
+  draftClubs(market: string): readonly number[];
+  draftEntry(footballerId: number, clubId: number): DraftEntryRow | null;
+  draftCandidates(
+    market: string,
+    clubId: number,
+    positions: readonly string[],
+    excludedIds: readonly number[],
+    limit: number,
+  ): DraftCandidateRow[];
   close(): void;
 }
 
@@ -59,6 +75,7 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
   const first = <T>({ sql, parameters }: Statement) => database.prepare(sql).get(...parameters) as T | undefined;
   const markets = new Set(all<{ code: string }>(marketsStatement()).map((market) => market.code));
   const concepts = new Map<string, readonly DuelConcept[]>();
+  const draftClubs = new Map<string, readonly number[]>();
   const ids = (statement: Statement) => all<{ id: number }>(statement).map((row) => row.id);
 
   const loadConcepts = (market: string): DuelConcept[] => {
@@ -147,6 +164,24 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     metricRows(footballerIds) {
       return footballerIds.length > 0 ? all<MetricRow>(metricRowsStatement(footballerIds)) : [];
+    },
+
+    draftClubs(market) {
+      const known = draftClubs.get(market);
+      if (known) {
+        return known;
+      }
+      const loaded = markets.has(market) ? ids(draftClubsStatement(market, DRAFT_FAME, DRAFT_PER_POSITION)) : [];
+      draftClubs.set(market, loaded);
+      return loaded;
+    },
+
+    draftEntry(footballerId, clubId) {
+      return first<DraftEntryRow>(draftEntryStatement(footballerId, clubId)) ?? null;
+    },
+
+    draftCandidates(market, clubId, positions, excludedIds, limit) {
+      return all<DraftCandidateRow>(draftCandidatesStatement(market, clubId, positions, excludedIds, limit));
     },
 
     close() {
