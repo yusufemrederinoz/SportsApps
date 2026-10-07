@@ -331,7 +331,7 @@
   "auction": {
     "round": "Tur {{round}} · {{target}} tur alan kazanır",
     "criteria": "Ölçüt",
-    "rule": "Bu ikisine uyan kaç futbolcu sayabilirsin? Rakibin artırır ya da \"Say bakalım\" der.",
+    "rule": "Bu ikisine uyan kaç futbolcu sayabilirsin? Rakibin artırır ya da \"Say bakalım\" der. Süren biterse \"Say bakalım\" demiş sayılırsın.",
     "noBid": "Henüz teklif yok",
     "lastBid": "Rakibin teklifi",
     "bidLabel": "Teklif {{bid}} isim",

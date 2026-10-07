@@ -148,6 +148,26 @@ export function AuctionMatchView({
     ? labels.map((label) => `${flagEmoji(label.countryCode) ?? ''} ${nameUppercase(label.name, label.local)}`.trim()).join('  ×  ')
     : '';
   const searchKey = `${view.round}-${view.named.length}-${view.missed.length}`;
+  const proofKey = `${view.round}-${view.phase}`;
+  const chips =
+    view.named.length > 0 || view.missed.length > 0 ? (
+      <View style={styles.chips}>
+        {view.named.map((footballerId) => (
+          <Animated.View key={`named-${footballerId}`} entering={FadeIn.duration(Motion.base)} style={[styles.chip, styles.chipRight]}>
+            <ThemedText type="smallBold" numberOfLines={1}>
+              {shortName(auction.cards[footballerId]?.name ?? '?')}
+            </ThemedText>
+          </Animated.View>
+        ))}
+        {view.missed.map((footballerId) => (
+          <Animated.View key={`missed-${footballerId}`} entering={FadeIn.duration(Motion.base)} style={[styles.chip, styles.chipWrong]}>
+            <ThemedText type="smallBold" themeColor="negative" numberOfLines={1} style={styles.struck}>
+              {shortName(auction.cards[footballerId]?.name ?? '?')}
+            </ThemedText>
+          </Animated.View>
+        ))}
+      </View>
+    ) : null;
   const activeSide: Side | null = bidding ? view.turn : proving ? view.bidder : null;
 
   const status = (): { text: string; color: ThemeColor } => {
@@ -260,24 +280,7 @@ export function AuctionMatchView({
         ) : null}
       </View>
 
-      {view.named.length > 0 || view.missed.length > 0 ? (
-        <View style={styles.chips}>
-          {view.named.map((footballerId) => (
-            <Animated.View key={`named-${footballerId}`} entering={FadeIn.duration(Motion.base)} style={[styles.chip, styles.chipRight]}>
-              <ThemedText type="smallBold" numberOfLines={1}>
-                {shortName(auction.cards[footballerId]?.name ?? '?')}
-              </ThemedText>
-            </Animated.View>
-          ))}
-          {view.missed.map((footballerId) => (
-            <Animated.View key={`missed-${footballerId}`} entering={FadeIn.duration(Motion.base)} style={[styles.chip, styles.chipWrong]}>
-              <ThemedText type="smallBold" themeColor="negative" numberOfLines={1} style={styles.struck}>
-                {shortName(auction.cards[footballerId]?.name ?? '?')}
-              </ThemedText>
-            </Animated.View>
-          ))}
-        </View>
-      ) : null}
+      {chips}
 
       <View style={styles.status}>
         <ThemedText key={`${searchKey}-${view.phase}-${current.text}`} type="subtitle" themeColor={current.color} style={styles.centered} accessibilityLiveRegion="polite">
@@ -324,17 +327,18 @@ export function AuctionMatchView({
             ) : null}
           </>
         ) : myProof ? (
-          <ActionButton label={t('auction.name')} onPress={() => setSearching(searchKey)} />
+          <ActionButton label={t('auction.name')} onPress={() => setSearching(proofKey)} />
         ) : null}
       </View>
 
-      {myProof && searching === searchKey ? (
+      {myProof && searching === proofKey ? (
         <FootballerSearch
           title={title}
           market={auction.market.code}
           secondsLeft={secondsLeft}
           excludedIds={[...view.named, ...view.missed]}
           closeLabel={t('auction.searchDone', { named: view.named.length, bid: view.bid })}
+          footer={chips}
           onSelect={(footballer) => onAct({ kind: 'name', footballerId: footballer.id })}
           onClose={() => setSearching(null)}
         />

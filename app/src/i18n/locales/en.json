@@ -331,7 +331,7 @@
   "auction": {
     "round": "Round {{round}} · first to {{target}}",
     "criteria": "Criteria",
-    "rule": "How many footballers fitting both can you name? Your opponent raises or says \"Prove it\".",
+    "rule": "How many footballers fitting both can you name? Your opponent raises or says \"Prove it\". If your time runs out, you say \"Prove it\".",
     "noBid": "No bid yet",
     "lastBid": "Their bid",
     "bidLabel": "Bid {{bid}} names",
