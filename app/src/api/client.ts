@@ -4,12 +4,18 @@ import {
   type ApiErrorCode,
   type ApiErrorResponse,
   type AuthResponse,
+  type DailyPuzzleResponse,
   type DailyRewardResponse,
   type GameId,
   type IdentityProvider,
+  type LeaderboardPeriod,
+  type LeaderboardResponse,
   type LoginRequest,
   type MatchHistoryResponse,
   type ProgressResponse,
+  type PuzzleGuessRequest,
+  type PuzzleGuessResponse,
+  type PuzzleRankingResponse,
   type RegisterRequest,
   type WalletResponse,
 } from '@sportapps/protocol';
@@ -37,13 +43,13 @@ interface RequestOptions {
   token?: string | null;
 }
 
-export interface HistoryFilter {
+export type HistoryFilter = {
   game?: GameId;
   before?: number;
   limit?: number;
-}
+};
 
-function query(filter: HistoryFilter): string {
+function query(filter: { readonly [key: string]: string | number | undefined }): string {
   const entries = Object.entries(filter).filter(([, value]) => value !== undefined);
   return entries.length === 0
     ? ''
@@ -97,6 +103,13 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     progress: (token: string) => request<ProgressResponse>('GET', '/progress', { token }),
     claimDaily: (token: string) => request<DailyRewardResponse>('POST', '/daily', { token }),
     wallet: (token: string) => request<WalletResponse>('GET', '/wallet', { token }),
+    leaderboard: (token: string, period: LeaderboardPeriod, game: GameId | null) =>
+      request<LeaderboardResponse>('GET', `/leaderboard${query({ period, game: game ?? undefined })}`, { token }),
+    puzzle: (token: string, market: string) => request<DailyPuzzleResponse>('GET', `/puzzle${query({ market })}`, { token }),
+    puzzleGuess: (token: string, guess: PuzzleGuessRequest) =>
+      request<PuzzleGuessResponse>('POST', '/puzzle/guess', { token, body: guess }),
+    puzzleRanking: (token: string, market: string) =>
+      request<PuzzleRankingResponse>('GET', `/puzzle/ranking${query({ market })}`, { token }),
   };
 }
 

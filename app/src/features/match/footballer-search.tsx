@@ -38,7 +38,7 @@ function runSearch(
 interface FootballerSearchProps {
   title: string;
   market: string;
-  secondsLeft: number;
+  secondsLeft: number | null;
   excludedIds: readonly number[];
   filter?: SearchFilter | null;
   emptyLabel?: string;
@@ -103,7 +103,7 @@ export function FootballerSearch({
   const assistsOf = (footballerId: number) =>
     showAssists && assists.key === resultKey ? (assists.values[footballerId] ?? null) : null;
   const searched = found.text === text && text.trim().length >= 2;
-  const urgent = secondsLeft <= URGENT_SECONDS;
+  const urgent = secondsLeft !== null && secondsLeft <= URGENT_SECONDS;
 
   return (
     <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
@@ -114,11 +114,13 @@ export function FootballerSearch({
             <ThemedText style={styles.title} numberOfLines={2}>
               {uppercase(title)}
             </ThemedText>
-            <View style={[styles.clock, urgent && styles.clockUrgent]}>
-              <ThemedText type="score" style={[styles.clockText, { color: urgent ? Colors.negative : Colors.volt }]}>
-                {secondsLeft}
-              </ThemedText>
-            </View>
+            {secondsLeft !== null ? (
+              <View style={[styles.clock, urgent && styles.clockUrgent]}>
+                <ThemedText type="score" style={[styles.clockText, { color: urgent ? Colors.negative : Colors.volt }]}>
+                  {secondsLeft}
+                </ThemedText>
+              </View>
+            ) : null}
           </View>
           <TextInput
             autoFocus

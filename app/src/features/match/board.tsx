@@ -34,10 +34,11 @@ interface BoardProps {
   session: MatchSession;
   disabled: boolean;
   selected: CellPosition | null;
+  cellCaption?: (index: number) => string | null;
   onSelectCell: (position: CellPosition) => void;
 }
 
-export function Board({ gridView, session, disabled, selected, onSelectCell }: BoardProps) {
+export function Board({ gridView, session, disabled, selected, cellCaption, onSelectCell }: BoardProps) {
   const nameUppercase = useNameUppercase();
   const [boardSize, setBoardSize] = useState(0);
   const pulse = useSharedValue(0);
@@ -208,13 +209,19 @@ export function Board({ gridView, session, disabled, selected, onSelectCell }: B
                     const cellLabel = `${rowHeader.name} × ${columnHeader.name}`;
                     if (mark) {
                       const footballer = session.footballers[mark.footballerId] ?? null;
+                      const caption = cellCaption ? cellCaption(index) : null;
                       return (
                         <View
                           key={column}
                           style={styles.track}
                           accessible
-                          accessibilityLabel={`${cellLabel}: ${footballer?.name ?? ''}`}>
+                          accessibilityLabel={`${cellLabel}: ${footballer?.name ?? ''}${caption ? `, ${caption}` : ''}`}>
                           <FootballerCard footballer={footballer} side={mark.side} size={cell} emphasis={emphasisOf(index)} />
+                          {caption ? (
+                            <View style={styles.caption} pointerEvents="none">
+                              <ThemedText style={styles.captionText}>{caption}</ThemedText>
+                            </View>
+                          ) : null}
                         </View>
                       );
                     }
@@ -312,5 +319,20 @@ const styles = StyleSheet.create({
   plusDisabled: {
     color: Colors.strokeBright,
     opacity: 0.5,
+  },
+  caption: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 6,
+    backgroundColor: 'rgba(5, 7, 10, 0.82)',
+  },
+  captionText: {
+    fontFamily: Fonts.heading,
+    fontSize: 13,
+    lineHeight: 16,
+    color: Colors.volt,
   },
 });

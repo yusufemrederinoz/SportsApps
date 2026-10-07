@@ -23,6 +23,22 @@ describe('progress requests', () => {
     ]);
   });
 
+  it('asks for leaderboards and the daily puzzle', async () => {
+    const { calls, client } = recording();
+    await client.leaderboard('token', 'week', null);
+    await client.leaderboard('token', 'all', 'top-ten');
+    await client.puzzle('token', 'tr');
+    await client.puzzleGuess('token', { market: 'tr', cell: { row: 1, column: 2 }, footballerId: 7 });
+    await client.puzzleRanking('token', 'tr');
+    expect(calls.map((call) => `${call.method} ${call.url}`)).toEqual([
+      'GET http://api.test/v1/leaderboard?period=week',
+      'GET http://api.test/v1/leaderboard?period=all&game=top-ten',
+      'GET http://api.test/v1/puzzle?market=tr',
+      'POST http://api.test/v1/puzzle/guess',
+      'GET http://api.test/v1/puzzle/ranking?market=tr',
+    ]);
+  });
+
   it('claims the daily reward with a signed post and reads progress and goals', async () => {
     const { calls, client } = recording();
     await client.claimDaily('token');

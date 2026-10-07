@@ -62,7 +62,13 @@
     "titleAccentTopTen": "İlk 10",
     "subtitleTopTen": "Gizli bir 10'luk liste var. Sırayla isim söyle; listede ne kadar aşağıdaysa o kadar puan. Yanlış isim can götürür.",
     "titleAccentCareer": "Kariyer",
-    "subtitleCareer": "Gizli bir futbolcunun kulüpleri sırayla açılır. Az ipucuyla bilen çok puan alır; yanlış tahmin yeni bir kulüp açar ve sırayı geçirir."
+    "subtitleCareer": "Gizli bir futbolcunun kulüpleri sırayla açılır. Az ipucuyla bilen çok puan alır; yanlış tahmin yeni bir kulüp açar ve sırayı geçirir.",
+    "puzzleTitle": "Günün bulmacası",
+    "puzzleHint": "Herkes aynı ızgarada · 9 hak",
+    "puzzleProgress": "{{filled}}/9 · {{score}} puan",
+    "puzzleDone": "Bitti · {{score}} puan",
+    "leaderboardTitle": "Lider tablosu",
+    "leaderboardHint": "Haftalık ve tüm zamanlar"
   },
   "difficulty": {
     "easy": "Kolay",
@@ -141,7 +147,10 @@
     "providerUnavailable": "Bu giriş yöntemi henüz kullanılamıyor.",
     "invalidIdentityToken": "Giriş doğrulanamadı. Tekrar dene.",
     "rateLimited": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar dene.",
-    "internal": "Bir şeyler ters gitti. Tekrar dene."
+    "internal": "Bir şeyler ters gitti. Tekrar dene.",
+    "puzzleFinished": "Bugünün bulmacası bitti.",
+    "cellTaken": "Bu hücre zaten dolu.",
+    "puzzleUnavailable": "Bulmaca şu an kullanılamıyor."
   },
   "online": {
     "connecting": "Bağlanıyor",
@@ -436,7 +445,8 @@
     "reasonPurchase": "Satın alma",
     "reasonAd": "Reklam ödülü",
     "offline": "Geçmiş yüklenemedi. Bağlantını kontrol et.",
-    "reasonJoker": "Joker"
+    "reasonJoker": "Joker",
+    "reasonPuzzle": "Günün bulmacası"
   },
   "jokers": {
     "extra-time": "Ek süre",
@@ -480,5 +490,36 @@
     "roleDF": "Defans",
     "roleMF": "Orta saha",
     "roleFW": "Forvet"
+  },
+  "leaderboard": {
+    "title": "Lider tablosu",
+    "week": "Bu hafta",
+    "all": "Tüm zamanlar",
+    "overall": "Genel",
+    "resets": "Her pazartesi 00.00'da sıfırlanır",
+    "empty": "Bu tabloda henüz kimse yok. Online maç oynayarak ilk sen gir.",
+    "points": "{{points}} puan",
+    "level": "Sv {{level}}",
+    "yourRank": "Senin sıran",
+    "offline": "Lider tablosu yüklenemedi."
+  },
+  "puzzle": {
+    "title": "Günün bulmacası",
+    "number": "#{{number}}",
+    "guessesLeft": "{{guesses}} hak",
+    "score": "{{score}} puan",
+    "rule": "Her hücreye satırına ve sütununa uyan bir futbolcu yaz. 9 hakkın var; yanlış tahmin de hak götürür. Aynı cevabı ne kadar az kişi verdiyse o kadar puan.",
+    "correct": "Doğru!",
+    "wrong": "Yanlış",
+    "alreadyUsed": "Bu futbolcuyu zaten kullandın",
+    "finished": "Bulmaca bitti",
+    "reward": "+{{goals}} gol kazandın",
+    "share": "Sonucu paylaş",
+    "shareText": "Futbol XOX · Günün bulmacası #{{number}}\n{{filled}}/9 · {{score}} puan",
+    "ranking": "Günün sıralaması",
+    "players": "Bugün {{players}} kişi oynadı",
+    "cellShare": "Aynı cevabı verenler: {{share}}",
+    "tomorrow": "Yeni bulmaca yarın 00.00'da",
+    "unavailable": "Bulmaca şu an yüklenemedi."
   }
 }

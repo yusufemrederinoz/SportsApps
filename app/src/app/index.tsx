@@ -15,6 +15,7 @@ import type { Difficulty } from '@/data/types';
 import { GAMES, GAME_ACCENTS, GAME_LABELS, GAME_SUBTITLES } from '@/features/games';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import { DailyRewardDialog } from '@/features/progress/daily-reward-dialog';
+import { HomeTiles } from '@/features/progress/home-tiles';
 import { ProgressChip } from '@/features/progress/progress-chip';
 import { useProgress } from '@/features/progress/use-progress';
 import { haptics } from '@/feedback/haptics';
@@ -88,6 +89,10 @@ function HomeScreen() {
             <ThemedText themeColor="textSecondary">{t(GAME_SUBTITLES[game])}</ThemedText>
           </Animated.View>
         </View>
+
+        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(240)}>
+          <HomeTiles onPuzzle={() => router.push('/puzzle')} onLeaderboard={() => router.push('/leaderboard')} />
+        </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(260)} style={styles.section}>
           <View style={styles.sectionHeader}>

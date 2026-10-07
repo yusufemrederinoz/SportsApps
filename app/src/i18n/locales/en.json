@@ -62,7 +62,13 @@
     "titleAccentTopTen": "Top 10",
     "subtitleTopTen": "There is a hidden list of ten. Take turns naming players; the lower on the list, the more points. A wrong name costs a life.",
     "titleAccentCareer": "Career",
-    "subtitleCareer": "A hidden footballer's clubs open one by one. Guess with fewer clues for more points; a wrong guess opens a new club and passes the turn."
+    "subtitleCareer": "A hidden footballer's clubs open one by one. Guess with fewer clues for more points; a wrong guess opens a new club and passes the turn.",
+    "puzzleTitle": "Daily puzzle",
+    "puzzleHint": "Everyone gets the same grid · 9 guesses",
+    "puzzleProgress": "{{filled}}/9 · {{score}} points",
+    "puzzleDone": "Done · {{score}} points",
+    "leaderboardTitle": "Leaderboard",
+    "leaderboardHint": "This week and all time"
   },
   "difficulty": {
     "easy": "Easy",
@@ -141,7 +147,10 @@
     "providerUnavailable": "This sign-in method is not available yet.",
     "invalidIdentityToken": "Sign-in could not be verified. Try again.",
     "rateLimited": "Too many attempts. Wait a minute and try again.",
-    "internal": "Something went wrong. Try again."
+    "internal": "Something went wrong. Try again.",
+    "puzzleFinished": "Today's puzzle is over.",
+    "cellTaken": "This cell is already filled.",
+    "puzzleUnavailable": "The puzzle is not available right now."
   },
   "online": {
     "connecting": "Connecting",
@@ -436,7 +445,8 @@
     "reasonPurchase": "Purchase",
     "reasonAd": "Ad reward",
     "offline": "History could not be loaded. Check your connection.",
-    "reasonJoker": "Joker"
+    "reasonJoker": "Joker",
+    "reasonPuzzle": "Daily puzzle"
   },
   "jokers": {
     "extra-time": "Extra time",
@@ -480,5 +490,36 @@
     "roleDF": "Defender",
     "roleMF": "Midfielder",
     "roleFW": "Forward"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "week": "This week",
+    "all": "All time",
+    "overall": "Overall",
+    "resets": "Resets every Monday at midnight",
+    "empty": "Nobody is on this board yet. Play an online match to be first.",
+    "points": "{{points}} points",
+    "level": "Lv {{level}}",
+    "yourRank": "Your rank",
+    "offline": "The leaderboard could not be loaded."
+  },
+  "puzzle": {
+    "title": "Daily puzzle",
+    "number": "#{{number}}",
+    "guessesLeft": "{{guesses}} guesses",
+    "score": "{{score}} points",
+    "rule": "Fill each cell with a footballer who fits its row and column. You have 9 guesses; a wrong guess uses one too. The fewer people give the same answer, the more points.",
+    "correct": "Correct!",
+    "wrong": "Wrong",
+    "alreadyUsed": "You already used this footballer",
+    "finished": "Puzzle finished",
+    "reward": "You earned {{goals}} goals",
+    "share": "Share your result",
+    "shareText": "Football XOX · Daily puzzle #{{number}}\n{{filled}}/9 · {{score}} points",
+    "ranking": "Today's ranking",
+    "players": "{{players}} people played today",
+    "cellShare": "Same answer: {{share}}",
+    "tomorrow": "A new puzzle comes at midnight",
+    "unavailable": "The puzzle could not be loaded."
   }
 }

@@ -29,6 +29,7 @@ const REASON_KEYS = {
   daily: 'history.reasonDaily',
   win: 'history.reasonWin',
   joker: 'history.reasonJoker',
+  puzzle: 'history.reasonPuzzle',
   purchase: 'history.reasonPurchase',
   ad: 'history.reasonAd',
 } as const satisfies Record<GoalReason, string>;

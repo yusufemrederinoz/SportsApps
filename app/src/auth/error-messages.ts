@@ -16,5 +16,8 @@ export const ERROR_KEYS = {
   'invalid-identity-token': 'errors.invalidIdentityToken',
   'rate-limited': 'errors.rateLimited',
   'not-found': 'errors.internal',
+  'puzzle-finished': 'errors.puzzleFinished',
+  'cell-taken': 'errors.cellTaken',
+  'puzzle-unavailable': 'errors.puzzleUnavailable',
   internal: 'errors.internal',
 } as const satisfies Record<RequestErrorCode, string>;
