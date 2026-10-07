@@ -14,6 +14,7 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Dil desteği | Baştan çok dilli. İlk diller Türkçe ve İngilizce; cihaz diline göre seçilir, yedek dil İngilizce. Veride adlar dil, bilinirlik ve ızgaralar pazar boyutuyla tutulur |
 | Platform | Android ve iOS birlikte; React Native + Expo |
 | Çekirdek deneyim | Online 1'e 1 düello. Offline mod da desteklenir |
+| Oyun modları | XOX'un yanında sekiz mod daha: Kart Düellosu, Kadro Kur, Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10, Kariyer Yolu. Hepsi online, bot ve arkadaş odası destekli; internetsiz oyun şimdilik yalnızca XOX'ta. Kurallar [oyun-modlari.md](oyun-modlari.md) belgesinde |
 | Rakip bulunamazsa | Rakip bot olur |
 | Veri | Yalnızca ücretsiz kaynaklar |
 | Kulüp logosu | Gerçek logo kullanılmaz |

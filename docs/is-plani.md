@@ -225,7 +225,7 @@ Bitti sayılır: Tanınmış oyuncuların kartları uygulamada görünür; atıf
 
 ## Adım 7B — Yeni oyun modları
 
-Durum: sürüyor (7 Ekim 2026'da başladı). Kurallar ve yapım sırası [oyun-modlari.md](oyun-modlari.md) belgesinde.
+Durum: ilk sürüm tamamlandı (7 Ekim 2026). Kurallar ve yapım sırası [oyun-modlari.md](oyun-modlari.md) belgesinde.
 
 Yapılanlar:
 
@@ -233,9 +233,15 @@ Yapılanlar:
 - Sunucuda moddan bağımsız lobi ve oda üreticileri; maç kaydında mod.
 - Kart Düellosu: kural motoru, sunucu odası ve bot, uygulama ekranları, ana ekranda oyun seçimi, arkadaş odasında mod. Emülatörde bota karşı ve arkadaş odasında denendi.
 - Kadro Kur: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
-- Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma ve İlk 10: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
+- Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
+- Kulüplere katılış ve ayrılış yılları uygulama veritabanında.
 
-Sıradaki: Kariyer Yolu (veri hattına kulüp sırası eklenecek).
+Kalanlar:
+
+- Gerçek telefonlarda iki kişiyle her modun denenmesi; süre ve puan dengesinin oyuncu geri bildirimine göre ayarlanması.
+- Bot zorluklarının mod mod gözden geçirilmesi (şu an kurallar tahmine dayalı).
+- Kart Düellosu ve diğer modlar için internetsiz (bota karşı) oyun.
+- Turnuva katılımı verisi ("Dünya Kupası'nda oynamış") ve transfer yönü konseptleri.
 
 Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; her biri için kural testleri, sunucu testleri ve emülatörde baştan sona bir maç vardır.
 

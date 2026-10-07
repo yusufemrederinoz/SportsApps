@@ -500,6 +500,14 @@ Doğrulama: gerçek veritabanıyla sunucu testinde bota karşı tam maç; emüla
 
 Aynı oturumda düzeltilen bir sorun: durum satırlarında yabancı futbolcu adları Türkçe kuralla büyütülüyordu ("ROBİN VAN PERSİE"); İlk 10, Zincir ve Kadro Kur'da adlar artık yerli/yabancı ayrımına göre büyütülüyor.
 
+### Kariyer Yolu ve dokuz modun tamamlanması
+
+Veri: tam veritabanındaki tarihli kulüp kayıtları (`player_clubs.first_year`, `last_year`) uygulama veritabanına `player_club_years` tablosu olarak eklendi (120.989 kayıt). Kaynakta 15 kayıtta ayrılış yılı katılış yılından önce görünüyordu; bu kayıtlarda ayrılış yılı boş bırakılıyor. Tanınmış (bilinirliği 45 ve üzeri) 972 oyuncunun 937'sinde bütün kulüplerin katılış yılı biliniyor. Uygulama bu tabloyu kullanmadığı için veri sürümü değişmedi; tabloyu sunucu okuyor.
+
+Kariyer Yolu: kural motoru, sunucu odası, bot ve uygulama ekranı eklendi. Ekran: "Kim bu futbolcu?" levhası ve şu anki puan, yıllarıyla açılan kulüp listesi, tur sonunda futbolcunun kartı. Emülatörde bota karşı denendi (FC Metz → AS Monaco ile başlayan 9 kulüplü bir kariyer; ardından Inter → Real Madrid). 9 kulüplü kariyerin ekranı neredeyse doldurduğu görülünce gizli futbolcular 3–8 kulüplü kariyerlerle sınırlandı.
+
+Böylece planlanan dokuz modun hepsi online (bot ve arkadaş odası dahil) oynanır durumda. Bütün modlarda ortak olan karar: bot "bilemediği" durumda süreyi doldurmak yerine akla yatkın yanlış bir cevap veriyor; insan oyuncu boşuna beklemiyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -578,3 +586,10 @@ Aynı oturumda düzeltilen bir sorun: durum satırlarında yabancı futbolcu adl
 | `7eeddd6` | 7 Ekim | Sunucuda İlk 10 odası ve botu |
 | `fe49019` | 7 Ekim | Uygulamada İlk 10 ekranı |
 | `756ed64` | 7 Ekim | Zincir ve Kadro Kur mesajlarında adların doğru büyütülmesi |
+| `add8884` | 7 Ekim | Belgeler: İlk 10 |
+| `ee28abe` | 7 Ekim | Kulüplere katılış ve ayrılış yıllarının uygulama veritabanına eklenmesi |
+| `29b0e36` | 7 Ekim | Kariyer Yolu kuralları (kural motoru) |
+| `366f15b` | 7 Ekim | Kariyer Yolu mesajları ve kariyer sorguları |
+| `f171bd2` | 7 Ekim | Sunucuda Kariyer Yolu odası ve botu |
+| `b37d734` | 7 Ekim | Kariyer Yolu'nda 3–8 kulüplü kariyer sınırı |
+| `c2ed18f` | 7 Ekim | Uygulamada Kariyer Yolu ekranı |

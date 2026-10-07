@@ -24,7 +24,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | `chain` | Zincir | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `rare` | En Az Bilinen | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `auction` | Açık Artırma | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
-| `career` | Kariyer Yolu | Öneri | Sırada |
+| `career` | Kariyer Yolu | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `top-ten` | İlk 10 | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 
 ### Kart Düellosu (`duel`)
@@ -125,6 +125,14 @@ Uygulanan hâli (7 Ekim 2026):
 
 Gizli bir futbolcunun kulüpleri kariyer sırasıyla tek tek açılır. Oyuncular sırayla tahmin eder. Az ipucuyla bilen çok puan alır; yanlış tahmin sırayı geçirir.
 
+Uygulanan hâli (7 Ekim 2026):
+
+- **Futbolcular.** Maçta 4 gizli futbolcu var. Bilinirliği zorluğa göre 65, 55 ya da 45 ve üzeri; bütün kulüplerinin katılış yılı bilinen ve 3–8 kulübü olan futbolcular seçilir (daha uzun kariyerler tek ekrana sığmıyor).
+- **İpuçları.** Kulüpler katılış yılına göre sıralanır ve yıllarıyla gösterilir ("2001–2003 FC Metz"). Yalnızca Süper Lig ve beş büyük ligin kulüpleri var; bu ekranda yazıyor.
+- **Puan.** Bir kulüp açıkken bilen, kulüp sayısı kadar puan alır; her yeni kulüp puanı bir azaltır (en az 1). Yanlış ya da süresi dolan tahmin yeni bir kulüp açar ve sırayı geçirir. Bütün kulüpler açıldıktan sonra bir tahmin hakkı daha var; kimse bilemezse tur puansız biter. Futbolcuyu ilk tahmin eden her turda değişir.
+- **Süre.** Tahmin başına 15 saniye; tur sonunda bütün kariyer ve futbolcunun kartı 5 saniye gösterilir.
+- **Bot.** Açık kulüp sayısıyla artan bir olasılıkla bilir (zorluğa göre başlangıç %12, %22 ya da %32; her kulüpte +%15). Bilemediğinde gizli futbolcuyla aynı kulüpte oynamış birini söyler.
+
 ### İlk 10 (`top-ten`)
 
 Bir liste sorulur ("Süper Lig'de en çok gol atan 10 yabancı"). Oyuncular sırayla ad söyler. Listede olan ad sırasına göre puan getirir, olmayan ad can götürür. Canı biten ya da liste bitince puanı az olan kaybeder.
@@ -167,7 +175,7 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 | `chain` | Kulüp üyeliği | Hazır |
 | `rare` | Izgara ölçütleri, bilinirlik puanı | Hazır |
 | `auction` | Izgara ölçütleri, cevap listeleri | Hazır |
-| `career` | Tarihli kulüp kayıtları | Tam veritabanında var; uygulama veritabanına eklenecek |
+| `career` | Tarihli kulüp kayıtları | Hazır (uygulama veritabanında `player_club_years`) |
 | `top-ten` | Sıralı listeler | Değer ve millî maç hazır; gol listeleri istatistikten sonra |
 
 ## Teknik yaklaşım
@@ -184,6 +192,6 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 3. Kadro Kur. (Tamam)
 4. Hangisi Yüksek, Zincir. (Tamam)
 5. En Az Bilinen, Açık Artırma. (Tamam)
-6. İlk 10 (Tamam), Kariyer Yolu.
+6. İlk 10, Kariyer Yolu. (Tamam)
 
 Her mod için bitti sayılma ölçütü: kural testleri, sunucu testleri (bot ve süre dolması dahil), emülatörde baştan sona bir maç.

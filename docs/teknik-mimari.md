@@ -192,6 +192,7 @@ Tam veritabanından farkları:
 - Oyuncunun ana uyruğu doğrudan `players.country_id` sütunundadır.
 - Bilinirlik puanı 20'nin altındaki oyuncular için satır tutulmaz; bu oyuncular yine geçerli cevaptır.
 - Ad araması için `player_search` adında tam metin dizini (FTS5) vardır.
+- Oyun modları için: `player_stats` (kariyer toplamları), `player_club_stats` (kulüp bazında), `player_profile` (en yüksek piyasa değeri, millî maç), `player_club_years` (kulübe katılış ve ayrılış yılı). Bu tabloları sunucu okur; uygulama yalnızca `player_stats` ve `player_clubs` üzerinden arama süzgeci kurar. Bu tablolar eklenirken veri sürümü değiştirilmedi, çünkü uygulamanın kullandığı veride değişiklik yok.
 
 ## Görsel hattı
 
@@ -447,6 +448,7 @@ Sunucu, sıranın kalan süresini milisaniye olarak gönderir; uygulama bunu ken
 | `src/play/rare-room.ts` | En Az Bilinen oda üreticisi: ızgaradan ölçütler, gizli cevaplar, doğruluk ve bilinirlik, bot |
 | `src/play/auction-room.ts` | Açık Artırma oda üreticisi: zengin hücre seçimi, teklif ve "Say bakalım", ispat süresi, bot |
 | `src/play/top-ten-room.ts` | İlk 10 oda üreticisi: liste seçimi, sıralama ve yakın ıskalar, canlar, bot |
+| `src/play/career-room.ts` | Kariyer Yolu oda üreticisi: gizli futbolcu seçimi, yıllara göre kulüp sırası, puan, bot |
 | `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
 | `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler |
 | `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar, düello konseptleri ve kart değerleri |
@@ -480,6 +482,7 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/features/rare/*` | En Az Bilinen: görünüm (ölçüt, gizli cevap, açılışta bilinirlik çubukları), sesler ve titreşim |
 | `src/features/auction/*` | Açık Artırma: görünüm (teklif sayacı, ispat listesi), sesler ve titreşim |
 | `src/features/top-ten/*` | İlk 10: görünüm (canlar, 10 satırlık liste), sesler ve titreşim |
+| `src/features/career/*` | Kariyer Yolu: görünüm (yıllarıyla kulüp listesi, cevap kartı), sesler ve titreşim |
 | `src/features/games.ts` | Oyun listesi, adları ve ana ekran metinleri; mod görünümlerinin ortak yardımcıları |
 | `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
 | `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
@@ -530,10 +533,10 @@ Açılış akışı:
 
 | Paket | Test sayısı | Neyi denetler |
 |---|---|---|
-| Veri hattı | 48 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (8): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları |
-| Kural motoru | 62 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş. En Az Bilinen (3): tur kazananı, gizli cevap, bitiş. Açık Artırma (5): teklif sırası ve sınırları, ispat, süre dolması, en yüksek teklif, bitiş. İlk 10 (4): sıraya göre puan, can kaybı, canı biten oyuncunun atlanması, bitiş |
-| Sunucu | 137 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (9), Zincir (9), En Az Bilinen (8), Açık Artırma (9) ve İlk 10 (8): soru, ölçüt ve liste üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; beşi için de gerçek veritabanıyla bota karşı tam maç |
-| Uygulama | 86 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek (2), Zincir (2), En Az Bilinen (2), Açık Artırma (2) ve İlk 10 (2): görünüm yardımcıları; ızgara başlığının adı (1) |
+| Veri hattı | 49 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (9): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları, kulüp yıllarının uygulama veritabanında tutarlılığı |
+| Kural motoru | 66 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş. En Az Bilinen (3): tur kazananı, gizli cevap, bitiş. Açık Artırma (5): teklif sırası ve sınırları, ispat, süre dolması, en yüksek teklif, bitiş. İlk 10 (4): sıraya göre puan, can kaybı, canı biten oyuncunun atlanması, bitiş. Kariyer Yolu (4): puanın açık ipucuna göre azalması, yeni ipucu ve sıra geçişi, son tahmin hakkı, bitiş |
+| Sunucu | 146 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (9), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; altısı için de gerçek veritabanıyla bota karşı tam maç |
+| Uygulama | 88 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1) |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -569,5 +572,7 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Zincir'de yalnızca veritabanındaki kulüpler (Süper Lig ve beş büyük lig) bağlantı sayılıyor; gerçekte başka bir kulüpte birlikte oynamış iki futbolcu yanlış sayılır.
 - Millî maç sayısı 2012 öncesi kariyerler için yok; bu yüzden İlk 10'da millî maç listesi kullanılmıyor, Kart Düellosu ve Hangisi Yüksek'te millî maç sorusu yalnızca iki kartta da değer varsa çıkıyor.
 - İlk 10'un gol listeleri iki kaynağı karıştırıyor (Vikiveri kaynaklı eski oyuncularda yalnızca lig golleri); ekranda "sıralama uygulamanın verisine göredir" notu var.
+- Kariyer Yolu'nda yalnızca veritabanındaki kulüpler var; bir kulüpteki birden fazla dönem tek kayıt olarak tutulduğu için araya giren kiralıklar ("Galatasaray 1992–2008" içinde "Torino 1995") sırayı bozuk gösterebilir.
+- Yeni modlarda internetsiz oyun yok; hepsi sunucu gerektiriyor.
 - Geliştirme ortamında sıcak yenileme ikinci bir bağlantı açıp maçı "başka cihaz" hatasıyla düşürebiliyor.
 - Görsel üretimi yüzü her zaman korumuyor: örnek olarak Messi'nin çizimi kaynak fotoğraftaki yüze yeterince benzemiyor. Kaynak kırpma doğru; sapma çizime dönüştürme adımında.
