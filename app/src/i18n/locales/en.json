@@ -128,7 +128,7 @@
     "password": "Password",
     "logout": "Sign out",
     "historyTitle": "Recent matches",
-    "historyEmpty": "No online matches yet.",
+    "historyEmpty": "No matches yet.",
     "historyWin": "Win",
     "historyLoss": "Loss",
     "historyDraw": "Draw",
