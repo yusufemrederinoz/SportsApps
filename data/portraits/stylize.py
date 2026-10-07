@@ -179,11 +179,16 @@ def run(limit=None):
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     pipeline = load_pipeline()
     matting = load_matting()
+    counts["failed"] = 0
     for player in pending:
-        crop = Image.open(crop_path(player["id"])).convert("RGB").resize((WORKING_SIZE, WORKING_SIZE))
-        result = portrait(pipeline, matting, crop, report[str(player["id"])]["face"])
-        result.resize((PORTRAIT_SIZE, PORTRAIT_SIZE), Image.LANCZOS).save(
-            output_path(player["id"]), "WEBP", quality=WEBP_QUALITY, method=6
-        )
-        counts["made"] += 1
+        try:
+            crop = Image.open(crop_path(player["id"])).convert("RGB").resize((WORKING_SIZE, WORKING_SIZE))
+            result = portrait(pipeline, matting, crop, report[str(player["id"])]["face"])
+            result.resize((PORTRAIT_SIZE, PORTRAIT_SIZE), Image.LANCZOS).save(
+                output_path(player["id"]), "WEBP", quality=WEBP_QUALITY, method=6
+            )
+            counts["made"] += 1
+        except (OSError, RuntimeError, ValueError) as error:
+            counts["failed"] += 1
+            print(f"failed {player['id']}: {error}")
     return counts
