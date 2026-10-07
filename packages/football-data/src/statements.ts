@@ -110,6 +110,31 @@ export function knownAnswersStatement(
   };
 }
 
+export function rareAnswersStatement(
+  market: string,
+  row: Header,
+  column: Header,
+  minimumFame: number,
+  limit: number,
+): Statement {
+  const rowCondition = headerCondition(row, 'f.player_id');
+  const columnCondition = headerCondition(column, 'f.player_id');
+  return {
+    sql: `SELECT f.player_id AS id, f.fame FROM player_fame f
+          WHERE f.market = ? AND f.fame >= ? AND ${rowCondition.sql} AND ${columnCondition.sql}
+          ORDER BY f.fame ASC, f.player_id
+          LIMIT ?`,
+    parameters: [market, minimumFame, rowCondition.parameter, columnCondition.parameter, limit],
+  };
+}
+
+export function fameStatement(market: string, footballerId: number): Statement {
+  return {
+    sql: 'SELECT COALESCE((SELECT fame FROM player_fame WHERE market = ? AND player_id = ?), 0) AS fame',
+    parameters: [market, footballerId],
+  };
+}
+
 export function nearMissesStatement(
   market: string,
   matching: Header,

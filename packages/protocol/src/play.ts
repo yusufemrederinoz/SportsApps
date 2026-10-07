@@ -2,6 +2,7 @@ import type { ChainAction, ChainView } from './chain';
 import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
 import type { HigherAction, HigherView } from './higher';
+import type { RareAction, RareView } from './rare';
 
 export const PLAY_PATH = '/play';
 export const PLAY_PROTOCOL_VERSION = 1;
@@ -11,7 +12,7 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
-export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain'] as const;
+export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain', 'rare'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
@@ -56,9 +57,10 @@ export type GameView =
   | { game: 'duel'; view: DuelView }
   | { game: 'draft'; view: DraftView }
   | { game: 'higher'; view: HigherView }
-  | { game: 'chain'; view: ChainView };
+  | { game: 'chain'; view: ChainView }
+  | { game: 'rare'; view: RareView };
 
-export type GameAction = DuelAction | DraftAction | HigherAction | ChainAction;
+export type GameAction = DuelAction | DraftAction | HigherAction | ChainAction | RareAction;
 
 export type SessionSnapshot = GameView & {
   matchId: string;
