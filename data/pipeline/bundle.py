@@ -148,10 +148,23 @@ CREATE TABLE IF NOT EXISTS player_profile (
     market_value INTEGER,
     caps INTEGER
 );
+CREATE TABLE IF NOT EXISTS player_club_years (
+    player_id INTEGER NOT NULL,
+    club_id INTEGER NOT NULL,
+    first_year INTEGER NOT NULL,
+    last_year INTEGER,
+    PRIMARY KEY (player_id, club_id)
+) WITHOUT ROWID;
 """
 PROFILE_COPY = (
     "INSERT INTO player_profile SELECT id, highest_market_value_eur, international_caps FROM source.players "
     "WHERE id IN (SELECT id FROM players) AND (highest_market_value_eur IS NOT NULL OR international_caps IS NOT NULL)"
+)
+CLUB_YEARS_COPY = (
+    "INSERT INTO player_club_years SELECT s.player_id, s.club_id, s.first_year, "
+    "CASE WHEN s.last_year >= s.first_year THEN s.last_year END FROM source.player_clubs s "
+    "WHERE s.first_year IS NOT NULL AND EXISTS "
+    "(SELECT 1 FROM player_clubs a WHERE a.player_id = s.player_id AND a.club_id = s.club_id)"
 )
 STATS_COPIES = (
     "INSERT INTO player_stats SELECT player_id, source, appearances, goals, assists, yellow_cards, red_cards, "
@@ -168,6 +181,8 @@ def copy_stats(connection):
     connection.execute("DELETE FROM player_club_stats")
     connection.execute("DELETE FROM player_profile")
     connection.execute(PROFILE_COPY)
+    connection.execute("DELETE FROM player_club_years")
+    connection.execute(CLUB_YEARS_COPY)
     if connection.execute("SELECT 1 FROM source.sqlite_master WHERE name = 'player_stats'").fetchone():
         for statement in STATS_COPIES:
             connection.execute(statement)
@@ -221,6 +236,7 @@ def refresh(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
         "portraits": connection.execute("SELECT COUNT(*) FROM player_portraits").fetchone()[0],
         "stats": connection.execute("SELECT COUNT(*) FROM player_stats").fetchone()[0],
         "club_stats": connection.execute("SELECT COUNT(*) FROM player_club_stats").fetchone()[0],
+        "club_years": connection.execute("SELECT COUNT(*) FROM player_club_years").fetchone()[0],
     }
     connection.commit()
     connection.execute("DETACH DATABASE source")

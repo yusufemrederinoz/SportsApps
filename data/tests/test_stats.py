@@ -87,3 +87,25 @@ class StoredStatsTest(unittest.TestCase):
         ).fetchone()[0]
         self.assertGreater(app_rows, 20000)
         self.assertEqual(orphans, 0)
+
+    def test_app_database_orders_careers_by_the_year_a_club_was_joined(self):
+        undated_links = self.app.execute(
+            "SELECT COUNT(*) FROM player_club_years y WHERE NOT EXISTS "
+            "(SELECT 1 FROM player_clubs c WHERE c.player_id = y.player_id AND c.club_id = y.club_id)"
+        ).fetchone()[0]
+        backwards = self.app.execute(
+            "SELECT COUNT(*) FROM player_club_years WHERE last_year IS NOT NULL AND last_year < first_year"
+        ).fetchone()[0]
+        icardi = [
+            row[0]
+            for row in self.app.execute(
+                "SELECT n.name FROM player_club_years y JOIN players p ON p.id = y.player_id "
+                "JOIN club_names n ON n.club_id = y.club_id AND n.language = 'tr' "
+                "WHERE p.name = 'Mauro Icardi' ORDER BY y.first_year, y.club_id"
+            )
+        ]
+        self.assertEqual(undated_links, 0)
+        self.assertEqual(backwards, 0)
+        self.assertGreater(self.app.execute("SELECT COUNT(*) FROM player_club_years").fetchone()[0], 100000)
+        self.assertEqual(icardi[-1], "Galatasaray")
+        self.assertLess(icardi.index("UC Sampdoria"), icardi.index("FC Internazionale Milano"))
