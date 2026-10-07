@@ -37,7 +37,7 @@ import { TURN_GRACE_MILLISECONDS } from './room';
 const SECOND = 1000;
 const POOL_FAME = 45;
 const POOL_SIZE = 60;
-const FALLBACK_METRICS: readonly DuelMetric[] = ['goals', 'appearances'];
+const AGE_METRICS: readonly DuelMetric[] = ['older', 'younger'];
 const BOT_STRONG_PICKS: Record<BotLevel, number> = { 1: 1, 2: 4, 3: DUEL_HAND_SIZE };
 const BOT_ACCURACY: Record<BotLevel, number> = { 1: 0.3, 2: 0.6, 3: 0.85 };
 
@@ -93,8 +93,15 @@ export function chooseQuestions(
   valueOf: (footballerId: number, metric: DuelMetric) => number | null,
   random: () => number,
 ): DuelQuestion<DuelMetric>[] {
-  const covered = DUEL_METRICS.filter((metric) => cards.every((id) => valueOf(id, metric) !== null));
-  const order = shuffle(covered.length > 0 ? covered : FALLBACK_METRICS, random);
+  const coverage = (metric: DuelMetric) => cards.filter((id) => valueOf(id, metric) !== null).length;
+  const covered = DUEL_METRICS.filter((metric) => coverage(metric) === cards.length);
+  const stats = shuffle(covered.filter((metric) => !AGE_METRICS.includes(metric)), random);
+  const ages = shuffle(covered.filter((metric) => AGE_METRICS.includes(metric)), random);
+  const partial = DUEL_METRICS.filter((metric) => !covered.includes(metric)).sort(
+    (first, second) => coverage(second) - coverage(first),
+  );
+  const preferred = [...stats.slice(0, DUEL_HAND_SIZE - 1), ...ages, ...stats.slice(DUEL_HAND_SIZE - 1), ...partial];
+  const order = shuffle(preferred.slice(0, DUEL_HAND_SIZE), random);
   return Array.from({ length: DUEL_HAND_SIZE }, (_, index) => {
     const metric = order[index % order.length] as DuelMetric;
     return { metric, prefer: METRIC_PREFERENCES[metric] };

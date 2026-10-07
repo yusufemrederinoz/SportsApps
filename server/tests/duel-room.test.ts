@@ -269,10 +269,20 @@ describe('questions', () => {
     expect(questions.find((question) => question.metric === 'older')?.prefer).toBe('low');
   });
 
-  it('repeats questions when too few are known for every card', () => {
-    const questions = chooseQuestions([1, 2], (_, metric) => (metric === 'goals' || metric === 'older' ? 5 : null), random);
-    expect(questions).toHaveLength(DUEL_HAND_SIZE);
-    expect(new Set(questions.map((question) => question.metric))).toEqual(new Set(['goals', 'older']));
+  it('asks one age question when enough statistics are known', () => {
+    const metrics = chooseQuestions([1, 2, 3], (footballerId) => footballerId, random).map((question) => question.metric);
+    expect(new Set(metrics).size).toBe(DUEL_HAND_SIZE);
+    expect(metrics.filter((metric) => metric === 'older' || metric === 'younger')).toHaveLength(1);
+  });
+
+  it('never repeats a question and falls back to the best-known ones', () => {
+    const valueOf = (footballerId: number, metric: DuelMetric) =>
+      metric === 'goals' || metric === 'older' || (metric === 'assists' && footballerId === 1) ? 5 : null;
+    for (let match = 0; match < 20; match += 1) {
+      const metrics = chooseQuestions([1, 2], valueOf, random).map((question) => question.metric);
+      expect(new Set(metrics).size).toBe(DUEL_HAND_SIZE);
+      expect(metrics).toEqual(expect.arrayContaining(['goals', 'older', 'assists']));
+    }
   });
 });
 
