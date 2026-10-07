@@ -60,7 +60,9 @@
     "titleAccentRare": "Least Known",
     "subtitleRare": "Name a footballer who fits both criteria, hidden from your opponent. The less known right answer takes the round.",
     "titleAccentAuction": "Auction",
-    "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time."
+    "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time.",
+    "titleAccentTopTen": "Top 10",
+    "subtitleTopTen": "There is a hidden list of ten. Take turns naming players; the lower on the list, the more points. A wrong name costs a life."
   },
   "difficulty": {
     "easy": "Easy",
@@ -187,7 +189,8 @@
     "higher": "Higher or Lower",
     "chain": "Club Chain",
     "rare": "Least Known",
-    "auction": "Answer Auction"
+    "auction": "Answer Auction",
+    "top-ten": "Top Ten"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -341,5 +344,22 @@
     "searchDone": "Close ({{named}}/{{bid}})",
     "byScore": "Two rounds won",
     "lastBidYours": "Your bid"
+  },
+  "topTen": {
+    "round": "List {{round}}/{{total}}",
+    "listValue": "Top 10 {{name}} footballers by peak market value",
+    "listGoals": "Top 10 {{name}} footballers by career goals",
+    "listClubGoals": "Top 10 career scorers who played for {{name}}",
+    "rule": "Rankings follow the app's data. Number 10 is worth 10 points, number 1 is worth 1; a wrong name costs a life.",
+    "lives": "{{name}}: {{lives}} lives",
+    "goals": "{{goals}} goals",
+    "say": "Name a footballer",
+    "yourTurn": "Your turn",
+    "opponentTurn": "Your opponent's turn",
+    "hit": "{{name}}: number {{rank}}!",
+    "miss": "{{name}} is not on the list",
+    "timeout": "Time is up",
+    "listOver": "The list is closed",
+    "byScore": "Both lists played"
   }
 }

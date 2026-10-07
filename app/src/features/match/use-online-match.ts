@@ -7,6 +7,7 @@ import type {
   GameAction,
   HigherView,
   RareView,
+  TopTenView,
   GameId,
   GameView,
   PlayErrorCode,
@@ -63,6 +64,7 @@ export type OnlineHigher = OnlineSessionBase & { game: 'higher'; view: HigherVie
 export type OnlineChain = OnlineSessionBase & { game: 'chain'; view: ChainView };
 export type OnlineRare = OnlineSessionBase & { game: 'rare'; view: RareView };
 export type OnlineAuction = OnlineSessionBase & { game: 'auction'; view: AuctionView };
+export type OnlineTopTen = OnlineSessionBase & { game: 'top-ten'; view: TopTenView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [

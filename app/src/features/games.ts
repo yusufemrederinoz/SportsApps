@@ -6,6 +6,7 @@ import { draftCardIds, finishDraftView } from '@/features/draft/online';
 import { duelCardIds, finishDuelView } from '@/features/duel/online';
 import { finishHigherView, higherCardIds } from '@/features/higher/online';
 import { finishRareView, rareCardIds } from '@/features/rare/online';
+import { finishTopTenView, topTenCardIds } from '@/features/top-ten/online';
 
 export const GAMES: readonly GameId[] = GAME_IDS;
 
@@ -17,6 +18,7 @@ export const GAME_LABELS = {
   chain: 'games.chain',
   rare: 'games.rare',
   auction: 'games.auction',
+  'top-ten': 'games.top-ten',
 } as const satisfies Record<GameId, string>;
 
 export const GAME_ACCENTS = {
@@ -27,6 +29,7 @@ export const GAME_ACCENTS = {
   chain: 'home.titleAccentChain',
   rare: 'home.titleAccentRare',
   auction: 'home.titleAccentAuction',
+  'top-ten': 'home.titleAccentTopTen',
 } as const satisfies Record<GameId, string>;
 
 export const GAME_SUBTITLES = {
@@ -37,6 +40,7 @@ export const GAME_SUBTITLES = {
   chain: 'home.subtitleChain',
   rare: 'home.subtitleRare',
   auction: 'home.subtitleAuction',
+  'top-ten': 'home.subtitleTopTen',
 } as const satisfies Record<GameId, string>;
 
 export function parseGame(value: string | undefined): GameId {
@@ -57,6 +61,8 @@ export function gameCardIds(state: GameView): number[] {
       return rareCardIds(state.view);
     case 'auction':
       return auctionCardIds(state.view);
+    case 'top-ten':
+      return topTenCardIds(state.view);
   }
 }
 
@@ -74,5 +80,7 @@ export function finishGameView(state: GameView, result: PlayResult): GameView {
       return { game: 'rare', view: finishRareView(state.view, result) };
     case 'auction':
       return { game: 'auction', view: finishAuctionView(state.view, result) };
+    case 'top-ten':
+      return { game: 'top-ten', view: finishTopTenView(state.view, result) };
   }
 }

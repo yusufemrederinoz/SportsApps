@@ -60,7 +60,9 @@
     "titleAccentRare": "Az Bilinen",
     "subtitleRare": "İki ölçüte uyan bir futbolcu yaz, rakibin görmesin. Doğru cevaplardan daha az tanınan turu alır.",
     "titleAccentAuction": "Artırma",
-    "subtitleAuction": "Kaç isim sayabileceğini artırarak söyle. \"Say bakalım\" denen, söylediği kadar doğru ismi süre içinde yazarsa turu alır."
+    "subtitleAuction": "Kaç isim sayabileceğini artırarak söyle. \"Say bakalım\" denen, söylediği kadar doğru ismi süre içinde yazarsa turu alır.",
+    "titleAccentTopTen": "İlk 10",
+    "subtitleTopTen": "Gizli bir 10'luk liste var. Sırayla isim söyle; listede ne kadar aşağıdaysa o kadar puan. Yanlış isim can götürür."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -187,7 +189,8 @@
     "higher": "Hangisi Yüksek",
     "chain": "Zincir",
     "rare": "En Az Bilinen",
-    "auction": "Açık Artırma"
+    "auction": "Açık Artırma",
+    "top-ten": "İlk 10"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -341,5 +344,22 @@
     "searchDone": "Kapat ({{named}}/{{bid}})",
     "byScore": "İki tur alındı",
     "lastBidYours": "Senin teklifin"
+  },
+  "topTen": {
+    "round": "Liste {{round}}/{{total}}",
+    "listValue": "En yüksek piyasa değerine ulaşmış 10 {{name}} futbolcusu",
+    "listGoals": "Kariyerinde en çok gol atan 10 {{name}} futbolcusu",
+    "listClubGoals": "{{name}} forması giymiş, kariyerinde en çok gol atan 10 futbolcu",
+    "rule": "Sıralama uygulamanın verisine göredir. 10. sıradaki isim 10 puan, 1. sıradaki 1 puan getirir; yanlış isim bir can götürür.",
+    "lives": "{{name}}: {{lives}} can",
+    "goals": "{{goals}} gol",
+    "say": "Futbolcu söyle",
+    "yourTurn": "Sıra sende",
+    "opponentTurn": "Sıra rakipte",
+    "hit": "{{name}}: {{rank}}. sırada!",
+    "miss": "{{name}} listede yok",
+    "timeout": "Süre doldu",
+    "listOver": "Liste kapandı",
+    "byScore": "İki liste tamamlandı"
   }
 }
