@@ -1,3 +1,12 @@
+import {
+  correctAnswerStatement,
+  gridAtOffsetStatement,
+  gridCountStatement,
+  gridOffset,
+  knownAnswersStatement,
+  marketsStatement,
+  minimumFameStatement,
+} from '@sportapps/football-data';
 import { nameTokens, type BotOption, type CellPosition, type Grid, type Header } from '@sportapps/game-core';
 
 import type {
@@ -34,21 +43,9 @@ function isTriple<T>(items: T[]): items is [T, T, T] {
   return items.length === 3;
 }
 
-function headerCondition(header: Header, playerColumn: string): { sql: string; parameter: QueryParameter } {
-  if (header.kind === 'club') {
-    return {
-      sql: `EXISTS (SELECT 1 FROM player_clubs WHERE club_id = ? AND player_id = ${playerColumn})`,
-      parameter: header.referenceId,
-    };
-  }
-  return {
-    sql: `EXISTS (SELECT 1 FROM players WHERE country_id = ? AND id = ${playerColumn})`,
-    parameter: header.referenceId,
-  };
-}
-
 export async function resolveMarket(database: QueryRunner, language: string): Promise<Market | null> {
-  const markets = await database.getAllAsync<Market>('SELECT code, language FROM markets ORDER BY code', []);
+  const { sql, parameters } = marketsStatement();
+  const markets = await database.getAllAsync<Market>(sql, parameters);
   return markets.find((market) => market.language === language) ?? markets[0] ?? null;
 }
 
@@ -58,18 +55,13 @@ export async function pickGridId(
   difficulty: Difficulty,
   random: () => number = Math.random,
 ): Promise<number | null> {
-  const count = await database.getFirstAsync<{ total: number }>(
-    'SELECT COUNT(*) AS total FROM grids WHERE market = ? AND difficulty = ?',
-    [market, difficulty],
-  );
+  const counting = gridCountStatement(market, difficulty);
+  const count = await database.getFirstAsync<{ total: number }>(counting.sql, counting.parameters);
   if (!count || count.total === 0) {
     return null;
   }
-  const offset = Math.min(count.total - 1, Math.floor(random() * count.total));
-  const row = await database.getFirstAsync<{ id: number }>(
-    'SELECT id FROM grids WHERE market = ? AND difficulty = ? ORDER BY id LIMIT 1 OFFSET ?',
-    [market, difficulty, offset],
-  );
+  const picking = gridAtOffsetStatement(market, difficulty, gridOffset(count.total, random));
+  const row = await database.getFirstAsync<{ id: number }>(picking.sql, picking.parameters);
   return row?.id ?? null;
 }
 
@@ -129,12 +121,8 @@ export async function isCorrectAnswer(
   row: Header,
   column: Header,
 ): Promise<boolean> {
-  const rowCondition = headerCondition(row, '?');
-  const columnCondition = headerCondition(column, '?');
-  const result = await database.getFirstAsync<{ correct: number }>(
-    `SELECT (${rowCondition.sql} AND ${columnCondition.sql}) AS correct`,
-    [rowCondition.parameter, footballerId, columnCondition.parameter, footballerId],
-  );
+  const { sql, parameters } = correctAnswerStatement(footballerId, row, column);
+  const result = await database.getFirstAsync<{ correct: number }>(sql, parameters);
   return result?.correct === 1;
 }
 
@@ -147,10 +135,8 @@ export async function loadFootballer(database: QueryRunner, footballerId: number
 }
 
 export async function loadMinimumFame(database: QueryRunner, difficulty: Difficulty): Promise<number> {
-  const level = await database.getFirstAsync<{ minimumFame: number }>(
-    'SELECT minimum_fame AS minimumFame FROM grid_levels WHERE difficulty = ?',
-    [difficulty],
-  );
+  const { sql, parameters } = minimumFameStatement(difficulty);
+  const level = await database.getFirstAsync<{ minimumFame: number }>(sql, parameters);
   return level?.minimumFame ?? 0;
 }
 
@@ -164,15 +150,14 @@ export async function loadBotOptions(
 ): Promise<BotOption[]> {
   return Promise.all(
     positions.map(async (position) => {
-      const rowCondition = headerCondition(grid.rows[position.row] as Header, 'f.player_id');
-      const columnCondition = headerCondition(grid.columns[position.column] as Header, 'f.player_id');
-      const rows = await database.getAllAsync<{ id: number }>(
-        `SELECT f.player_id AS id FROM player_fame f
-         WHERE f.market = ? AND f.fame >= ? AND ${rowCondition.sql} AND ${columnCondition.sql}
-         ORDER BY f.fame DESC, f.player_id
-         LIMIT ?`,
-        [market, minimumFame, rowCondition.parameter, columnCondition.parameter, limit],
+      const { sql, parameters } = knownAnswersStatement(
+        market,
+        grid.rows[position.row] as Header,
+        grid.columns[position.column] as Header,
+        minimumFame,
+        limit,
       );
+      const rows = await database.getAllAsync<{ id: number }>(sql, parameters);
       return { position, footballerIds: rows.map((row) => row.id) };
     }),
   );
