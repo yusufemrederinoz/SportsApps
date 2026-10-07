@@ -35,6 +35,8 @@ const FAILURE_KEYS = {
 
 type KnownFailure = keyof typeof FAILURE_KEYS;
 
+const FINAL_FAILURES: readonly OnlineFailure[] = ['outdated-client', 'replaced', 'room-not-found', 'room-closed'];
+
 function Pulse({ delay }: { delay: number }) {
   const progress = useSharedValue(0);
   const style = useAnimatedStyle(() => ({
@@ -55,10 +57,11 @@ interface OnlineLobbyProps {
   phase: Exclude<OnlinePhase, 'playing'>;
   failure: OnlineFailure | null;
   roomCode: string | null;
+  onRetry: () => void;
   onLeave: () => void;
 }
 
-export function OnlineLobby({ phase, failure, roomCode, onLeave }: OnlineLobbyProps) {
+export function OnlineLobby({ phase, failure, roomCode, onRetry, onLeave }: OnlineLobbyProps) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
 
@@ -73,7 +76,10 @@ export function OnlineLobby({ phase, failure, roomCode, onLeave }: OnlineLobbyPr
             {t(failure && failure in FAILURE_KEYS ? FAILURE_KEYS[failure as KnownFailure] : 'online.failureGeneric')}
           </ThemedText>
         </View>
-        <ActionButton label={t('match.home')} onPress={onLeave} variant="secondary" />
+        <View style={styles.actions}>
+          {failure && FINAL_FAILURES.includes(failure) ? null : <ActionButton label={t('online.retry')} onPress={onRetry} />}
+          <ActionButton label={t('match.home')} onPress={onLeave} variant="secondary" />
+        </View>
       </Screen>
     );
   }
@@ -134,6 +140,9 @@ const styles = StyleSheet.create({
   },
   centered: {
     textAlign: 'center',
+  },
+  actions: {
+    gap: Spacing.three,
   },
   radar: {
     alignSelf: 'center',

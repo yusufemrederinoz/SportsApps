@@ -159,7 +159,8 @@
     "failureReplaced": "You are playing on another device.",
     "failureRoomNotFound": "There is no room with this code.",
     "failureRoomClosed": "The room was closed.",
-    "failureGeneric": "Online play is not available right now."
+    "failureGeneric": "Online play is not available right now.",
+    "retry": "Try again"
   },
   "friend": {
     "title": "Play a friend",

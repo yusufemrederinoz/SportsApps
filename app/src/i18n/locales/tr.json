@@ -159,7 +159,8 @@
     "failureReplaced": "Başka bir cihazda oynuyorsun.",
     "failureRoomNotFound": "Bu kodla bir oda yok.",
     "failureRoomClosed": "Oda kapandı.",
-    "failureGeneric": "Online oyun şu an kullanılamıyor."
+    "failureGeneric": "Online oyun şu an kullanılamıyor.",
+    "retry": "Tekrar dene"
   },
   "friend": {
     "title": "Arkadaşınla oyna",

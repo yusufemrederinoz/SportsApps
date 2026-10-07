@@ -210,6 +210,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
         phase={online.phase === 'playing' ? 'connecting' : online.phase}
         failure={online.failure}
         roomCode={online.roomCode}
+        onRetry={online.playAgain}
         onLeave={() => router.back()}
       />
     );
