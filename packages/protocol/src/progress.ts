@@ -5,7 +5,7 @@ export const WELCOME_GOALS = 15;
 export const WIN_GOALS = 1;
 export const DAILY_GOALS: readonly number[] = [1, 2, 2, 3, 3, 4, 5];
 
-export type GoalReason = 'welcome' | 'daily' | 'win' | 'joker' | 'purchase' | 'ad';
+export type GoalReason = 'welcome' | 'daily' | 'win' | 'joker' | 'puzzle' | 'purchase' | 'ad';
 
 export interface LevelInfo {
   level: number;

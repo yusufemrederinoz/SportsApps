@@ -8,5 +8,6 @@ export * from './higher';
 export * from './jokers';
 export * from './play';
 export * from './progress';
+export * from './rankings';
 export * from './rare';
 export * from './top-ten';

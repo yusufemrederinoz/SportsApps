@@ -60,6 +60,9 @@ export type ApiErrorCode =
   | 'invalid-identity-token'
   | 'rate-limited'
   | 'not-found'
+  | 'puzzle-finished'
+  | 'cell-taken'
+  | 'puzzle-unavailable'
   | 'internal';
 
 export interface ApiErrorResponse {
