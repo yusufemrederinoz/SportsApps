@@ -1,5 +1,6 @@
 import { Canvas, Circle, Group, SweepGradient, vec } from '@shopify/react-native-skia';
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
   Easing,
@@ -13,10 +14,12 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
+import { GoalIcon } from '@/components/goal-icon';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MaxContentWidth, Motion, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
+import { MatchRewardContext, signed } from './match-reward';
 import { WinBurst } from './win-burst';
 
 const RAY_COUNT = 12;
@@ -27,6 +30,13 @@ const TITLE_SLAM = new Keyframe({
   72: { opacity: 1, transform: [{ scale: 1.06 }] },
   100: { opacity: 1, transform: [{ scale: 1 }] },
 }).duration(Motion.cinematic);
+const LEVEL_UP_SLAM = new Keyframe({
+  0: { opacity: 0, transform: [{ scale: 2.4 }, { rotate: '-6deg' }] },
+  60: { opacity: 1, transform: [{ scale: 0.94 }, { rotate: '-3deg' }] },
+  100: { opacity: 1, transform: [{ scale: 1 }, { rotate: '-3deg' }] },
+})
+  .duration(Motion.slow)
+  .delay(Motion.cinematic + Motion.slow);
 
 function rayColors(color: string): string[] {
   return Array.from({ length: RAY_COUNT * 2 + 1 }, (_, index) => (index % 2 === 0 ? 'rgba(0, 0, 0, 0)' : color));
@@ -67,8 +77,11 @@ interface ResultOverlayProps {
 const TONE_COLORS = { win: Colors.gold, loss: Colors.negative, draw: Colors.text } as const;
 
 export function ResultOverlay({ title, detail, score, tone, playAgainLabel, homeLabel, onPlayAgain, onHome }: ResultOverlayProps) {
+  const { t } = useTranslation();
   const uppercase = useUppercase();
   const color = TONE_COLORS[tone];
+  const reward = use(MatchRewardContext);
+  const levelUp = reward !== null && reward.level > reward.previousLevel;
 
   return (
     <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.overlay} accessibilityViewIsModal>
@@ -92,6 +105,33 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
             {uppercase(detail)}
           </ThemedText>
         </Animated.View>
+        {reward ? (
+          <Animated.View
+            entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)}
+            style={styles.reward}
+            accessible
+            accessibilityLiveRegion="polite">
+            <View style={styles.rewardRow}>
+              <ThemedText style={[styles.rewardPoints, { color: reward.change < 0 ? Colors.negative : reward.change > 0 ? Colors.positive : Colors.textSecondary }]}>
+                {uppercase(t('reward.points', { value: signed(reward.change) }))}
+              </ThemedText>
+              {reward.goalsEarned > 0 ? (
+                <View style={styles.goalChip}>
+                  <GoalIcon size={22} />
+                  <ThemedText style={styles.goalText}>{signed(reward.goalsEarned)}</ThemedText>
+                </View>
+              ) : null}
+            </View>
+            <ThemedText type="label" themeColor="textSecondary">
+              {uppercase(t('reward.gamePoints', { points: reward.points }))}
+            </ThemedText>
+            {levelUp ? (
+              <Animated.View entering={LEVEL_UP_SLAM} style={styles.levelUp}>
+                <ThemedText style={styles.levelUpText}>{uppercase(t('reward.levelUp', { level: reward.level }))}</ThemedText>
+              </Animated.View>
+            ) : null}
+          </Animated.View>
+        ) : null}
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.cinematic)} style={styles.actions}>
           <ActionButton label={playAgainLabel} onPress={onPlayAgain} />
           <ActionButton label={homeLabel} onPress={onHome} variant="secondary" />
@@ -135,5 +175,49 @@ const styles = StyleSheet.create({
   actions: {
     alignSelf: 'stretch',
     gap: Spacing.three,
+  },
+  reward: {
+    alignItems: 'center',
+    gap: Spacing.one,
+  },
+  rewardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+  },
+  rewardPoints: {
+    fontFamily: Fonts.display,
+    fontSize: 34,
+    lineHeight: 36,
+  },
+  goalChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.half,
+    borderRadius: 999,
+    borderWidth: 1.5,
+    borderColor: Colors.gold,
+    backgroundColor: Colors.panel,
+  },
+  goalText: {
+    fontFamily: Fonts.display,
+    fontSize: 24,
+    lineHeight: 26,
+    color: Colors.gold,
+  },
+  levelUp: {
+    marginTop: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.one,
+    borderRadius: 8,
+    backgroundColor: Colors.volt,
+  },
+  levelUpText: {
+    fontFamily: Fonts.display,
+    fontSize: 26,
+    lineHeight: 28,
+    color: Colors.onAccent,
   },
 });

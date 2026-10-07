@@ -1,5 +1,6 @@
 import { normalizeRoomCode, type GameId } from '@sportapps/protocol';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
@@ -19,6 +20,8 @@ import { RareMatchView } from '@/features/rare/rare-view';
 import { TopTenMatchView } from '@/features/top-ten/top-ten-view';
 import { parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
+import { useLeaveGuard } from '@/features/match/leave-guard';
+import { MatchRewardContext } from '@/features/match/match-reward';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
 import { BOT_SIDE, useMatch } from '@/features/match/use-match';
@@ -30,6 +33,7 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
   const uppercase = useUppercase();
   const router = useRouter();
   const { unavailable, setup, session, secondsLeft, canPlay, answer, restart } = useMatch(difficulty);
+  const leaveDialog = useLeaveGuard(session !== null && session.match.result === null, false);
 
   if (unavailable || !setup || !session) {
     return (
@@ -48,23 +52,26 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
   const resultTitle = !result?.winner ? t('match.draw') : t(result.winner === BOT_SIDE ? 'match.youLose' : 'match.youWin');
 
   return (
-    <MatchView
-      gridView={setup.gridView}
-      marketCode={setup.market.code}
-      session={session}
-      secondsLeft={secondsLeft}
-      canPlay={canPlay}
-      names={names}
-      opponentSide={BOT_SIDE}
-      tag={t(DIFFICULTY_LABELS[difficulty])}
-      turnLabel={t(match.turn === BOT_SIDE ? 'match.turnRival' : 'match.turnYours')}
-      resultTitle={resultTitle}
-      resultDetail={t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells')}
-      playAgainLabel={t('match.playAgain')}
-      onAnswer={(position, footballer) => void answer(position, footballer)}
-      onPlayAgain={restart}
-      onQuit={() => router.back()}
-    />
+    <>
+      <MatchView
+        gridView={setup.gridView}
+        marketCode={setup.market.code}
+        session={session}
+        secondsLeft={secondsLeft}
+        canPlay={canPlay}
+        names={names}
+        opponentSide={BOT_SIDE}
+        tag={t(DIFFICULTY_LABELS[difficulty])}
+        turnLabel={t(match.turn === BOT_SIDE ? 'match.turnRival' : 'match.turnYours')}
+        resultTitle={resultTitle}
+        resultDetail={t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells')}
+        playAgainLabel={t('match.playAgain')}
+        onAnswer={(position, footballer) => void answer(position, footballer)}
+        onPlayAgain={restart}
+        onQuit={() => router.back()}
+      />
+      {leaveDialog}
+    </>
   );
 }
 
@@ -73,6 +80,10 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   const router = useRouter();
   const online = useOnlineMatch(entry, difficulty, game);
   const { setup, session, live } = online;
+  const running =
+    online.phase === 'playing' &&
+    (live ? live.view.result === null : session !== null && session.match.result === null);
+  const leaveDialog = useLeaveGuard(running, entry.kind === 'queue');
   const notice = online.reconnecting
     ? t('online.reconnecting')
     : online.opponentConnected
@@ -83,169 +94,89 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     entry.kind === 'queue' || entry.kind === 'bot'
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
+  const quit = () => router.back();
+  const shared = {
+    secondsLeft: online.liveSecondsLeft,
+    canAct: online.canAct,
+    notice,
+    playAgainLabel,
+    onAct: online.act,
+    onPlayAgain: playAgain,
+    onQuit: quit,
+  };
 
-  if (online.phase === 'playing' && live?.game === 'career') {
+  const content = (): ReactNode => {
+    if (online.phase === 'playing' && live) {
+      switch (live.game) {
+        case 'career':
+          return <CareerMatchView career={live} {...shared} />;
+        case 'top-ten':
+          return <TopTenMatchView topTen={live} {...shared} />;
+        case 'auction':
+          return <AuctionMatchView auction={live} {...shared} />;
+        case 'rare':
+          return <RareMatchView rare={live} {...shared} />;
+        case 'chain':
+          return <ChainMatchView chain={live} {...shared} />;
+        case 'higher':
+          return <HigherMatchView higher={live} {...shared} />;
+        case 'draft':
+          return <DraftMatchView draft={live} {...shared} />;
+        case 'duel':
+          return <DuelMatchView duel={live} {...shared} />;
+      }
+    }
+
+    if (online.phase !== 'playing' || !setup || !session) {
+      return (
+        <OnlineLobby
+          phase={online.phase === 'playing' ? 'connecting' : online.phase}
+          failure={online.failure}
+          roomCode={online.roomCode}
+          onRetry={online.playAgain}
+          onLeave={quit}
+        />
+      );
+    }
+
+    const { match } = session;
+    const { result } = match;
+    const rival = setup.side === 'x' ? 'o' : 'x';
+    const names = { [setup.side]: t('match.you'), [rival]: setup.usernames[rival] } as Record<'x' | 'o', string>;
+    const won = result?.winner === setup.side;
+    const resultTitle = !result?.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose');
+    const resultDetail =
+      result?.reason === 'forfeit'
+        ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
+        : t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells');
+
     return (
-      <CareerMatchView
-        career={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
+      <MatchView
+        gridView={setup.gridView}
+        marketCode={setup.market.code}
+        session={session}
+        secondsLeft={online.secondsLeft}
+        canPlay={online.canPlay}
+        names={names}
+        opponentSide={rival}
+        tag={t(DIFFICULTY_LABELS[setup.difficulty])}
+        turnLabel={t(match.turn === setup.side ? 'match.turnYours' : 'match.turnRival')}
+        resultTitle={resultTitle}
+        resultDetail={resultDetail}
         playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'top-ten') {
-    return (
-      <TopTenMatchView
-        topTen={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
         notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
+        onAnswer={online.answer}
         onPlayAgain={playAgain}
-        onQuit={() => router.back()}
+        onQuit={quit}
       />
     );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'auction') {
-    return (
-      <AuctionMatchView
-        auction={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'rare') {
-    return (
-      <RareMatchView
-        rare={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'chain') {
-    return (
-      <ChainMatchView
-        chain={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'higher') {
-    return (
-      <HigherMatchView
-        higher={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'draft') {
-    return (
-      <DraftMatchView
-        draft={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase === 'playing' && live?.game === 'duel') {
-    return (
-      <DuelMatchView
-        duel={live}
-        secondsLeft={online.liveSecondsLeft}
-        canAct={online.canAct}
-        notice={notice}
-        playAgainLabel={playAgainLabel}
-        onAct={online.act}
-        onPlayAgain={playAgain}
-        onQuit={() => router.back()}
-      />
-    );
-  }
-
-  if (online.phase !== 'playing' || !setup || !session) {
-    return (
-      <OnlineLobby
-        phase={online.phase === 'playing' ? 'connecting' : online.phase}
-        failure={online.failure}
-        roomCode={online.roomCode}
-        onRetry={online.playAgain}
-        onLeave={() => router.back()}
-      />
-    );
-  }
-
-  const { match } = session;
-  const { result } = match;
-  const rival = setup.side === 'x' ? 'o' : 'x';
-  const names = { [setup.side]: t('match.you'), [rival]: setup.usernames[rival] } as Record<'x' | 'o', string>;
-  const won = result?.winner === setup.side;
-  const resultTitle = !result?.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose');
-  const resultDetail =
-    result?.reason === 'forfeit'
-      ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
-      : t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells');
+  };
 
   return (
-    <MatchView
-      gridView={setup.gridView}
-      marketCode={setup.market.code}
-      session={session}
-      secondsLeft={online.secondsLeft}
-      canPlay={online.canPlay}
-      names={names}
-      opponentSide={rival}
-      tag={t(DIFFICULTY_LABELS[setup.difficulty])}
-      turnLabel={t(match.turn === setup.side ? 'match.turnYours' : 'match.turnRival')}
-      resultTitle={resultTitle}
-      resultDetail={resultDetail}
-      playAgainLabel={playAgainLabel}
-      notice={notice}
-      onAnswer={online.answer}
-      onPlayAgain={playAgain}
-      onQuit={() => router.back()}
-    />
+    <MatchRewardContext value={online.reward}>
+      {content()}
+      {leaveDialog}
+    </MatchRewardContext>
   );
 }
 

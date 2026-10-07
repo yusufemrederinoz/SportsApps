@@ -12,6 +12,7 @@ import type {
   GameId,
   GameView,
   PlayErrorCode,
+  PointsChange,
   ServerMessage,
 } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -93,6 +94,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const [session, setSession] = useState<MatchSession | null>(null);
   const [live, setLive] = useState<OnlineGame | null>(null);
   const [opponentConnected, setOpponentConnected] = useState(true);
+  const [reward, setReward] = useState<PointsChange | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [sentTurn, setSentTurn] = useState<number | null>(null);
   const [acting, setActing] = useState(false);
@@ -277,6 +279,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
           if (message.matchId === matchId) {
             playing = false;
             finished = true;
+            setReward(message.points ?? null);
             setSession((current) => current && finishSession(current, message.result));
             setLive((current) => current && ({ ...current, ...finishGameView(current, message.result) } as OnlineGame));
           }
@@ -403,6 +406,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     setActing(false);
     setReconnecting(false);
     setOpponentConnected(true);
+    setReward(null);
     setPhase('connecting');
     setRound((current) => current + 1);
   };
@@ -416,6 +420,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     live,
     opponentConnected,
     reconnecting,
+    reward,
     secondsLeft: session ? secondsLeft(session, now) : 0,
     liveSecondsLeft: live ? Math.max(0, Math.ceil((live.deadlineAt - now) / 1000)) : 0,
     canPlay,

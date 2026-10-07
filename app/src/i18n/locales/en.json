@@ -119,7 +119,7 @@
     "email": "Email",
     "password": "Password",
     "logout": "Sign out",
-    "historyTitle": "Recent online matches",
+    "historyTitle": "Recent matches",
     "historyEmpty": "No online matches yet.",
     "historyWin": "Win",
     "historyLoss": "Loss",
@@ -376,5 +376,65 @@
     "solvedByRival": "Your opponent got it",
     "unsolved": "Nobody got it",
     "byScore": "All four footballers played"
+  },
+  "leave": {
+    "title": "Leave the match?",
+    "message": "If you leave, the match counts as a loss.",
+    "messageRanked": "If you leave, the match counts as a loss and you lose points in this game.",
+    "confirm": "Leave the match",
+    "cancel": "Keep playing"
+  },
+  "reward": {
+    "points": "{{value}} points",
+    "gamePoints": "Your points in this game: {{points}}",
+    "levelUp": "New level: {{level}}"
+  },
+  "progress": {
+    "level": "Level {{level}}",
+    "levelShort": "Lv {{level}}",
+    "points": "{{points}} points",
+    "goals": "{{goals}} goals",
+    "gamePoints": "Your points: {{points}}",
+    "toNext": "{{points}} points to the next level",
+    "open": "Level {{level}}, {{points}} points, {{goals}} goals. Open history and stats."
+  },
+  "daily": {
+    "title": "Daily reward",
+    "streak": "Day {{streak}}",
+    "hint": "Come back every day to grow your streak. From day 7 on, 5 goals a day.",
+    "collect": "Collect",
+    "day": "Day {{day}}: {{goals}} goals"
+  },
+  "history": {
+    "title": "History",
+    "open": "History and stats",
+    "summary": "Overall",
+    "totalPoints": "Total points",
+    "played": "Matches",
+    "wins": "Wins",
+    "losses": "Losses",
+    "draws": "Draws",
+    "winRate": "Win rate",
+    "bestStreak": "Best streak",
+    "currentStreak": "Current streak",
+    "games": "Games",
+    "matches": "Matches",
+    "allGames": "All",
+    "empty": "No matches in this game yet.",
+    "more": "Show more",
+    "unranked": "Unranked",
+    "kindQueue": "Online",
+    "kindBot": "Versus bot",
+    "kindRoom": "Friend room",
+    "forfeit": "Forfeit",
+    "record": "{{wins}}W {{draws}}D {{losses}}L",
+    "bestPoints": "Best {{points}}",
+    "goalsTitle": "Goal activity",
+    "reasonWelcome": "Welcome gift",
+    "reasonDaily": "Daily reward",
+    "reasonWin": "Ranked win",
+    "reasonPurchase": "Purchase",
+    "reasonAd": "Ad reward",
+    "offline": "History could not be loaded. Check your connection."
   }
 }

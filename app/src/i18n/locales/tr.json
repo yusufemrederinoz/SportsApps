@@ -119,7 +119,7 @@
     "email": "E-posta",
     "password": "Şifre",
     "logout": "Çıkış yap",
-    "historyTitle": "Son ONLINE maçlar",
+    "historyTitle": "Son maçlar",
     "historyEmpty": "Henüz online maç yok.",
     "historyWin": "Galibiyet",
     "historyLoss": "Mağlubiyet",
@@ -376,5 +376,65 @@
     "solvedByRival": "Rakip bildi",
     "unsolved": "Kimse bilemedi",
     "byScore": "Dört futbolcu da soruldu"
+  },
+  "leave": {
+    "title": "Maçtan çıkılsın mı?",
+    "message": "Maçı terk edersen mağlup sayılırsın.",
+    "messageRanked": "Maçı terk edersen mağlup sayılırsın ve bu oyundaki puanın düşer.",
+    "confirm": "Maçı terk et",
+    "cancel": "Maça devam et"
+  },
+  "reward": {
+    "points": "{{value}} puan",
+    "gamePoints": "Bu oyundaki puanın: {{points}}",
+    "levelUp": "Yeni seviye: {{level}}"
+  },
+  "progress": {
+    "level": "Seviye {{level}}",
+    "levelShort": "Sv {{level}}",
+    "points": "{{points}} puan",
+    "goals": "{{goals}} gol",
+    "gamePoints": "Puanın: {{points}}",
+    "toNext": "Sonraki seviyeye {{points}} puan",
+    "open": "Seviye {{level}}, {{points}} puan, {{goals}} gol. Geçmiş ve istatistikleri aç."
+  },
+  "daily": {
+    "title": "Günlük ödül",
+    "streak": "{{streak}}. gün",
+    "hint": "Her gün gir, seriyi büyüt. 7. günden sonra her gün 5 gol.",
+    "collect": "Topla",
+    "day": "{{day}}. gün: {{goals}} gol"
+  },
+  "history": {
+    "title": "Geçmiş",
+    "open": "Geçmiş ve istatistikler",
+    "summary": "Genel",
+    "totalPoints": "Toplam puan",
+    "played": "Maç",
+    "wins": "Galibiyet",
+    "losses": "Mağlubiyet",
+    "draws": "Beraberlik",
+    "winRate": "Kazanma",
+    "bestStreak": "En uzun seri",
+    "currentStreak": "Şu anki seri",
+    "games": "Oyunlar",
+    "matches": "Maçlar",
+    "allGames": "Tümü",
+    "empty": "Bu oyunda henüz maç yok.",
+    "more": "Daha fazla göster",
+    "unranked": "Puansız",
+    "kindQueue": "Online",
+    "kindBot": "Bota karşı",
+    "kindRoom": "Arkadaş odası",
+    "forfeit": "Hükmen",
+    "record": "{{wins}}G {{draws}}B {{losses}}M",
+    "bestPoints": "En yüksek {{points}}",
+    "goalsTitle": "Gol hareketleri",
+    "reasonWelcome": "Hoş geldin hediyesi",
+    "reasonDaily": "Günlük ödül",
+    "reasonWin": "Puanlı galibiyet",
+    "reasonPurchase": "Satın alma",
+    "reasonAd": "Reklam ödülü",
+    "offline": "Geçmiş yüklenemedi. Bağlantını kontrol et."
   }
 }
