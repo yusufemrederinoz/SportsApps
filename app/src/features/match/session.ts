@@ -25,6 +25,7 @@ export interface PlayedFootballer {
   name: string;
   countryCode: string | null;
   role: string | null;
+  hasPortrait: boolean;
 }
 
 export interface Claim {

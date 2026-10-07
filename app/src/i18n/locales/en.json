@@ -111,7 +111,8 @@
     "historyEmpty": "No online matches yet.",
     "historyWin": "Win",
     "historyLoss": "Loss",
-    "historyDraw": "Draw"
+    "historyDraw": "Draw",
+    "credits": "Image sources"
   },
   "errors": {
     "network": "The server could not be reached. Check your connection.",
@@ -157,5 +158,12 @@
     "codeLabel": "Room code",
     "codeHint": "Five characters, from your friend.",
     "join": "Join"
+  },
+  "credits": {
+    "title": "Image sources",
+    "intro": "Player portraits are illustrations made from freely licensed photographs on Wikimedia Commons. Each illustration is shared under the same licence as its source photograph.",
+    "count": "{{count}} portraits",
+    "empty": "There are no portraits in this version yet.",
+    "openHint": "Opens the source photograph"
   }
 }

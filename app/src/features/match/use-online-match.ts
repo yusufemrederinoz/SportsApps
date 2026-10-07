@@ -84,7 +84,13 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
           footballers.set(
             footballerId,
             found
-              ? { id: found.id, name: found.name, countryCode: found.countryCode, role: found.role }
+              ? {
+                  id: found.id,
+                  name: found.name,
+                  countryCode: found.countryCode,
+                  role: found.role,
+                  hasPortrait: found.hasPortrait,
+                }
               : unknownFootballer(footballerId),
           );
         }

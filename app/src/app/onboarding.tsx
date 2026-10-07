@@ -16,7 +16,7 @@ import { useUppercase } from '@/i18n/uppercase';
 
 const SAMPLE_ROW = 'Real Madrid';
 const SAMPLE_COLUMN = 'Barcelona';
-const SAMPLE_FOOTBALLER = { id: 0, name: 'Gheorghe Hagi', countryCode: 'RO', role: 'MF' };
+const SAMPLE_FOOTBALLER = { id: 0, name: 'Gheorghe Hagi', countryCode: 'RO', role: 'MF', hasPortrait: false };
 const CARD_SIZE = 132;
 const LINE_CARD_SIZE = 84;
 const LINE_CARDS = [0, 1, 2];

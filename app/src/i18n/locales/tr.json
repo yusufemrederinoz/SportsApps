@@ -111,7 +111,8 @@
     "historyEmpty": "Henüz online maç yok.",
     "historyWin": "Galibiyet",
     "historyLoss": "Mağlubiyet",
-    "historyDraw": "Beraberlik"
+    "historyDraw": "Beraberlik",
+    "credits": "Görsel kaynakları"
   },
   "errors": {
     "network": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",
@@ -157,5 +158,12 @@
     "codeLabel": "Oda kodu",
     "codeHint": "Arkadaşından aldığın beş karakter.",
     "join": "Katıl"
+  },
+  "credits": {
+    "title": "Görsel kaynakları",
+    "intro": "Oyuncu görselleri, Wikimedia Commons'taki serbest lisanslı fotoğraflardan üretilmiş çizimlerdir. Her çizim, kaynak fotoğrafıyla aynı lisansla paylaşılır.",
+    "count": "{{count}} görsel",
+    "empty": "Bu sürümde henüz görsel yok.",
+    "openHint": "Kaynak fotoğrafı açar"
   }
 }

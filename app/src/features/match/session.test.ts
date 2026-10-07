@@ -22,7 +22,7 @@ function answer(turnNumber: number, row: number, column: number, id: number, cor
     type: 'answer',
     turnNumber,
     position: { row, column },
-    footballer: { id, name: `Footballer ${id}`, countryCode: 'TR', role: 'MF' },
+    footballer: { id, name: `Footballer ${id}`, countryCode: 'TR', role: 'MF', hasPortrait: false },
     correct,
     now,
   };
@@ -43,7 +43,9 @@ describe('reduceSession', () => {
   it('records a correct answer, its name and restarts the clock', () => {
     const session = reduceSession(startSession(grid, 'x', 0), answer(1, 0, 0, 7));
     expect(session.match.cells[0]).toEqual({ side: 'x', footballerId: 7 });
-    expect(session.footballers).toEqual({ 7: { id: 7, name: 'Footballer 7', countryCode: 'TR', role: 'MF' } });
+    expect(session.footballers).toEqual({
+      7: { id: 7, name: 'Footballer 7', countryCode: 'TR', role: 'MF', hasPortrait: false },
+    });
     expect(session.feedback).toEqual({ kind: 'correct', side: 'x', footballerName: 'Footballer 7' });
     expect(session.lastClaim).toEqual({ index: 0, side: 'x', turnNumber: 1 });
     expect(session.turnEndsAt).toBe(25_000);

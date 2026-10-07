@@ -9,7 +9,15 @@ import {
 } from '@sportapps/football-data';
 import { nameTokens, type BotOption, type CellPosition, type Grid, type Header } from '@sportapps/game-core';
 
-import type { Difficulty, FootballerSummary, GridView, HeaderView, Market, QueryRunner } from './types';
+import type {
+  Difficulty,
+  FootballerSummary,
+  GridView,
+  HeaderView,
+  Market,
+  PortraitCredit,
+  QueryRunner,
+} from './types';
 
 const FALLBACK_LANGUAGE = 'en';
 const MINIMUM_SEARCH_LENGTH = 2;
@@ -25,6 +33,15 @@ const HEADER_NAME = `
       ELSE (SELECT name FROM country_names WHERE country_id = h.reference_id AND language = '${FALLBACK_LANGUAGE}')
     END
   )`;
+
+const FOOTBALLER_COLUMNS = `p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode, p.position AS role,
+            EXISTS (SELECT 1 FROM player_portraits WHERE player_id = p.id) AS hasPortrait`;
+
+type FootballerRow = Omit<FootballerSummary, 'hasPortrait'> & { hasPortrait: number };
+
+function toFootballer(row: FootballerRow): FootballerSummary {
+  return { ...row, hasPortrait: row.hasPortrait === 1 };
+}
 
 interface HeaderRow extends HeaderView {
   axis: 'row' | 'column';
@@ -95,8 +112,8 @@ export async function searchFootballers(
     return [];
   }
   const match = tokens.map((token) => `"${token}"*`).join(' ');
-  return database.getAllAsync<FootballerSummary>(
-    `SELECT p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode, p.position AS role
+  const rows = await database.getAllAsync<FootballerRow>(
+    `SELECT ${FOOTBALLER_COLUMNS}
      FROM (SELECT DISTINCT player_id FROM player_search WHERE player_search MATCH ?) s
      JOIN players p ON p.id = s.player_id
      LEFT JOIN countries c ON c.id = p.country_id
@@ -105,6 +122,7 @@ export async function searchFootballers(
      LIMIT ?`,
     [match, market, limit],
   );
+  return rows.map(toFootballer);
 }
 
 export async function isCorrectAnswer(
@@ -119,10 +137,20 @@ export async function isCorrectAnswer(
 }
 
 export async function loadFootballer(database: QueryRunner, footballerId: number): Promise<FootballerSummary | null> {
-  return database.getFirstAsync<FootballerSummary>(
-    `SELECT p.id, p.name, p.birth_year AS birthYear, c.code AS countryCode, p.position AS role
+  const row = await database.getFirstAsync<FootballerRow>(
+    `SELECT ${FOOTBALLER_COLUMNS}
      FROM players p LEFT JOIN countries c ON c.id = p.country_id WHERE p.id = ?`,
     [footballerId],
+  );
+  return row ? toFootballer(row) : null;
+}
+
+export async function loadPortraitCredits(database: QueryRunner): Promise<PortraitCredit[]> {
+  return database.getAllAsync<PortraitCredit>(
+    `SELECT pp.player_id AS playerId, p.name, pp.author, pp.license, pp.source_url AS sourceUrl
+     FROM player_portraits pp JOIN players p ON p.id = pp.player_id
+     ORDER BY p.name, pp.player_id`,
+    [],
   );
 }
 

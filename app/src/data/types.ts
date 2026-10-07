@@ -35,4 +35,13 @@ export interface FootballerSummary {
   birthYear: number | null;
   countryCode: string | null;
   role: FootballerRole | null;
+  hasPortrait: boolean;
+}
+
+export interface PortraitCredit {
+  playerId: number;
+  name: string;
+  author: string;
+  license: string;
+  sourceUrl: string;
 }

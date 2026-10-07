@@ -93,6 +93,11 @@ function AccountScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
+        <Pressable accessibilityRole="link" onPress={() => router.push('/credits')} style={styles.credits}>
+          <ThemedText type="label" themeColor="textSecondary" style={styles.creditsLabel}>
+            {`${uppercase(t('account.credits'))} ›`}
+          </ThemedText>
+        </Pressable>
         <ActionButton label={t('account.logout')} onPress={() => void run(leave)} variant="secondary" />
       </View>
     </Screen>
@@ -161,5 +166,13 @@ const styles = StyleSheet.create({
   },
   footer: {
     justifyContent: 'flex-end',
+    gap: Spacing.two,
+  },
+  credits: {
+    minHeight: MinimumTouchSize,
+    justifyContent: 'center',
+  },
+  creditsLabel: {
+    textAlign: 'center',
   },
 });

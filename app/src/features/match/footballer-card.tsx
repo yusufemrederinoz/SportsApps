@@ -1,5 +1,6 @@
 import type { Side } from '@sportapps/game-core';
 import { Canvas, Group, LinearGradient, Path, Rect, vec } from '@shopify/react-native-skia';
+import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -15,6 +16,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { portraitUrl } from '@/api';
 import { platePath } from '@/components/metal-plate';
 import { ThemedText } from '@/components/themed-text';
 import { Finishes, Fonts, Motion } from '@/constants/theme';
@@ -28,6 +30,9 @@ const STREAK = 'rgba(255, 255, 255, 0.20)';
 const SHINE = 'rgba(255, 255, 255, 0.85)';
 const SHINE_FADE = 'rgba(255, 255, 255, 0)';
 const BANNER = 'rgba(0, 0, 0, 0.42)';
+const PORTRAIT_SCALE = 0.96;
+const PORTRAIT_LEFT = 0.1;
+const PORTRAIT_TOP = -0.13;
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 
 const WALKOUT = new Keyframe({
@@ -70,6 +75,8 @@ export function FootballerCard({ footballer, side, size, emphasis }: FootballerC
   const roleKey = footballer?.role && footballer.role in ROLE_KEYS ? ROLE_KEYS[footballer.role as keyof typeof ROLE_KEYS] : null;
   const flag = flagEmoji(footballer?.countryCode ?? null);
   const bannerTop = size * 0.62;
+  const portrait = footballer?.hasPortrait ? portraitUrl(footballer.id) : null;
+  const portraitSize = size * PORTRAIT_SCALE;
 
   return (
     <Animated.View entering={WALKOUT} style={{ width: size, height: size }}>
@@ -99,6 +106,24 @@ export function FootballerCard({ footballer, side, size, emphasis }: FootballerC
           <ThemedText style={[styles.watermark, { color: finish.ink, fontSize: size * 0.62, lineHeight: size * 0.66 }]}>
             {side.toUpperCase()}
           </ThemedText>
+          {portrait ? (
+            <View style={[styles.portraitWindow, { height: bannerTop }]}>
+              <Image
+                source={{ uri: portrait }}
+                style={{
+                  position: 'absolute',
+                  width: portraitSize,
+                  height: portraitSize,
+                  left: size * PORTRAIT_LEFT,
+                  top: size * PORTRAIT_TOP,
+                }}
+                contentFit="cover"
+                cachePolicy="disk"
+                transition={Motion.base}
+                accessible={false}
+              />
+            </View>
+          ) : null}
           <View style={styles.badges}>
             <ThemedText style={[styles.role, { color: finish.ink, fontSize: size * 0.2, lineHeight: size * 0.22 }]}>
               {roleKey ? t(roleKey) : ''}
@@ -143,6 +168,13 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.display,
     opacity: 0.16,
   },
+  portraitWindow: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    overflow: 'hidden',
+  },
   badges: {
     position: 'absolute',
     top: 4,
@@ -157,7 +189,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     paddingHorizontal: 4,
   },

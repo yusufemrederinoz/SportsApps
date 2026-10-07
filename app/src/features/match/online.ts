@@ -8,7 +8,7 @@ export type FootballerLookup = (footballerId: number) => PlayedFootballer;
 const UNKNOWN_NAME = '?';
 
 export function unknownFootballer(id: number): PlayedFootballer {
-  return { id, name: UNKNOWN_NAME, countryCode: null, role: null };
+  return { id, name: UNKNOWN_NAME, countryCode: null, role: null, hasPortrait: false };
 }
 
 export function footballerIdsOf(moves: readonly PlayMove[]): number[] {

@@ -19,7 +19,13 @@ const grid: Grid = {
   ],
 };
 
-const lookup = (id: number): PlayedFootballer => ({ id, name: `Footballer ${id}`, countryCode: 'TR', role: 'FW' });
+const lookup = (id: number): PlayedFootballer => ({
+  id,
+  name: `Footballer ${id}`,
+  countryCode: 'TR',
+  role: 'FW',
+  hasPortrait: id % 2 === 1,
+});
 
 const claimed = (turnNumber: number, side: 'x' | 'o', row: number, column: number, footballerId: number): PlayMove => ({
   kind: 'answer',
@@ -124,6 +130,6 @@ describe('helpers', () => {
   it('lists each answered footballer once', () => {
     const moves: PlayMove[] = [claimed(1, 'x', 0, 0, 7), { kind: 'timeout', turnNumber: 2, side: 'o' }, claimed(3, 'x', 0, 1, 7)];
     expect(footballerIdsOf(moves)).toEqual([7]);
-    expect(unknownFootballer(3)).toEqual({ id: 3, name: '?', countryCode: null, role: null });
+    expect(unknownFootballer(3)).toEqual({ id: 3, name: '?', countryCode: null, role: null, hasPortrait: false });
   });
 });
