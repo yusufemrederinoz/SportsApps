@@ -249,7 +249,7 @@ export function TopTenMatchView({
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
-          <ThemedText style={styles.title} accessibilityRole="header" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.7}>
+          <ThemedText style={styles.title} accessibilityRole="header" numberOfLines={3} adjustsFontSizeToFit minimumFontScale={0.7}>
             {title}
           </ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
   list: {
     alignSelf: 'stretch',
     flexGrow: 0,
+    flexShrink: 1,
     maxHeight: 10 * 40,
   },
   listContent: {
@@ -423,7 +424,8 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
   },
   status: {
-    flex: 1,
+    flexGrow: 1,
+    minHeight: 64,
     alignSelf: 'stretch',
     justifyContent: 'center',
     gap: Spacing.one,
