@@ -11,8 +11,10 @@ import {
   type ChainTiming,
 } from '../src/play/chain-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const BOT_WAIT = { minimum: 4000, maximum: 4000 };
 const TIMING: ChainTiming = { ...DEFAULT_CHAIN_TIMING, botThinkMilliseconds: { minimum: 3000, maximum: 3000 } };
@@ -39,6 +41,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -103,10 +106,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(5_000_000);
   seed = 21;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { chain: createChainRoomFactory(library, TIMING) },
+    games: { chain: capturing(createChainRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -141,6 +145,24 @@ describe('chain matches', () => {
     const view = first.view();
     expect(view.chain.at(-1)).toMatchObject({ side: player.session().side, clubId: clubOf(lastId(view)) * 10 });
     expect(view.turn).toBe(other.session().side);
+  });
+
+  it('adds ten seconds and points to a linking club only on your own turn', () => {
+    const { first, active, waiting } = pair();
+    const player = active();
+    const room = lastRoom(rooms);
+    expect(room.useJoker(waiting().session().side, 'extra-time', {})).toEqual({ error: 'invalid-action' });
+    expect(room.useJoker(player.session().side, 'club-hint', {})).toEqual({
+      reveal: { kind: 'club', clubId: clubOf(lastId(first.view())) * 10 },
+    });
+    expect(room.useJoker(player.session().side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 10 } });
+    expect(first.view()).toMatchObject({ turnSeconds: 30, deadlineIn: 30000 });
+    vi.advanceTimersByTime(FIRST_TURN);
+    expect(first.view().phase).toBe('playing');
+    vi.advanceTimersByTime(10000);
+    expect(first.view().phase).toBe('reveal');
+    vi.advanceTimersByTime(TIMING.revealMilliseconds);
+    expect(first.view().turnSeconds).toBe(20);
   });
 
   it('gives the round to the opponent after a wrong, repeated or missing answer', () => {

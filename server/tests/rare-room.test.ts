@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAccountService } from '../src/accounts/service';
 import { openDatabase, type Database } from '../src/database';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import {
   DEFAULT_RARE_TIMING,
@@ -15,6 +16,7 @@ import {
   type RareTiming,
 } from '../src/play/rare-room';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const club = (referenceId: number): Header => ({ kind: 'club', referenceId });
 const GRID: Grid = { id: 9, rows: [club(1), club(2), club(3)], columns: [club(4), club(5), club(6)] };
@@ -44,6 +46,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -112,10 +115,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(6_000_000);
   seed = 13;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { rare: createRareRoomFactory(library, TIMING) },
+    games: { rare: capturing(createRareRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -170,6 +174,22 @@ describe('least known matches', () => {
     expect(view.scores[side]).toBe(1);
     vi.advanceTimersByTime(TIMING.revealMilliseconds);
     expect(first.view()).toMatchObject({ phase: 'answering', round: 2, own: null, answered: { x: false, o: false } });
+  });
+
+  it('hints at the least known answer and adds fifteen seconds before the player answers', () => {
+    const { first, second } = pair();
+    const side = first.session().side;
+    const room = lastRoom(rooms);
+    expect(room.useJoker(side, 'hint', {})).toEqual({
+      reveal: { kind: 'initials', footballerId: rightAnswer(first, 20), birthYear: false },
+    });
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 15 } });
+    name(second, rightAnswer(second, 50));
+    vi.advanceTimersByTime(TIMING.answerMilliseconds + TURN_GRACE_MILLISECONDS);
+    expect(first.view().phase).toBe('answering');
+    vi.advanceTimersByTime(15000);
+    expect(first.view().phase).toBe('reveal');
+    expect(room.useJoker(side, 'hint', {})).toEqual({ error: 'invalid-action' });
   });
 
   it('counts a wrong answer and a missing answer as no answer', () => {

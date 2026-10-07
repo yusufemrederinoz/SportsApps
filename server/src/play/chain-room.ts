@@ -12,7 +12,14 @@ import {
   type ChainMissReason,
   type Side,
 } from '@sportapps/game-core';
-import type { ChainMissView, ChainView, ChainViewPhase, PlayErrorCode, PlayResult } from '@sportapps/protocol';
+import {
+  EXTRA_TIME_SECONDS,
+  type ChainMissView,
+  type ChainView,
+  type ChainViewPhase,
+  type PlayErrorCode,
+  type PlayResult,
+} from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
 import { botLevelFor } from './bot';
@@ -23,6 +30,8 @@ const SECOND = 1000;
 const MINIMUM_SEEDS = 5;
 const BOT_CANDIDATES = 30;
 const BOT_SHORTLIST = 10;
+const HINT_FAME = 35;
+const HINT_CANDIDATES = 40;
 const BOT_FAME: Record<BotLevel, number> = { 1: 50, 2: 40, 3: 30 };
 const BOT_FAILURE: Record<BotLevel, { base: number; growth: number }> = {
   1: { base: 0.2, growth: 0.03 },
@@ -79,13 +88,14 @@ export function createChainRoomFactory(library: ChainLibrary, timing: ChainTimin
     let finishedAt: number | null = null;
     let phaseTimer: Timer | null = null;
     let botTimer: Timer | null = null;
+    let bonusSeconds = 0;
 
     const view = (): ChainView => ({
       phase: stage,
       round: state.round,
       roundsToWin: state.roundsToWin,
       turn: state.turn,
-      turnSeconds: chainTurnSeconds(state),
+      turnSeconds: chainTurnSeconds(state) + bonusSeconds,
       chain: state.chain.map((link) => ({ ...link })),
       miss: stage === 'playing' ? null : lastMiss,
       deadlineIn: stage === 'finished' ? 0 : Math.max(0, deadline - now()),
@@ -177,6 +187,7 @@ export function createChainRoomFactory(library: ChainLibrary, timing: ChainTimin
     function startTurn(): void {
       stopTimers();
       stage = 'playing';
+      bonusSeconds = 0;
       const milliseconds = chainTurnSeconds(state) * SECOND;
       deadline = now() + milliseconds;
       const side = state.turn;
@@ -236,7 +247,40 @@ export function createChainRoomFactory(library: ChainLibrary, timing: ChainTimin
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        if (stage !== 'playing' || state.turn !== side) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'extra-time') {
+          const seconds = EXTRA_TIME_SECONDS.chain ?? 0;
+          if (phaseTimer) {
+            clearTimeout(phaseTimer);
+          }
+          bonusSeconds += seconds;
+          deadline += seconds * SECOND;
+          phaseTimer = setTimeout(() => {
+            if (stage === 'playing' && state.turn === side) {
+              miss(side, null, 'timeout');
+            }
+          }, Math.max(0, deadline - now()) + TURN_GRACE_MILLISECONDS);
+          broadcast();
+          return { reveal: { kind: 'time', seconds } };
+        }
+        if (joker === 'club-hint') {
+          const current = lastLink(state).footballerId;
+          const used = state.chain.map((entry) => entry.footballerId);
+          const counts = new Map<number, number>();
+          library.chainCandidates(market, current, used, HINT_FAME, HINT_CANDIDATES).forEach((candidate) => {
+            const club = library.sharedClub(market, current, candidate);
+            if (club !== null) {
+              counts.set(club, (counts.get(club) ?? 0) + 1);
+            }
+          });
+          const best = [...counts.entries()].sort((first, second) => second[1] - first[1])[0];
+          return best ? { reveal: { kind: 'club', clubId: best[0] } } : { error: 'invalid-action' };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'chain',

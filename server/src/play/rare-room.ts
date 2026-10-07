@@ -15,6 +15,7 @@ import {
   type Side,
 } from '@sportapps/game-core';
 import {
+  EXTRA_TIME_SECONDS,
   RARE_ANSWER_SECONDS,
   type PlayErrorCode,
   type PlayResult,
@@ -34,6 +35,7 @@ const BOT_NEAR_MISSES = 8;
 const BOT_FAME = 20;
 const BOT_MISS: Record<BotLevel, number> = { 1: 0.3, 2: 0.15, 3: 0.07 };
 const BOT_DEPTH: Record<BotLevel, number> = { 1: 0.85, 2: 0.5, 3: 0.15 };
+const HINT_SHARE = 0.34;
 
 export interface RareTiming {
   answerMilliseconds: number;
@@ -256,7 +258,33 @@ export function createRareRoomFactory(library: RareLibrary, timing: RareTiming =
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        const criteria = currentCriteria(state);
+        if (stage !== 'answering' || criteria === null || state.pending[side] !== undefined) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'extra-time') {
+          const seconds = EXTRA_TIME_SECONDS.rare ?? 0;
+          if (phaseTimer) {
+            clearTimeout(phaseTimer);
+          }
+          deadline += seconds * SECOND;
+          phaseTimer = setTimeout(reveal, Math.max(0, deadline - now()) + TURN_GRACE_MILLISECONDS);
+          broadcast();
+          return { reveal: { kind: 'time', seconds } };
+        }
+        if (joker === 'hint') {
+          const answers = [...library.rareAnswers(market, criteria.row, criteria.column, BOT_FAME, BOT_ANSWERS)].sort(
+            (first, second) => first.fame - second.fame,
+          );
+          if (answers.length === 0) {
+            return { error: 'invalid-action' };
+          }
+          const rare = answers.slice(0, Math.max(1, Math.ceil(answers.length * HINT_SHARE)));
+          return { reveal: { kind: 'initials', footballerId: pick(rare, random).id, birthYear: false } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'rare',
