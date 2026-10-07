@@ -1,8 +1,8 @@
 import type { DuelConcept } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Keyboard, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -16,6 +16,7 @@ import { URGENT_SECONDS } from './use-match-effects';
 
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const NO_ROLE = '-';
+const FOCUS_DELAY = 250;
 
 export type SearchFilter =
   | { kind: 'concept'; concept: DuelConcept }
@@ -65,6 +66,7 @@ export function FootballerSearch({
   const database = useSQLiteContext();
   const { t } = useTranslation();
   const uppercase = useUppercase();
+  const input = useRef<TextInput>(null);
   const [text, setText] = useState('');
   const [found, setFound] = useState<{ text: string; footballers: FootballerSummary[] }>({ text: '', footballers: [] });
   const filterKey = JSON.stringify(filter);
@@ -80,6 +82,8 @@ export function FootballerSearch({
       cancelled = true;
     };
   }, [database, market, filterKey, text]);
+
+  useEffect(() => () => Keyboard.dismiss(), []);
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const resultKey = results.map((footballer) => footballer.id).join(',');
@@ -106,7 +110,7 @@ export function FootballerSearch({
   const urgent = secondsLeft !== null && secondsLeft <= URGENT_SECONDS;
 
   return (
-    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose} onShow={() => setTimeout(() => input.current?.focus(), FOCUS_DELAY)}>
       <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
@@ -123,6 +127,7 @@ export function FootballerSearch({
             ) : null}
           </View>
           <TextInput
+            ref={input}
             autoFocus
             autoCorrect={false}
             autoCapitalize="words"
@@ -152,6 +157,7 @@ export function FootballerSearch({
                   haptics.select();
                   setText('');
                   onSelect(item);
+                  input.current?.focus();
                 }}
                 style={({ pressed }) => [styles.result, pressed && styles.resultPressed]}>
                 <View style={styles.role}>
