@@ -12,7 +12,6 @@ import type { FootballerSummary } from '@/data/types';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
-import { flagEmoji } from './flags';
 import { URGENT_SECONDS } from './use-match-effects';
 
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
@@ -135,7 +134,6 @@ export function FootballerSearch({
                 <ThemedText style={styles.resultName} numberOfLines={1}>
                   {item.name}
                 </ThemedText>
-                <ThemedText style={styles.resultFlag}>{flagEmoji(item.countryCode) ?? ''}</ThemedText>
                 <ThemedText type="label" themeColor="textSecondary">
                   {item.birthYear ?? ''}
                 </ThemedText>
@@ -250,10 +248,6 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.bodyBold,
     fontSize: 17,
     lineHeight: 22,
-  },
-  resultFlag: {
-    fontSize: 18,
-    lineHeight: 24,
   },
   cancel: {
     alignItems: 'center',
