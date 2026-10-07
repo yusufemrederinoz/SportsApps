@@ -212,7 +212,7 @@ Kalanlar:
 
 - Lider tablosu.
 - Herkesin aynı ızgarayı çözdüğü günlük bulmaca.
-- Golün harcanacağı yerler (açık karar).
+- Maç içi jokerler: her modda iki joker, joker 3 gol, maçta en çok 2 (karar verildi, yapılıyor).
 
 Bitti sayılır: Bir maçın sonucu puana ve lider tablosuna yansır; günlük bulmaca her gün kendiliğinden değişir.
 
@@ -260,7 +260,7 @@ Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; he
 
 ## Adım 8 — Gelir modeli ve mağaza hazırlığı
 
-- Ödüllü reklam (AdMob) ve uygulama içi gol satın alma eklenir. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
+- Ödüllü reklam (AdMob; reklam başı 2 gol, günde en çok 5) ve uygulama içi gol satın alma eklenir. Misafir hesap satın alamaz, önce hesap açar. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.
 - Mağaza sayfaları, ekran görüntüleri ve Türkçe açıklamalar hazırlanır.
 - Geliştirici hesapları açılır: Apple yıllık 99 dolar, Google Play tek seferlik 25 dolar.

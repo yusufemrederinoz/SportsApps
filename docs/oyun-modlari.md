@@ -7,12 +7,38 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 ## Ortak ilkeler
 
 - Her modun kendi puanı vardır. Puan yalnızca online sıra maçlarında değişir (gizli bot dahil); "Bota karşı" ve arkadaş odası puansızdır. Puanlı galibiyet 1 gol getirir. Ayrıntı [teknik-mimari.md](teknik-mimari.md) belgesinde "Puan, seviye ve gol" bölümünde.
+- Her modun iki jokeri var (aşağıda "Jokerler"). Joker 3 gol; bir maçta en çok 2 joker kullanılır; puanlı maçlarda da geçerlidir.
 - Her mod iki kişiliktir ve online oynanır; rakip çıkmazsa gerçek oyuncu gibi görünen bot gelir. Arkadaş odası her modda çalışır. Ana ekrandaki "Bota karşı" girişi her modda beklemeden "Bot" adlı rakiple maç açar (XOX'ta bu maç internetsiz, telefonda oynanır).
 - Maçın sahibi sunucudur: cevabı, istatistiği ve süreyi sunucu belirler. Uygulama yalnızca hamle gönderir ve sunucunun gönderdiği görünümü çizer.
 - Gizli bilgi (rakibin eli, henüz açılmamış soru) uygulamaya hiç gönderilmez.
 - Yeni modlar önce yalnızca online çalışır (bot dahil). İnternetsiz oynanış, mod oturduktan sonra eklenir. XOX'un internetsiz modları olduğu gibi kalır.
 - Mod adları bize aittir; esinlenilen yapımların adları ve görselleri kullanılmaz.
 - Kodda mod kimlikleri İngilizcedir; ekranda görünen adlar çeviri dosyalarından gelir.
+
+## Jokerler
+
+Kararlar (7 Ekim 2026): her modun kendine özgü iki jokeri var. Joker 3 gol tutar ve oyuncunun gol bakiyesinden düşer. Bir oyuncu bir maçta en çok 2 joker kullanır (iki farklı ya da aynı jokeri iki kez). Puanlı maçlarda da kullanılır. Joker kullanılınca rakibin ekranında "Rakip joker kullandı" görünür; jokerin verdiği bilgi yalnızca kullanana gider. Jokerin geçerli olup olmadığına ve etkisine sunucu karar verir.
+
+| Mod | Joker | Etkisi |
+|---|---|---|
+| XOX | Ek süre | Bu hamleye +15 saniye |
+| XOX | İpucu | Seçilen hücreye uyan, henüz kullanılmamış tanınmış bir futbolcunun baş harfi ve doğum yılı |
+| Kart Düellosu | Kart değiştir | Elden seçilen kart, konsepte uyan rastgele bir kartla değişir (oynanmadan önce) |
+| Kart Düellosu | Değerleri gör | Bu turun sorusunda kendi kartlarının değerleri görünür |
+| Kadro Kur | Ek süre | Bu tura +15 saniye |
+| Kadro Kur | Asistleri gör | Bu turda arama sonuçlarında futbolcuların kariyer asistleri görünür |
+| Hangisi Yüksek | Pas | Soru cevaplanmadan geçilir; seri bozulmaz, sıra oyuncuda kalır, yeni soru gelir |
+| Hangisi Yüksek | Bir değer | İki karttan birinin değeri açılır |
+| Zincir | Ek süre | Bu hamleye +10 saniye |
+| Zincir | Kulüp ipucu | Son futbolcunun, bağlanabilecek en çok futbolcusu olan kulübü gösterilir |
+| En Az Bilinen | Ek süre | Bu tura +15 saniye |
+| En Az Bilinen | İpucu | İki ölçüte uyan az bilinen bir futbolcunun baş harfi |
+| Açık Artırma | Sayıyı gör | İki ölçüte uyan tanınmış futbolcu sayısı |
+| Açık Artırma | Ek süre | İspata +15 saniye |
+| İlk 10 | Ek can | Bu listede +1 can |
+| İlk 10 | Baş harf | Listede henüz bulunmamış bir ismin baş harfi |
+| Kariyer Yolu | Uyruk | Gizli futbolcunun uyruğu |
+| Kariyer Yolu | Mevki | Gizli futbolcunun mevkisi ve doğum yılı |
 
 ## Modlar
 
