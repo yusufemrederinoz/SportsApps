@@ -1,6 +1,6 @@
 import type { GameId } from '@sportapps/protocol';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
@@ -24,6 +24,9 @@ function HomeScreen() {
   const { state: auth } = useAuth();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const [game, setGame] = useState<GameId>('grid');
+  const gameScroller = useRef<ScrollView>(null);
+  const gameScrollerWidth = useRef(0);
+  const chipFrames = useRef<Partial<Record<GameId, { x: number; width: number }>>>({});
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
   const accent = t(GAME_ACCENTS[game]);
   const startBot = () => router.push({ pathname: '/match', params: { mode: 'bot', difficulty: String(difficulty) } });
@@ -33,6 +36,15 @@ function HomeScreen() {
 
   return (
     <Screen contentStyle={styles.screen}>
+  const selectGame = (option: GameId) => {
+    haptics.select();
+    setGame(option);
+    const frame = chipFrames.current[option];
+    if (frame) {
+      const x = frame.x + frame.width / 2 - gameScrollerWidth.current / 2;
+      gameScroller.current?.scrollTo({ x: Math.max(0, x), animated: true });
+    }
+  };
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
           <Pressable
@@ -76,8 +88,12 @@ function HomeScreen() {
             horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.gameScroller}
+            ref={gameScroller}
             contentContainerStyle={styles.gameRow}
             accessibilityRole="radiogroup">
+            onLayout={(event) => {
+              gameScrollerWidth.current = event.nativeEvent.layout.width;
+            }}
             {GAMES.map((option) => {
               const selected = option === game;
               return (
@@ -85,9 +101,10 @@ function HomeScreen() {
                   key={option}
                   accessibilityRole="radio"
                   accessibilityState={{ selected }}
-                  onPress={() => {
-                    haptics.select();
-                    setGame(option);
+                  onPress={() => selectGame(option)}
+                  onLayout={(event) => {
+                    const { x, width } = event.nativeEvent.layout;
+                    chipFrames.current[option] = { x, width };
                   }}
                   style={[styles.difficultyOption, styles.gameOption, selected && styles.difficultySelected]}>
                   <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
