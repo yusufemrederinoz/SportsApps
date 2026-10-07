@@ -16,6 +16,7 @@ import { flagEmoji } from '@/features/match/flags';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
+import { ownScoreFirst } from '@/features/match/sides';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineAuction } from '@/features/match/use-online-match';
@@ -178,7 +179,7 @@ export function AuctionMatchView({
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
             detail={result.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('auction.byScore')}
-            score={`${view.scores.x} – ${view.scores.o}`}
+            score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -202,6 +203,7 @@ export function AuctionMatchView({
 
       <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <Scoreboard
+          side={side}
           names={names}
           scores={view.scores}
           activeSide={activeSide}

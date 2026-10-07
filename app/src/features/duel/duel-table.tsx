@@ -16,13 +16,13 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
 import { FootballerCard, type CardEmphasis } from '@/features/match/footballer-card';
 import type { PlayedFootballer } from '@/features/match/session';
+import { ownSideFirst } from '@/features/match/sides';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
 import { CardBack, EmptySlot } from './card-back';
 import { METRIC_KEYS, metricValueText } from './labels';
 
-const SIDES: readonly Side[] = ['x', 'o'];
 const VERSUS = 'VS';
 const POINT = '+1';
 const LIFT = 10;
@@ -163,7 +163,7 @@ export function DuelTable({ view, side, cards, canAct, arenaSize, handCardSize, 
   return (
     <View style={styles.container}>
       <View style={styles.arena}>
-        {SIDES.map((slotSide, index) => (
+        {ownSideFirst(side).map((slotSide, index) => (
           <View key={slotSide} style={styles.arenaSide}>
             {index === 1 ? (
               <ThemedText style={[styles.versus, { marginTop: (arenaSize - VERSUS_HEIGHT) / 2 }]}>{VERSUS}</ThemedText>

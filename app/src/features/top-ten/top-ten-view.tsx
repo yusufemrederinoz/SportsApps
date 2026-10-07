@@ -18,6 +18,7 @@ import { JokerBar } from '@/features/jokers/joker-bar';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
+import { ownScoreFirst, ownSideFirst } from '@/features/match/sides';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineTopTen } from '@/features/match/use-online-match';
@@ -25,7 +26,6 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
-const SIDES: readonly Side[] = ['x', 'o'];
 const LIFE_SIZE = 12;
 const RANK_SIZE = 30;
 
@@ -185,7 +185,7 @@ export function TopTenMatchView({
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
             detail={result.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('topTen.byScore')}
-            score={`${view.scores.x} – ${view.scores.o}`}
+            score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -209,6 +209,7 @@ export function TopTenMatchView({
 
       <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <Scoreboard
+          side={side}
           names={names}
           scores={view.scores}
           activeSide={playing ? view.turn : null}
@@ -231,7 +232,7 @@ export function TopTenMatchView({
       <JokerBar scope={view.round} available={(joker) => view.phase === 'playing' && (joker !== 'extra-life' || view.lives[side] > 0)} />
 
       <View style={styles.lives}>
-        {SIDES.map((lifeSide) => (
+        {ownSideFirst(side).map((lifeSide) => (
           <View key={lifeSide} style={styles.lifeRow} accessible accessibilityLabel={t('topTen.lives', { name: names[lifeSide], lives: view.lives[lifeSide] })}>
             {Array.from({ length: view.maxLives }, (_, index) => (
               <View

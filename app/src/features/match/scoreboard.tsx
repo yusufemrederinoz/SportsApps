@@ -8,7 +8,10 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
+import { ownSideFirst } from './sides';
+
 interface ScoreboardProps {
+  side: Side;
   names: Record<Side, string>;
   scores: Record<Side, number>;
   activeSide: Side | null;
@@ -18,13 +21,14 @@ interface ScoreboardProps {
 
 interface SidePanelProps {
   side: Side;
+  edge: 'left' | 'right';
   name: string;
   score: number;
   active: boolean;
   compact: boolean;
 }
 
-function SidePanel({ side, name, score, active, compact }: SidePanelProps) {
+function SidePanel({ side, edge, name, score, active, compact }: SidePanelProps) {
   const uppercase = useUppercase();
   const finish = Finishes[side];
   const bump = useSharedValue(1);
@@ -40,13 +44,13 @@ function SidePanel({ side, name, score, active, compact }: SidePanelProps) {
   return (
     <MetalPlate
       finish={active ? finish : null}
-      cut={side === 'x' ? 'left' : 'right'}
+      cut={edge}
       style={[styles.panel, active && { shadowColor: finish.base }, active && styles.glow]}>
       <View
         accessible
         accessibilityLabel={`${name}: ${score}`}
         accessibilityState={{ selected: active }}
-        style={[styles.panelContent, side === 'o' && styles.reversed]}>
+        style={[styles.panelContent, edge === 'right' && styles.reversed]}>
         <ThemedText style={[styles.name, { color: textColor }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
           {uppercase(name)}
         </ThemedText>
@@ -60,12 +64,13 @@ function SidePanel({ side, name, score, active, compact }: SidePanelProps) {
   );
 }
 
-export function Scoreboard({ names, scores, activeSide, center, compact = false }: ScoreboardProps) {
+export function Scoreboard({ side, names, scores, activeSide, center, compact = false }: ScoreboardProps) {
+  const [left, right] = ownSideFirst(side);
   return (
     <View style={styles.container}>
-      <SidePanel side="x" name={names.x} score={scores.x} active={activeSide === 'x'} compact={compact} />
+      <SidePanel side={left} edge="left" name={names[left]} score={scores[left]} active={activeSide === left} compact={compact} />
       <View style={styles.center}>{center}</View>
-      <SidePanel side="o" name={names.o} score={scores.o} active={activeSide === 'o'} compact={compact} />
+      <SidePanel side={right} edge="right" name={names[right]} score={scores[right]} active={activeSide === right} compact={compact} />
     </View>
   );
 }

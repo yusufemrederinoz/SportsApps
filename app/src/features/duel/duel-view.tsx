@@ -15,6 +15,7 @@ import type { ConceptLabel } from '@/data/types';
 import { JokerBar } from '@/features/jokers/joker-bar';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
+import { ownScoreFirst } from '@/features/match/sides';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineDuel } from '@/features/match/use-online-match';
@@ -124,7 +125,7 @@ export function DuelMatchView({
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
             detail={resultDetail}
-            score={`${view.scores.x} – ${view.scores.o}`}
+            score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -174,6 +175,7 @@ export function DuelMatchView({
         <>
           <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
             <Scoreboard
+              side={side}
               names={names}
               scores={view.scores}
               activeSide={activeSide}

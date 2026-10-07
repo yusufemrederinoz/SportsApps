@@ -1,4 +1,4 @@
-import { countCells, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
+import { countCells, opponentOf, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -15,6 +15,7 @@ import { FeedbackStamp } from './feedback-stamp';
 import { FootballerSearch } from './footballer-search';
 import { ResultOverlay } from './result-overlay';
 import { Scoreboard } from './scoreboard';
+import { ownScoreFirst } from './sides';
 import type { MatchSession } from './session';
 import { TurnTimer } from './turn-timer';
 import { URGENT_SECONDS, useMatchEffects } from './use-match-effects';
@@ -70,6 +71,7 @@ export function MatchView({
   const selected = selection && selection.turnNumber === match.turnNumber && canPlay ? selection.position : null;
   const urgent = !result && secondsLeft <= URGENT_SECONDS;
   const scores = { x: countCells(match, 'x'), o: countCells(match, 'o') };
+  const ownSide = opponentOf(opponentSide);
   const resultTone = !result?.winner ? 'draw' : result.winner === opponentSide ? 'loss' : 'win';
   const headerTitle = (header: HeaderView) => nameUppercase(header.name, header.local);
   const selectedTitle = selected
@@ -84,7 +86,7 @@ export function MatchView({
           <ResultOverlay
             title={resultTitle}
             detail={resultDetail}
-            score={`${scores.x} – ${scores.o}`}
+            score={ownScoreFirst(scores, ownSide)}
             tone={resultTone}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -108,6 +110,7 @@ export function MatchView({
 
       <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <Scoreboard
+          side={ownSide}
           names={names}
           scores={scores}
           activeSide={result ? null : match.turn}

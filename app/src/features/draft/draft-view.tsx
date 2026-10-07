@@ -18,6 +18,7 @@ import { JokerContext, ownReveals } from '@/features/jokers/joker-context';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
+import { ownScoreFirst, ownSideFirst } from '@/features/match/sides';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineDraft } from '@/features/match/use-online-match';
@@ -29,7 +30,6 @@ import { useDraftEffects } from './use-draft-effects';
 
 const SLOT_HEIGHT_SHARE = 0.058;
 const MAXIMUM_SLOT_SIZE = 60;
-const SIDES: readonly Side[] = ['x', 'o'];
 
 interface DraftMatchViewProps {
   draft: OnlineDraft;
@@ -139,7 +139,7 @@ export function DraftMatchView({
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
             detail={result.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('draft.byScore')}
-            score={`${view.scores.x} – ${view.scores.o}`}
+            score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -163,6 +163,7 @@ export function DraftMatchView({
 
       <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <Scoreboard
+          side={side}
           names={names}
           scores={view.scores}
           activeSide={running ? (ownPicked ? (view.picked[rival] ? null : rival) : side) : null}
@@ -198,7 +199,7 @@ export function DraftMatchView({
       </Animated.View>
 
       <View style={styles.boards}>
-        {SIDES.map((boardSide) => (
+        {ownSideFirst(side).map((boardSide) => (
           <LineupBoard
             key={boardSide}
             side={boardSide}

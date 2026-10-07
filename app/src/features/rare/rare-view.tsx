@@ -20,6 +20,7 @@ import { FootballerCard } from '@/features/match/footballer-card';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
+import { ownScoreFirst, ownSideFirst } from '@/features/match/sides';
 import { TurnTimer } from '@/features/match/turn-timer';
 import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import type { OnlineRare } from '@/features/match/use-online-match';
@@ -27,7 +28,6 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
 
-const SIDES: readonly Side[] = ['x', 'o'];
 const FAME_BAR_WIDTH = 96;
 const MAXIMUM_FAME = 100;
 const PIP_SIZE = 12;
@@ -237,7 +237,7 @@ export function RareMatchView({
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
             detail={result.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('rare.byScore')}
-            score={`${view.scores.x} – ${view.scores.o}`}
+            score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}
             homeLabel={t('match.home')}
@@ -261,6 +261,7 @@ export function RareMatchView({
 
       <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <Scoreboard
+          side={side}
           names={names}
           scores={view.scores}
           activeSide={null}
@@ -314,7 +315,7 @@ export function RareMatchView({
       <View style={styles.middle}>
         {!answering && lastRound ? (
           <View style={styles.reveal}>
-            {SIDES.map((answerSide) => (
+            {ownSideFirst(side).map((answerSide) => (
               <AnswerColumn
                 key={`${view.rounds.length}-${answerSide}`}
                 answer={lastRound.answers[answerSide]}
