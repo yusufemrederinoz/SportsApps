@@ -1,4 +1,4 @@
-import type { MetricRow } from '@sportapps/football-data';
+import { metricValue, type MetricRow } from '@sportapps/football-data';
 import { DUEL_HAND_SIZE } from '@sportapps/game-core';
 import type { DuelConcept, DuelMetric, DuelView, GameView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,8 +14,10 @@ import {
   type DuelTiming,
 } from '../src/play/duel-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const CONCEPT: DuelConcept = { kind: 'club', clubId: 9 };
 const POOL = Array.from({ length: 30 }, (_, index) => index + 1);
@@ -68,6 +70,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -142,10 +145,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(2_000_000);
   seed = 11;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { duel: createDuelRoomFactory(library, TIMING) },
+    games: { duel: capturing(createDuelRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -287,6 +291,29 @@ describe('questions', () => {
 });
 
 describe('playing rounds', () => {
+  it('shows the values of the hand for the question and swaps a card for a spare one', () => {
+    const { first } = dealt();
+    const side = first.session().side;
+    const room = lastRoom(rooms);
+    const metric = first.view().question?.metric as DuelMetric;
+    const shown = room.useJoker(side, 'see-values', {});
+    expect(shown).toMatchObject({ reveal: { kind: 'values' } });
+    if ('reveal' in shown && shown.reveal.kind === 'values') {
+      expect(Object.keys(shown.reveal.values).map(Number).sort((a, b) => a - b)).toEqual(FIRST_HAND);
+      expect(shown.reveal.values[3]).toBe(metricValue(rowOf(3), metric));
+    }
+    expect(room.useJoker(side, 'swap-card', { footballerId: 11 })).toEqual({ error: 'invalid-action' });
+    const swapped = room.useJoker(side, 'swap-card', { footballerId: 4 });
+    expect(swapped).toMatchObject({ reveal: { kind: 'swap', from: 4 } });
+    const to = 'reveal' in swapped && swapped.reveal.kind === 'swap' ? swapped.reveal.to : 0;
+    expect([...FIRST_HAND, ...SECOND_HAND]).not.toContain(to);
+    expect(first.view().remaining).toContain(to);
+    expect(first.view().remaining).not.toContain(4);
+    act(first, { kind: 'play', footballerId: to });
+    expect(first.view().played).toBe(to);
+    expect(room.useJoker(side, 'see-values', {})).toEqual({ error: 'invalid-action' });
+  });
+
   it('hides a played card until both players have played, then reveals the round', () => {
     const { first, second } = dealt();
     const question = first.view().question;

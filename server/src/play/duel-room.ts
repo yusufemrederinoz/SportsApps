@@ -388,7 +388,41 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
         }
       },
 
-      useJoker: NO_JOKER,
+      useJoker(side, joker, target) {
+        const question = currentQuestion(state);
+        const hand = state.hands[side];
+        if (stage !== 'playing' || !question || !hand || state.plays[side] !== undefined) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'see-values') {
+          const values = Object.fromEntries(
+            state.remaining[side].map((footballerId) => [footballerId, valueOf(footballerId, question.metric)]),
+          );
+          return { reveal: { kind: 'values', values } };
+        }
+        if (joker === 'swap-card') {
+          const from = target.footballerId;
+          if (from === undefined || !state.remaining[side].includes(from)) {
+            return { error: 'invalid-action' };
+          }
+          const held = [...(state.hands.x ?? []), ...(state.hands.o ?? [])];
+          const spare = pool.filter((footballerId) => !held.includes(footballerId));
+          if (spare.length === 0) {
+            return { error: 'invalid-action' };
+          }
+          const to = pick(spare, random);
+          remember([to]);
+          const swap = (cards: readonly number[]) => cards.map((card) => (card === from ? to : card));
+          state = {
+            ...state,
+            hands: { ...state.hands, [side]: swap(hand) },
+            remaining: { ...state.remaining, [side]: swap(state.remaining[side]) },
+          };
+          broadcast();
+          return { reveal: { kind: 'swap', from, to } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
 
       record: () => ({

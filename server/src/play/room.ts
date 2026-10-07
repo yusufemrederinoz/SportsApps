@@ -56,6 +56,7 @@ export interface MatchRoom {
   start(): void;
   answer(side: Side, turnNumber: number, cell: CellPosition, footballerId: number): PlayErrorCode | null;
   forfeit(side: Side): void;
+  extendTurn(milliseconds: number): void;
   snapshot(side: Side, opponentConnected: boolean): MatchSnapshot;
   dispose(): void;
 }
@@ -183,6 +184,15 @@ export function createMatchRoom(options: RoomOptions): MatchRoom {
       if (state.result) {
         finish(state.result);
       }
+    },
+
+    extendTurn(milliseconds) {
+      if (state.result) {
+        return;
+      }
+      stopTimer();
+      turnDeadline += milliseconds;
+      timer = setTimeout(expireTurn, Math.max(0, turnDeadline - now()) + TURN_GRACE_MILLISECONDS);
     },
 
     snapshot(side, opponentConnected) {

@@ -7,8 +7,10 @@ import { openDatabase, type Database } from '../src/database';
 import type { FootballLibrary } from '../src/football/library';
 import { createGridRoomFactory } from '../src/play/grid-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const club = (referenceId: number): Header => ({ kind: 'club', referenceId });
 const GRID: Grid = { id: 77, rows: [club(1), club(2), club(3)], columns: [club(4), club(5), club(6)] };
@@ -65,6 +67,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -139,10 +142,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(2_000_000);
   seed = 11;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { grid: createGridRoomFactory(library) },
+    games: { grid: capturing(createGridRoomFactory(library), rooms) },
     hasMarket: library.hasMarket,
     history,
     random,
@@ -318,6 +322,24 @@ describe('playing', () => {
     lobby.handle(x.player.id, { type: 'leave', matchId });
     expect(o.of('finished')[0]?.result).toEqual({ winner: 'o', reason: 'forfeit' });
     expect(history.list(x.player.id)[0]).toMatchObject({ outcome: 'loss', reason: 'forfeit' });
+  });
+});
+
+describe('grid jokers', () => {
+  it('adds fifteen seconds to the turn and hints at an open cell on your turn', () => {
+    const { starter, other } = pair();
+    const room = lastRoom(rooms);
+    const side = starter.match().side;
+    expect(room.useJoker(other.match().side, 'extra-time', {})).toEqual({ error: 'invalid-action' });
+    expect(room.useJoker(side, 'hint', {})).toEqual({ error: 'invalid-action' });
+    const hint = room.useJoker(side, 'hint', { cell: { row: 0, column: 0 } });
+    expect(hint).toMatchObject({ reveal: { kind: 'initials', birthYear: true } });
+    expect([14, 114]).toContain('reveal' in hint && hint.reveal.kind === 'initials' ? hint.reveal.footballerId : 0);
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 15 } });
+    vi.advanceTimersByTime(TURN);
+    expect(starter.of('move')).toHaveLength(0);
+    vi.advanceTimersByTime(15000);
+    expect(starter.of('move').at(-1)?.move).toMatchObject({ kind: 'timeout', side });
   });
 });
 

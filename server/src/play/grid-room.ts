@@ -1,9 +1,12 @@
-import { countCells } from '@sportapps/game-core';
+import { BOARD_SIZE, cellIndex, countCells, usedFootballerIds } from '@sportapps/game-core';
+import { EXTRA_TIME_SECONDS } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
 import { DEFAULT_BOT_TIMING, botLevelFor, createBotPlayer, type BotTiming } from './bot';
 import { NO_JOKER, SIDES, type LiveRoom, type RoomFactory } from './live-room';
 import { createMatchRoom } from './room';
+
+const SECOND = 1000;
 
 export function createGridRoomFactory(library: FootballLibrary, timing: BotTiming = DEFAULT_BOT_TIMING): RoomFactory {
   return (context) => {
@@ -64,7 +67,37 @@ export function createGridRoomFactory(library: FootballLibrary, timing: BotTimin
         return room.answer(side, message.turnNumber, message.cell, message.footballerId);
       },
       forfeit: room.forfeit,
-      useJoker: NO_JOKER,
+      useJoker(side, joker, target) {
+        const state = room.state();
+        if (state.result || state.turn !== side) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'extra-time') {
+          const seconds = EXTRA_TIME_SECONDS.grid ?? 0;
+          room.extendTurn(seconds * SECOND);
+          return { reveal: { kind: 'time', seconds } };
+        }
+        if (joker === 'hint') {
+          const cell = target.cell;
+          if (
+            !cell ||
+            cell.row < 0 ||
+            cell.row >= BOARD_SIZE ||
+            cell.column < 0 ||
+            cell.column >= BOARD_SIZE ||
+            state.cells[cellIndex(cell)] !== null
+          ) {
+            return { error: 'invalid-action' };
+          }
+          const used = usedFootballerIds(state);
+          const [option] = library.knownAnswers(market, grid, [cell], library.minimumFame(difficulty));
+          const open = (option?.footballerIds ?? []).filter((footballerId) => !used.includes(footballerId));
+          return open.length > 0
+            ? { reveal: { kind: 'initials', footballerId: open[Math.floor(random() * open.length)] as number, birthYear: true } }
+            : { error: 'invalid-action' };
+        }
+        return NO_JOKER();
+      },
       finishedAt: room.finishedAt,
       record: () => ({
         game: 'grid',
