@@ -1,3 +1,4 @@
+import type { DuelConcept } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
-import { searchFootballers } from '@/data/queries';
+import { searchConceptFootballers, searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
@@ -22,11 +23,24 @@ interface FootballerSearchProps {
   market: string;
   secondsLeft: number;
   excludedIds: readonly number[];
+  concept?: DuelConcept | null;
+  emptyLabel?: string;
+  closeLabel?: string;
   onSelect: (footballer: FootballerSummary) => void;
   onClose: () => void;
 }
 
-export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSelect, onClose }: FootballerSearchProps) {
+export function FootballerSearch({
+  title,
+  market,
+  secondsLeft,
+  excludedIds,
+  concept = null,
+  emptyLabel,
+  closeLabel,
+  onSelect,
+  onClose,
+}: FootballerSearchProps) {
   const database = useSQLiteContext();
   const { t } = useTranslation();
   const uppercase = useUppercase();
@@ -35,7 +49,10 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
 
   useEffect(() => {
     let cancelled = false;
-    void searchFootballers(database, market, text).then((footballers) => {
+    const searching = concept
+      ? searchConceptFootballers(database, market, concept, text)
+      : searchFootballers(database, market, text);
+    void searching.then((footballers) => {
       if (!cancelled) {
         setFound({ text, footballers });
       }
@@ -43,7 +60,7 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
     return () => {
       cancelled = true;
     };
-  }, [database, market, text]);
+  }, [database, market, concept, text]);
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const searched = found.text === text && text.trim().length >= 2;
@@ -83,7 +100,7 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
             contentContainerStyle={styles.list}
             ListEmptyComponent={
               <ThemedText type="small" themeColor="textSecondary" style={styles.empty}>
-                {searched ? t('search.empty') : t('search.hint')}
+                {searched ? (emptyLabel ?? t('search.empty')) : t('search.hint')}
               </ThemedText>
             }
             renderItem={({ item }) => (
@@ -92,6 +109,7 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
                 accessibilityLabel={item.birthYear ? `${item.name}, ${item.birthYear}` : item.name}
                 onPress={() => {
                   haptics.select();
+                  setText('');
                   onSelect(item);
                 }}
                 style={({ pressed }) => [styles.result, pressed && styles.resultPressed]}>
@@ -110,7 +128,7 @@ export function FootballerSearch({ title, market, secondsLeft, excludedIds, onSe
           />
           <Pressable accessibilityRole="button" onPress={onClose} style={styles.cancel}>
             <ThemedText type="label" themeColor="textSecondary">
-              {uppercase(t('search.cancel'))}
+              {uppercase(closeLabel ?? t('search.cancel'))}
             </ThemedText>
           </Pressable>
         </SafeAreaView>

@@ -47,7 +47,10 @@
     "modeOnlineTitle": "Online match",
     "modeOnlineHint": "Play a real opponent.",
     "modeFriendTitle": "Play a friend",
-    "modeFriendHint": "Open a private room with a code."
+    "modeFriendHint": "Open a private room with a code.",
+    "game": "Game",
+    "titleAccentDuel": "Duel",
+    "subtitleDuel": "Pick seven cards. Each round, the better card for the question scores."
   },
   "difficulty": {
     "easy": "Easy",
@@ -157,7 +160,8 @@
     "joinTitle": "Join a room",
     "codeLabel": "Room code",
     "codeHint": "Five characters, from your friend.",
-    "join": "Join"
+    "join": "Join",
+    "createGame": "Game: {{game}}"
   },
   "credits": {
     "title": "Image sources",
@@ -165,5 +169,68 @@
     "count": "{{count}} portraits",
     "empty": "There are no portraits in this version yet.",
     "openHint": "Opens the source photograph"
+  },
+  "games": {
+    "grid": "XOX",
+    "duel": "Card Duel"
+  },
+  "leagues": {
+    "TR1": "Süper Lig",
+    "GB1": "Premier League",
+    "ES1": "LaLiga",
+    "IT1": "Serie A",
+    "L1": "Bundesliga",
+    "FR1": "Ligue 1"
+  },
+  "duel": {
+    "conceptLabel": "Concept",
+    "conceptHomeLeagueForeigners": "Foreigners in {{name}} history",
+    "conceptForeigners": "Foreigners in the home league",
+    "conceptHomeNationalsAbroad": "Home players who played abroad",
+    "conceptClub": "Played for {{name}}",
+    "conceptCountry": "Footballers from {{name}}",
+    "conceptLeague": "{{name}} players",
+    "pickHint": "You pick before you know the questions: goals, assists, matches, age… anything can come up.",
+    "pickCount": "{{picked}}/{{total}} cards",
+    "addCard": "Add a card",
+    "removeCard": "Remove {{name}}",
+    "fill": "Fill at random",
+    "ready": "Ready",
+    "searchEmpty": "No footballer fits this concept.",
+    "searchDone": "Done ({{picked}}/{{total}})",
+    "locked": "Your hand is set",
+    "starting": "The duel is starting…",
+    "waitingOpponentHand": "Your opponent is picking cards…",
+    "round": "Round {{round}}/{{total}}",
+    "questionGoals": "More career goals wins",
+    "questionAssists": "More career assists wins",
+    "questionAppearances": "More career matches wins",
+    "questionYellowCards": "More yellow cards wins",
+    "questionGoalRate": "More goals per match wins",
+    "questionMarketValue": "The higher peak market value wins",
+    "questionCaps": "More international caps wins",
+    "questionOlder": "The older player wins",
+    "questionYounger": "The younger player wins",
+    "metricGoals": "Goals",
+    "metricAssists": "Assists",
+    "metricAppearances": "Matches",
+    "metricYellowCards": "Yellow cards",
+    "metricGoalRate": "Goals per match",
+    "metricMarketValue": "Market value",
+    "metricCaps": "Caps",
+    "metricBirthYear": "Born",
+    "valueUnknown": "?",
+    "valueMillions": "€{{value}}M",
+    "valueThousands": "€{{value}}K",
+    "emptySlot": "Empty card slot",
+    "hiddenCard": "Hidden card",
+    "pickCard": "Pick your card",
+    "play": "Play this card",
+    "waitingOpponentCard": "Waiting for your opponent…",
+    "opponentPlayed": "Your opponent has played",
+    "roundWon": "You take the round!",
+    "roundLost": "Round lost",
+    "roundDrawn": "Round drawn",
+    "byScore": "Seven rounds played"
   }
 }

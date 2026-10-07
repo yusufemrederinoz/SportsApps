@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { api } from '@/api';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Radius, Spacing, type ThemeColor } from '@/constants/theme';
+import { GAME_LABELS, parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import { useUppercase } from '@/i18n/uppercase';
 
@@ -78,7 +79,7 @@ export function MatchHistory({ token }: { token: string }) {
                 {match.opponent}
               </ThemedText>
               <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
-                {`${t(DIFFICULTY_LABELS[match.difficulty])} · ${playedOn(match.finishedAt)}`}
+                {`${t(GAME_LABELS[parseGame(match.game)])} · ${t(DIFFICULTY_LABELS[match.difficulty])} · ${playedOn(match.finishedAt)}`}
               </ThemedText>
             </View>
             <View style={styles.result}>

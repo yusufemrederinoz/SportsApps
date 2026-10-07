@@ -47,7 +47,10 @@
     "modeOnlineTitle": "ONLINE maç",
     "modeOnlineHint": "Gerçek bir rakiple oyna.",
     "modeFriendTitle": "Arkadaşınla oyna",
-    "modeFriendHint": "Kodla özel oda aç."
+    "modeFriendHint": "Kodla özel oda aç.",
+    "game": "Oyun",
+    "titleAccentDuel": "Düello",
+    "subtitleDuel": "Yedi kart seç. Her turda sorulan soruda kartı üstün gelen puanı alır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -157,7 +160,8 @@
     "joinTitle": "Odaya katıl",
     "codeLabel": "Oda kodu",
     "codeHint": "Arkadaşından aldığın beş karakter.",
-    "join": "Katıl"
+    "join": "Katıl",
+    "createGame": "Oyun: {{game}}"
   },
   "credits": {
     "title": "Görsel kaynakları",
@@ -165,5 +169,68 @@
     "count": "{{count}} görsel",
     "empty": "Bu sürümde henüz görsel yok.",
     "openHint": "Kaynak fotoğrafı açar"
+  },
+  "games": {
+    "grid": "XOX",
+    "duel": "Kart Düellosu"
+  },
+  "leagues": {
+    "TR1": "Süper Lig",
+    "GB1": "Premier League",
+    "ES1": "LaLiga",
+    "IT1": "Serie A",
+    "L1": "Bundesliga",
+    "FR1": "Ligue 1"
+  },
+  "duel": {
+    "conceptLabel": "Konsept",
+    "conceptHomeLeagueForeigners": "{{name}} tarihindeki yabancılar",
+    "conceptForeigners": "Ligimizde oynamış yabancılar",
+    "conceptHomeNationalsAbroad": "Yurt dışında oynamış yerli oyuncular",
+    "conceptClub": "{{name}} forması giymiş oyuncular",
+    "conceptCountry": "{{name}} futbolcuları",
+    "conceptLeague": "{{name}} oyuncuları",
+    "pickHint": "Soruları bilmeden seçiyorsun: gol, asist, maç sayısı, yaş… her şey sorulabilir.",
+    "pickCount": "{{picked}}/{{total}} kart",
+    "addCard": "Kart ekle",
+    "removeCard": "{{name}} kartını çıkar",
+    "fill": "Rastgele tamamla",
+    "ready": "Hazırım",
+    "searchEmpty": "Bu konsepte uyan futbolcu bulunamadı.",
+    "searchDone": "Tamam ({{picked}}/{{total}})",
+    "locked": "Kartların hazır",
+    "starting": "Düello başlıyor…",
+    "waitingOpponentHand": "Rakip kartlarını seçiyor…",
+    "round": "Tur {{round}}/{{total}}",
+    "questionGoals": "Kariyerinde daha çok gol atan kazanır",
+    "questionAssists": "Kariyerinde daha çok asist yapan kazanır",
+    "questionAppearances": "Kariyerinde daha çok maça çıkan kazanır",
+    "questionYellowCards": "Daha çok sarı kart gören kazanır",
+    "questionGoalRate": "Maç başına gol ortalaması yüksek olan kazanır",
+    "questionMarketValue": "En yüksek piyasa değeri büyük olan kazanır",
+    "questionCaps": "Daha çok millî maça çıkan kazanır",
+    "questionOlder": "Yaşı büyük olan kazanır",
+    "questionYounger": "Yaşı küçük olan kazanır",
+    "metricGoals": "Gol",
+    "metricAssists": "Asist",
+    "metricAppearances": "Maç",
+    "metricYellowCards": "Sarı kart",
+    "metricGoalRate": "Maç başı gol",
+    "metricMarketValue": "Piyasa değeri",
+    "metricCaps": "Millî maç",
+    "metricBirthYear": "Doğum yılı",
+    "valueUnknown": "?",
+    "valueMillions": "{{value}} mn €",
+    "valueThousands": "{{value}} bin €",
+    "emptySlot": "Boş kart yeri",
+    "hiddenCard": "Kapalı kart",
+    "pickCard": "Kartını seç",
+    "play": "Bu kartı oyna",
+    "waitingOpponentCard": "Rakip bekleniyor…",
+    "opponentPlayed": "Rakip kartını koydu",
+    "roundWon": "Tur senin!",
+    "roundLost": "Tur rakibin",
+    "roundDrawn": "Tur berabere",
+    "byScore": "Yedi tur tamamlandı"
   }
 }

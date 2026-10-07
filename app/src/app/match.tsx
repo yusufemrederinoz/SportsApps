@@ -1,4 +1,4 @@
-import { normalizeRoomCode } from '@sportapps/protocol';
+import { normalizeRoomCode, type GameId } from '@sportapps/protocol';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
@@ -9,6 +9,8 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
+import { DuelMatchView } from '@/features/duel/duel-view';
+import { parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
@@ -66,11 +68,36 @@ function LocalMatch({ mode, difficulty }: { mode: MatchMode; difficulty: Difficu
   );
 }
 
-function OnlineMatch({ entry, difficulty }: { entry: OnlineEntry; difficulty: Difficulty }) {
+function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficulty: Difficulty; game: GameId }) {
   const { t } = useTranslation();
   const router = useRouter();
-  const online = useOnlineMatch(entry, difficulty);
-  const { setup, session } = online;
+  const online = useOnlineMatch(entry, difficulty, game);
+  const { setup, session, duel } = online;
+  const notice = online.reconnecting
+    ? t('online.reconnecting')
+    : online.opponentConnected
+      ? null
+      : t('online.opponentAway');
+  const playAgainLabel = t(entry.kind === 'queue' ? 'match.newOpponent' : 'match.playAgain');
+  const playAgain =
+    entry.kind === 'queue'
+      ? online.playAgain
+      : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
+
+  if (online.phase === 'playing' && duel) {
+    return (
+      <DuelMatchView
+        duel={duel}
+        secondsLeft={online.duelSecondsLeft}
+        canAct={online.canAct}
+        notice={notice}
+        playAgainLabel={playAgainLabel}
+        onAct={online.act}
+        onPlayAgain={playAgain}
+        onQuit={() => router.back()}
+      />
+    );
+  }
 
   if (online.phase !== 'playing' || !setup || !session) {
     return (
@@ -93,11 +120,6 @@ function OnlineMatch({ entry, difficulty }: { entry: OnlineEntry; difficulty: Di
     result?.reason === 'forfeit'
       ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
       : t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells');
-  const notice = online.reconnecting
-    ? t('online.reconnecting')
-    : online.opponentConnected
-      ? null
-      : t('online.opponentAway');
 
   return (
     <MatchView
@@ -112,10 +134,10 @@ function OnlineMatch({ entry, difficulty }: { entry: OnlineEntry; difficulty: Di
       turnLabel={match.turn === setup.side ? t('match.turnYours') : t('match.turn', { name: names[rival] })}
       resultTitle={resultTitle}
       resultDetail={resultDetail}
-      playAgainLabel={t(entry.kind === 'queue' ? 'match.newOpponent' : 'match.playAgain')}
+      playAgainLabel={playAgainLabel}
       notice={notice}
       onAnswer={online.answer}
-      onPlayAgain={entry.kind === 'queue' ? online.playAgain : () => router.replace('/friend')}
+      onPlayAgain={playAgain}
       onQuit={() => router.back()}
     />
   );
@@ -129,13 +151,19 @@ function onlineEntry(entry: string | undefined, code: string | undefined): Onlin
 }
 
 export default function MatchRoute() {
-  const params = useLocalSearchParams<{ mode?: string; difficulty?: string; entry?: string; code?: string }>();
+  const params = useLocalSearchParams<{
+    mode?: string;
+    difficulty?: string;
+    entry?: string;
+    code?: string;
+    game?: string;
+  }>();
   const difficulty = parseDifficulty(params.difficulty);
 
   return (
     <EntryGate allow="app">
       {params.mode === 'online' ? (
-        <OnlineMatch entry={onlineEntry(params.entry, params.code)} difficulty={difficulty} />
+        <OnlineMatch entry={onlineEntry(params.entry, params.code)} difficulty={difficulty} game={parseGame(params.game)} />
       ) : (
         <LocalMatch mode={params.mode === 'bot' ? 'bot' : 'local'} difficulty={difficulty} />
       )}

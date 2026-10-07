@@ -1,5 +1,5 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
-import type { PlayErrorCode, ServerMessage } from '@sportapps/protocol';
+import type { DuelAction, DuelView, GameId, PlayErrorCode, ServerMessage } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import version from '@/assets/data/version.json';
 import { useAuth } from '@/auth/auth-provider';
 import { loadFootballer, loadGrid, resolveMarket } from '@/data/queries';
 import type { Difficulty, FootballerSummary, GridView, Market } from '@/data/types';
+import { duelCardIds, finishDuelView } from '@/features/duel/online';
 import { createPlayClient, playUrl, type PlayClient } from '@/online/play-client';
 
 import {
@@ -33,6 +34,17 @@ export interface OnlineSetup {
   usernames: Record<Side, string>;
 }
 
+export interface OnlineDuel {
+  matchId: string;
+  market: Market;
+  difficulty: Difficulty;
+  side: Side;
+  usernames: Record<Side, string>;
+  view: DuelView;
+  deadlineAt: number;
+  cards: Readonly<Record<number, PlayedFootballer>>;
+}
+
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [
   'unauthorized',
@@ -42,7 +54,7 @@ const BLOCKING_ERRORS: readonly PlayErrorCode[] = [
   'room-not-found',
 ];
 
-export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
+export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game: GameId = 'grid') {
   const database = useSQLiteContext();
   const { i18n } = useTranslation();
   const language = i18n.language;
@@ -56,9 +68,11 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
   const [roomCode, setRoomCode] = useState<string | null>(null);
   const [setup, setSetup] = useState<OnlineSetup | null>(null);
   const [session, setSession] = useState<MatchSession | null>(null);
+  const [duel, setDuel] = useState<OnlineDuel | null>(null);
   const [opponentConnected, setOpponentConnected] = useState(true);
   const [reconnecting, setReconnecting] = useState(false);
   const [sentTurn, setSentTurn] = useState<number | null>(null);
+  const [acting, setActing] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const client = useRef<PlayClient | null>(null);
 
@@ -97,6 +111,12 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
       }
     };
 
+    const cardsOf = async (view: DuelView) => {
+      const ids = duelCardIds(view);
+      await remember(ids);
+      return Object.fromEntries(ids.map((id) => [id, lookup(id)]));
+    };
+
     const fail = (reason: OnlineFailure) => {
       setFailure(reason);
       setPhase('failed');
@@ -109,7 +129,12 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
       if (entryKind === 'join') {
         connection.send({ type: 'join-room', code: entryCode });
       } else {
-        connection.send({ type: entryKind === 'host' ? 'create-room' : 'queue', market: market.code, difficulty });
+        connection.send({
+          type: entryKind === 'host' ? 'create-room' : 'queue',
+          market: market.code,
+          difficulty,
+          game,
+        });
       }
     };
 
@@ -162,6 +187,56 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
           setPhase('playing');
           return;
         }
+        case 'session': {
+          const snapshot = message.session;
+          if (!market) {
+            fail('outdated-client');
+            return;
+          }
+          const cards = await cardsOf(snapshot.view);
+          if (disposed) {
+            return;
+          }
+          matchId = snapshot.matchId;
+          playing = snapshot.view.result === null;
+          finished = snapshot.view.result !== null;
+          setDuel({
+            matchId: snapshot.matchId,
+            market,
+            difficulty: snapshot.difficulty,
+            side: snapshot.side,
+            usernames: snapshot.usernames,
+            view: snapshot.view,
+            deadlineAt: receivedAt + snapshot.view.deadlineIn,
+            cards,
+          });
+          setOpponentConnected(snapshot.opponentConnected);
+          setActing(false);
+          setNow(Date.now());
+          setPhase('playing');
+          return;
+        }
+        case 'view': {
+          if (message.matchId !== matchId) {
+            return;
+          }
+          const { view } = message;
+          const cards = await cardsOf(view);
+          if (disposed) {
+            return;
+          }
+          setDuel(
+            (current) =>
+              current && {
+                ...current,
+                view,
+                deadlineAt: receivedAt + view.deadlineIn,
+                cards: { ...current.cards, ...cards },
+              },
+          );
+          setActing(false);
+          return;
+        }
         case 'move': {
           if (message.matchId !== matchId) {
             return;
@@ -182,6 +257,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
             playing = false;
             finished = true;
             setSession((current) => current && finishSession(current, message.result));
+            setDuel((current) => current && { ...current, view: finishDuelView(current.view, message.result) });
           }
           return;
         case 'opponent':
@@ -194,6 +270,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
             fail(message.code);
           } else {
             setSentTurn(null);
+            setActing(false);
           }
           return;
         case 'pong':
@@ -250,10 +327,12 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
         client.current = null;
       }
     };
-  }, [token, database, language, entryKind, entryCode, difficulty, round]);
+  }, [token, database, language, entryKind, entryCode, difficulty, game, round]);
 
   const unavailable: OnlineFailure | null = !token ? 'signed-out' : !apiUrl ? 'offline' : null;
-  const active = phase === 'playing' && session !== null && session.match.result === null;
+  const gridActive = session !== null && session.match.result === null;
+  const duelActive = duel !== null && duel.view.result === null;
+  const active = phase === 'playing' && (gridActive || duelActive);
 
   useEffect(() => {
     if (!active) {
@@ -263,8 +342,9 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
     return () => clearInterval(interval);
   }, [active]);
 
-  const ownTurn = active && setup !== null && session.match.turn === setup.side;
+  const ownTurn = active && setup !== null && session !== null && session.match.turn === setup.side;
   const canPlay = ownTurn && !reconnecting && sentTurn !== session.match.turnNumber;
+  const canAct = active && duelActive && !reconnecting && !acting;
 
   const answer = (position: CellPosition, footballer: FootballerSummary) => {
     if (!canPlay || !setup || !session) {
@@ -283,12 +363,23 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
     }
   };
 
+  const act = (action: DuelAction) => {
+    if (!canAct || !duel) {
+      return;
+    }
+    if (client.current?.send({ type: 'act', matchId: duel.matchId, action })) {
+      setActing(true);
+    }
+  };
+
   const playAgain = () => {
     setSession(null);
     setSetup(null);
+    setDuel(null);
     setRoomCode(null);
     setFailure(null);
     setSentTurn(null);
+    setActing(false);
     setReconnecting(false);
     setOpponentConnected(true);
     setPhase('connecting');
@@ -301,11 +392,15 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty) {
     roomCode,
     setup,
     session,
+    duel,
     opponentConnected,
     reconnecting,
     secondsLeft: session ? secondsLeft(session, now) : 0,
+    duelSecondsLeft: duel ? Math.max(0, Math.ceil((duel.deadlineAt - now) / 1000)) : 0,
     canPlay,
+    canAct,
     answer,
+    act,
     playAgain,
   };
 }

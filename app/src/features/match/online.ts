@@ -36,7 +36,10 @@ export function applyMove(
 }
 
 export function finishSession(session: MatchSession, result: PlayResult | null): MatchSession {
-  return result && !session.match.result ? { ...session, match: { ...session.match, result } } : session;
+  if (!result || result.reason === 'score' || session.match.result) {
+    return session;
+  }
+  return { ...session, match: { ...session.match, result: { winner: result.winner, reason: result.reason } } };
 }
 
 export function sessionFromSnapshot(

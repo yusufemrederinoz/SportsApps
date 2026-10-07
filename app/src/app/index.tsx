@@ -1,3 +1,4 @@
+import type { GameId } from '@sportapps/protocol';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +12,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { AccentFinishes, Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
+import { GAMES, GAME_LABELS } from '@/features/games';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
 import type { MatchMode } from '@/features/match/use-match';
 import { haptics } from '@/feedback/haptics';
@@ -22,12 +24,14 @@ function HomeScreen() {
   const router = useRouter();
   const { state: auth } = useAuth();
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
+  const [game, setGame] = useState<GameId>('grid');
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
+  const accent = t(game === 'duel' ? 'home.titleAccentDuel' : 'home.titleAccent');
   const start = (mode: MatchMode) =>
     router.push({ pathname: '/match', params: { mode, difficulty: String(difficulty) } });
   const startOnline = () =>
-    router.push({ pathname: '/match', params: { mode: 'online', entry: 'queue', difficulty: String(difficulty) } });
-  const openFriend = () => router.push({ pathname: '/friend', params: { difficulty: String(difficulty) } });
+    router.push({ pathname: '/match', params: { mode: 'online', entry: 'queue', difficulty: String(difficulty), game } });
+  const openFriend = () => router.push({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
 
   return (
     <Screen contentStyle={styles.screen}>
@@ -51,20 +55,46 @@ function HomeScreen() {
           </Pressable>
         </Animated.View>
 
-        <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
+        <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${accent}`}>
           <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
             <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
           </Animated.View>
           <Animated.View entering={FadeInLeft.duration(Motion.slow).delay(110)} style={styles.accentRow}>
-            <ThemedText type="display" style={styles.accent}>
-              {uppercase(t('home.titleAccent'))}
+            <ThemedText key={game} type="display" style={styles.accent}>
+              {uppercase(accent)}
             </ThemedText>
             <View style={styles.slash} />
           </Animated.View>
           <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
-            <ThemedText themeColor="textSecondary">{t('home.subtitle')}</ThemedText>
+            <ThemedText themeColor="textSecondary">{t(game === 'duel' ? 'home.subtitleDuel' : 'home.subtitle')}</ThemedText>
           </Animated.View>
         </View>
+
+        <Animated.View entering={FadeInDown.duration(Motion.slow).delay(260)} style={styles.section}>
+          <ThemedText type="label" themeColor="textSecondary">
+            {uppercase(t('home.game'))}
+          </ThemedText>
+          <View style={styles.difficultyRow} accessibilityRole="radiogroup">
+            {GAMES.map((option) => {
+              const selected = option === game;
+              return (
+                <Pressable
+                  key={option}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected }}
+                  onPress={() => {
+                    haptics.select();
+                    setGame(option);
+                  }}
+                  style={[styles.difficultyOption, selected && styles.difficultySelected]}>
+                  <ThemedText style={[styles.difficultyLabel, { color: selected ? Colors.onAccent : Colors.textSecondary }]}>
+                    {uppercase(t(GAME_LABELS[option]))}
+                  </ThemedText>
+                </Pressable>
+              );
+            })}
+          </View>
+        </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(300)} style={styles.section}>
           <ThemedText type="label" themeColor="textSecondary">
@@ -105,13 +135,22 @@ function HomeScreen() {
             finish={AccentFinishes.steel}
             onPress={openFriend}
           />
-          <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={() => start('bot')} />
-          <ModeCard
-            title={t('home.modeLocalTitle')}
-            hint={t('home.modeLocalHint')}
-            finish={Finishes.o}
-            onPress={() => start('local')}
-          />
+          {game === 'grid' ? (
+            <>
+              <ModeCard
+                title={t('home.modeBotTitle')}
+                hint={t('home.modeBotHint')}
+                finish={Finishes.x}
+                onPress={() => start('bot')}
+              />
+              <ModeCard
+                title={t('home.modeLocalTitle')}
+                hint={t('home.modeLocalHint')}
+                finish={Finishes.o}
+                onPress={() => start('local')}
+              />
+            </>
+          ) : null}
         </Animated.View>
       </ScrollView>
     </Screen>
