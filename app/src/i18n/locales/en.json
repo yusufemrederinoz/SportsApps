@@ -62,7 +62,9 @@
     "titleAccentAuction": "Auction",
     "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time.",
     "titleAccentTopTen": "Top 10",
-    "subtitleTopTen": "There is a hidden list of ten. Take turns naming players; the lower on the list, the more points. A wrong name costs a life."
+    "subtitleTopTen": "There is a hidden list of ten. Take turns naming players; the lower on the list, the more points. A wrong name costs a life.",
+    "titleAccentCareer": "Career",
+    "subtitleCareer": "A hidden footballer's clubs open one by one. Guess with fewer clues for more points; a wrong guess opens a new club and passes the turn."
   },
   "difficulty": {
     "easy": "Easy",
@@ -190,7 +192,8 @@
     "chain": "Club Chain",
     "rare": "Least Known",
     "auction": "Answer Auction",
-    "top-ten": "Top Ten"
+    "top-ten": "Top Ten",
+    "career": "Career Path"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -361,5 +364,20 @@
     "timeout": "Time is up",
     "listOver": "The list is closed",
     "byScore": "Both lists played"
+  },
+  "career": {
+    "round": "Footballer {{round}}/{{total}}",
+    "question": "Who is this footballer?",
+    "rule": "Clubs open in the order they were joined. Get it now for {{points}} points.",
+    "scope": "Only clubs of the Süper Lig and Europe's big five leagues are shown.",
+    "guess": "Guess ({{points}} points)",
+    "yourTurn": "Your turn",
+    "opponentTurn": "Your opponent's turn",
+    "wrong": "Not {{name}}",
+    "timeout": "Time is up",
+    "solvedByYou": "You got it!",
+    "solvedByRival": "Your opponent got it",
+    "unsolved": "Nobody got it",
+    "byScore": "Four footballers played"
   }
 }

@@ -1,6 +1,7 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
 import type {
   AuctionView,
+  CareerView,
   ChainView,
   DraftView,
   DuelView,
@@ -65,6 +66,7 @@ export type OnlineChain = OnlineSessionBase & { game: 'chain'; view: ChainView }
 export type OnlineRare = OnlineSessionBase & { game: 'rare'; view: RareView };
 export type OnlineAuction = OnlineSessionBase & { game: 'auction'; view: AuctionView };
 export type OnlineTopTen = OnlineSessionBase & { game: 'top-ten'; view: TopTenView };
+export type OnlineCareer = OnlineSessionBase & { game: 'career'; view: CareerView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [

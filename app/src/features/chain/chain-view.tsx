@@ -55,7 +55,7 @@ interface ChainMatchViewProps {
   onQuit: () => void;
 }
 
-function useClubLabels(clubIds: readonly number[], market: string): Readonly<Record<number, ClubLabel>> {
+export function useClubLabels(clubIds: readonly number[], market: string): Readonly<Record<number, ClubLabel>> {
   const database = useSQLiteContext();
   const { i18n } = useTranslation();
   const language = i18n.language;

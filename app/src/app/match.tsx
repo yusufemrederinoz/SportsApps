@@ -10,6 +10,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
 import { AuctionMatchView } from '@/features/auction/auction-view';
+import { CareerMatchView } from '@/features/career/career-view';
 import { ChainMatchView } from '@/features/chain/chain-view';
 import { DraftMatchView } from '@/features/draft/draft-view';
 import { DuelMatchView } from '@/features/duel/duel-view';
@@ -89,6 +90,21 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     entry.kind === 'queue'
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
+
+  if (online.phase === 'playing' && live?.game === 'career') {
+    return (
+      <CareerMatchView
+        career={live}
+        secondsLeft={online.liveSecondsLeft}
+        canAct={online.canAct}
+        notice={notice}
+        playAgainLabel={playAgainLabel}
+        onAct={online.act}
+        onPlayAgain={playAgain}
+        onQuit={() => router.back()}
+      />
+    );
+  }
 
   if (online.phase === 'playing' && live?.game === 'top-ten') {
     return (

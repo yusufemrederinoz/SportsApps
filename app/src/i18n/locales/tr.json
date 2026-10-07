@@ -62,7 +62,9 @@
     "titleAccentAuction": "Artırma",
     "subtitleAuction": "Kaç isim sayabileceğini artırarak söyle. \"Say bakalım\" denen, söylediği kadar doğru ismi süre içinde yazarsa turu alır.",
     "titleAccentTopTen": "İlk 10",
-    "subtitleTopTen": "Gizli bir 10'luk liste var. Sırayla isim söyle; listede ne kadar aşağıdaysa o kadar puan. Yanlış isim can götürür."
+    "subtitleTopTen": "Gizli bir 10'luk liste var. Sırayla isim söyle; listede ne kadar aşağıdaysa o kadar puan. Yanlış isim can götürür.",
+    "titleAccentCareer": "Kariyer",
+    "subtitleCareer": "Gizli bir futbolcunun kulüpleri sırayla açılır. Az ipucuyla bilen çok puan alır; yanlış tahmin yeni bir kulüp açar ve sırayı geçirir."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -190,7 +192,8 @@
     "chain": "Zincir",
     "rare": "En Az Bilinen",
     "auction": "Açık Artırma",
-    "top-ten": "İlk 10"
+    "top-ten": "İlk 10",
+    "career": "Kariyer Yolu"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -361,5 +364,20 @@
     "timeout": "Süre doldu",
     "listOver": "Liste kapandı",
     "byScore": "İki liste tamamlandı"
+  },
+  "career": {
+    "round": "Futbolcu {{round}}/{{total}}",
+    "question": "Kim bu futbolcu?",
+    "rule": "Kulüpler katılış yılına göre açılıyor. Şimdi bilirsen {{points}} puan.",
+    "scope": "Yalnızca Süper Lig ve Avrupa'nın beş büyük liginin kulüpleri gösterilir.",
+    "guess": "Tahmin et ({{points}} puan)",
+    "yourTurn": "Sıra sende",
+    "opponentTurn": "Sıra rakipte",
+    "wrong": "{{name}} değil",
+    "timeout": "Süre doldu",
+    "solvedByYou": "Bildin!",
+    "solvedByRival": "Rakip bildi",
+    "unsolved": "Kimse bilemedi",
+    "byScore": "Dört futbolcu tamamlandı"
   }
 }
