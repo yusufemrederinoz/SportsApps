@@ -56,7 +56,9 @@
     "titleAccentHigher": "Hangisi?",
     "subtitleHigher": "İki futbolcu, bir soru: golü, asisti, değeri ya da yaşı hangisinin üstün? Bildikçe sıra sende kalır.",
     "titleAccentChain": "Zincir",
-    "subtitleChain": "Sırayla, son futbolcuyla aynı kulüpte oynamış birini söyle. Bulamayan ya da yanlış söyleyen turu kaybeder; üç tur alan kazanır."
+    "subtitleChain": "Sırayla, son futbolcuyla aynı kulüpte oynamış birini söyle. Bulamayan ya da yanlış söyleyen turu kaybeder; üç tur alan kazanır.",
+    "titleAccentRare": "Az Bilinen",
+    "subtitleRare": "İki ölçüte uyan bir futbolcu yaz, rakibin görmesin. Doğru cevaplardan daha az tanınan turu alır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -181,7 +183,8 @@
     "duel": "Kart Düellosu",
     "draft": "Kadro Kur",
     "higher": "Hangisi Yüksek",
-    "chain": "Zincir"
+    "chain": "Zincir",
+    "rare": "En Az Bilinen"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -292,5 +295,23 @@
     "roundToYou": "tur senin",
     "roundToRival": "tur rakibin",
     "byScore": "Üç tur tamamlandı"
+  },
+  "rare": {
+    "round": "Tur {{round}}/{{total}}",
+    "criteria": "Ölçüt",
+    "rule": "İkisine de uyan futbolcuyu yaz. Daha az tanınan doğru cevap turu alır.",
+    "hint": "En az bilineni bul",
+    "name": "Futbolcu yaz",
+    "locked": "Cevabın gizli kaldı",
+    "waitingOpponent": "Rakip düşünüyor…",
+    "bothAnswered": "İki cevap da geldi",
+    "right": "Doğru",
+    "wrong": "Yanlış",
+    "noAnswer": "Cevap yok",
+    "fame": "Bilinirlik {{fame}}",
+    "roundWon": "Tur senin!",
+    "roundLost": "Tur rakibin",
+    "roundDrawn": "Tur berabere",
+    "byScore": "Beş tur tamamlandı"
   }
 }

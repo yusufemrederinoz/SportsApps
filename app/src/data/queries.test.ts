@@ -11,6 +11,7 @@ import {
   loadBotOptions,
   loadClubLabel,
   loadConceptLabel,
+  loadHeaderLabel,
   loadFootballer,
   loadGrid,
   loadMinimumFame,
@@ -142,6 +143,17 @@ describe.skipIf(!available)('queries against the bundled database', () => {
       local: true,
     });
     expect((await loadClubLabel(runner, REAL_MADRID.referenceId, 'tr', 'tr')).local).toBe(false);
+  });
+
+  it('names a grid header with its flag and casing rule', async () => {
+    expect(await loadHeaderLabel(runner, TURKEY, 'tr', 'tr')).toEqual({
+      kind: 'country',
+      referenceId: TURKEY.referenceId,
+      name: 'Türkiye',
+      countryCode: 'TR',
+      local: true,
+    });
+    expect(await loadHeaderLabel(runner, REAL_MADRID, 'tr', 'tr')).toMatchObject({ kind: 'club', countryCode: null, local: false });
   });
 
   it('describes a duel concept with names in the language of the player', async () => {

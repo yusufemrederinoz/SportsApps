@@ -5,6 +5,7 @@ import type {
   DuelView,
   GameAction,
   HigherView,
+  RareView,
   GameId,
   GameView,
   PlayErrorCode,
@@ -59,6 +60,7 @@ export type OnlineDuel = OnlineSessionBase & { game: 'duel'; view: DuelView };
 export type OnlineDraft = OnlineSessionBase & { game: 'draft'; view: DraftView };
 export type OnlineHigher = OnlineSessionBase & { game: 'higher'; view: HigherView };
 export type OnlineChain = OnlineSessionBase & { game: 'chain'; view: ChainView };
+export type OnlineRare = OnlineSessionBase & { game: 'rare'; view: RareView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [

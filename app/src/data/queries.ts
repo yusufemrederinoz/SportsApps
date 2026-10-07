@@ -186,6 +186,27 @@ export function searchDraftFootballers(
   );
 }
 
+export async function loadHeaderLabel(
+  database: QueryRunner,
+  header: Header,
+  market: string,
+  language: string,
+): Promise<HeaderView> {
+  if (header.kind === 'club') {
+    const club = await loadClubLabel(database, header.referenceId, market, language);
+    return { kind: 'club', referenceId: header.referenceId, name: club.name, countryCode: null, local: club.local };
+  }
+  const row = await database.getFirstAsync<{ name: string | null; code: string | null }>(
+    `SELECT COALESCE(
+              (SELECT name FROM country_names WHERE country_id = c.id AND language = ?),
+              (SELECT name FROM country_names WHERE country_id = c.id AND language = '${FALLBACK_LANGUAGE}')
+            ) AS name, c.code
+     FROM countries c WHERE c.id = ?`,
+    [language, header.referenceId],
+  );
+  return { kind: 'country', referenceId: header.referenceId, name: row?.name ?? '', countryCode: row?.code ?? null, local: true };
+}
+
 export async function loadClubLabel(database: QueryRunner, clubId: number, market: string, language: string): Promise<ClubLabel> {
   const row = await database.getFirstAsync<{ name: string | null; local: number }>(
     `SELECT COALESCE(
