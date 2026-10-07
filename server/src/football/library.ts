@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 
 import {
   clubConceptsStatement,
+  comparablePlayersStatement,
   conceptMembersStatement,
   conceptPlayersStatement,
   correctAnswerStatement,
@@ -50,6 +51,7 @@ export interface FootballLibrary {
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
   conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
   metricRows(footballerIds: readonly number[]): MetricRow[];
+  comparablePlayers(market: string, minimumFame: number, limit: number): number[];
   draftClubs(market: string): readonly number[];
   draftEntry(footballerId: number, clubId: number): DraftEntryRow | null;
   draftCandidates(
@@ -164,6 +166,10 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     metricRows(footballerIds) {
       return footballerIds.length > 0 ? all<MetricRow>(metricRowsStatement(footballerIds)) : [];
+    },
+
+    comparablePlayers(market, minimumFame, limit) {
+      return ids(comparablePlayersStatement(market, minimumFame, limit));
     },
 
     draftClubs(market) {

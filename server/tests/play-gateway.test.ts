@@ -7,6 +7,7 @@ import {
   type AuthResponse,
   type DraftView,
   type DuelView,
+  type HigherView,
   type MatchHistoryResponse,
   type MatchSnapshot,
   type ServerMessage,
@@ -162,6 +163,10 @@ beforeEach(async () => {
       draftTiming: {
         pauseMilliseconds: 10,
         botPickMilliseconds: { minimum: 10, maximum: 10 },
+      },
+      higherTiming: {
+        revealMilliseconds: 10,
+        botAnswerMilliseconds: { minimum: 10, maximum: 10 },
       },
     },
   });
@@ -368,6 +373,42 @@ describe.skipIf(!available)('play gateway', () => {
       await app.inject({ method: 'GET', url: '/v1/matches', headers: { authorization: `Bearer ${human.auth.token}` } })
     ).json() as MatchHistoryResponse;
     expect(history.matches).toMatchObject([{ game: 'draft', reason: 'score' }]);
+    human.socket.close();
+  });
+
+  it('plays higher or lower from real data against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 1, game: 'higher' });
+    const { session } = await human.next('session');
+    if (session.game !== 'higher') {
+      throw new Error('not higher or lower');
+    }
+    const { side } = session;
+    const rows = new Map(football.metricRows(football.comparablePlayers('tr', 0, 5000)).map((row) => [row.id, row]));
+    let view: HigherView = session.view;
+    let answered = 0;
+    for (;;) {
+      if (view.phase === 'finished') {
+        break;
+      }
+      if (view.phase === 'answering' && view.turn === side && view.question) {
+        const [first, second] = view.question.cards;
+        expect(rows.has(first) && rows.has(second)).toBe(true);
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'choose', footballerId: first } });
+        answered += 1;
+      }
+      const message = await human.next('view');
+      if (message.game !== 'higher') {
+        throw new Error('not higher or lower');
+      }
+      view = message.view;
+      if (view.phase === 'reveal') {
+        expect(view.last?.values.every((value) => typeof value === 'number')).toBe(true);
+      }
+    }
+    expect(answered).toBeGreaterThanOrEqual(3);
+    expect(view.result?.reason).toBe('score');
+    expect(view.scores.x + view.scores.o).toBeGreaterThanOrEqual(0);
     human.socket.close();
   });
 

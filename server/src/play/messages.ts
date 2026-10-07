@@ -42,6 +42,9 @@ function action(value: unknown): GameAction | null {
   if (fields.kind === 'pick' && integer(fields.footballerId)) {
     return { kind: 'pick', footballerId: fields.footballerId };
   }
+  if (fields.kind === 'choose' && integer(fields.footballerId)) {
+    return { kind: 'choose', footballerId: fields.footballerId };
+  }
   if (
     fields.kind === 'hand' &&
     Array.isArray(fields.footballerIds) &&

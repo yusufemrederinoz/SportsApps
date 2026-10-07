@@ -34,6 +34,7 @@ const library: FootballLibrary = {
   conceptPlayers: () => [],
   conceptMembers: () => [],
   metricRows: () => [],
+  comparablePlayers: () => [],
   draftClubs: () => [],
   draftEntry: () => null,
   draftCandidates: () => [],
