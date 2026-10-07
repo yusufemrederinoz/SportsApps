@@ -444,6 +444,18 @@ Veriyle ilgili gözlemler:
 - "Eksik kariyer" işareti güvenilir çıkmadı; düelloda kullanılmıyor.
 - Teknik direktör ve başkan olarak tanınan bazı adlar (Süleyman Seba gibi) oyuncu kaydıyla havuzda; oyuncu kariyerleri olduğu için çıkarılmadı.
 
+### Kadro Kur
+
+Kural motoru, sunucu odası, bot ve uygulama ekranı yazıldı. Ekran: skor tablosu (toplam asist) ve sayaç, turun kulübü, iki tarafın kadrosu yan yana saha dizilişiyle (forvet üstte, kaleci altta), "Futbolcu seç" ile açılan arama. Seçilen futbolcu görseli, soyadı ve asist sayısıyla yuvaya oturuyor; rakibin seçimi anında görünüyor.
+
+Ortak altyapıda değişenler: oturum mesajları birden fazla mod taşıyacak biçimde genelleştirildi (`session` ve `view` mesajlarında mod alanı); arama penceresi konsept ya da kulüp ve mevki süzgeci alabiliyor; ana ekrandaki oyun seçimi yana kayan bir sıraya dönüştü.
+
+Doğrulama: gerçek veritabanıyla sunucu testinde bota karşı tam maç; emülatörde bota karşı tam maç (Manchester City turunda De Bruyne 261, Barcelona turunda Messi 368 asist; iki tur süre dolmasıyla boş geçti; sonuç 629–517).
+
+Emülatörde bulunan ve düzeltilen sorunlar: dört basamaklı skorlar rakibin adını sığmaz hâle getiriyordu (Kadro Kur'da skor tablosu küçük rakam kullanıyor); "Kevin De Bruyne" yuvada "Bruyne" görünüyordu (soyadı ekleriyle gösteriliyor: "De Bruyne", "van der Sar").
+
+Görsel bulgusu: Messi'nin kartındaki çizim kaynak fotoğraftaki yüzü yeterince korumuyor (kaynak kırpma doğru; çizime dönüştürme yüzü değiştiriyor). Bu, dönüştürme gücünün bütün görsellerde yarattığı genel bir risk; tanınmış oyuncuların görselleri elle gözden geçirilmeli, gerekirse kimliği koruyan bir yöntem denenmeli.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -490,3 +502,8 @@ Veriyle ilgili gözlemler:
 | `16e17b1` | 7 Ekim | Düello sürelerinin protokolde paylaşılması |
 | `bb4a295` | 7 Ekim | Uygulamada konsepte göre futbolcu arama |
 | `8c54ca2` | 7 Ekim | Uygulamada Kart Düellosu ekranları ve oyun seçimi |
+| `58266d0` | 7 Ekim | Belgeler: mod altyapısı ve Kart Düellosu |
+| `7058d57` | 7 Ekim | Kadro Kur kuralları (kural motoru) |
+| `71a9a5e` | 7 Ekim | Kadro Kur mesajları ve ortak veri ifadeleri; çok modlu oturum mesajları |
+| `428499b` | 7 Ekim | Sunucuda Kadro Kur odası ve botu |
+| `4f8682f` | 7 Ekim | Uygulamada Kadro Kur ekranı ve kaydırılabilir oyun seçimi |

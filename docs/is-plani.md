@@ -232,8 +232,9 @@ Yapılanlar:
 - Kariyer istatistikleri: ikinci açık veri seti ve Vikiveri yedeği; piyasa değeri ve millî maç sayısı.
 - Sunucuda moddan bağımsız lobi ve oda üreticileri; maç kaydında mod.
 - Kart Düellosu: kural motoru, sunucu odası ve bot, uygulama ekranları, ana ekranda oyun seçimi, arkadaş odasında mod. Emülatörde bota karşı ve arkadaş odasında denendi.
+- Kadro Kur: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
 
-Sıradakiler: Kadro Kur, Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, Kariyer Yolu, İlk 10.
+Sıradakiler: Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, Kariyer Yolu, İlk 10.
 
 Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; her biri için kural testleri, sunucu testleri ve emülatörde baştan sona bir maç vardır.
 

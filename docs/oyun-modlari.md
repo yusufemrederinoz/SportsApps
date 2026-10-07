@@ -19,7 +19,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 |---|---|---|---|
 | `grid` | Futbol XOX | İlk mod | Yayında |
 | `duel` | Kart Düellosu | Kullanıcının istediği (yarışma programı biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
-| `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Sırada |
+| `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
 | `higher` | Hangisi Yüksek | Öneri | Sırada |
 | `chain` | Zincir | Öneri | Sırada |
 | `rare` | En Az Bilinen | Öneri | Sırada |
@@ -66,6 +66,15 @@ Kararlar:
 - Futbolcu yalnızca kendi mevkisinin yuvasına konur.
 - Değer kariyer toplamıdır (o kulüpteki değil).
 - Süre dolunca o tur boş geçilir; yuva maç sonuna kadar boş kalabilir.
+
+Uygulanan hâli (7 Ekim 2026):
+
+- **Kadro.** 7 yuva: 1 kaleci, 2 defans, 2 orta saha, 2 forvet. Maç 7 tur sürer; her turda iki oyuncu da birer futbolcu alır.
+- **Hedef.** Kariyer asist toplamı. Asist verisi olmayan futbolcular (çoğu Vikiveri kaynaklı eski oyuncular) seçilemez; arama yalnızca o turun kulübünde oynamış, mevkisi boş bir yuvaya uyan, asist verisi olan ve henüz alınmamış futbolcuları gösterir.
+- **Kulüpler.** Her mevkide tanınmış (bilinirliği 32 ve üzeri) en az 2 kaleci ve 4'er defans, orta saha, forvet oyuncusu olan kulüpler (Türkiye pazarında 54). Zorluk 1'de en tanınmış 16, zorluk 2'de 32 kulüp arasından, zorluk 3'te hepsinden 7 farklı kulüp çekilir. Gelecek turların kulübü önceden gösterilmez.
+- **Seçimler açıktır.** Rakibin aldığı futbolcu ve asist sayısı hemen iki tarafa da görünür; aynı futbolcuyu önce seçen alır.
+- **Süreler.** Her tur 30 saniye; iki taraf da seçince 3 saniyelik ara, sonra yeni kulüp.
+- **Bot.** Zorluk 3'te boş yuvalarına uyan en yüksek asistli futbolcuyu, zorluk 2'de en yüksek 4 asistten birini, zorluk 1'de tanınmış futbolculardan rastgele birini alır. 4–14 saniyede seçer.
 
 ### Hangisi Yüksek (`higher`)
 
@@ -135,7 +144,7 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 
 1. İstatistik aktarımı ve ortak oturum altyapısı. (Tamam)
 2. Kart Düellosu. (Tamam)
-3. Kadro Kur.
+3. Kadro Kur. (Tamam)
 4. Hangisi Yüksek, Zincir.
 5. En Az Bilinen, Açık Artırma.
 6. Kariyer Yolu, İlk 10.
