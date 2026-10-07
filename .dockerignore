@@ -1,0 +1,11 @@
+**/node_modules
+**/.expo
+.git
+docs
+data
+server/data
+server/tests
+app/src
+app/assets/images
+app/assets/sounds
+packages/*/tests

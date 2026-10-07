@@ -176,9 +176,25 @@ Durum: tamamlandı (7 Ekim 2026).
 
 ### 5D — Barındırma
 
-Durum: başlamadı. Yer henüz seçilmedi.
+Durum: hazırlık yapıldı (7 Ekim 2026); yer seçimi ve hesap açma bekliyor.
 
-- Sunucunun internete açılması, TLS, yedekleme.
+Yapılanlar:
+
+- Sunucuyu paketleyen `Dockerfile` ve yayına alma adımları ([teknik-mimari.md](teknik-mimari.md), "Yayına alma").
+
+Kalanlar:
+
+- Barındırma yerini seçmek ve hesabı açmak (bu adım hesap sahibini gerektirir).
+- TLS, alan adı, veritabanı yedeği.
+- Oyuncu görsellerini sunucuya ya da bir depolama servisine taşımak.
+
+Ücretsiz seçenekler (koşullar değişebilir; karar anında doğrulanmalı):
+
+| Seçenek | Uygunluk |
+|---|---|
+| Kendi bilgisayarında çalıştırıp Cloudflare Tunnel ile dışarı açmak | Kapalı beta için en hızlı yol: kapı açmaya gerek yok, HTTPS ve WebSocket hazır. Bilgisayar açık kalmalı |
+| Sürekli ücretsiz sanal sunucu (örnek: Oracle Cloud "Always Free", Google Cloud e2-micro) | Kalıcı disk ve sürekli açık süreç; SQLite ve WebSocket için uygun. Kayıt için kredi kartı doğrulaması ister |
+| Uyuyan ücretsiz uygulama servisleri | Uygun değil: süreç uykuya geçince maçlar düşer, ücretsiz katmanda kalıcı disk olmaz |
 
 ## Adım 6 — Sıralama ve günlük bulmaca
 

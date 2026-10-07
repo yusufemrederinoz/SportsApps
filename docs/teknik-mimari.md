@@ -365,6 +365,24 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 
 Şema değişiklikleri `server/src/database.ts` içindeki sıralı listeye eklenir; sunucu açılırken eksik olanları uygular.
 
+### Yayına alma
+
+Depo kökündeki `Dockerfile`, sunucuyu yalnızca üretim bağımlılıklarıyla paketler. İmaj; sunucu kodunu, ortak paketleri ve futbol veritabanını içerir. Kalıcı veriler (`/data`) imajın dışında tutulur.
+
+| İş | Komut (depo kökünde) |
+|---|---|
+| İmajı üretmek | `docker build -t sportapps-server .` |
+| Çalıştırmak | `docker run -d -p 4000:4000 -v sportapps-data:/data sportapps-server` |
+| Docker olmadan | `npm ci --omit=dev --workspace @sportapps/server`, ardından `server` klasöründe `node --import tsx src/main.ts` |
+
+- `/data` altında sunucu veritabanı (`sportapps.sqlite`) ve oyuncu görselleri (`portraits/`) durur. Görseller üretildiği bilgisayardan bu klasöre kopyalanmalıdır.
+- Sunucu şifresiz HTTP konuşur. Önünde TLS sonlandıran bir katman gerekir (barındırma servisinin kendi katmanı, Caddy ya da Cloudflare Tunnel). WebSocket bağlantısı aynı adresten geçer.
+- Uygulama yayın sürümünde sunucu adresini `EXPO_PUBLIC_API_URL` değişkeninden alır (örnek: `https://api.ornek.com`).
+- Maçlar bellekte tutulduğu için tek kopya çalıştırılmalıdır; sunucu yeniden başlarsa süren maçlar düşer.
+- Veri sürümü imajın içindeki `version.json` ile belirlenir; uygulamadaki veritabanı ile sunucudaki aynı üretimden olmalıdır, yoksa online maç "uygulamayı güncelle" hatası verir.
+
+Dockerfile bu bilgisayarda Docker ile derlenmedi (Docker kapalıydı); içindeki adımlar temiz bir klasörde elle uygulanıp sunucu çalıştırılarak denendi.
+
 ### Hesap kuralları
 
 - **Misafir.** Oyuncu "misafir olarak devam et" dediğinde açılır. Kullanıcı adı `guest` ve altı rakamdır. Misafir hesabı cihaza bağlıdır ve kalıcı hesaba dönüşmez.
