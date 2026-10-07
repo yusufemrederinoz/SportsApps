@@ -143,7 +143,16 @@ CREATE TABLE IF NOT EXISTS player_club_stats (
     assists INTEGER NOT NULL,
     PRIMARY KEY (player_id, club_id)
 ) WITHOUT ROWID;
+CREATE TABLE IF NOT EXISTS player_profile (
+    player_id INTEGER PRIMARY KEY,
+    market_value INTEGER,
+    caps INTEGER
+);
 """
+PROFILE_COPY = (
+    "INSERT INTO player_profile SELECT id, highest_market_value_eur, international_caps FROM source.players "
+    "WHERE id IN (SELECT id FROM players) AND (highest_market_value_eur IS NOT NULL OR international_caps IS NOT NULL)"
+)
 STATS_COPIES = (
     "INSERT INTO player_stats SELECT player_id, source, appearances, goals, assists, yellow_cards, red_cards, "
     "is_complete FROM source.player_stats WHERE player_id IN (SELECT id FROM players)",
@@ -157,6 +166,8 @@ def copy_stats(connection):
     connection.executescript(STATS_TABLES)
     connection.execute("DELETE FROM player_stats")
     connection.execute("DELETE FROM player_club_stats")
+    connection.execute("DELETE FROM player_profile")
+    connection.execute(PROFILE_COPY)
     if connection.execute("SELECT 1 FROM source.sqlite_master WHERE name = 'player_stats'").fetchone():
         for statement in STATS_COPIES:
             connection.execute(statement)
