@@ -54,4 +54,4 @@ def register(database_path=DATABASE_PATH):
 
 
 def write():
-    return {"registered": register(), "in_app_database": bundle.refresh_portraits()}
+    return {"registered": register(), "in_app_database": bundle.refresh()["portraits"]}

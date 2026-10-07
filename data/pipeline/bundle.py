@@ -124,10 +124,49 @@ def copy_portraits(connection):
         connection.execute(PORTRAIT_COPY)
 
 
+STATS_TABLES = """
+CREATE TABLE IF NOT EXISTS player_stats (
+    player_id INTEGER PRIMARY KEY,
+    source TEXT NOT NULL,
+    appearances INTEGER NOT NULL,
+    goals INTEGER NOT NULL,
+    assists INTEGER,
+    yellow_cards INTEGER,
+    red_cards INTEGER,
+    is_complete INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS player_club_stats (
+    player_id INTEGER NOT NULL,
+    club_id INTEGER NOT NULL,
+    appearances INTEGER NOT NULL,
+    goals INTEGER NOT NULL,
+    assists INTEGER NOT NULL,
+    PRIMARY KEY (player_id, club_id)
+) WITHOUT ROWID;
+"""
+STATS_COPIES = (
+    "INSERT INTO player_stats SELECT player_id, source, appearances, goals, assists, yellow_cards, red_cards, "
+    "is_complete FROM source.player_stats WHERE player_id IN (SELECT id FROM players)",
+    "INSERT INTO player_club_stats SELECT player_id, club_id, appearances, goals, assists "
+    "FROM source.player_club_stats WHERE player_id IN (SELECT id FROM players) AND club_id IN (SELECT id FROM clubs)",
+)
+REVISION_KEYS = ("built_at", "portraits_at", "stats_at")
+
+
+def copy_stats(connection):
+    connection.executescript(STATS_TABLES)
+    connection.execute("DELETE FROM player_stats")
+    connection.execute("DELETE FROM player_club_stats")
+    if connection.execute("SELECT 1 FROM source.sqlite_master WHERE name = 'player_stats'").fetchone():
+        for statement in STATS_COPIES:
+            connection.execute(statement)
+
+
 def data_version(connection):
-    built_at = connection.execute("SELECT value FROM source.meta WHERE key = 'built_at'").fetchone()[0]
-    portraits_at = connection.execute("SELECT value FROM source.meta WHERE key = 'portraits_at'").fetchone()
-    revised_at = max(built_at, portraits_at[0]) if portraits_at else built_at
+    placeholders = ", ".join("?" for _ in REVISION_KEYS)
+    revised_at = connection.execute(
+        f"SELECT MAX(value) FROM source.meta WHERE key IN ({placeholders})", REVISION_KEYS
+    ).fetchone()[0]
     return "".join(character for character in revised_at if character.isdigit())[:14]
 
 
@@ -146,6 +185,7 @@ def write(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     for statement in COPIES:
         connection.execute(statement)
     copy_portraits(connection)
+    copy_stats(connection)
     built_at = connection.execute("SELECT value FROM source.meta WHERE key = 'built_at'").fetchone()[0]
     version = data_version(connection)
     connection.executemany(
@@ -160,14 +200,19 @@ def write(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     return target_path
 
 
-def refresh_portraits(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
+def refresh(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     connection = sqlite3.connect(target_path, timeout=30)
     connection.execute("ATTACH DATABASE ? AS source", (str(source_path),))
     copy_portraits(connection)
+    copy_stats(connection)
     version = data_version(connection)
-    count = connection.execute("SELECT COUNT(*) FROM player_portraits").fetchone()[0]
+    counts = {
+        "portraits": connection.execute("SELECT COUNT(*) FROM player_portraits").fetchone()[0],
+        "stats": connection.execute("SELECT COUNT(*) FROM player_stats").fetchone()[0],
+        "club_stats": connection.execute("SELECT COUNT(*) FROM player_club_stats").fetchone()[0],
+    }
     connection.commit()
     connection.execute("DETACH DATABASE source")
     connection.close()
     write_version(version)
-    return count
+    return counts

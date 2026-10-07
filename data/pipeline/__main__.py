@@ -2,7 +2,7 @@ import argparse
 
 from portraits import publish
 
-from . import bundle, export, grids, merge, report
+from . import bundle, export, grids, merge, report, stats
 
 
 def main():
@@ -12,11 +12,16 @@ def main():
     build.add_argument("--refresh", action="store_true")
     commands.add_parser("grids")
     commands.add_parser("bundle")
+    commands.add_parser("stats")
     arguments = parser.parse_args()
 
     if arguments.command == "grids":
         for summary in grids.write():
             print(summary)
+        return
+    if arguments.command == "stats":
+        print(f"stats: {stats.write()}")
+        print(f"app database: {bundle.refresh()}")
         return
     if arguments.command == "bundle":
         print(f"app database: {bundle.write()}")
@@ -26,6 +31,7 @@ def main():
     database_path = export.write(dataset)
     dataset["grid_summaries"] = grids.write(database_path)
     print(f"portraits: {publish.register(database_path)}")
+    print(f"stats: {stats.write(database_path)}")
     report_path = report.write(dataset)
     print(f"database: {database_path}")
     print(f"report: {report_path}")
