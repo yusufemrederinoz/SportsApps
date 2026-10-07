@@ -1,5 +1,6 @@
 import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
+import type { HigherAction, HigherView } from './higher';
 
 export const PLAY_PATH = '/play';
 export const PLAY_PROTOCOL_VERSION = 1;
@@ -9,7 +10,7 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
-export const GAME_IDS = ['grid', 'duel', 'draft'] as const;
+export const GAME_IDS = ['grid', 'duel', 'draft', 'higher'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
@@ -50,9 +51,12 @@ export interface MatchSnapshot {
   opponentConnected: boolean;
 }
 
-export type GameView = { game: 'duel'; view: DuelView } | { game: 'draft'; view: DraftView };
+export type GameView =
+  | { game: 'duel'; view: DuelView }
+  | { game: 'draft'; view: DraftView }
+  | { game: 'higher'; view: HigherView };
 
-export type GameAction = DuelAction | DraftAction;
+export type GameAction = DuelAction | DraftAction | HigherAction;
 
 export type SessionSnapshot = GameView & {
   matchId: string;

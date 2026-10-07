@@ -115,6 +115,15 @@ export function metricValue(row: MetricRow, metric: DuelMetric): number | null {
   }
 }
 
+export function comparablePlayersStatement(market: string, minimumFame: number, limit: number): Statement {
+  return {
+    sql: `SELECT f.player_id AS id FROM player_fame f
+          WHERE f.market = ? AND f.fame >= ? AND ${comparable('f.player_id')}
+          ORDER BY f.fame DESC, f.player_id LIMIT ?`,
+    parameters: [market, minimumFame, limit],
+  };
+}
+
 export function clubConceptsStatement(market: string, minimumFame: number, minimumPlayers: number): Statement {
   return {
     sql: `SELECT pc.club_id AS id FROM player_clubs pc
