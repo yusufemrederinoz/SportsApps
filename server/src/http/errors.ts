@@ -12,9 +12,12 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   'already-signed-in': 409,
   'email-taken': 409,
   'username-taken': 409,
+  'puzzle-finished': 409,
+  'cell-taken': 409,
   'rate-limited': 429,
   internal: 500,
   'provider-unavailable': 503,
+  'puzzle-unavailable': 503,
 };
 
 export class ApiError extends Error {

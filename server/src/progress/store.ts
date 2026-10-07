@@ -188,6 +188,9 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     spendGoals: (userId: string, amount: number, reason: GoalReason, reference: string): number =>
       wallet.credit(userId, -amount, reason, reference),
 
+    creditGoals: (userId: string, amount: number, reason: GoalReason, reference: string): number =>
+      wallet.credit(userId, amount, reason, reference),
+
     settle(match: RankedMatch, result: PlayResult): Record<Side, PointsChange | null> {
       return transaction(database, () => {
         const settleSide = (side: Side): PointsChange | null => {

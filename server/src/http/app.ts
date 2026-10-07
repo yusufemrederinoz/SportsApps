@@ -10,8 +10,14 @@ import {
   type AccountResponse,
   type ApiErrorResponse,
   type AuthResponse,
+  type DailyPuzzleResponse,
   type DailyRewardResponse,
   type GameId,
+  type LeaderboardPeriod,
+  type LeaderboardResponse,
+  type PuzzleGuessRequest,
+  type PuzzleGuessResponse,
+  type PuzzleRankingResponse,
   type IdentityProvider,
   type IdentitySignInRequest,
   type LoginRequest,
@@ -40,6 +46,8 @@ import { createMatchHistory } from '../play/history';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
 import { DEFAULT_TOP_TEN_TIMING, createTopTenRoomFactory, type TopTenTiming } from '../play/top-ten-room';
+import { createLeaderboard } from '../progress/leaderboard';
+import { PuzzleError, createPuzzles, type Puzzles } from '../progress/puzzle';
 import { createProgress } from '../progress/store';
 import { ApiError } from './errors';
 import { createRateLimiter } from './rate-limit';
@@ -88,6 +96,42 @@ const REGISTER = body({
 });
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
 const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
+const MARKET_MAX_LENGTH = 8;
+const LEADERBOARD_QUERY = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      period: { type: 'string', enum: ['week', 'all'] },
+      game: { type: 'string', enum: [...GAME_IDS] },
+    },
+  },
+} as const;
+const MARKET_QUERY = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['market'],
+    properties: { market: { type: 'string', minLength: 1, maxLength: MARKET_MAX_LENGTH } },
+  },
+} as const;
+const PUZZLE_GUESS = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['market', 'cell', 'footballerId'],
+    properties: {
+      market: { type: 'string', minLength: 1, maxLength: MARKET_MAX_LENGTH },
+      cell: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['row', 'column'],
+        properties: { row: { type: 'integer' }, column: { type: 'integer' } },
+      },
+      footballerId: { type: 'integer', minimum: 1 },
+    },
+  },
+} as const;
 const HISTORY_QUERY = {
   querystring: {
     type: 'object',
@@ -116,6 +160,9 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
+  const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
+  let puzzles: Puzzles | null = null;
+  let hasMarket: (market: string) => boolean = () => false;
 
   if (dependencies.football) {
     const { football } = dependencies;
@@ -152,6 +199,8 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       progress,
     });
     registerPlayGateway(app, { accounts, lobby, dataVersion: football.dataVersion, now });
+    puzzles = createPuzzles(database, football, progress, { now, timeZone: config.timeZone });
+    hasMarket = football.hasMarket;
     app.addHook('onClose', () => lobby.shutdown());
   }
 
@@ -260,6 +309,59 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.post(`${API_PREFIX}/daily`, (request): DailyRewardResponse => progress.claimDaily(requireSession(request).user.id));
 
   app.get(`${API_PREFIX}/wallet`, (request): WalletResponse => progress.wallet(requireSession(request).user.id));
+
+  app.get<{ Querystring: { period?: LeaderboardPeriod; game?: GameId } }>(
+    `${API_PREFIX}/leaderboard`,
+    { schema: LEADERBOARD_QUERY },
+    (request): LeaderboardResponse =>
+      leaderboard.board(requireSession(request).user.id, request.query.period ?? 'week', request.query.game ?? null),
+  );
+
+  const puzzleWork = <T>(market: string, work: (available: Puzzles) => T): T => {
+    if (!puzzles || !hasMarket(market)) {
+      throw new ApiError('puzzle-unavailable');
+    }
+    try {
+      return work(puzzles);
+    } catch (error) {
+      if (error instanceof PuzzleError) {
+        throw new ApiError(
+          error.code === 'finished'
+            ? 'puzzle-finished'
+            : error.code === 'cell-taken'
+              ? 'cell-taken'
+              : error.code === 'no-puzzle'
+                ? 'puzzle-unavailable'
+                : 'validation',
+        );
+      }
+      throw error;
+    }
+  };
+
+  app.get<{ Querystring: { market: string } }>(
+    `${API_PREFIX}/puzzle`,
+    { schema: MARKET_QUERY },
+    (request): DailyPuzzleResponse => {
+      const userId = requireSession(request).user.id;
+      return { puzzle: puzzleWork(request.query.market, (available) => available.puzzle(userId, request.query.market)) };
+    },
+  );
+
+  app.post<{ Body: PuzzleGuessRequest }>(`${API_PREFIX}/puzzle/guess`, { schema: PUZZLE_GUESS }, (request): PuzzleGuessResponse => {
+    const userId = requireSession(request).user.id;
+    const { market, cell, footballerId } = request.body;
+    return puzzleWork(market, (available) => available.guess(userId, market, cell, footballerId));
+  });
+
+  app.get<{ Querystring: { market: string } }>(
+    `${API_PREFIX}/puzzle/ranking`,
+    { schema: MARKET_QUERY },
+    (request): PuzzleRankingResponse => {
+      const userId = requireSession(request).user.id;
+      return puzzleWork(request.query.market, (available) => available.ranking(userId, request.query.market));
+    },
+  );
 
   return app;
 }

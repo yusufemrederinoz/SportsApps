@@ -102,6 +102,32 @@ const MIGRATIONS: readonly string[] = [
   ALTER TABLE matches ADD COLUMN x_points_change INTEGER;
   ALTER TABLE matches ADD COLUMN o_points_change INTEGER;
   `,
+  `
+  CREATE INDEX matches_finished ON matches (finished_at);
+  CREATE TABLE puzzle_plays (
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    day TEXT NOT NULL,
+    market TEXT NOT NULL,
+    grid_id INTEGER NOT NULL,
+    guesses_left INTEGER NOT NULL,
+    finished_at INTEGER,
+    reward_goals INTEGER,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, day, market)
+  ) STRICT;
+  CREATE INDEX puzzle_plays_day ON puzzle_plays (day, market);
+  CREATE TABLE puzzle_answers (
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    day TEXT NOT NULL,
+    market TEXT NOT NULL,
+    cell INTEGER NOT NULL,
+    footballer_id INTEGER NOT NULL,
+    answered_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, day, market, cell)
+  ) STRICT;
+  CREATE INDEX puzzle_answers_cell ON puzzle_answers (day, market, cell, footballer_id);
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
