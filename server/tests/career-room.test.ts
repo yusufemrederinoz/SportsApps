@@ -12,8 +12,10 @@ import {
   type CareerTiming,
 } from '../src/play/career-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const BOT_WAIT = { minimum: 4000, maximum: 4000 };
 const TIMING: CareerTiming = { ...DEFAULT_CAREER_TIMING, botThinkMilliseconds: { minimum: 2000, maximum: 2000 } };
@@ -26,6 +28,7 @@ const library: CareerLibrary = {
   careerPath: (id) =>
     Array.from({ length: clubsOf(id) }, (_, index) => ({ clubId: id * 10 + index, firstYear: 2000 + index * 3, lastYear: 2002 + index * 3 })),
   chainCandidates: (_, id) => [id + 100, id + 200],
+  footballerFacts: (id) => ({ countryId: id * 2, position: 'FW', birthYear: 1990 + id }),
 };
 
 interface Client extends Connection {
@@ -40,6 +43,8 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
+const lobbyRoom = () => lastRoom(rooms);
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -103,10 +108,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(9_000_000);
   seed = 29;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { career: createCareerRoomFactory(library, TIMING) },
+    games: { career: capturing(createCareerRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -183,6 +189,16 @@ describe('career path matches', () => {
     const side = first.session().side;
     expect(first.of('finished')[0]?.result).toEqual({ winner: side, reason: 'score' });
     expect(history.list(second.player.id)[0]).toMatchObject({ game: 'career', outcome: 'loss', ownCells: 0 });
+  });
+
+  it('reveals the nationality and position of the hidden footballer only while it is hidden', () => {
+    const { first } = pair();
+    const side = first.session().side;
+    const room = (joker: 'nationality' | 'position' | 'pass') => lobbyRoom().useJoker(side, joker, {});
+    const mystery = mysteryOf(first.view());
+    expect(room('nationality')).toEqual({ reveal: { kind: 'country', countryId: mystery * 2 } });
+    expect(room('position')).toEqual({ reveal: { kind: 'position', position: 'FW', birthYear: 1990 + mystery } });
+    expect(room('pass')).toEqual({ error: 'joker-unavailable' });
   });
 
   it('lets the bot guess on its turns', () => {

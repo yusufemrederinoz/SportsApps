@@ -13,8 +13,10 @@ import {
   type AuctionTiming,
 } from '../src/play/auction-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const club = (referenceId: number): Header => ({ kind: 'club', referenceId });
 const GRID: Grid = { id: 3, rows: [club(1), club(2), club(3)], columns: [club(4), club(5), club(6)] };
@@ -48,6 +50,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -118,10 +121,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(7_000_000);
   seed = 17;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { auction: createAuctionRoomFactory(library, TIMING) },
+    games: { auction: capturing(createAuctionRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -195,6 +199,24 @@ describe('auction matches', () => {
     const view = first.view();
     expect(view.phase).toBe('reveal');
     expect(view.outcome?.winner).not.toBe(bidder.session().side);
+  });
+
+  it('shows how many known answers fit and gives the prover fifteen more seconds', () => {
+    const { first, active } = pair();
+    const bidder = active();
+    const side = bidder.session().side;
+    const room = lastRoom(rooms);
+    expect(room.useJoker(side, 'answer-count', {})).toMatchObject({ reveal: { kind: 'count' } });
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ error: 'invalid-action' });
+    act(bidder, { kind: 'bid', amount: 2 });
+    act(active(), { kind: 'challenge' });
+    expect(room.useJoker(side === 'x' ? 'o' : 'x', 'extra-time', {})).toEqual({ error: 'invalid-action' });
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 15 } });
+    expect(first.view().phaseSeconds).toBe(33);
+    vi.advanceTimersByTime(TIMING.proofBaseMilliseconds + 2 * TIMING.proofPerAnswerMilliseconds + TURN_GRACE_MILLISECONDS);
+    expect(first.view().phase).toBe('proving');
+    vi.advanceTimersByTime(15000);
+    expect(first.view().phase).toBe('reveal');
   });
 
   it('opens with the lowest bid when the first bidder stays silent', () => {

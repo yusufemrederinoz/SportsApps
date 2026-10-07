@@ -19,6 +19,7 @@ import {
   AUCTION_BID_SECONDS,
   AUCTION_PROOF_BASE_SECONDS,
   AUCTION_PROOF_SECONDS_PER_ANSWER,
+  EXTRA_TIME_SECONDS,
   type AuctionView,
   type AuctionViewPhase,
   type PlayErrorCode,
@@ -174,11 +175,24 @@ export function createAuctionRoomFactory(library: AuctionLibrary, timing: Auctio
       context.onFinished(live, outcome);
     };
 
+    let expire: () => void = () => undefined;
+
     const startPhase = (milliseconds: number, onExpire: () => void) => {
       stopTimers();
+      expire = onExpire;
       phaseMilliseconds = milliseconds;
       deadline = now() + milliseconds;
       phaseTimer = setTimeout(onExpire, milliseconds + TURN_GRACE_MILLISECONDS);
+    };
+
+    const extendPhase = (milliseconds: number) => {
+      if (phaseTimer) {
+        clearTimeout(phaseTimer);
+      }
+      phaseMilliseconds += milliseconds;
+      deadline += milliseconds;
+      phaseTimer = setTimeout(expire, Math.max(0, deadline - now()) + TURN_GRACE_MILLISECONDS);
+      broadcast();
     };
 
     function afterSettle(): void {
@@ -359,7 +373,23 @@ export function createAuctionRoomFactory(library: AuctionLibrary, timing: Auctio
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        const criteria = auctionCriteria(state);
+        if (joker === 'answer-count') {
+          return (stage === 'bidding' || stage === 'proving') && criteria
+            ? { reveal: { kind: 'count', count: library.answerCount(market, criteria.row, criteria.column, CELL_FAME) } }
+            : { error: 'invalid-action' };
+        }
+        if (joker === 'extra-time') {
+          if (stage !== 'proving' || state.bidder !== side) {
+            return { error: 'invalid-action' };
+          }
+          const seconds = EXTRA_TIME_SECONDS.auction ?? 0;
+          extendPhase(seconds * SECOND);
+          return { reveal: { kind: 'time', seconds } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'auction',

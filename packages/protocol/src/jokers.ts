@@ -33,6 +33,14 @@ export const GAME_JOKERS: Readonly<Record<GameId, readonly JokerId[]>> = {
   career: ['nationality', 'position'],
 };
 
+export const EXTRA_TIME_SECONDS: Readonly<Partial<Record<GameId, number>>> = {
+  grid: 15,
+  draft: 15,
+  chain: 10,
+  rare: 15,
+  auction: 15,
+};
+
 export interface JokerTarget {
   cell?: PlayCell;
   footballerId?: number;

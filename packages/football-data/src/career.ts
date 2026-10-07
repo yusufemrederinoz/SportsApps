@@ -1,5 +1,11 @@
 import type { Statement } from './statements';
 
+export interface FootballerFactsRow {
+  countryId: number | null;
+  position: string | null;
+  birthYear: number | null;
+}
+
 export interface CareerStepRow {
   clubId: number;
   firstYear: number;
@@ -17,6 +23,13 @@ export function careerCandidatesStatement(market: string, minimumFame: number, m
             )
           ORDER BY f.fame DESC, f.player_id LIMIT ?`,
     parameters: [market, minimumFame, minimumClubs, limit],
+  };
+}
+
+export function footballerFactsStatement(footballerId: number): Statement {
+  return {
+    sql: 'SELECT country_id AS countryId, position, birth_year AS birthYear FROM players WHERE id = ?',
+    parameters: [footballerId],
   };
 }
 

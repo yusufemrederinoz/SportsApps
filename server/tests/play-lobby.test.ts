@@ -38,6 +38,7 @@ const library: FootballLibrary = {
   ranking: () => [],
   careerCandidates: () => [],
   careerPath: () => [],
+  footballerFacts: () => null,
   duelConcepts: () => [],
   conceptPlayers: () => [],
   conceptMembers: () => [],

@@ -50,7 +50,7 @@ export const DEFAULT_CAREER_TIMING: CareerTiming = {
   botThinkMilliseconds: { minimum: 3000, maximum: 7000 },
 };
 
-export type CareerLibrary = Pick<FootballLibrary, 'careerCandidates' | 'careerPath' | 'chainCandidates'>;
+export type CareerLibrary = Pick<FootballLibrary, 'careerCandidates' | 'careerPath' | 'chainCandidates' | 'footballerFacts'>;
 
 type Timer = ReturnType<typeof setTimeout>;
 
@@ -257,7 +257,20 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(_, joker) {
+        const mystery = currentMystery(state);
+        if (stage !== 'playing' || !mystery) {
+          return { error: 'invalid-action' };
+        }
+        const facts = library.footballerFacts(mystery.footballerId);
+        if (joker === 'nationality') {
+          return { reveal: { kind: 'country', countryId: facts?.countryId ?? null } };
+        }
+        if (joker === 'position') {
+          return { reveal: { kind: 'position', position: facts?.position ?? null, birthYear: facts?.birthYear ?? null } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'career',

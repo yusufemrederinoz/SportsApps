@@ -261,7 +261,27 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        if (stage !== 'playing' || state.phase !== 'playing') {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'extra-life') {
+          if (state.lives[side] <= 0) {
+            return { error: 'invalid-action' };
+          }
+          const lives = state.lives[side] + 1;
+          state = { ...state, lives: { ...state.lives, [side]: lives } };
+          broadcast();
+          return { reveal: { kind: 'life', lives } };
+        }
+        if (joker === 'first-letter') {
+          const hidden = (currentList(state)?.entries ?? []).filter((_, index) => state.found[index] === null);
+          return hidden.length > 0
+            ? { reveal: { kind: 'initials', footballerId: pick(hidden, random).footballerId, birthYear: false } }
+            : { error: 'invalid-action' };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'top-ten',

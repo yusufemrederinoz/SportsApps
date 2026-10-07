@@ -6,6 +6,7 @@ import {
   answerCountStatement,
   careerCandidatesStatement,
   careerPathStatement,
+  footballerFactsStatement,
   chainCandidatesStatement,
   chainSeedsStatement,
   clubConceptsStatement,
@@ -35,6 +36,7 @@ import {
   topCountryGoalsStatement,
   topValuesStatement,
   type CareerStepRow,
+  type FootballerFactsRow,
   type DraftCandidateRow,
   type DraftEntryRow,
   type GridHeaderRow,
@@ -70,6 +72,7 @@ export interface FootballLibrary {
   topTenLists(market: string): readonly TopTenListView[];
   careerCandidates(market: string, minimumFame: number, minimumClubs: number, limit: number): number[];
   careerPath(footballerId: number): CareerStepRow[];
+  footballerFacts(footballerId: number): FootballerFactsRow | null;
   ranking(list: TopTenListView, limit: number): RankedRow[];
   duelConcepts(market: string): readonly DuelConcept[];
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
@@ -215,6 +218,10 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     careerPath(footballerId) {
       return all<CareerStepRow>(careerPathStatement(footballerId));
+    },
+
+    footballerFacts(footballerId) {
+      return first<FootballerFactsRow>(footballerFactsStatement(footballerId)) ?? null;
     },
 
     ranking(list, limit) {

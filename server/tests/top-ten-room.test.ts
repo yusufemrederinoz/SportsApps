@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createAccountService } from '../src/accounts/service';
 import { openDatabase, type Database } from '../src/database';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
 import {
@@ -13,6 +14,7 @@ import {
   type TopTenLibrary,
   type TopTenTiming,
 } from '../src/play/top-ten-room';
+import { capturing, lastRoom } from './capture';
 
 const BOT_WAIT = { minimum: 4000, maximum: 4000 };
 const TIMING: TopTenTiming = { ...DEFAULT_TOP_TEN_TIMING, botThinkMilliseconds: { minimum: 2000, maximum: 2000 } };
@@ -45,6 +47,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -108,10 +111,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(8_000_000);
   seed = 23;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { 'top-ten': createTopTenRoomFactory(library, TIMING) },
+    games: { 'top-ten': capturing(createTopTenRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -163,6 +167,19 @@ describe('top ten matches', () => {
     const other = side === 'x' ? 'o' : 'x';
     expect(first.view().lives[other]).toBe(2);
     expect(first.view().lastGuess).toMatchObject({ side: other, footballerId: null, rank: null });
+  });
+
+  it('gives an extra life and the initials of a name still hidden', () => {
+    const { first } = pair();
+    const side = first.session().side;
+    const room = lastRoom(rooms);
+    expect(room.useJoker(side, 'extra-life', {})).toEqual({ reveal: { kind: 'life', lives: 4 } });
+    expect(first.view().lives[side]).toBe(4);
+    const hint = room.useJoker(side, 'first-letter', {});
+    expect(hint).toMatchObject({ reveal: { kind: 'initials', birthYear: false } });
+    const hinted = 'reveal' in hint && hint.reveal.kind === 'initials' ? hint.reveal.footballerId : 0;
+    expect(Math.floor(hinted / 100)).toBe(keyOf(first.view().list));
+    expect(room.useJoker(side, 'nationality', {})).toEqual({ error: 'joker-unavailable' });
   });
 
   it('reveals the whole list at the end of a round and moves to the next list', () => {
