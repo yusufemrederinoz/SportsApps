@@ -1,4 +1,5 @@
 import {
+  conceptCondition,
   correctAnswerStatement,
   gridAtOffsetStatement,
   gridCountStatement,
@@ -8,8 +9,10 @@ import {
   minimumFameStatement,
 } from '@sportapps/football-data';
 import { nameTokens, type BotOption, type CellPosition, type Grid, type Header } from '@sportapps/game-core';
+import type { DuelConcept } from '@sportapps/protocol';
 
 import type {
+  ConceptLabel,
   Difficulty,
   FootballerSummary,
   GridView,
@@ -132,6 +135,81 @@ export async function searchFootballers(
     [match, market, limit],
   );
   return rows.map(toFootballer);
+}
+
+export async function searchConceptFootballers(
+  database: QueryRunner,
+  market: string,
+  concept: DuelConcept,
+  text: string,
+  limit = 20,
+): Promise<FootballerSummary[]> {
+  const tokens = nameTokens(text);
+  if (tokens.join('').length < MINIMUM_SEARCH_LENGTH) {
+    return [];
+  }
+  const match = tokens.map((token) => `"${token}"*`).join(' ');
+  const condition = conceptCondition(concept, market, 'p.id');
+  const rows = await database.getAllAsync<FootballerRow>(
+    `SELECT ${FOOTBALLER_COLUMNS}
+     FROM (SELECT DISTINCT player_id FROM player_search WHERE player_search MATCH ?) s
+     JOIN players p ON p.id = s.player_id
+     LEFT JOIN countries c ON c.id = p.country_id
+     LEFT JOIN player_fame f ON f.player_id = p.id AND f.market = ?
+     WHERE ${condition.sql}
+     ORDER BY COALESCE(f.fame, 0) DESC, p.name
+     LIMIT ?`,
+    [match, market, ...condition.parameters, limit],
+  );
+  return rows.map(toFootballer);
+}
+
+export async function loadConceptLabel(
+  database: QueryRunner,
+  concept: DuelConcept,
+  market: string,
+  language: string,
+): Promise<ConceptLabel> {
+  switch (concept.kind) {
+    case 'club': {
+      const row = await database.getFirstAsync<{ name: string | null; local: number }>(
+        `SELECT COALESCE(
+                  (SELECT name FROM club_names WHERE club_id = c.id AND language = ?),
+                  (SELECT name FROM club_names WHERE club_id = c.id AND language = '${FALLBACK_LANGUAGE}')
+                ) AS name,
+                EXISTS (SELECT 1 FROM markets m WHERE m.code = ? AND m.home_league_code = c.league_code) AS local
+         FROM clubs c WHERE c.id = ?`,
+        [language, market, concept.clubId],
+      );
+      return { name: row?.name ?? null, leagueCode: null, local: row?.local === 1 };
+    }
+    case 'country': {
+      const row = await database.getFirstAsync<{ name: string | null }>(
+        `SELECT COALESCE(
+                  (SELECT name FROM country_names WHERE country_id = ? AND language = ?),
+                  (SELECT name FROM country_names WHERE country_id = ? AND language = '${FALLBACK_LANGUAGE}')
+                ) AS name`,
+        [concept.countryId, language, concept.countryId],
+      );
+      return { name: row?.name ?? null, leagueCode: null, local: true };
+    }
+    case 'league': {
+      const row = await database.getFirstAsync<{ local: number }>(
+        'SELECT EXISTS (SELECT 1 FROM markets WHERE code = ? AND home_league_code = ?) AS local',
+        [market, concept.leagueCode],
+      );
+      return { name: null, leagueCode: concept.leagueCode, local: row?.local === 1 };
+    }
+    case 'home-league-foreigners': {
+      const row = await database.getFirstAsync<{ code: string | null }>(
+        'SELECT home_league_code AS code FROM markets WHERE code = ?',
+        [market],
+      );
+      return { name: null, leagueCode: row?.code ?? null, local: true };
+    }
+    case 'home-nationals-abroad':
+      return { name: null, leagueCode: null, local: true };
+  }
 }
 
 export async function isCorrectAnswer(

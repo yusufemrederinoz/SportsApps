@@ -9,11 +9,13 @@ import { afterAll, describe, expect, it } from 'vitest';
 import {
   isCorrectAnswer,
   loadBotOptions,
+  loadConceptLabel,
   loadFootballer,
   loadGrid,
   loadMinimumFame,
   pickGridId,
   resolveMarket,
+  searchConceptFootballers,
   searchFootballers,
 } from './queries';
 import type { Difficulty, QueryRunner } from './types';
@@ -101,6 +103,42 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     expect(await isCorrectAnswer(runner, calhanoglu, MILAN, TURKEY)).toBe(true);
     expect(await isCorrectAnswer(runner, calhanoglu, MILAN, GERMANY)).toBe(false);
     expect(await isCorrectAnswer(runner, calhanoglu, GALATASARAY, TURKEY)).toBe(false);
+  });
+
+  it('searches only among the footballers of a duel concept', async () => {
+    const names = async (concept: Parameters<typeof searchConceptFootballers>[2], text: string) =>
+      (await searchConceptFootballers(runner, 'tr', concept, text)).map((footballer) => footballer.name);
+
+    expect(await names({ kind: 'club', clubId: GALATASARAY.referenceId }, 'icardi')).toContain('Mauro Icardi');
+    expect(await names({ kind: 'club', clubId: REAL_MADRID.referenceId }, 'icardi')).toEqual([]);
+    expect(await names({ kind: 'home-league-foreigners' }, 'icardi')).toContain('Mauro Icardi');
+    expect(await names({ kind: 'home-league-foreigners' }, 'calhanoglu')).toEqual([]);
+    expect(await names({ kind: 'home-nationals-abroad' }, 'calhanoglu')).toContain('Hakan Çalhanoğlu');
+    expect(await names({ kind: 'country', countryId: TURKEY.referenceId }, 'icardi')).toEqual([]);
+    expect(await names({ kind: 'league', leagueCode: 'IT1' }, 'calhanoglu')).toContain('Hakan Çalhanoğlu');
+    expect(await names({ kind: 'league', leagueCode: 'IT1' }, 'c')).toEqual([]);
+  });
+
+  it('describes a duel concept with names in the language of the player', async () => {
+    expect(await loadConceptLabel(runner, { kind: 'club', clubId: GALATASARAY.referenceId }, 'tr', 'tr')).toEqual({
+      name: 'Galatasaray',
+      leagueCode: null,
+      local: true,
+    });
+    expect((await loadConceptLabel(runner, { kind: 'club', clubId: REAL_MADRID.referenceId }, 'tr', 'tr')).local).toBe(false);
+    expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'tr')).name).toBe('Almanya');
+    expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'de')).name).toBe('Germany');
+    expect(await loadConceptLabel(runner, { kind: 'home-league-foreigners' }, 'tr', 'tr')).toEqual({
+      name: null,
+      leagueCode: 'TR1',
+      local: true,
+    });
+    expect(await loadConceptLabel(runner, { kind: 'league', leagueCode: 'GB1' }, 'tr', 'tr')).toEqual({
+      name: null,
+      leagueCode: 'GB1',
+      local: false,
+    });
+    expect((await loadConceptLabel(runner, { kind: 'league', leagueCode: 'TR1' }, 'tr', 'tr')).local).toBe(true);
   });
 
   it('gives the bot enough known answers for every cell of a generated grid', async () => {

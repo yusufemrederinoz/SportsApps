@@ -39,6 +39,12 @@ export interface FootballerSummary {
   hasPortrait: boolean;
 }
 
+export interface ConceptLabel {
+  name: string | null;
+  leagueCode: string | null;
+  local: boolean;
+}
+
 export interface PortraitCredit {
   playerId: number;
   name: string;
