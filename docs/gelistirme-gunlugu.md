@@ -482,6 +482,14 @@ Doğrulama: gerçek ızgaralarla sunucu testinde bota karşı tam maç (her turd
 
 Düzeltilen sorun: bot bilemediği turlarda hiç cevap vermiyor, insan oyuncu 30 saniye bekliyordu; artık akla yatkın yanlış bir cevap veriyor.
 
+### Açık Artırma
+
+Kural motoru, sunucu odası, bot ve uygulama ekranı eklendi. Ekran: ölçüt levhası, büyük teklif sayısı (kimin teklifi olduğu), artır/azalt düğmeleri, "N isim sayarım" ve "Say bakalım"; ispatta "2/5 doğru isim" ilerlemesi ve yazılan isimlerin listesi.
+
+Doğrulama: gerçek ızgaralarla sunucu testinde bota karşı tam maç; emülatörde bota karşı tam maç (AS Monaco × Fransa turunda bot "Say bakalım" dedi; sonuç ekranına kadar).
+
+Düzeltilen sorunlar: bot bildiğinden fazla teklif verince ispatta isimleri bitiyor ve süre dolana kadar bekliyordu, artık hemen pes ediyor; kendi teklifinde "SEN SÖYLEDİ" yazıyordu, artık "SENİN TEKLİFİN".
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -549,3 +557,8 @@ Düzeltilen sorun: bot bilemediği turlarda hiç cevap vermiyor, insan oyuncu 30
 | `ed7dba7` | 7 Ekim | En Az Bilinen mesajları ve ortak veri ifadeleri |
 | `79eb598` | 7 Ekim | Sunucuda En Az Bilinen odası ve botu |
 | `eeef981` | 7 Ekim | Uygulamada En Az Bilinen ekranı |
+| `251e6c3` | 7 Ekim | Belgeler: En Az Bilinen |
+| `a04c987` | 7 Ekim | Açık Artırma kuralları (kural motoru) |
+| `df47a2d` | 7 Ekim | Açık Artırma mesajları ve ortak veri ifadeleri |
+| `1aece96` | 7 Ekim | Sunucuda Açık Artırma odası ve botu |
+| `e46e6d3` | 7 Ekim | Uygulamada Açık Artırma ekranı |

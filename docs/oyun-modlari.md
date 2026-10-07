@@ -23,7 +23,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | `higher` | Hangisi Yüksek | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `chain` | Zincir | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `rare` | En Az Bilinen | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
-| `auction` | Açık Artırma | Öneri | Sırada |
+| `auction` | Açık Artırma | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `career` | Kariyer Yolu | Öneri | Sırada |
 | `top-ten` | İlk 10 | Öneri | Sırada |
 
@@ -114,6 +114,13 @@ Uygulanan hâli (7 Ekim 2026):
 
 Bir ölçüt çıkar. Oyuncular sırayla "kaç tane sayarım" diye artırır. Pes eden, rakibine "say bakalım" demiş olur. Rakip söylediği sayı kadar doğru cevabı süre içinde sayarsa turu alır, sayamazsa kaybeder.
 
+Uygulanan hâli (7 Ekim 2026):
+
+- **Ölçütler.** Seçilen zorluktaki bir ızgaranın, bilinirliği 32 ve üzeri en az 6 cevabı olan hücreleri; maç en çok üç tur, iki tur alan kazanır. Turu açan oyuncu her turda değişir.
+- **Teklif.** Teklif bir öncekinden büyük olmalı, en çok 12. İlk teklif zorunlu ("Say bakalım" ancak bir teklif varken denebilir). Teklif sırası 15 saniye; süresi dolan oyuncu, ortada teklif yoksa 1 demiş, varsa "Say bakalım" demiş sayılır. 12'ye çıkan teklif doğrudan ispata gider.
+- **İspat.** Süre 8 saniye + teklif başına 5 saniye. Yazılan doğru isimler yeşil, yanlışlar üstü çizili görünür; yanlış isim süreden yer ama turu bitirmez. Hedefe ulaşınca tur hemen biter.
+- **Bot.** Hücrenin tanınmış cevaplarının zorluğa göre %35, %55 ya da %75'ini "bilir"; bildiği kadar (kolay ve orta seviyede bazen bir fazla) teklif verir, aşılınca "Say bakalım" der. İspatta bildiklerini 3–6 saniye arayla yazar; bildikleri biterse süreyi beklemeden pes eder.
+
 ### Kariyer Yolu (`career`)
 
 Gizli bir futbolcunun kulüpleri kariyer sırasıyla tek tek açılır. Oyuncular sırayla tahmin eder. Az ipucuyla bilen çok puan alır; yanlış tahmin sırayı geçirir.
@@ -168,7 +175,7 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 2. Kart Düellosu. (Tamam)
 3. Kadro Kur. (Tamam)
 4. Hangisi Yüksek, Zincir. (Tamam)
-5. En Az Bilinen (Tamam), Açık Artırma.
+5. En Az Bilinen, Açık Artırma. (Tamam)
 6. Kariyer Yolu, İlk 10.
 
 Her mod için bitti sayılma ölçütü: kural testleri, sunucu testleri (bot ve süre dolması dahil), emülatörde baştan sona bir maç.
