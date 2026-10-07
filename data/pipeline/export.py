@@ -50,6 +50,13 @@ CREATE TABLE players (
     transfermarkt_id INTEGER,
     wikidata_id TEXT
 );
+CREATE TABLE player_portraits (
+    player_id INTEGER PRIMARY KEY REFERENCES players (id),
+    author TEXT NOT NULL,
+    license TEXT NOT NULL,
+    license_url TEXT NOT NULL,
+    source_url TEXT NOT NULL
+);
 CREATE TABLE player_names (
     player_id INTEGER NOT NULL REFERENCES players (id),
     name TEXT NOT NULL,

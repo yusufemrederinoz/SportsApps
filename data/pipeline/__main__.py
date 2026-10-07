@@ -1,5 +1,7 @@
 import argparse
 
+from portraits import publish
+
 from . import bundle, export, grids, merge, report
 
 
@@ -23,6 +25,7 @@ def main():
     dataset = merge.build(refresh=arguments.refresh)
     database_path = export.write(dataset)
     dataset["grid_summaries"] = grids.write(database_path)
+    print(f"portraits: {publish.register(database_path)}")
     report_path = report.write(dataset)
     print(f"database: {database_path}")
     print(f"report: {report_path}")

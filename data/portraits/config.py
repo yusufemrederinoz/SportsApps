@@ -1,0 +1,18 @@
+from pipeline.config import BUILD_DIR, CACHE_DIR
+
+MARKET = "tr"
+MINIMUM_FAME = 32
+
+SOURCE_WIDTH = 1280
+LARGE_SOURCE_WIDTH = 3840
+MINIMUM_SOURCE_SIDE = 300
+PORTRAIT_SIZE = 512
+WORKING_SIZE = 768
+
+CACHE = CACHE_DIR / "portraits"
+METADATA_PATH = CACHE / "commons-metadata.json"
+SOURCE_DIR = CACHE / "source"
+CROP_DIR = CACHE / "crops"
+MODEL_DIR = CACHE / "models"
+OUTPUT_DIR = BUILD_DIR / "portraits"
+REVIEW_DIR = BUILD_DIR / "portrait-review"

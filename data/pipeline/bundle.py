@@ -102,6 +102,40 @@ COPIES = (
     "WHERE country_id IN (SELECT id FROM countries)",
 )
 
+PORTRAIT_TABLE = """
+CREATE TABLE IF NOT EXISTS player_portraits (
+    player_id INTEGER PRIMARY KEY,
+    author TEXT NOT NULL,
+    license TEXT NOT NULL,
+    license_url TEXT NOT NULL,
+    source_url TEXT NOT NULL
+)
+"""
+PORTRAIT_COPY = (
+    "INSERT INTO player_portraits SELECT player_id, author, license, license_url, source_url "
+    "FROM source.player_portraits WHERE player_id IN (SELECT id FROM players)"
+)
+
+
+def copy_portraits(connection):
+    connection.execute(PORTRAIT_TABLE)
+    connection.execute("DELETE FROM player_portraits")
+    if connection.execute("SELECT 1 FROM source.sqlite_master WHERE name = 'player_portraits'").fetchone():
+        connection.execute(PORTRAIT_COPY)
+
+
+def data_version(connection):
+    built_at = connection.execute("SELECT value FROM source.meta WHERE key = 'built_at'").fetchone()[0]
+    portraits_at = connection.execute("SELECT value FROM source.meta WHERE key = 'portraits_at'").fetchone()
+    revised_at = max(built_at, portraits_at[0]) if portraits_at else built_at
+    return "".join(character for character in revised_at if character.isdigit())[:14]
+
+
+def write_version(version):
+    APP_VERSION_PATH.write_text(
+        json.dumps({"schemaVersion": SCHEMA_VERSION, "dataVersion": version}, indent=2) + "\n", encoding="utf-8"
+    )
+
 
 def write(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -111,7 +145,9 @@ def write(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     connection.execute("ATTACH DATABASE ? AS source", (str(source_path),))
     for statement in COPIES:
         connection.execute(statement)
+    copy_portraits(connection)
     built_at = connection.execute("SELECT value FROM source.meta WHERE key = 'built_at'").fetchone()[0]
+    version = data_version(connection)
     connection.executemany(
         "INSERT INTO meta VALUES (?, ?)", [("built_at", built_at), ("schema_version", str(SCHEMA_VERSION))]
     )
@@ -120,9 +156,18 @@ def write(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
     connection.execute("DETACH DATABASE source")
     connection.execute("VACUUM")
     connection.close()
-
-    version = "".join(character for character in built_at if character.isdigit())[:14]
-    APP_VERSION_PATH.write_text(
-        json.dumps({"schemaVersion": SCHEMA_VERSION, "dataVersion": version}, indent=2) + "\n", encoding="utf-8"
-    )
+    write_version(version)
     return target_path
+
+
+def refresh_portraits(source_path=DATABASE_PATH, target_path=APP_DATABASE_PATH):
+    connection = sqlite3.connect(target_path, timeout=30)
+    connection.execute("ATTACH DATABASE ? AS source", (str(source_path),))
+    copy_portraits(connection)
+    version = data_version(connection)
+    count = connection.execute("SELECT COUNT(*) FROM player_portraits").fetchone()[0]
+    connection.commit()
+    connection.execute("DETACH DATABASE source")
+    connection.close()
+    write_version(version)
+    return count
