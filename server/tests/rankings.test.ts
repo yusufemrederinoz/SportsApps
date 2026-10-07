@@ -121,8 +121,8 @@ describe('daily puzzle', () => {
     const service = puzzles();
     const first = service.puzzle(player(), 'tr');
     const second = service.puzzle(player(), 'tr');
-    expect(first).toMatchObject({ day: '2026-10-07', number: 7, guessesLeft: 9, finished: false, score: 0, players: 1 });
-    expect(second.players).toBe(2);
+    expect(first).toMatchObject({ day: '2026-10-07', number: 7, guessesLeft: 9, finished: false, score: 0, players: 0 });
+    expect(service.ranking(player(), 'tr').entries).toEqual([]);
     expect(second.gridId).toBe(first.gridId);
     vi.setSystemTime(WEDNESDAY + DAY);
     expect(service.puzzle(player(), 'tr').gridId).toBe(1 + Math.floor(dayFraction('tr', '2026-10-08') * 1000));

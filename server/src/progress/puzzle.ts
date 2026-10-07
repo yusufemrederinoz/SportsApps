@@ -135,18 +135,20 @@ export function createPuzzles(database: Database, library: PuzzleLibrary, progre
     return grid;
   };
 
-  const playOf = (userId: string, market: string, day: string): PlayRow => {
+  const playOf = (userId: string, market: string, day: string, start: boolean): PlayRow => {
     const existing = selectPlay.get(userId, day, market) as PlayRow | undefined;
     if (existing) {
       return existing;
     }
     const grid = gridFor(market, day);
-    insertPlay.run(userId, day, market, grid.id, PUZZLE_GUESSES, now(), now());
+    if (start) {
+      insertPlay.run(userId, day, market, grid.id, PUZZLE_GUESSES, now(), now());
+    }
     return { grid_id: grid.id, guesses_left: PUZZLE_GUESSES, finished_at: null, reward_goals: null };
   };
 
   const view = (userId: string, market: string, day: string): DailyPuzzleView => {
-    const play = playOf(userId, market, day);
+    const play = playOf(userId, market, day, false);
     const answers = selectAnswers.all(userId, day, market) as unknown as AnswerRow[];
     const cells = Array.from({ length: CELL_COUNT }, (_, index) => {
       const answer = answers.find((entry) => entry.cell === index);
@@ -189,7 +191,7 @@ export function createPuzzles(database: Database, library: PuzzleLibrary, progre
     ): { puzzle: DailyPuzzleView; outcome: PuzzleGuessOutcome; goals: number | null } {
       return transaction(database, () => {
         const day = today();
-        const play = playOf(userId, market, day);
+        const play = playOf(userId, market, day, true);
         if (play.finished_at !== null || play.guesses_left <= 0) {
           throw new PuzzleError('finished');
         }
