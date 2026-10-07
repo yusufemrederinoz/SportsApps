@@ -35,7 +35,7 @@ import {
 } from './online';
 import { secondsLeft, type MatchSession, type PlayedFootballer } from './session';
 
-export type OnlineEntry = { kind: 'queue' } | { kind: 'host' } | { kind: 'join'; code: string };
+export type OnlineEntry = { kind: 'queue' } | { kind: 'bot' } | { kind: 'host' } | { kind: 'join'; code: string };
 export type OnlinePhase = 'connecting' | 'searching' | 'hosting' | 'playing' | 'failed';
 export type OnlineFailure = PlayErrorCode | 'offline' | 'signed-out' | 'room-closed';
 
@@ -153,7 +153,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
         connection.send({ type: 'join-room', code: entryCode });
       } else {
         connection.send({
-          type: entryKind === 'host' ? 'create-room' : 'queue',
+          type: entryKind === 'host' ? 'create-room' : entryKind === 'bot' ? 'play-bot' : 'queue',
           market: market.code,
           difficulty,
           game,

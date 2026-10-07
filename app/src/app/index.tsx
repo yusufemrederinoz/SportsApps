@@ -29,13 +29,13 @@ function HomeScreen() {
   const chipFrames = useRef<Partial<Record<GameId, { x: number; width: number }>>>({});
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
   const accent = t(GAME_ACCENTS[game]);
-  const startBot = () => router.push({ pathname: '/match', params: { mode: 'bot', difficulty: String(difficulty) } });
+  const startBot = () =>
+    game === 'grid'
+      ? router.push({ pathname: '/match', params: { mode: 'bot', difficulty: String(difficulty) } })
+      : router.push({ pathname: '/match', params: { mode: 'online', entry: 'bot', difficulty: String(difficulty), game } });
   const startOnline = () =>
     router.push({ pathname: '/match', params: { mode: 'online', entry: 'queue', difficulty: String(difficulty), game } });
   const openFriend = () => router.push({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
-
-  return (
-    <Screen contentStyle={styles.screen}>
   const selectGame = (option: GameId) => {
     haptics.select();
     setGame(option);
@@ -45,6 +45,9 @@ function HomeScreen() {
       gameScroller.current?.scrollTo({ x: Math.max(0, x), animated: true });
     }
   };
+
+  return (
+    <Screen contentStyle={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
           <Pressable
@@ -85,15 +88,15 @@ function HomeScreen() {
             {uppercase(t('home.game'))}
           </ThemedText>
           <ScrollView
+            ref={gameScroller}
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.gameScroller}
-            ref={gameScroller}
-            contentContainerStyle={styles.gameRow}
-            accessibilityRole="radiogroup">
             onLayout={(event) => {
               gameScrollerWidth.current = event.nativeEvent.layout.width;
             }}
+            style={styles.gameScroller}
+            contentContainerStyle={styles.gameRow}
+            accessibilityRole="radiogroup">
             {GAMES.map((option) => {
               const selected = option === game;
               return (
@@ -155,9 +158,7 @@ function HomeScreen() {
             finish={AccentFinishes.steel}
             onPress={openFriend}
           />
-          {game === 'grid' ? (
-            <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={startBot} />
-          ) : null}
+          <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={startBot} />
         </Animated.View>
       </ScrollView>
     </Screen>

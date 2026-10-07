@@ -80,7 +80,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
       : t('online.opponentAway');
   const playAgainLabel = t(entry.kind === 'queue' ? 'match.newOpponent' : 'match.playAgain');
   const playAgain =
-    entry.kind === 'queue'
+    entry.kind === 'queue' || entry.kind === 'bot'
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
 
@@ -249,8 +249,8 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
 }
 
 function onlineEntry(entry: string | undefined, code: string | undefined): OnlineEntry {
-  if (entry === 'host') {
-    return { kind: 'host' };
+  if (entry === 'host' || entry === 'bot') {
+    return { kind: entry };
   }
   return entry === 'join' ? { kind: 'join', code: normalizeRoomCode(code ?? '') } : { kind: 'queue' };
 }
