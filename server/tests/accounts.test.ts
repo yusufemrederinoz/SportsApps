@@ -18,6 +18,7 @@ const config: ServerConfig = {
   port: 0,
   databasePath: ':memory:',
   footballDatabasePath: '',
+  portraitsPath: '',
   sessionDays: 90,
   googleClientIds: [GOOGLE_CLIENT_ID],
   appleClientIds: [],

@@ -1,3 +1,7 @@
+import { createReadStream } from 'node:fs';
+import { stat } from 'node:fs/promises';
+import { join } from 'node:path';
+
 import {
   API_PREFIX,
   EMAIL_MAX_LENGTH,
@@ -30,6 +34,8 @@ const BEARER = 'Bearer ';
 const TOKEN_MAX_LENGTH = 8192;
 const USERNAME_INPUT_MAX_LENGTH = 64;
 const HISTORY_PAGE_SIZE = 30;
+const PORTRAIT_FILE = /^\d{1,12}\.webp$/;
+const PORTRAIT_CACHE_SECONDS = 7 * 24 * 60 * 60;
 
 export interface AppDependencies {
   database: Database;
@@ -156,6 +162,23 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
 
   app.get(`${API_PREFIX}/me`, (request): AccountResponse => ({ account: accounts.account(requireSession(request).user) }));
+
+  app.get<{ Params: { file: string } }>(`${API_PREFIX}/portraits/:file`, async (request, reply) => {
+    const { file } = request.params;
+    if (!PORTRAIT_FILE.test(file)) {
+      throw new ApiError('not-found');
+    }
+    const path = join(config.portraitsPath, file);
+    const details = await stat(path).catch(() => null);
+    if (!details?.isFile()) {
+      throw new ApiError('not-found');
+    }
+    return reply
+      .header('Content-Type', 'image/webp')
+      .header('Content-Length', details.size)
+      .header('Cache-Control', `public, max-age=${PORTRAIT_CACHE_SECONDS}, immutable`)
+      .send(createReadStream(path));
+  });
 
   app.get(
     `${API_PREFIX}/matches`,
