@@ -128,6 +128,16 @@ export function rareAnswersStatement(
   };
 }
 
+export function answerCountStatement(market: string, row: Header, column: Header, minimumFame: number): Statement {
+  const rowCondition = headerCondition(row, 'f.player_id');
+  const columnCondition = headerCondition(column, 'f.player_id');
+  return {
+    sql: `SELECT COUNT(*) AS total FROM player_fame f
+          WHERE f.market = ? AND f.fame >= ? AND ${rowCondition.sql} AND ${columnCondition.sql}`,
+    parameters: [market, minimumFame, rowCondition.parameter, columnCondition.parameter],
+  };
+}
+
 export function fameStatement(market: string, footballerId: number): Statement {
   return {
     sql: 'SELECT COALESCE((SELECT fame FROM player_fame WHERE market = ? AND player_id = ?), 0) AS fame',

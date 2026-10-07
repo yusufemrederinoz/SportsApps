@@ -1,4 +1,5 @@
 export * from './accounts';
+export * from './auction';
 export * from './chain';
 export * from './draft';
 export * from './duel';
