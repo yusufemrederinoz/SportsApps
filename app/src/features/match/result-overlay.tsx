@@ -80,7 +80,8 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const color = TONE_COLORS[tone];
-  const reward = use(MatchRewardContext);
+  const outcome = use(MatchRewardContext);
+  const reward = outcome === 'unranked' ? null : outcome;
   const levelUp = reward !== null && reward.level > reward.previousLevel;
 
   return (
@@ -132,6 +133,16 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
             ) : null}
           </Animated.View>
         ) : null}
+        {outcome === 'unranked' ? (
+          <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)} style={styles.unranked}>
+            <ThemedText type="label" themeColor="textSecondary">
+              {uppercase(t('reward.unranked'))}
+            </ThemedText>
+            <ThemedText type="small" themeColor="textSecondary" style={styles.centered}>
+              {t('reward.unrankedHint')}
+            </ThemedText>
+          </Animated.View>
+        ) : null}
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.cinematic)} style={styles.actions}>
           <ActionButton label={playAgainLabel} onPress={onPlayAgain} />
           <ActionButton label={homeLabel} onPress={onHome} variant="secondary" />
@@ -179,6 +190,13 @@ const styles = StyleSheet.create({
   reward: {
     alignItems: 'center',
     gap: Spacing.one,
+  },
+  unranked: {
+    alignItems: 'center',
+    gap: Spacing.half,
+  },
+  centered: {
+    textAlign: 'center',
   },
   rewardRow: {
     flexDirection: 'row',

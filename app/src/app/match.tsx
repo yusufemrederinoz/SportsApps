@@ -55,7 +55,7 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
   const resultTitle = !result?.winner ? t('match.draw') : t(result.winner === BOT_SIDE ? 'match.youLose' : 'match.youWin');
 
   return (
-    <>
+    <MatchRewardContext value="unranked">
       <MatchView
         gridView={setup.gridView}
         marketCode={setup.market.code}
@@ -74,7 +74,7 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
         onQuit={() => router.back()}
       />
       {leaveDialog}
-    </>
+    </MatchRewardContext>
   );
 }
 
@@ -199,7 +199,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   };
 
   return (
-    <MatchRewardContext value={online.reward}>
+    <MatchRewardContext value={entry.kind === 'queue' ? online.reward : 'unranked'}>
       <JokerContext value={jokers}>
         {content()}
         {leaveDialog}
