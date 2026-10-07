@@ -1,3 +1,4 @@
+import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
 
 export const PLAY_PATH = '/play';
@@ -8,7 +9,7 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
-export const GAME_IDS = ['grid', 'duel'] as const;
+export const GAME_IDS = ['grid', 'duel', 'draft'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
@@ -49,16 +50,18 @@ export interface MatchSnapshot {
   opponentConnected: boolean;
 }
 
-export interface SessionSnapshot {
+export type GameView = { game: 'duel'; view: DuelView } | { game: 'draft'; view: DraftView };
+
+export type GameAction = DuelAction | DraftAction;
+
+export type SessionSnapshot = GameView & {
   matchId: string;
-  game: 'duel';
   market: string;
   difficulty: PlayDifficulty;
   side: PlaySide;
   usernames: Record<PlaySide, string>;
   opponentConnected: boolean;
-  view: DuelView;
-}
+};
 
 export type PlayErrorCode =
   | 'unauthorized'
@@ -82,7 +85,7 @@ export type ClientMessage =
   | { type: 'join-room'; code: string }
   | { type: 'cancel' }
   | { type: 'answer'; matchId: string; turnNumber: number; cell: PlayCell; footballerId: number }
-  | { type: 'act'; matchId: string; action: DuelAction }
+  | { type: 'act'; matchId: string; action: GameAction }
   | { type: 'leave'; matchId: string }
   | { type: 'ping' };
 
@@ -93,7 +96,7 @@ export type ServerMessage =
   | { type: 'idle' }
   | { type: 'match'; match: MatchSnapshot }
   | { type: 'session'; session: SessionSnapshot }
-  | { type: 'view'; matchId: string; view: DuelView }
+  | ({ type: 'view'; matchId: string } & GameView)
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
   | { type: 'finished'; matchId: string; result: PlayResult }
   | { type: 'opponent'; matchId: string; connected: boolean }
