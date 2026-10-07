@@ -19,7 +19,7 @@ const BOT_WAIT = { minimum: 4000, maximum: 4000 };
 const TIMING: CareerTiming = { ...DEFAULT_CAREER_TIMING, botThinkMilliseconds: { minimum: 2000, maximum: 2000 } };
 const TURN_TIMEOUT = TIMING.turnMilliseconds + TURN_GRACE_MILLISECONDS;
 const CANDIDATES = [11, 12, 13, 14, 15, 16];
-const clubsOf = (id: number) => (id === 16 ? 2 : 4);
+const clubsOf = (id: number) => (id === 16 ? 2 : id === 15 ? 9 : 4);
 
 const library: CareerLibrary = {
   careerCandidates: (market) => (market === 'tr' ? CANDIDATES : []),
@@ -122,10 +122,10 @@ afterEach(() => {
 });
 
 describe('career path setup', () => {
-  it('only picks footballers with at least three clubs', () => {
+  it('only picks footballers with three to eight clubs', () => {
     const mysteries = chooseMysteries(library, 'tr', 2, () => 0);
     expect(mysteries).toHaveLength(4);
-    expect(mysteries.every((mystery) => mystery.path.length >= 3)).toBe(true);
+    expect(mysteries.every((mystery) => mystery.path.length >= 3 && mystery.path.length <= 8)).toBe(true);
   });
 
   it('makes the bot surer as clues open and on harder levels', () => {

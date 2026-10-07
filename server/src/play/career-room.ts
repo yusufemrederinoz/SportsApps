@@ -29,6 +29,7 @@ import { TURN_GRACE_MILLISECONDS } from './room';
 const SECOND = 1000;
 const ROUNDS = 4;
 const MINIMUM_CLUBS = 3;
+const MAXIMUM_CLUBS = 8;
 const CANDIDATES = 300;
 const DECOYS = 20;
 const DECOY_FAME = 40;
@@ -85,7 +86,7 @@ export function chooseMysteries(
   const chosen: Mystery[] = [];
   for (const footballerId of candidates) {
     const path = library.careerPath(footballerId);
-    if (path.length >= MINIMUM_CLUBS) {
+    if (path.length >= MINIMUM_CLUBS && path.length <= MAXIMUM_CLUBS) {
       chosen.push({ footballerId, path });
     }
     if (chosen.length === ROUNDS) {
