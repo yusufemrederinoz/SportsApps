@@ -549,6 +549,16 @@ Uygulama: her online maçta skorun altında joker çubuğu (XOX'ta arama pencere
 
 Doğrulama: 180 sunucu ve 92 uygulama testi; emülatörde puanlı Kariyer Yolu maçında "Uyruk: İngiltere" ve "Mevki: Forvet · 2000 doğumlu" (hak 0'a indi, gol 16'dan 10'a düştü), puanlı XOX maçında arama penceresinde "+15 saniye eklendi" ve "İpucu: L. P. · 1994". Emülatörde açılan bilginin bir sonraki futbolcuda da kalacağı görüldü; bilgi o tur ya da soruya bağlandı.
 
+### Lider tablosu ve günün bulmacası
+
+Seçenekli sorularla verilen kararlar: lider tablosu haftalık ve tüm zamanlar; bulmacada 9 hak ve nadirlik puanı; bitirene 2 gol, 9/9 yapana +3 gol, günün sıralaması ayrı.
+
+Sunucu: `GET /leaderboard`, `GET /puzzle`, `POST /puzzle/guess`, `GET /puzzle/ranking`; bulmaca tabloları (`puzzle_plays`, `puzzle_answers`); gün ve hafta sınırları saat dilimine göre. Puan formülü ilk çözeni cezalandırmayacak biçimde seçildi: hücreyi tek başına dolduran 100 alır. Emülatörde bakarken görülen bir hata düzeltildi: bulmacayı yalnızca açmak "oynadı" kaydı açıyordu ve ana ekrandan bakan herkes sıralamaya 0 puanla giriyordu; kayıt artık ilk tahminde açılıyor.
+
+Uygulama: ana ekranda bulmaca ve lider tablosu kutucukları; lider tablosu ekranı (dönem, genel ve oyun seçimi, ilk üç için madalya renkleri, kendi sıran); bulmaca ekranı (XOX tahtası, dolu kartta aynı cevabı verenlerin oranı, hak noktaları, bitiş özeti, gol ödülü, paylaşma, günün sıralaması). Arama penceresi artık saatsiz de açılabiliyor.
+
+Doğrulama: 189 sunucu ve 93 uygulama testi; geliştirme sunucusunda gerçek veriyle uçlar; emülatörde ana ekran kutucukları, bulmacada Bayern Münih × Real Madrid için Toni Kroos ("%100", 100 puan), hakların bitmesiyle bitiş özeti ("+2 gol kazandın"), günün sıralaması ve haftalık lider tablosu.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -661,3 +671,9 @@ Doğrulama: 180 sunucu ve 92 uygulama testi; emülatörde puanlı Kariyer Yolu m
 | `516da65` | 7 Ekim | Kart Düellosu ve XOX jokerleri |
 | `d273bf6` | 7 Ekim | Yeniden bağlanınca gönderilen jokerlerin işaretlenmesi |
 | `26088cb` | 7 Ekim | Uygulamada joker çubuğu |
+| `708e829` | 7 Ekim | Belgeler: jokerler |
+| `e277c84` | 7 Ekim | Belgeler: bilinen eksiklerin güncellenmesi |
+| `84fc28d` | 7 Ekim | Lider tablosu ve bulmaca mesajları |
+| `cc86ef6` | 7 Ekim | Sunucuda lider tablosu ve günün bulmacası |
+| `dc701d6` | 7 Ekim | Bulmaca oyuncusunun ilk tahminde sayılması |
+| `bf93189` | 7 Ekim | Uygulamada lider tablosu ve bulmaca ekranları |

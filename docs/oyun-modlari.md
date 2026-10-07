@@ -42,6 +42,15 @@ Ne zaman kullanılabilir: sıra tabanlı modlarda kendi sıranda (Zincir, Hangis
 | Kariyer Yolu | Uyruk | Gizli futbolcunun uyruğu |
 | Kariyer Yolu | Mevki | Gizli futbolcunun mevkisi ve doğum yılı |
 
+## Günün bulmacası
+
+Kararlar (7 Ekim 2026): herkes aynı gün aynı XOX ızgarasını çözer (Türkiye pazarı, orta zorluktaki ızgaralardan güne göre seçilen biri). Online oynanır.
+
+- **Haklar.** 9 tahmin hakkı. Her tahmin bir hak götürür; yanlış tahmin ya da aynı futbolcuyu ikinci kez yazmak da. Dolu hücreye tahmin yapılamaz.
+- **Puan.** Her dolu hücre en çok 100 puan. Puan `100 − 100 × (aynı cevabı veren diğer kişi sayısı) / (o hücreye cevap veren herkes)` ile hesaplanır: hücreyi tek başına dolduran ya da kimsenin vermediği cevabı yazan 100 alır, herkesin verdiği cevap en az puanı getirir. İlk çözen cezalandırılmaz. Puanlar gün boyunca, başkaları oynadıkça değişebilir. En yüksek toplam 900.
+- **Bitiş ve ödül.** Haklar bitince ya da 9 hücre dolunca bulmaca biter. Bitirene 2 gol, 9/9 yapana ek 3 gol. Oyun puanını ve seviyeyi etkilemez.
+- **Sıralama ve paylaşma.** Günün sıralaması toplam puana göre (eşitlikte dolu hücre sayısı). Sonuç, dolu ve boş hücreleri gösteren bir kare dizisiyle paylaşılabilir. Bulmaca her gün Türkiye saatiyle 00.00'da değişir; numarası 1 Ekim 2026'dan sayılır.
+
 ## Modlar
 
 | Kimlik | Ekrandaki ad | Kaynak | Durum |

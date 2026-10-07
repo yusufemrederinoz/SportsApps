@@ -53,6 +53,8 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Golün kullanımı | Gol yalnızca maç içi jokerde harcanır. Her modun kendine özgü iki jokeri var; joker 3 gol, bir maçta en çok 2 joker. Puanlı maçlarda da kullanılabilir; kullanınca rakibe "Rakip joker kullandı" görünür. Liste [oyun-modlari.md](oyun-modlari.md) belgesinde |
 | Gol satın alma | Misafir hesap gol satın alamaz; önce hesap açar (misafirin golü cihaza bağlı). Paketler ve fiyatlar mağaza hazırlığında (Adım 8) belirlenecek |
 | Ödüllü reklam | İzlenen her reklam 2 gol, günde en çok 5 reklam (günde en çok 10 gol) |
+| Lider tablosu | Haftalık (her pazartesi 00.00'da sıfırlanır, o hafta puanlı maçlarda kazanılan puan) ve tüm zamanlar (puan). Genel ve oyun oyun; ilk 50 ve oyuncunun kendi sırası |
+| Günün bulmacası | Herkes aynı gün aynı XOX ızgarasını çözer; 9 tahmin hakkı, yanlış tahmin de hak götürür. Aynı cevabı ne kadar az kişi verdiyse o kadar puan. Bitirene 2 gol, 9/9 yapana +3 gol; günün sıralaması ayrı, oyun puanını etkilemez |
 | Maçtan çıkış | Süren maçtan çıkmadan önce onay istenir: "Maçı terk edersen mağlup sayılırsın". Android geri tuşu da aynı onayı açar |
 | Kopan bağlantı | Oyuncu 30 saniye içinde dönerse maç sürer, dönmezse hükmen kaybeder. Maçtan çıkan da hükmen kaybeder |
 | Arkadaş daveti | Beş karakterli oda kodu, on dakika geçerli |

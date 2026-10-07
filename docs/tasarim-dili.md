@@ -81,6 +81,9 @@ Kurallar:
 | Gol simgesi | Skia ile çizilmiş futbol topu (emoji değil). Gol miktarları altın renkle yazılır |
 | Günlük ödül penceresi | Dönerek gelen büyük top, altın "+3", "3. GÜN", yedi günlük seri kutuları (bugün altın dolu), "Topla" düğmesi; açılışta başarı titreşimi ve ses |
 | Onay penceresi | Karartılmış zemin üstünde metal levha: kırmızı başlık, açıklama, birincil "Maça devam et", ikincil "Maçı terk et". Güvenli seçenek birincildir |
+| Ana ekran kutucukları | Kahraman yazının altında iki yan yana kutucuk: "Günün bulmacası #7" (üstte altın çizgi, altında durum: "9 hak", "3/9 · 240 puan", "Bitti · 640 puan") ve "Lider tablosu" (neon çizgi) |
+| Lider tablosu satırı | Sıra dairesi (ilk üçte altın, gümüş, bronz), kullanıcı adı, koyu zeminde neon seviye etiketi ("SV 3"), sağda büyük puan. Oyuncunun kendi satırı neon çerçeveli; ilk 50'de değilse listenin altında "Senin sıran" başlığıyla durur |
+| Bulmaca ekranı | Başlık ve neon numara etiketi ("#7"), dokuz hak noktası (kalan haklar neon), altın puan; XOX tahtası; dolu kartın sağ üstünde aynı cevabı verenlerin oranı ("%33"). Bitince neon metal levhada büyük puan, "1/9 · Bugün 12 kişi oynadı", altın gol rozeti, "Sonucu paylaş" ve günün sıralaması |
 | Joker çubuğu | Skor tablosunun altında: solda "JOKER" ve kalan hak ("2 HAK", neon), yanında modun iki jokeri; her düğme altın çerçeveli, sağında küçük top ve fiyat ("3"). Kullanılamayan joker sönük. Altında açılan bilgi neon ("Uyruk: İngiltere"), rakibin jokeri altın satır, hata kırmızı. XOX'ta arama penceresinin altında, Kart Düellosu'nda elin altında durur |
 | Maç sonu ödülü | Sonuç ekranında skorun altında: yeşil ya da kırmızı "+25 PUAN", altın çerçeveli "+1" gol, "Bu oyundaki puanın"; seviye atlanınca eğik neon "Yeni seviye" damgası |
 | Zorluk seçici | Üç dilim; seçili olan volt dolgu ve ışıma |
