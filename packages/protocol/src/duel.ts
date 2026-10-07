@@ -21,6 +21,9 @@ export const DUEL_METRICS = [
 
 export type DuelMetric = (typeof DUEL_METRICS)[number];
 
+export const DUEL_PICK_SECONDS = 90;
+export const DUEL_PLAY_SECONDS = 20;
+
 export type MetricPreference = 'high' | 'low';
 
 export const METRIC_PREFERENCES: Readonly<Record<DuelMetric, MetricPreference>> = {

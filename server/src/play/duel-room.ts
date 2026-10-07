@@ -18,6 +18,8 @@ import {
 } from '@sportapps/game-core';
 import {
   DUEL_METRICS,
+  DUEL_PICK_SECONDS,
+  DUEL_PLAY_SECONDS,
   METRIC_PREFERENCES,
   type DuelConcept,
   type DuelMetric,
@@ -32,6 +34,7 @@ import { botLevelFor } from './bot';
 import { SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
+const SECOND = 1000;
 const POOL_FAME = 45;
 const POOL_SIZE = 60;
 const FALLBACK_METRICS: readonly DuelMetric[] = ['goals', 'appearances'];
@@ -48,8 +51,8 @@ export interface DuelTiming {
 }
 
 export const DEFAULT_DUEL_TIMING: DuelTiming = {
-  pickMilliseconds: 90000,
-  playMilliseconds: 20000,
+  pickMilliseconds: DUEL_PICK_SECONDS * SECOND,
+  playMilliseconds: DUEL_PLAY_SECONDS * SECOND,
   revealMilliseconds: 4500,
   botPickMilliseconds: { minimum: 9000, maximum: 26000 },
   botFollowMilliseconds: { minimum: 1500, maximum: 4000 },
