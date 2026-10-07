@@ -65,6 +65,43 @@ const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE matches ADD COLUMN game TEXT NOT NULL DEFAULT 'grid';
   `,
+  `
+  CREATE TABLE ratings (
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    game TEXT NOT NULL,
+    points INTEGER NOT NULL,
+    best_points INTEGER NOT NULL,
+    matches INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, game)
+  ) STRICT;
+  CREATE INDEX ratings_game ON ratings (game, points);
+  CREATE TABLE daily_rewards (
+    user_id TEXT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    streak INTEGER NOT NULL,
+    best_streak INTEGER NOT NULL,
+    last_day TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE TABLE wallets (
+    user_id TEXT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    goals INTEGER NOT NULL CHECK (goals >= 0),
+    updated_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE TABLE goal_ledger (
+    id INTEGER PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    amount INTEGER NOT NULL,
+    balance INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    reference TEXT,
+    created_at INTEGER NOT NULL,
+    UNIQUE (user_id, reason, reference)
+  ) STRICT;
+  CREATE INDEX goal_ledger_user ON goal_ledger (user_id, id);
+  ALTER TABLE matches ADD COLUMN x_points_change INTEGER;
+  ALTER TABLE matches ADD COLUMN o_points_change INTEGER;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
@@ -90,6 +127,9 @@ export function migrate(database: Database, now: number = Date.now()): void {
 }
 
 export function transaction<T>(database: Database, work: () => T): T {
+  if (database.isTransaction) {
+    return work();
+  }
   database.exec('BEGIN IMMEDIATE');
   try {
     const result = work();

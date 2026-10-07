@@ -5,15 +5,20 @@ import { join } from 'node:path';
 import {
   API_PREFIX,
   EMAIL_MAX_LENGTH,
+  GAME_IDS,
   PASSWORD_MAX_LENGTH,
   type AccountResponse,
   type ApiErrorResponse,
   type AuthResponse,
+  type DailyRewardResponse,
+  type GameId,
   type IdentityProvider,
   type IdentitySignInRequest,
   type LoginRequest,
   type MatchHistoryResponse,
+  type ProgressResponse,
   type RegisterRequest,
+  type WalletResponse,
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
 
@@ -35,6 +40,7 @@ import { createMatchHistory } from '../play/history';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
 import { DEFAULT_TOP_TEN_TIMING, createTopTenRoomFactory, type TopTenTiming } from '../play/top-ten-room';
+import { createProgress } from '../progress/store';
 import { ApiError } from './errors';
 import { createRateLimiter } from './rate-limit';
 
@@ -82,6 +88,17 @@ const REGISTER = body({
 });
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
 const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
+const HISTORY_QUERY = {
+  querystring: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      game: { type: 'string', enum: [...GAME_IDS] },
+      before: { type: 'integer', minimum: 0 },
+      limit: { type: 'integer', minimum: 1, maximum: HISTORY_PAGE_SIZE },
+    },
+  },
+} as const;
 
 function errorBody(error: ApiError): ApiErrorResponse {
   return { error: { code: error.code } };
@@ -98,6 +115,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
   const history = createMatchHistory(database);
+  const progress = createProgress(database, { now, timeZone: config.timeZone });
 
   if (dependencies.football) {
     const { football } = dependencies;
@@ -131,6 +149,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       },
       hasMarket: football.hasMarket,
       history,
+      progress,
     });
     registerPlayGateway(app, { accounts, lobby, dataVersion: football.dataVersion, now });
     app.addHook('onClose', () => lobby.shutdown());
@@ -224,10 +243,23 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       .send(createReadStream(path));
   });
 
-  app.get(
+  app.get<{ Querystring: { game?: GameId; before?: number; limit?: number } }>(
     `${API_PREFIX}/matches`,
-    (request): MatchHistoryResponse => ({ matches: history.list(requireSession(request).user.id, HISTORY_PAGE_SIZE) }),
+    { schema: HISTORY_QUERY },
+    (request): MatchHistoryResponse => {
+      const { game, before, limit = HISTORY_PAGE_SIZE } = request.query;
+      const matches = history.list(requireSession(request).user.id, { game, before, limit: limit + 1 });
+      return { matches: matches.slice(0, limit), more: matches.length > limit };
+    },
   );
+
+  app.get(`${API_PREFIX}/progress`, (request): ProgressResponse => ({
+    progress: progress.progress(requireSession(request).user.id),
+  }));
+
+  app.post(`${API_PREFIX}/daily`, (request): DailyRewardResponse => progress.claimDaily(requireSession(request).user.id));
+
+  app.get(`${API_PREFIX}/wallet`, (request): WalletResponse => progress.wallet(requireSession(request).user.id));
 
   return app;
 }

@@ -1,5 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
+import { DEFAULT_TIME_ZONE } from './progress/points';
+
 export interface ServerConfig {
   host: string;
   port: number;
@@ -9,6 +11,7 @@ export interface ServerConfig {
   sessionDays: number;
   googleClientIds: string[];
   appleClientIds: string[];
+  timeZone: string;
 }
 
 const DEFAULT_DATABASE_PATH = fileURLToPath(new URL('../data/sportapps.sqlite', import.meta.url));
@@ -37,5 +40,6 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): Server
     sessionDays: integer(environment.SESSION_DAYS, 90),
     googleClientIds: list(environment.GOOGLE_CLIENT_IDS),
     appleClientIds: list(environment.APPLE_CLIENT_IDS),
+    timeZone: environment.TIME_ZONE ?? DEFAULT_TIME_ZONE,
   };
 }

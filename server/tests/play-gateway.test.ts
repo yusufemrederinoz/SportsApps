@@ -33,6 +33,7 @@ const config: ServerConfig = {
   sessionDays: 90,
   googleClientIds: [],
   appleClientIds: [],
+  timeZone: 'Europe/Istanbul',
 };
 
 interface Client {

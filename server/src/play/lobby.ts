@@ -11,9 +11,11 @@ import {
   type PlayDifficulty,
   type PlayErrorCode,
   type PlayResult,
+  type PointsChange,
   type ServerMessage,
 } from '@sportapps/protocol';
 
+import type { Progress } from '../progress/store';
 import { createBotName } from './bot';
 import type { MatchHistory } from './history';
 import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type WaitRange } from './live-room';
@@ -22,6 +24,10 @@ const ADAPTATION_MATCHES = 5;
 const DIFFICULTIES: readonly number[] = [1, 2, 3];
 const DEFAULT_GAME: GameId = 'grid';
 const CHOSEN_BOT_NAME = 'Bot';
+const BOT_POINT_SPREAD = 60;
+const MATCH_WINDOW_BASE = 150;
+const MATCH_WINDOW_PER_SECOND = 75;
+const SECOND = 1000;
 
 export interface Connection {
   send(message: ServerMessage): void;
@@ -37,6 +43,7 @@ export interface LobbyOptions {
   games: Partial<Record<GameId, RoomFactory>>;
   hasMarket: (market: string) => boolean;
   history: MatchHistory;
+  progress?: Progress;
   now?: () => number;
   random?: () => number;
   isUsernameTaken?: (username: string) => boolean;
@@ -60,6 +67,8 @@ interface Member {
 
 interface QueueEntry {
   userId: string;
+  points: number;
+  since: number;
   botTimer: ReturnType<typeof setTimeout>;
 }
 
@@ -80,7 +89,7 @@ interface ActiveMatch {
 const IDLE: Status = { kind: 'idle' };
 
 export function createLobby(options: LobbyOptions) {
-  const { games, history } = options;
+  const { games, history, progress } = options;
   const now = options.now ?? Date.now;
   const random = options.random ?? Math.random;
   const isUsernameTaken = options.isUsernameTaken ?? (() => false);
@@ -155,11 +164,28 @@ export function createLobby(options: LobbyOptions) {
     }
   };
 
+  const settlePoints = (room: LiveRoom, result: PlayResult): Record<Side, PointsChange | null> => {
+    if (room.kind !== 'queue' || !progress) {
+      return { x: null, o: null };
+    }
+    try {
+      const { game, difficulty } = room.record();
+      return progress.settle({ id: room.id, game, difficulty, seats: room.seats }, result);
+    } catch (error) {
+      reportError(error);
+      return { x: null, o: null };
+    }
+  };
+
   const onFinished = (room: LiveRoom, result: PlayResult) => {
     const active = matches.get(room.id);
-    SIDES.forEach((side) => send(room.seats[side].userId, { type: 'finished', matchId: room.id, result }));
+    const changes = settlePoints(room, result);
+    SIDES.forEach((side) => {
+      const points = changes[side];
+      send(room.seats[side].userId, { type: 'finished', matchId: room.id, result, ...(points ? { points } : {}) });
+    });
     try {
-      history.record(room, result, room.finishedAt() ?? now());
+      history.record(room, result, room.finishedAt() ?? now(), { x: changes.x?.change ?? null, o: changes.o?.change ?? null });
     } catch (error) {
       reportError(error);
     }
@@ -186,11 +212,20 @@ export function createLobby(options: LobbyOptions) {
     const firstSide: Side = random() < 0.5 ? 'x' : 'o';
     const taken = (username: string) =>
       username.toLowerCase() === first.username.toLowerCase() || isUsernameTaken(username);
+    const ranked = kind === 'queue' && progress !== undefined;
+    const pointsOf = (player: Player) => (ranked ? progress.pointsOf(player.id, game) : 0);
+    const firstPoints = pointsOf(first);
+    const botPoints = () =>
+      ranked ? Math.max(0, Math.round(firstPoints + (random() * 2 - 1) * BOT_POINT_SPREAD)) : 0;
     const rival: Seat = second
-      ? { userId: second.id, username: second.username }
-      : { userId: null, username: kind === 'bot' ? CHOSEN_BOT_NAME : createBotName(market, taken, random) };
+      ? { userId: second.id, username: second.username, points: pointsOf(second) }
+      : {
+          userId: null,
+          username: kind === 'bot' ? CHOSEN_BOT_NAME : createBotName(market, taken, random),
+          points: botPoints(),
+        };
     const seats = {
-      [firstSide]: { userId: first.id, username: first.username },
+      [firstSide]: { userId: first.id, username: first.username, points: firstPoints },
       [opponentOf(firstSide)]: rival,
     } as Record<Side, Seat>;
     const room =
@@ -243,10 +278,20 @@ export function createLobby(options: LobbyOptions) {
   const isSetup = (game: GameId, market: string, difficulty: number): difficulty is PlayDifficulty =>
     games[game] !== undefined && options.hasMarket(market) && DIFFICULTIES.includes(difficulty);
 
+  const matchWindow = (entry: QueueEntry) =>
+    MATCH_WINDOW_BASE + (MATCH_WINDOW_PER_SECOND * Math.max(0, now() - entry.since)) / SECOND;
+
   const enqueue = (member: Member, game: GameId, market: string, difficulty: PlayDifficulty) => {
     const key = `${game}:${market}:${difficulty}`;
     const entries = queues.get(key) ?? [];
-    const waiting = entries.find((entry) => entry.userId !== member.player.id && isConnected(entry.userId));
+    const points = progress?.pointsOf(member.player.id, game) ?? 0;
+    const distance = (entry: QueueEntry) => Math.abs(entry.points - points);
+    const waiting = entries
+      .filter(
+        (entry) =>
+          entry.userId !== member.player.id && isConnected(entry.userId) && distance(entry) <= matchWindow(entry),
+      )
+      .sort((first, second) => distance(first) - distance(second))[0];
     const rival = waiting ? members.get(waiting.userId) : undefined;
     if (waiting && rival) {
       leaveQueue(waiting.userId, key);
@@ -261,7 +306,7 @@ export function createLobby(options: LobbyOptions) {
         startMatch('queue', game, market, difficulty, current.player, null);
       }
     }, wait);
-    queues.set(key, [...entries, { userId: member.player.id, botTimer }]);
+    queues.set(key, [...entries, { userId: member.player.id, points, since: now(), botTimer }]);
     member.status = { kind: 'queued', key };
     send(member.player.id, { type: 'queued' });
   };

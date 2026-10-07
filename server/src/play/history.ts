@@ -1,6 +1,7 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import type {
   GameId,
+  MatchKind,
   MatchOutcome,
   MatchSummary,
   PlayDifficulty,
@@ -9,12 +10,20 @@ import type {
 } from '@sportapps/protocol';
 
 import type { Database } from '../database';
+import { outcomeFor } from '../progress/store';
 import type { LiveRoom } from './live-room';
 
 const HISTORY_LIMIT = 50;
 
+export interface HistoryQuery {
+  game?: GameId;
+  before?: number;
+  limit?: number;
+}
+
 interface MatchRow {
   id: string;
+  kind: string;
   game: string;
   difficulty: number;
   x_user_id: string | null;
@@ -24,34 +33,43 @@ interface MatchRow {
   reason: string;
   x_cells: number;
   o_cells: number;
+  x_points_change: number | null;
+  o_points_change: number | null;
+  goals_earned: number;
   finished_at: number;
-}
-
-function outcomeFor(side: Side, winner: string | null): MatchOutcome {
-  if (winner === null) {
-    return 'draw';
-  }
-  return winner === side ? 'win' : 'loss';
 }
 
 export function createMatchHistory(database: Database) {
   const insert = database.prepare(
     `INSERT INTO matches (
        id, kind, game, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username,
-       winner, reason, x_cells, o_cells, move_count, started_at, finished_at
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       winner, reason, x_cells, o_cells, move_count, started_at, finished_at, x_points_change, o_points_change
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   );
   const selectForUser = database.prepare(
-    `SELECT id, game, difficulty, x_user_id, x_username, o_username, winner, reason, x_cells, o_cells, finished_at
-     FROM matches WHERE x_user_id = ? OR o_user_id = ?
-     ORDER BY finished_at DESC, id LIMIT ?`,
+    `SELECT id, kind, game, difficulty, x_user_id, x_username, o_username, winner, reason, x_cells, o_cells,
+       x_points_change, o_points_change, finished_at,
+       (SELECT COALESCE(SUM(amount), 0) FROM goal_ledger
+        WHERE goal_ledger.user_id = ? AND reason = 'win' AND reference = matches.id) AS goals_earned
+     FROM matches
+     WHERE (x_user_id = ? OR o_user_id = ?) AND (? IS NULL OR game = ?) AND (? IS NULL OR finished_at < ?)
+     ORDER BY finished_at DESC, rowid DESC LIMIT ?`,
   );
 
-  const listRows = (userId: string, limit: number) =>
-    selectForUser.all(userId, userId, Math.max(1, Math.min(HISTORY_LIMIT, limit))) as unknown as MatchRow[];
+  const listRows = (userId: string, query: HistoryQuery) => {
+    const game = query.game ?? null;
+    const before = query.before ?? null;
+    const limit = Math.max(1, Math.min(HISTORY_LIMIT, query.limit ?? HISTORY_LIMIT));
+    return selectForUser.all(userId, userId, userId, game, game, before, before, limit) as unknown as MatchRow[];
+  };
 
   return {
-    record(room: LiveRoom, result: PlayResult, finishedAt: number): void {
+    record(
+      room: LiveRoom,
+      result: PlayResult,
+      finishedAt: number,
+      pointsChanges: Record<Side, number | null> = { x: null, o: null },
+    ): void {
       const details = room.record();
       insert.run(
         room.id,
@@ -71,18 +89,22 @@ export function createMatchHistory(database: Database) {
         details.moveCount,
         details.startedAt,
         finishedAt,
+        pointsChanges.x,
+        pointsChanges.o,
       );
     },
 
-    list(userId: string, limit: number = HISTORY_LIMIT): MatchSummary[] {
-      return listRows(userId, limit).map((row) => {
+    list(userId: string, query: HistoryQuery = {}): MatchSummary[] {
+      return listRows(userId, query).map((row) => {
         const side: Side = row.x_user_id === userId ? 'x' : 'o';
         const other = opponentOf(side);
         const cells = { x: row.x_cells, o: row.o_cells };
         const usernames = { x: row.x_username, o: row.o_username };
+        const changes = { x: row.x_points_change, o: row.o_points_change };
         return {
           id: row.id,
           game: row.game as GameId,
+          kind: row.kind as MatchKind,
           finishedAt: row.finished_at,
           difficulty: row.difficulty as PlayDifficulty,
           opponent: usernames[other],
@@ -90,12 +112,14 @@ export function createMatchHistory(database: Database) {
           reason: row.reason as PlayFinishReason,
           ownCells: cells[side],
           opponentCells: cells[other],
+          pointsChange: changes[side],
+          goalsEarned: row.goals_earned,
         };
       });
     },
 
     recentOutcomes(userId: string, limit: number): MatchOutcome[] {
-      return listRows(userId, limit).map((row) => outcomeFor(row.x_user_id === userId ? 'x' : 'o', row.winner));
+      return listRows(userId, { limit }).map((row) => outcomeFor(row.x_user_id === userId ? 'x' : 'o', row.winner));
     },
   };
 }

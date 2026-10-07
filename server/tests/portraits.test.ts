@@ -27,6 +27,7 @@ beforeAll(async () => {
     sessionDays: 90,
     googleClientIds: [],
     appleClientIds: [],
+    timeZone: 'Europe/Istanbul',
   };
   app = buildApp({ database: openDatabase(':memory:'), config });
   await app.ready();

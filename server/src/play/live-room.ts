@@ -2,6 +2,7 @@ import type { Side } from '@sportapps/game-core';
 import type {
   ClientMessage,
   GameId,
+  MatchKind,
   MatchOutcome,
   PlayDifficulty,
   PlayErrorCode,
@@ -9,7 +10,7 @@ import type {
   ServerMessage,
 } from '@sportapps/protocol';
 
-export type MatchKind = 'queue' | 'bot' | 'room';
+export type { MatchKind };
 
 export interface WaitRange {
   minimum: number;
@@ -19,6 +20,7 @@ export interface WaitRange {
 export interface Seat {
   userId: string | null;
   username: string;
+  points: number;
 }
 
 export interface MatchRecord {
