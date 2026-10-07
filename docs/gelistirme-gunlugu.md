@@ -559,6 +559,25 @@ Uygulama: ana ekranda bulmaca ve lider tablosu kutucukları; lider tablosu ekran
 
 Doğrulama: 189 sunucu ve 93 uygulama testi; geliştirme sunucusunda gerçek veriyle uçlar; emülatörde ana ekran kutucukları, bulmacada Bayern Münih × Real Madrid için Toni Kroos ("%100", 100 puan), hakların bitmesiyle bitiş özeti ("+2 gol kazandın"), günün sıralaması ve haftalık lider tablosu.
 
+### Uçtan uca kullanıcı testi
+
+Yeni bir hesapla (test_kaan) emülatörde bütün uygulama kullanıcı gözüyle denendi: tanıtım, karşılama, kayıt ve giriş, günlük ödül, dokuz modun bota karşı maçı, puanlı online maç, betikle bağlanan ikinci oyuncuyla arkadaş odası, geçmiş, lider tablosu, günün bulmacası (bitiş ve paylaşma dahil), misafirin aynı hesaba dönmesi, sunucu kapalıyken maç kurma ve "Tekrar dene". 25 bulgu not edildi; uygulama içinde çözülebilenler düzeltildi:
+
+- **Kesilen eğik yazılar.** Android, eğik başlık yazı tipini içeriğe göre genişleyen kutularda dar ölçüyor; son kelime görünmeyen ikinci satıra düşüyordu ("SV 1" yerine "SV", "İLK 10" yerine "İLK", "42 – 7" yerine "42 –"). `ThemedText` bu yazı tipinde boşluk içeren metnin sonuna bir boşluk ekleyerek pay bırakıyor.
+- **Oyuncu hep solda.** Oyuncu O olduğunda skor tablosunda sağda duruyor, sonuç ekranı "2 – 1 KAYBETTİN" gibi rakibin skoruyla başlıyordu. Bütün modlarda oyuncunun paneli, kartı, kadrosu, cevabı ve canları solda; sonuç skoru oyuncunun skoruyla başlıyor (geçmiş ekranıyla aynı).
+- **Puansız maç notu.** Bota karşı ve arkadaş maçlarının sonucunda "Puansız maç · Puan ve gol yalnızca Online maç eşleşmelerinde kazanılır" yazıyor.
+- **Açık Artırma.** İspatta her doğru isimden sonra arama penceresi kapanıyordu; artık ispat boyunca açık kalıyor ve doğru/yanlış isimler pencerenin altında da görünüyor. Kurala süre dolunca "Say bakalım" denmiş sayıldığı eklendi.
+- **İlk 10.** Joker çubuğu eklenince durum satırı (isabet, ıska, sıra) listenin altında sıkışıp görünmez olmuştu; liste artık küçülüp kaydırılıyor, uzun kulüp adlı başlık üç satıra sığıyor.
+- **Günlük ödül.** Ödül yalnızca cihazın günü değişince ve ana ekran odaklanınca isteniyordu; uygulama arka plandan dönünce ya da aynı oturumda hesap değişince hiç istenmiyordu. Ana ekran her görünüşünde ve uygulama öne geldiğinde sunucuya soruyor; sunucu günde bir kez veriyor.
+- **Sunucuya ulaşılamayınca.** "Bağlanıyor" ekranı bir dakikadan uzun bekliyordu. Hiç bağlanılamamışsa iki kısa denemeden sonra vazgeçiliyor; 8 saniyede hazır olmayan bağlantı kopmuş sayılıyor.
+- **Arkadaş odası.** Maç sonunda "Ana sayfa" arkadaş ekranına dönüyordu, artık ana ekrana gidiyor. Oda kodu ekranında "Kodu paylaş" düğmesi ve odanın oyunu var.
+- **Arama penceresi.** Giriş alanına açılışta güvenilir biçimde odaklanıyor, seçimden sonra odak kalıyor; pencere süre dolup kapanınca klavye ekranda kalmıyor.
+- **Küçükler.** XOX'ta botun doğru cevabı yeşil "DOĞRU!" yerine altın "RAKİP BİLDİ"; giriş ve kayıt formlarında yazmaya başlayınca eski hata kayboluyor; "Şifre aşağıdaki kurallara uymuyor" yerine "Şifre kurallara uymuyor" (kurallar üstte); hesap ekranında "Henüz maç yok"; gol 3'ün altına inince joker çubuğunun altında "Joker 3 gol, sende 2 gol var".
+
+Düzeltilmeyenler ve karar bekleyenler [teknik-mimari.md](teknik-mimari.md) "Bilinen eksikler" bölümünde: tanıtım ve karşılama yalnızca XOX'u anlatıyor, 15 gol hediyesi açıklanmıyor, Kart Düellosu'nda iki elde aynı futbolcu olabiliyor, bazı çizimlerde yüz başka birine dönüşmüş (Arda Güler).
+
+Doğrulama: 189 sunucu ve 97 uygulama testi; düzeltmeler emülatörde tek tek denendi (İlk 10'da "LIONEL MESSI LİSTEDE YOK" satırı, Açık Artırma'da açık kalan pencere ve üstü çizili isimler, arkadaş maçından ana ekrana dönüş, ikinci günün +2 gol penceresi, joker uyarısı).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -677,3 +696,19 @@ Doğrulama: 189 sunucu ve 93 uygulama testi; geliştirme sunucusunda gerçek ver
 | `cc86ef6` | 7 Ekim | Sunucuda lider tablosu ve günün bulmacası |
 | `dc701d6` | 7 Ekim | Bulmaca oyuncusunun ilk tahminde sayılması |
 | `bf93189` | 7 Ekim | Uygulamada lider tablosu ve bulmaca ekranları |
+| `923b92f` | 7 Ekim | Belgeler: lider tablosu ve günün bulmacası |
+| `b9014c6` | 8 Ekim | Eğik başlık yazısında son kelimenin satırda kalması |
+| `605b402` | 8 Ekim | Oyuncunun her modda solda, skorunun önde olması |
+| `3fe58f9` | 8 Ekim | Puansız maç notu |
+| `26f1747` | 8 Ekim | Açık Artırma ispatında açık kalan arama ve süre kuralı |
+| `b6af49d` | 8 Ekim | İlk 10'da görünür durum satırı ve uzun başlık |
+| `ec79b09` | 8 Ekim | Günlük ödülün her ana ekran açılışında ve uygulama öne gelince istenmesi |
+| `9bab6ef` | 8 Ekim | Sunucuya ilk bağlantıda erken vazgeçme |
+| `744474f` | 8 Ekim | Arkadaş maçından ana ekrana dönüş |
+| `4e627bd` | 8 Ekim | Puansız maç notunda mod adı |
+| `e880f9d` | 8 Ekim | Arama penceresinde odak ve klavye |
+| `2636b4c` | 8 Ekim | XOX'ta rakibin cevabının rakibe ait gösterilmesi |
+| `0d106c5` | 8 Ekim | Giriş formlarında eski hatanın silinmesi, şifre kuralı yazısı |
+| `b887c09` | 8 Ekim | Boş maç geçmişi yazısı |
+| `9543b57` | 8 Ekim | Oda kodunu paylaşma ve odanın oyunu |
+| `214360d` | 8 Ekim | Gol yetmeyince joker uyarısı |

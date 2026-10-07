@@ -226,6 +226,7 @@ Yapılanlar:
 Kalanlar:
 
 - En tanınmış oyuncuların görsellerini elle gözden geçirmek; kötü çıkanları silmek.
+- Kaynak yüz ile çizim arasında otomatik kimlik karşılaştırması; yüzü başka birine dönen çizimleri (8 Ekim testinde Arda Güler, Arthur) yeniden üretmek ya da çıkarmak.
 - Fotoğrafı elenen tanınmış oyuncular için başka bir Commons fotoğrafı seçebilmek (elle düzeltme tablosu).
 - Görselleri bir depolama servisine taşımak (barındırma kararıyla birlikte).
 - Kart koleksiyonu.
@@ -252,6 +253,7 @@ Kalanlar:
 - Bot zorluklarının mod mod gözden geçirilmesi (şu an kurallar tahmine dayalı).
 - Kart Düellosu ve diğer modlar için internetsiz (bota karşı) oyun.
 - Turnuva katılımı verisi ("Dünya Kupası'nda oynamış") ve transfer yönü konseptleri.
+- Tanıtım ve karşılamanın dokuz modu, puan ve seviyeyi, golü, jokerleri ve günün bulmacasını anlatacak biçimde yenilenmesi (8 Ekim uçtan uca testinden).
 
 Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; her biri için kural testleri, sunucu testleri ve emülatörde baştan sona bir maç vardır.
 
