@@ -52,7 +52,9 @@
     "titleAccentDuel": "Duel",
     "subtitleDuel": "Pick seven cards. Each round, the better card for the question scores.",
     "titleAccentDraft": "Draft",
-    "subtitleDraft": "Each round reveals a club. Add a footballer who played there to your lineup; the lineup with more career assists wins."
+    "subtitleDraft": "Each round reveals a club. Add a footballer who played there to your lineup; the lineup with more career assists wins.",
+    "titleAccentHigher": "Which?",
+    "subtitleHigher": "Two footballers, one question: whose goals, assists, value or age come out on top? Keep answering right to keep your turn."
   },
   "difficulty": {
     "easy": "Easy",
@@ -175,7 +177,8 @@
   "games": {
     "grid": "XOX",
     "duel": "Card Duel",
-    "draft": "Lineup Draft"
+    "draft": "Lineup Draft",
+    "higher": "Higher or Lower"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -250,5 +253,24 @@
     "emptySlot": "Empty {{position}} slot",
     "slotLabel": "{{position}}: {{name}}, {{value}} assists",
     "byScore": "Lineups complete"
+  },
+  "higher": {
+    "inning": "Inning {{inning}}/{{total}}",
+    "questionGoals": "Who scored more career goals?",
+    "questionAssists": "Who made more career assists?",
+    "questionAppearances": "Who played more career matches?",
+    "questionMarketValue": "Whose peak market value was higher?",
+    "questionCaps": "Who has more international caps?",
+    "questionOlder": "Who is older?",
+    "questionYounger": "Who is younger?",
+    "streak": "Streak",
+    "yourTurn": "Your turn: tap a card",
+    "opponentTurn": "Your opponent's turn",
+    "correctYou": "Correct! +1",
+    "correctOpponent": "Your opponent got it",
+    "wrongYou": "Wrong",
+    "wrongOpponent": "Your opponent missed",
+    "timeout": "Time is up",
+    "byScore": "All innings played"
   }
 }

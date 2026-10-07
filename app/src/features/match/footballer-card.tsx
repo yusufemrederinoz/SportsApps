@@ -47,9 +47,10 @@ interface FootballerCardProps {
   side: Side;
   size: number;
   emphasis: CardEmphasis;
+  watermark?: boolean;
 }
 
-export function FootballerCard({ footballer, side, size, emphasis }: FootballerCardProps) {
+export function FootballerCard({ footballer, side, size, emphasis, watermark = true }: FootballerCardProps) {
   const { t } = useTranslation();
   const finish = Finishes[side];
   const shine = useSharedValue(0);
@@ -103,9 +104,11 @@ export function FootballerCard({ footballer, side, size, emphasis }: FootballerC
           <Path path={path} style="stroke" strokeWidth={2} color={finish.light} />
         </Canvas>
         <View style={[styles.fill, styles.content]} pointerEvents="none">
-          <ThemedText style={[styles.watermark, { color: finish.ink, fontSize: size * 0.62, lineHeight: size * 0.66 }]}>
-            {side.toUpperCase()}
-          </ThemedText>
+          {watermark ? (
+            <ThemedText style={[styles.watermark, { color: finish.ink, fontSize: size * 0.62, lineHeight: size * 0.66 }]}>
+              {side.toUpperCase()}
+            </ThemedText>
+          ) : null}
           {portrait ? (
             <View style={[styles.portraitWindow, { height: bannerTop }]}>
               <Image

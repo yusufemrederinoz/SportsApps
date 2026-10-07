@@ -3,6 +3,7 @@ import type {
   DraftView,
   DuelView,
   GameAction,
+  HigherView,
   GameId,
   GameView,
   PlayErrorCode,
@@ -55,6 +56,7 @@ interface OnlineSessionBase {
 export type OnlineGame = OnlineSessionBase & GameView;
 export type OnlineDuel = OnlineSessionBase & { game: 'duel'; view: DuelView };
 export type OnlineDraft = OnlineSessionBase & { game: 'draft'; view: DraftView };
+export type OnlineHigher = OnlineSessionBase & { game: 'higher'; view: HigherView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [

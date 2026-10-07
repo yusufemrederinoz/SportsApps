@@ -52,7 +52,9 @@
     "titleAccentDuel": "Düello",
     "subtitleDuel": "Yedi kart seç. Her turda sorulan soruda kartı üstün gelen puanı alır.",
     "titleAccentDraft": "Kadro",
-    "subtitleDraft": "Her turda bir kulüp çıkar. O kulüpte oynamış bir futbolcuyu kadrona al; kariyer asist toplamı yüksek kadro kazanır."
+    "subtitleDraft": "Her turda bir kulüp çıkar. O kulüpte oynamış bir futbolcuyu kadrona al; kariyer asist toplamı yüksek kadro kazanır.",
+    "titleAccentHigher": "Hangisi?",
+    "subtitleHigher": "İki futbolcu, bir soru: golü, asisti, değeri ya da yaşı hangisinin üstün? Bildikçe sıra sende kalır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -175,7 +177,8 @@
   "games": {
     "grid": "XOX",
     "duel": "Kart Düellosu",
-    "draft": "Kadro Kur"
+    "draft": "Kadro Kur",
+    "higher": "Hangisi Yüksek"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -250,5 +253,24 @@
     "emptySlot": "Boş {{position}} yuvası",
     "slotLabel": "{{position}}: {{name}}, {{value}} asist",
     "byScore": "Kadrolar tamamlandı"
+  },
+  "higher": {
+    "inning": "El {{inning}}/{{total}}",
+    "questionGoals": "Kariyerinde kim daha çok gol attı?",
+    "questionAssists": "Kariyerinde kim daha çok asist yaptı?",
+    "questionAppearances": "Kariyerinde kim daha çok maça çıktı?",
+    "questionMarketValue": "Kimin en yüksek piyasa değeri daha büyük?",
+    "questionCaps": "Kim daha çok millî maça çıktı?",
+    "questionOlder": "Kim daha yaşlı?",
+    "questionYounger": "Kim daha genç?",
+    "streak": "Seri",
+    "yourTurn": "Sıra sende: kartına dokun",
+    "opponentTurn": "Sıra rakipte",
+    "correctYou": "Doğru! +1",
+    "correctOpponent": "Rakip bildi",
+    "wrongYou": "Yanlış",
+    "wrongOpponent": "Rakip bilemedi",
+    "timeout": "Süre doldu",
+    "byScore": "Bütün eller oynandı"
   }
 }

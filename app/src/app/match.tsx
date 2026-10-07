@@ -11,6 +11,7 @@ import { Spacing } from '@/constants/theme';
 import type { Difficulty } from '@/data/types';
 import { DraftMatchView } from '@/features/draft/draft-view';
 import { DuelMatchView } from '@/features/duel/duel-view';
+import { HigherMatchView } from '@/features/higher/higher-view';
 import { parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { MatchView } from '@/features/match/match-view';
@@ -84,6 +85,21 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     entry.kind === 'queue'
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
+
+  if (online.phase === 'playing' && live?.game === 'higher') {
+    return (
+      <HigherMatchView
+        higher={live}
+        secondsLeft={online.liveSecondsLeft}
+        canAct={online.canAct}
+        notice={notice}
+        playAgainLabel={playAgainLabel}
+        onAct={online.act}
+        onPlayAgain={playAgain}
+        onQuit={() => router.back()}
+      />
+    );
+  }
 
   if (online.phase === 'playing' && live?.game === 'draft') {
     return (
