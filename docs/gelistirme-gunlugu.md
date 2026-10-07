@@ -312,3 +312,4 @@ Doğrulama: 44 uygulama testi (giriş kararı için 4 yeni), tip denetimi, lint,
 | `0b2b056` | 7 Ekim | Hesap sunucusu: misafir, şifre, Google ve Apple doğrulaması |
 | `829de6d` | 7 Ekim | Uygulamada hesap istemcisi ve hesap ekranı |
 | `a00409b` | 7 Ekim | Giriş akışının yeniden yazılması: tanıtım, karşılama, ayrı hesaplar |
+| `d4e1dd0` | 7 Ekim | Açılışta takılmanın giderilmesi: ekran kapısı, hataya dayanıklı oturum yükleme |
