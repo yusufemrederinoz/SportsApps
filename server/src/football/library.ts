@@ -3,6 +3,8 @@ import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
 import {
+  chainCandidatesStatement,
+  chainSeedsStatement,
   clubConceptsStatement,
   comparablePlayersStatement,
   conceptMembersStatement,
@@ -22,6 +24,7 @@ import {
   metricRowsStatement,
   minimumFameStatement,
   nearMissesStatement,
+  sharedClubStatement,
   toGrid,
   type DraftCandidateRow,
   type DraftEntryRow,
@@ -38,6 +41,9 @@ const CONCEPT_FAME = 45;
 const CONCEPT_PLAYERS = 25;
 const DRAFT_FAME = 32;
 const DRAFT_PER_POSITION = 4;
+const CHAIN_SEED_FAME = 55;
+const CHAIN_SEED_CLUBS = 3;
+const CHAIN_SEEDS = 200;
 
 export interface FootballLibrary {
   readonly dataVersion: string;
@@ -52,6 +58,15 @@ export interface FootballLibrary {
   conceptMembers(concept: DuelConcept, market: string, footballerIds: readonly number[]): number[];
   metricRows(footballerIds: readonly number[]): MetricRow[];
   comparablePlayers(market: string, minimumFame: number, limit: number): number[];
+  chainSeeds(market: string): readonly number[];
+  sharedClub(market: string, firstId: number, secondId: number): number | null;
+  chainCandidates(
+    market: string,
+    footballerId: number,
+    excludedIds: readonly number[],
+    minimumFame: number,
+    limit: number,
+  ): number[];
   draftClubs(market: string): readonly number[];
   draftEntry(footballerId: number, clubId: number): DraftEntryRow | null;
   draftCandidates(
@@ -78,6 +93,7 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
   const markets = new Set(all<{ code: string }>(marketsStatement()).map((market) => market.code));
   const concepts = new Map<string, readonly DuelConcept[]>();
   const draftClubs = new Map<string, readonly number[]>();
+  const chainSeeds = new Map<string, readonly number[]>();
   const ids = (statement: Statement) => all<{ id: number }>(statement).map((row) => row.id);
 
   const loadConcepts = (market: string): DuelConcept[] => {
@@ -170,6 +186,26 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
 
     comparablePlayers(market, minimumFame, limit) {
       return ids(comparablePlayersStatement(market, minimumFame, limit));
+    },
+
+    chainSeeds(market) {
+      const known = chainSeeds.get(market);
+      if (known) {
+        return known;
+      }
+      const loaded = markets.has(market)
+        ? ids(chainSeedsStatement(market, CHAIN_SEED_FAME, CHAIN_SEED_CLUBS, CHAIN_SEEDS))
+        : [];
+      chainSeeds.set(market, loaded);
+      return loaded;
+    },
+
+    sharedClub(market, firstId, secondId) {
+      return first<{ id: number }>(sharedClubStatement(market, firstId, secondId))?.id ?? null;
+    },
+
+    chainCandidates(market, footballerId, excludedIds, minimumFame, limit) {
+      return ids(chainCandidatesStatement(market, footballerId, excludedIds, minimumFame, limit));
     },
 
     draftClubs(market) {

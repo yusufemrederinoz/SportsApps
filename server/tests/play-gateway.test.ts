@@ -168,6 +168,10 @@ beforeEach(async () => {
         revealMilliseconds: 10,
         botAnswerMilliseconds: { minimum: 10, maximum: 10 },
       },
+      chainTiming: {
+        revealMilliseconds: 10,
+        botThinkMilliseconds: { minimum: 10, maximum: 10 },
+      },
     },
   });
   await app.ready();
@@ -409,6 +413,41 @@ describe.skipIf(!available)('play gateway', () => {
     expect(answered).toBeGreaterThanOrEqual(3);
     expect(view.result?.reason).toBe('score');
     expect(view.scores.x + view.scores.o).toBeGreaterThanOrEqual(0);
+    human.socket.close();
+  });
+
+  it('links footballers through shared clubs from real data against the bot', async () => {
+    const human = await ready();
+    human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'chain' });
+    const { session } = await human.next('session');
+    if (session.game !== 'chain') {
+      throw new Error('not a chain');
+    }
+    const { side } = session;
+    let view = session.view;
+    let linked = 0;
+    while (view.phase !== 'finished') {
+      if (view.phase === 'playing' && view.turn === side) {
+        const last = view.chain.at(-1)?.footballerId ?? 0;
+        const used = view.chain.map((link) => link.footballerId);
+        const [candidate] = football.chainCandidates('tr', last, used, 0, 1);
+        const answer = linked < 3 && candidate ? candidate : 1;
+        if (answer === candidate) {
+          expect(football.sharedClub('tr', last, candidate)).not.toBeNull();
+          linked += 1;
+        }
+        human.send({ type: 'act', matchId: session.matchId, action: { kind: 'link', footballerId: answer } });
+      }
+      const message = await human.next('view');
+      if (message.game !== 'chain') {
+        throw new Error('not a chain');
+      }
+      view = message.view;
+    }
+    expect(linked).toBeGreaterThan(0);
+    expect(view.chain.every((link, index) => index === 0 || link.clubId !== null)).toBe(true);
+    expect(view.result?.reason).toBe('score');
+    expect(Math.max(view.scores.x, view.scores.o)).toBe(view.roundsToWin);
     human.socket.close();
   });
 
