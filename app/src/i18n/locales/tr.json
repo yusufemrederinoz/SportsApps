@@ -213,7 +213,7 @@
     "fill": "Rastgele tamamla",
     "ready": "Hazırım",
     "searchEmpty": "Bu konsepte uyan futbolcu bulunamadı.",
-    "searchDone": "Tamam ({{picked}}/{{total}})",
+    "searchDone": "Tamam",
     "locked": "Kartların hazır",
     "starting": "Düello başlıyor…",
     "waitingOpponentHand": "Rakip kartlarını seçiyor…",

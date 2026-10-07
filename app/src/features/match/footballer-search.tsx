@@ -1,6 +1,6 @@
 import type { DuelConcept } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -43,6 +43,7 @@ interface FootballerSearchProps {
   filter?: SearchFilter | null;
   emptyLabel?: string;
   closeLabel?: string;
+  footer?: ReactNode;
   onSelect: (footballer: FootballerSummary) => void;
   onClose: () => void;
 }
@@ -55,6 +56,7 @@ export function FootballerSearch({
   filter = null,
   emptyLabel,
   closeLabel,
+  footer,
   onSelect,
   onClose,
 }: FootballerSearchProps) {
@@ -140,6 +142,7 @@ export function FootballerSearch({
               </Pressable>
             )}
           />
+          {footer}
           <Pressable accessibilityRole="button" onPress={onClose} style={styles.cancel}>
             <ThemedText type="label" themeColor="textSecondary">
               {uppercase(closeLabel ?? t('search.cancel'))}

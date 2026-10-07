@@ -2,7 +2,7 @@ import type { Side } from '@sportapps/game-core';
 import type { DuelConcept } from '@sportapps/protocol';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
@@ -18,6 +18,7 @@ import { useUppercase } from '@/i18n/uppercase';
 const ADD_MARK = '+';
 const REMOVE_MARK = '×';
 const BADGE_SIZE = 22;
+const TRAY_CARD_MAX = 64;
 
 interface HandPickerProps {
   title: string;
@@ -140,11 +141,38 @@ export function HandPicker({
           secondsLeft={secondsLeft}
           excludedIds={pickedIds}
           emptyLabel={t('duel.searchEmpty')}
-          closeLabel={t('duel.searchDone', { picked: picked.length, total: handSize })}
+          closeLabel={t('duel.searchDone')}
+          footer={<PickedTray picked={picked} handSize={handSize} side={side} />}
           onSelect={add}
           onClose={() => setSearching(false)}
         />
       ) : null}
+    </View>
+  );
+}
+
+function PickedTray({ picked, handSize, side }: { picked: readonly FootballerSummary[]; handSize: number; side: Side }) {
+  const { t } = useTranslation();
+  const { width } = useWindowDimensions();
+  const size = Math.min(TRAY_CARD_MAX, Math.floor((width - Spacing.three * 2 - Spacing.one * (handSize - 1)) / handSize));
+  const finish = Finishes[side];
+
+  return (
+    <View style={styles.tray}>
+      {Array.from({ length: handSize }, (_, index) => picked[index] ?? null).map((footballer, index) =>
+        footballer ? (
+          <View key={footballer.id} accessible accessibilityLabel={footballer.name}>
+            <FootballerCard footballer={footballer} side={side} size={size} emphasis="none" />
+          </View>
+        ) : (
+          <View
+            key={`empty-${index}`}
+            accessible
+            accessibilityLabel={t('duel.emptySlot')}
+            style={[styles.empty, { width: size, height: size, borderRadius: size * 0.12, borderColor: finish.base }]}
+          />
+        ),
+      )}
     </View>
   );
 }
@@ -236,5 +264,11 @@ const styles = StyleSheet.create({
   },
   actions: {
     gap: Spacing.three,
+  },
+  tray: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.one,
+    paddingTop: Spacing.two,
   },
 });

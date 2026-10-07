@@ -213,7 +213,7 @@
     "fill": "Fill at random",
     "ready": "Ready",
     "searchEmpty": "No footballer fits this concept.",
-    "searchDone": "Done ({{picked}}/{{total}})",
+    "searchDone": "Done",
     "locked": "Your hand is set",
     "starting": "The duel is starting…",
     "waitingOpponentHand": "Your opponent is picking cards…",
