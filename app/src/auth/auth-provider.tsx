@@ -7,16 +7,18 @@ import {
   adoptMember,
   completeOnboarding,
   enterAsGuest,
+  entryOf,
   hasCompletedOnboarding,
   leaveSession,
   restoreSession,
   type AuthState,
+  type Entry,
 } from './session';
 import { secureStore } from './storage';
 
 interface AuthContextValue {
   state: AuthState;
-  onboarded: boolean | null;
+  entry: Entry;
   finishOnboarding: () => Promise<void>;
   continueAsGuest: () => Promise<void>;
   register: (input: RegisterRequest) => Promise<void>;
@@ -33,12 +35,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([restoreSession(api, secureStore), hasCompletedOnboarding(secureStore)]).then(([restored, completed]) => {
+    const apply = (restored: AuthState, completed: boolean) => {
       if (!cancelled) {
         setState(restored);
         setOnboarded(completed);
       }
-    });
+    };
+    Promise.all([restoreSession(api, secureStore), hasCompletedOnboarding(secureStore)]).then(
+      ([restored, completed]) => apply(restored, completed),
+      (error: unknown) => {
+        console.warn('Could not restore the saved session', error);
+        apply({ status: 'signed-out' }, false);
+      },
+    );
     return () => {
       cancelled = true;
     };
@@ -46,10 +55,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   const value: AuthContextValue = {
     state,
-    onboarded,
+    entry: entryOf(state, onboarded),
     finishOnboarding: async () => {
-      await completeOnboarding(secureStore);
       setOnboarded(true);
+      await completeOnboarding(secureStore).catch((error: unknown) => {
+        console.warn('Could not remember the finished onboarding', error);
+      });
     },
     continueAsGuest: async () => setState(await enterAsGuest(api, secureStore)),
     register: async (input) => setState(await adoptMember(secureStore, await api.register(input))),

@@ -12,6 +12,7 @@
   },
   "welcome": {
     "guest": "Continue as guest",
+    "connecting": "Connecting…",
     "login": "Sign in",
     "register": "Create account",
     "guestHint": "Your guest account stays on this phone."

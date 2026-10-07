@@ -5,13 +5,14 @@ import { StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
+import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Motion, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
-export default function WelcomeScreen() {
+function WelcomeScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
@@ -48,7 +49,7 @@ export default function WelcomeScreen() {
       </View>
 
       <Animated.View entering={FadeInDown.duration(Motion.slow).delay(320)} style={styles.actions}>
-        <ActionButton label={t('welcome.guest')} onPress={() => void enterAsGuest()} />
+        <ActionButton label={t(entering ? 'welcome.connecting' : 'welcome.guest')} onPress={() => void enterAsGuest()} />
         <ActionButton label={t('welcome.login')} onPress={() => router.push('/login')} variant="secondary" />
         <ActionButton label={t('welcome.register')} onPress={() => router.push('/register')} variant="secondary" />
         <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
@@ -56,6 +57,14 @@ export default function WelcomeScreen() {
         </ThemedText>
       </Animated.View>
     </Screen>
+  );
+}
+
+export default function WelcomeRoute() {
+  return (
+    <EntryGate allow="welcome">
+      <WelcomeScreen />
+    </EntryGate>
   );
 }
 

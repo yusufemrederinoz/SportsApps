@@ -302,7 +302,8 @@ Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların 
 | `src/auth/session.ts` | Giriş akışının mantığı |
 | `src/auth/storage.ts` | Jetonları ve tanıtım bayrağını cihazın güvenli deposunda saklar |
 | `src/auth/auth-provider.tsx` | Hesap durumunu tüm ekranlara verir |
-| `src/app/_layout.tsx` | Hangi ekranların açık olduğunu hesap durumuna göre belirler |
+| `src/auth/entry-gate.tsx` | Her ekranı saran kapı: ekran hesap durumuna uymuyorsa doğru ekrana yönlendirir |
+| `src/app/_layout.tsx` | Yazı tiplerini yükler, açılış ekranını kapatır, sağlayıcıları ve ekran yığınını kurar |
 | `src/app/onboarding.tsx` | Tanıtım: üç sayfada oyunun anlatımı |
 | `src/app/welcome.tsx` | Karşılama: misafir olarak devam et, giriş yap, hesap oluştur |
 | `src/app/login.tsx`, `src/app/register.tsx` | Giriş ve kayıt formları |
@@ -321,7 +322,9 @@ Açılış akışı:
 
 - **Misafir hesabı cihazda kalır.** Cihazda iki ayrı jeton saklanır: misafir jetonu ve üye jetonu. "Misafir olarak devam et" her seferinde aynı misafir hesabını açar; yeni misafir yalnızca eski jeton artık kabul edilmiyorsa oluşur.
 - **Çıkış.** Üye çıkışı sunucudaki oturumu kapatır. Misafir çıkışı yalnızca karşılama ekranına döndürür; misafir hesabı durur.
-- **Ekran koruması.** Ekranlar Expo Router'ın korumalı yığınıyla açılıp kapanır; hesap durumu değişince yönlendirme kendiliğinden olur.
+- **Ekran koruması.** Her ekran `EntryGate` ile sarılıdır. Hesap durumundan dört sonuçtan biri çıkar: yükleniyor, tanıtım, karşılama, oyun. Ekran kendi grubunda değilse kapı önce yığındaki üst ekranları kapatır, sonra doğru ekrana geçer. Ana ekran, maç ve hesap "oyun" grubundadır; giriş ve kayıt "karşılama" grubundadır.
+- **Açılış ekranı.** Yalnızca yazı tipleri yüklenince kapanır; hesap durumunu beklemez. Hesap durumu yüklenirken ekranda dönen bir gösterge durur.
+- **Hata dayanıklılığı.** Kayıtlı oturum okunamazsa uygulama tanıtım ekranından devam eder ve hatayı terminale yazar.
 - **Klavye.** Form ekranı klavye yüksekliği kadar alt boşluk ekler ve odaklanan alanı yukarı kaydırır. Klavye kütüphanesi kullanılmadı, çünkü Expo Go içinde gelmiyor.
 - **Sunucu adresi.** `EXPO_PUBLIC_API_URL` verilmişse o kullanılır. Verilmemişse geliştirme sırasında Expo'nun çalıştığı bilgisayarın adresi ve 4000 kapısı kendiliğinden kullanılır; ayar gerekmez.
 - **Çevrimdışı.** Sunucuya ulaşılamazsa misafir girişi yine içeri alır; bota karşı ve iki kişilik oyun çalışmaya devam eder.
@@ -334,7 +337,7 @@ Açılış akışı:
 | Veri hattı | 23 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme |
 | Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
 | Sunucu | 19 | Misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, oturum açıkken girişin reddi, Google jetonu doğrulama, istek sınırı |
-| Uygulama | 40 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı |
+| Uygulama | 44 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -348,7 +351,8 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Uygulama veritabanı (13 MB) depoya ikili dosya olarak giriyor; her veri güncellemesi depo geçmişini büyütür.
 - Web hedefi kurulmadı; veritabanı kütüphanesinin web desteği ek ayar ister.
-- Yeni giriş akışı (tanıtım, karşılama, giriş, kayıt, hesap) cihazda henüz denenmedi.
+- Yeni giriş akışı (tanıtım, karşılama, giriş, kayıt, hesap) cihazda henüz baştan sona denenmedi. İlk denemede uygulama açılışta takıldı; düzeltme cihazda doğrulanmayı bekliyor.
+- Üye, sunucuya ulaşılamayan bir ağda uygulamayı açarsa ana ekran en çok 8 saniye gecikir; hesap bilgisi cihazda saklanmadığı için istek zaman aşımı bekleniyor.
 - Misafir hesabı kalıcı hesaba dönüşmediği için misafirken oynanan maçlar üye hesabına taşınmaz.
 - Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
 - Hesap silme yok; mağazalar hesap açılan uygulamalarda bunu şart koşuyor.

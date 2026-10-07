@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
+import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
@@ -20,7 +21,7 @@ const CARD_SIZE = 132;
 const LINE_CARD_SIZE = 84;
 const LINE_CARDS = [0, 1, 2];
 
-export default function OnboardingScreen() {
+function OnboardingScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const { finishOnboarding } = useAuth();
@@ -118,6 +119,14 @@ export default function OnboardingScreen() {
         <ActionButton label={t(last ? 'onboarding.start' : 'onboarding.next')} onPress={advance} />
       </Animated.View>
     </Screen>
+  );
+}
+
+export default function OnboardingRoute() {
+  return (
+    <EntryGate allow="onboarding">
+      <OnboardingScreen />
+    </EntryGate>
   );
 }
 

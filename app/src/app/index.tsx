@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
+import { EntryGate } from '@/auth/entry-gate';
 import { ModeCard } from '@/components/mode-card';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -16,7 +17,7 @@ import type { MatchMode } from '@/features/match/use-match';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
-export default function HomeScreen() {
+function HomeScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
@@ -117,6 +118,14 @@ export default function HomeScreen() {
         ))}
       </Animated.View>
     </Screen>
+  );
+}
+
+export default function HomeRoute() {
+  return (
+    <EntryGate allow="app">
+      <HomeScreen />
+    </EntryGate>
   );
 }
 

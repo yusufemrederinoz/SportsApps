@@ -8,6 +8,7 @@ import {
   adoptMember,
   completeOnboarding,
   enterAsGuest,
+  entryOf,
   hasCompletedOnboarding,
   leaveSession,
   restoreSession,
@@ -205,5 +206,28 @@ describe('onboarding', () => {
     expect(await hasCompletedOnboarding(store)).toBe(false);
     await completeOnboarding(store);
     expect(await hasCompletedOnboarding(store)).toBe(true);
+  });
+});
+
+describe('entryOf', () => {
+  const signedIn = { status: 'signed-in', token: 'token', account: member } as const;
+
+  it('waits until both the session and the onboarding flag are known', () => {
+    expect(entryOf({ status: 'loading' }, true)).toBe('loading');
+    expect(entryOf({ status: 'signed-out' }, null)).toBe('loading');
+  });
+
+  it('starts a new player on the onboarding', () => {
+    expect(entryOf({ status: 'signed-out' }, false)).toBe('onboarding');
+  });
+
+  it('offers the entry choice once the onboarding is done', () => {
+    expect(entryOf({ status: 'signed-out' }, true)).toBe('welcome');
+  });
+
+  it('opens the game for a signed-in or offline player', () => {
+    expect(entryOf(signedIn, true)).toBe('app');
+    expect(entryOf(signedIn, false)).toBe('app');
+    expect(entryOf({ status: 'offline' }, true)).toBe('app');
   });
 });

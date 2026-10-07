@@ -269,11 +269,27 @@ Tasarım notları:
 
 - Şifre kuralı varsayılanını ben seçtim (özel karakter şartı yok); kural tek yerde, ortak pakette duruyor.
 - Klavye için hazır kütüphane kullanılmadı, çünkü Expo Go içinde gelmiyor ve uygulama şu an Expo Go ile deneniyor.
-- Ekranların açılıp kapanması Expo Router'ın korumalı yığınına bırakıldı; elle yönlendirme yok.
+- Ekranların açılıp kapanması Expo Router'ın korumalı yığınına bırakıldı; elle yönlendirme yok. (Bu karar bir sonraki başlıkta geri alındı.)
 
 Geri alınan iş: bir önceki dilimde yazılan "misafir kayıt olunca yerinde kalıcı hesaba dönüşür" davranışı ve kullanıcı adı değiştirme. İkisi de istenmeden eklenmişti. Sonucu: misafirken oynanan maçlar üye hesabına taşınmayacak.
 
 Doğrulama: 19 sunucu ve 40 uygulama testi, tip denetimi, lint, Android paketleme geçiyor. Sunucu çalıştırılıp kurallar canlı denendi: misafirken kayıt 409, zayıf şifre 400, çıkış yapılmış kayıt 200, misafir jetonu sonrasında hâlâ geçerli, kullanıcı adı değiştirme 404. Yeni ekranlar telefonda henüz denenmedi.
+
+### Adım 5A — Açılışta takılma
+
+Yeni giriş akışı telefonda açıldığında uygulama açılış ekranında takılı kaldı. Hata cihazda görülmeden, kod okunarak arandı; kesin neden doğrulanamadı. Takılmaya yol açabilecek üç nokta bulundu ve üçü de kaldırıldı.
+
+| Olası neden | Yapılan |
+|---|---|
+| Açılış ekranının kapanması hesap durumunun yüklenmesine bağlanmıştı; yükleme bitmezse ekran hiç kapanmıyordu | Açılış ekranı yeniden yalnızca yazı tipleri yüklenince kapanıyor (son çalışan sürümdeki davranış) |
+| Kayıtlı oturum okunurken oluşan bir hata yakalanmıyordu; hesap durumu sonsuza kadar "yükleniyor" kalıyordu | Hata yakalanıyor, terminale yazılıyor ve uygulama tanıtım ekranından devam ediyor |
+| Tanıtımın bitişi önce cihaza yazılıyor, sonra ekrana yansıyordu; yazma başarısız olursa tanıtımdan çıkılamıyordu | Önce ekran ilerliyor, yazma hatası akışı durdurmuyor |
+
+Ek olarak ekran koruması değişti. Expo Router'ın korumalı yığını bırakıldı; her ekran artık `EntryGate` ile sarılı. Kapı, hesap durumuna göre dört sonuçtan birini verir: yükleniyor, tanıtım, karşılama, oyun. Ekran kendi grubunda değilse doğru ekrana yönlendirir. Neden: korumalı yığında ilk ekranın kendisi kapalıyken ne olacağı cihazda doğrulanamıyordu; açık yönlendirme adım adım izlenebiliyor.
+
+Küçük ekler: hesap durumu yüklenirken dönen bir gösterge çıkıyor; "misafir olarak devam et" düğmesi sunucu beklenirken "Bağlanıyor…" yazıyor.
+
+Doğrulama: 44 uygulama testi (giriş kararı için 4 yeni), tip denetimi, lint, Android paketleme geçiyor. Bu araçlar çalışma anındaki bir takılmayı yakalayamaz; düzeltme telefonda henüz doğrulanmadı.
 
 ## Commit listesi
 
@@ -295,3 +311,4 @@ Doğrulama: 19 sunucu ve 40 uygulama testi, tip denetimi, lint, Android paketlem
 | `c25712e` | 7 Ekim | Arayüzün metalik oyuncu kartları etrafında yeniden tasarımı |
 | `0b2b056` | 7 Ekim | Hesap sunucusu: misafir, şifre, Google ve Apple doğrulaması |
 | `829de6d` | 7 Ekim | Uygulamada hesap istemcisi ve hesap ekranı |
+| `a00409b` | 7 Ekim | Giriş akışının yeniden yazılması: tanıtım, karşılama, ayrı hesaplar |

@@ -119,7 +119,7 @@ Durum: sürüyor. Dört dilime ayrıldı.
 
 ### 5A — Hesaplar
 
-Durum: ilk denemeden sonra yeniden yazıldı, cihazda deneme bekliyor (7 Ekim 2026).
+Durum: ilk denemeden sonra yeniden yazıldı. Cihazda açılışta takıldı; düzeltme yapıldı, cihazda doğrulama bekliyor (7 Ekim 2026).
 
 Yapılanlar:
 
@@ -127,7 +127,7 @@ Yapılanlar:
 - Misafir hesap, e-posta ve şifreyle kayıt ve giriş, çıkış.
 - Google ve Apple kimlik jetonlarının sunucuda doğrulanması.
 - Uygulamada tanıtım, karşılama, giriş, kayıt ve hesap ekranları.
-- 19 sunucu testi ve 40 uygulama testi geçiyor.
+- 19 sunucu testi ve 44 uygulama testi geçiyor.
 
 İlk denemeden sonra değişenler:
 
@@ -141,7 +141,7 @@ Yapılanlar:
 
 Kalanlar:
 
-- Yeni akışı telefonda denemek.
+- Açılıştaki takılmanın düzeldiğini ve yeni akışı telefonda doğrulamak.
 - Şifre sıfırlama, e-posta doğrulama ve hesap silme.
 
 Ertelenenler:

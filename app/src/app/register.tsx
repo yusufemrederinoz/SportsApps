@@ -6,6 +6,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import type { RequestErrorCode } from '@/api/client';
 import { useAuth } from '@/auth/auth-provider';
+import { EntryGate } from '@/auth/entry-gate';
 import { ERROR_KEYS } from '@/auth/error-messages';
 import { useSubmit } from '@/auth/use-submit';
 import { ActionButton } from '@/components/action-button';
@@ -16,7 +17,7 @@ import { ThemedText } from '@/components/themed-text';
 import { MinimumTouchSize } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
-export default function RegisterScreen() {
+function RegisterScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
@@ -82,6 +83,14 @@ export default function RegisterScreen() {
         </ThemedText>
       </Pressable>
     </FormScreen>
+  );
+}
+
+export default function RegisterRoute() {
+  return (
+    <EntryGate allow="welcome">
+      <RegisterScreen />
+    </EntryGate>
   );
 }
 

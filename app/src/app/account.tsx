@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
+import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
@@ -12,7 +13,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
-export default function AccountScreen() {
+function AccountScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
@@ -90,6 +91,14 @@ export default function AccountScreen() {
         <ActionButton label={t('account.logout')} onPress={() => void run(leave)} variant="secondary" />
       </View>
     </Screen>
+  );
+}
+
+export default function AccountRoute() {
+  return (
+    <EntryGate allow="app">
+      <AccountScreen />
+    </EntryGate>
   );
 }
 

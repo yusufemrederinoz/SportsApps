@@ -14,6 +14,8 @@ export type AuthState =
   | { status: 'offline' }
   | { status: 'signed-in'; token: string; account: Account };
 
+export type Entry = 'loading' | 'onboarding' | 'welcome' | 'app';
+
 const MEMBER_TOKEN_KEY = 'member-token';
 const GUEST_TOKEN_KEY = 'guest-token';
 const ONBOARDING_KEY = 'onboarding-done';
@@ -78,4 +80,14 @@ export async function hasCompletedOnboarding(store: KeyValueStore): Promise<bool
 
 export async function completeOnboarding(store: KeyValueStore): Promise<void> {
   await store.set(ONBOARDING_KEY, SET);
+}
+
+export function entryOf(state: AuthState, onboarded: boolean | null): Entry {
+  if (state.status === 'loading' || onboarded === null) {
+    return 'loading';
+  }
+  if (state.status === 'signed-in' || state.status === 'offline') {
+    return 'app';
+  }
+  return onboarded ? 'welcome' : 'onboarding';
 }

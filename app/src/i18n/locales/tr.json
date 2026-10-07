@@ -12,6 +12,7 @@
   },
   "welcome": {
     "guest": "Misafir olarak devam et",
+    "connecting": "Bağlanıyor…",
     "login": "Giriş yap",
     "register": "Hesap oluştur",
     "guestHint": "Misafir hesabın bu telefonda kalır."

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
+import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -21,7 +22,7 @@ import { BOT_SIDE, useMatch, type MatchMode } from '@/features/match/use-match';
 import { URGENT_SECONDS, useMatchEffects } from '@/features/match/use-match-effects';
 import { useUppercase } from '@/i18n/uppercase';
 
-export default function MatchScreen() {
+function MatchScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
@@ -157,6 +158,14 @@ export default function MatchScreen() {
         />
       ) : null}
     </Screen>
+  );
+}
+
+export default function MatchRoute() {
+  return (
+    <EntryGate allow="app">
+      <MatchScreen />
+    </EntryGate>
   );
 }
 
