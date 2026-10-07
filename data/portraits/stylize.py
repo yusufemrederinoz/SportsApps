@@ -3,7 +3,7 @@ import sqlite3
 
 from pipeline.config import DATABASE_PATH
 
-from .config import MINIMUM_SOURCE_SIDE, MODEL_DIR, OUTPUT_DIR, PORTRAIT_SIZE, WORKING_SIZE
+from .config import BACKDROP, MINIMUM_SOURCE_SIDE, MODEL_DIR, OUTPUT_DIR, PORTRAIT_SIZE, WORKING_SIZE
 from .faces import REPORT_PATH, crop_path
 from .sources import target_players
 
@@ -33,7 +33,6 @@ CANNY_LOW = 60
 CANNY_HIGH = 150
 HEAD_SCALE_X = 1.7
 HEAD_SCALE_Y = 2.1
-BACKDROP = (14, 20, 32)
 CLOTHING_BLUR = 22
 MINIMUM_CLOTHING_PIXELS = 2000
 FEATHER = 12
@@ -96,10 +95,14 @@ def clean_source(crop, subject, face):
     return Image.fromarray(blended.clip(0, 255).astype(numpy.uint8))
 
 
-def cut_out(portrait, subject):
+def cut_out(portrait, subject, face):
+    from PIL import Image
+
     cutout = portrait.convert("RGBA")
     cutout.putalpha(subject.convert("L"))
-    return cutout
+    centered = Image.new("RGBA", cutout.size, (0, 0, 0, 0))
+    centered.paste(cutout, (round(cutout.width / 2 - (face[0] + face[2] / 2)), 0))
+    return centered
 
 
 def load_pipeline():
@@ -147,7 +150,7 @@ def portrait(pipeline, matting, crop, face, strength=STRENGTH, control_scale=CON
 
     source = clean_source(crop, subject_mask(matting, crop), face)
     drawn = stylize(pipeline, source, control_image(crop, face), strength, control_scale)
-    return cut_out(drawn, subject_mask(matting, drawn))
+    return cut_out(drawn, subject_mask(matting, drawn), face)
 
 
 def usable(entry):

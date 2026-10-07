@@ -3,7 +3,16 @@ import unittest
 
 from pipeline.config import APP_DATABASE_PATH, DATABASE_PATH
 from portraits.config import OUTPUT_DIR
-from portraits.faces import MINIMUM_FACE_WIDTH, has_rival, is_frontal, judge, largest_face, portrait_box
+from portraits.faces import (
+    MINIMUM_FACE_WIDTH,
+    distinct,
+    has_rival,
+    is_cut_off,
+    is_frontal,
+    judge,
+    largest_face,
+    portrait_box,
+)
 from portraits.sources import artist_name, describe, is_free_license
 
 
@@ -62,32 +71,61 @@ class FaceTest(unittest.TestCase):
         self.assertIs(largest_face([small, large, unsure, tiny]), large)
         self.assertIsNone(largest_face([unsure, tiny]))
 
-    def test_frames_the_head_with_room_for_shoulders_inside_the_photo(self):
-        left, top, side = portrait_box(face(), 1280, 1600)
+    def test_frames_the_head_with_room_for_shoulders(self):
+        left, top, side = portrait_box(face(), 1280)
         self.assertEqual(side, 600)
         self.assertEqual(left, 200)
-        self.assertGreater(300 + 120, top + side / 2 - 60)
-        self.assertEqual(portrait_box(face(x=0, y=0), 1280, 1600)[:2], (0, 0))
-        self.assertEqual(portrait_box(face(), 500, 1600)[2], 500)
+        self.assertAlmostEqual(top + side / 2, 300 + 120 + 240 * 0.12, delta=1)
+
+    def test_narrows_the_frame_when_the_photo_is_not_wide_enough(self):
+        narrow = face(x=90, y=300, width=200, height=240)
+        left, _, side = portrait_box(narrow, 380)
+        self.assertLess(side, 600)
+        self.assertGreaterEqual(side, 240 * 1.9)
+        self.assertGreaterEqual(left, -side * 0.15 - 1)
+        self.assertLessEqual(left + side, 380 + side * 0.15 + 1)
+
+    def test_slides_the_frame_into_the_photo_for_a_player_near_the_edge(self):
+        near_edge = face(x=140, y=300, width=200, height=240)
+        left, _, side = portrait_box(near_edge, 2000)
+        self.assertEqual(side, 600)
+        self.assertEqual(left, 0)
+        drift = abs((140 + 100) - (left + side / 2)) / side
+        self.assertLessEqual(drift, 0.16)
+
+    def test_rejects_a_head_that_the_photo_cuts_off(self):
+        self.assertFalse(is_cut_off(face(), 1280))
+        self.assertFalse(is_cut_off(face(x=140), 2000))
+        self.assertTrue(is_cut_off(face(y=10), 1280))
+        self.assertTrue(is_cut_off(face(x=5), 1280))
+        self.assertTrue(is_cut_off(face(x=1075), 1280))
+        self.assertTrue(is_cut_off(face(x=30, width=200, height=240), 260))
+
+    def test_keeps_one_box_for_a_face_found_at_two_scales(self):
+        first = face(score=0.95)
+        again = face(x=404, y=296, score=0.85)
+        other = face(x=900, y=300, score=0.9)
+        self.assertEqual(distinct([again, first, other]), [first, other])
 
     def test_tells_a_frontal_face_from_a_profile(self):
         self.assertTrue(is_frontal(face()))
-        self.assertFalse(is_frontal(face(turn=1.1)))
+        self.assertFalse(is_frontal(face(turn=1.5)))
         narrow = face()
         narrow["left_eye"] = (narrow["right_eye"][0] + 10, narrow["left_eye"][1])
         self.assertFalse(is_frontal(narrow))
 
     def test_notices_a_second_person_inside_the_frame(self):
         main = face()
-        box = portrait_box(main, 1280, 1600)
+        box = portrait_box(main, 1280)
         self.assertTrue(has_rival(main, [main, face(x=560, y=320, width=150, height=180)], box))
         self.assertFalse(has_rival(main, [main, face(x=560, y=320, width=60, height=70)], box))
         self.assertFalse(has_rival(main, [main, face(x=1100, y=1300, width=160, height=180)], box))
 
     def test_judges_each_kind_of_source_photo(self):
         self.assertEqual(judge([], 1280, 1600)[0], "no_face")
-        self.assertEqual(judge([face(turn=1.2)], 1280, 1600)[0], "turned")
+        self.assertEqual(judge([face(turn=1.6)], 1280, 1600)[0], "turned")
         self.assertEqual(judge([face(x=0, y=0, width=400, height=480)], 600, 700)[0], "tight")
+        self.assertEqual(judge([face(x=220, y=200, width=400, height=480)], 840, 1000)[0], "cropped")
         main = face()
         self.assertEqual(judge([main, face(x=560, y=320, width=150, height=180)], 1280, 1600)[0], "crowded")
         status, chosen, box = judge([main], 1280, 1600)

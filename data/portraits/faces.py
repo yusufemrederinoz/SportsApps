@@ -4,7 +4,7 @@ import urllib.request
 
 from pipeline.config import DATABASE_PATH, USER_AGENT
 
-from .config import CROP_DIR, MINIMUM_SOURCE_SIDE, MODEL_DIR, WORKING_SIZE
+from .config import BACKDROP, CROP_DIR, MINIMUM_SOURCE_SIDE, MODEL_DIR, WORKING_SIZE
 from .sources import fetch_large, large_source_path, load_metadata, source_path, target_players
 
 DETECTOR_URL = "https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx"
@@ -13,10 +13,16 @@ SCORE_THRESHOLD = 0.8
 MINIMUM_FACE_WIDTH = 64
 CROP_SCALE = 2.5
 VERTICAL_SHIFT = 0.12
-MINIMUM_CONTEXT = 1.6
-MINIMUM_EYE_SPAN = 0.22
-NOSE_RANGE = (0.02, 0.98)
+MINIMUM_CROP_SCALE = 1.9
+TOP_MARGIN = 0.08
+FACE_MARGIN = 0.05
+SIDE_PADDING = 0.15
+CENTER_DRIFT = 0.16
+MINIMUM_EYE_SPAN = 0.14
+NOSE_RANGE = (-0.3, 1.3)
 RIVAL_SHARE = 0.55
+DETECTION_SIDES = (480, 960, 0)
+SAME_FACE_OVERLAP = 0.4
 REPORT_PATH = CROP_DIR / "faces.json"
 
 
@@ -50,21 +56,54 @@ def judge(faces, image_width, image_height):
         return "no_face", None, None
     if not is_frontal(face):
         return "turned", face, None
-    box = portrait_box(face, image_width, image_height)
-    if box[2] < max(face["width"], face["height"]) * MINIMUM_CONTEXT:
-        return "tight", face, box
+    if is_cut_off(face, image_width):
+        return "tight", face, None
+    box = portrait_box(face, image_width)
     if has_rival(face, faces, box):
         return "crowded", face, box
     return "cropped", face, box
 
 
-def portrait_box(face, image_width, image_height):
-    side = min(max(face["width"], face["height"]) * CROP_SCALE, image_width, image_height)
+def widest_side(face, image_width):
     center_x = face["x"] + face["width"] / 2
+    reach = min(center_x, image_width - center_x)
+    return min(reach / (0.5 - CENTER_DRIFT - SIDE_PADDING), image_width / (1 - 2 * SIDE_PADDING))
+
+
+def is_cut_off(face, image_width):
+    size = max(face["width"], face["height"])
+    margin = face["width"] * FACE_MARGIN
+    return (
+        face["y"] - face["height"] * TOP_MARGIN < 0
+        or face["x"] < margin
+        or face["x"] + face["width"] > image_width - margin
+        or widest_side(face, image_width) < size * MINIMUM_CROP_SCALE
+    )
+
+
+def portrait_box(face, image_width):
+    size = max(face["width"], face["height"])
+    side = min(size * CROP_SCALE, max(size * MINIMUM_CROP_SCALE, widest_side(face, image_width)))
+    centered = face["x"] + face["width"] / 2 - side / 2
+    spare = image_width - side
+    inside = min(max(centered, 0.0), spare) if spare >= 0 else spare / 2
+    drifted = min(max(inside, centered - side * CENTER_DRIFT), centered + side * CENTER_DRIFT)
+    left = min(max(drifted, -side * SIDE_PADDING), spare + side * SIDE_PADDING)
     center_y = face["y"] + face["height"] / 2 + face["height"] * VERTICAL_SHIFT
-    left = min(max(0.0, center_x - side / 2), image_width - side)
-    top = min(max(0.0, center_y - side / 2), image_height - side)
-    return int(round(left)), int(round(top)), int(side)
+    return int(round(left)), int(round(center_y - side / 2)), int(round(side))
+
+
+def padded_crop(numpy, image, box):
+    left, top, side = box
+    height, width = image.shape[:2]
+    canvas = numpy.empty((side, side, 3), dtype=numpy.uint8)
+    canvas[:] = BACKDROP[::-1]
+    source_left, source_top = max(0, left), max(0, top)
+    source_right, source_bottom = min(width, left + side), min(height, top + side)
+    canvas[source_top - top : source_bottom - top, source_left - left : source_right - left] = image[
+        source_top:source_bottom, source_left:source_right
+    ]
+    return canvas
 
 
 def crop_path(player_id):
@@ -80,23 +119,55 @@ def detector_model():
     return str(DETECTOR_PATH)
 
 
+def overlap(first, second):
+    left = max(first["x"], second["x"])
+    top = max(first["y"], second["y"])
+    right = min(first["x"] + first["width"], second["x"] + second["width"])
+    bottom = min(first["y"] + first["height"], second["y"] + second["height"])
+    shared = max(0.0, right - left) * max(0.0, bottom - top)
+    total = first["width"] * first["height"] + second["width"] * second["height"] - shared
+    return shared / total if total > 0 else 0.0
+
+
+def distinct(faces):
+    kept = []
+    for face in sorted(faces, key=lambda candidate: candidate["score"], reverse=True):
+        if all(overlap(face, other) < SAME_FACE_OVERLAP for other in kept):
+            kept.append(face)
+    return kept
+
+
 def detect(detector, image):
+    import cv2
+
     height, width = image.shape[:2]
-    detector.setInputSize((width, height))
-    _, found = detector.detect(image)
-    return [
-        {
-            "x": float(row[0]),
-            "y": float(row[1]),
-            "width": float(row[2]),
-            "height": float(row[3]),
-            "right_eye": (float(row[4]), float(row[5])),
-            "left_eye": (float(row[6]), float(row[7])),
-            "nose": (float(row[8]), float(row[9])),
-            "score": float(row[14]),
-        }
-        for row in (found if found is not None else [])
-    ]
+    faces = []
+    for limit in DETECTION_SIDES:
+        scale = min(1.0, limit / max(width, height)) if limit else 1.0
+        if scale == 1.0 and limit and faces:
+            continue
+        resized = (
+            image
+            if scale == 1.0
+            else cv2.resize(image, (round(width * scale), round(height * scale)), interpolation=cv2.INTER_AREA)
+        )
+        detector.setInputSize((resized.shape[1], resized.shape[0]))
+        _, found = detector.detect(resized)
+        for row in found if found is not None else []:
+            values = [float(value) / scale for value in row[:10]]
+            faces.append(
+                {
+                    "x": values[0],
+                    "y": values[1],
+                    "width": values[2],
+                    "height": values[3],
+                    "right_eye": (values[4], values[5]),
+                    "left_eye": (values[6], values[7]),
+                    "nose": (values[8], values[9]),
+                    "score": float(row[14]),
+                }
+            )
+    return distinct(faces)
 
 
 def needs_larger_source(entry):
@@ -117,7 +188,7 @@ def examine(cv2, numpy, detector, source, target):
         return {"status": status, "faces": len(faces)}
     left, top, side = box
     crop = cv2.resize(
-        image[top : top + side, left : left + side],
+        padded_crop(numpy, image, box),
         (WORKING_SIZE, WORKING_SIZE),
         interpolation=cv2.INTER_AREA if side >= WORKING_SIZE else cv2.INTER_CUBIC,
     )
