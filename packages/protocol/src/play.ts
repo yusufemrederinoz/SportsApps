@@ -5,6 +5,7 @@ import type { DraftAction, DraftView } from './draft';
 import type { DuelAction, DuelView } from './duel';
 import type { HigherAction, HigherView } from './higher';
 import type { RareAction, RareView } from './rare';
+import type { PointsChange } from './progress';
 import type { TopTenView } from './top-ten';
 
 export const PLAY_PATH = '/play';
@@ -113,7 +114,7 @@ export type ServerMessage =
   | { type: 'session'; session: SessionSnapshot }
   | ({ type: 'view'; matchId: string } & GameView)
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
-  | { type: 'finished'; matchId: string; result: PlayResult }
+  | { type: 'finished'; matchId: string; result: PlayResult; points?: PointsChange }
   | { type: 'opponent'; matchId: string; connected: boolean }
   | { type: 'error'; code: PlayErrorCode }
   | { type: 'pong' };
@@ -130,10 +131,12 @@ export function isRoomCode(value: string): boolean {
 }
 
 export type MatchOutcome = 'win' | 'loss' | 'draw';
+export type MatchKind = 'queue' | 'bot' | 'room';
 
 export interface MatchSummary {
   id: string;
   game: GameId;
+  kind: MatchKind;
   finishedAt: number;
   difficulty: PlayDifficulty;
   opponent: string;
@@ -141,8 +144,11 @@ export interface MatchSummary {
   reason: PlayFinishReason;
   ownCells: number;
   opponentCells: number;
+  pointsChange: number | null;
+  goalsEarned: number;
 }
 
 export interface MatchHistoryResponse {
   matches: MatchSummary[];
+  more: boolean;
 }

@@ -6,5 +6,6 @@ export * from './draft';
 export * from './duel';
 export * from './higher';
 export * from './play';
+export * from './progress';
 export * from './rare';
 export * from './top-ten';
