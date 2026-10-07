@@ -1,5 +1,6 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
 import type {
+  ChainView,
   DraftView,
   DuelView,
   GameAction,
@@ -57,6 +58,7 @@ export type OnlineGame = OnlineSessionBase & GameView;
 export type OnlineDuel = OnlineSessionBase & { game: 'duel'; view: DuelView };
 export type OnlineDraft = OnlineSessionBase & { game: 'draft'; view: DraftView };
 export type OnlineHigher = OnlineSessionBase & { game: 'higher'; view: HigherView };
+export type OnlineChain = OnlineSessionBase & { game: 'chain'; view: ChainView };
 
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [
@@ -244,6 +246,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
                 } as OnlineGame)
               : current,
           );
+          setNow(Date.now());
           setActing(false);
           return;
         }

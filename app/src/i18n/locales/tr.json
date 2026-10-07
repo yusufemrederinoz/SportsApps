@@ -54,7 +54,9 @@
     "titleAccentDraft": "Kadro",
     "subtitleDraft": "Her turda bir kulüp çıkar. O kulüpte oynamış bir futbolcuyu kadrona al; kariyer asist toplamı yüksek kadro kazanır.",
     "titleAccentHigher": "Hangisi?",
-    "subtitleHigher": "İki futbolcu, bir soru: golü, asisti, değeri ya da yaşı hangisinin üstün? Bildikçe sıra sende kalır."
+    "subtitleHigher": "İki futbolcu, bir soru: golü, asisti, değeri ya da yaşı hangisinin üstün? Bildikçe sıra sende kalır.",
+    "titleAccentChain": "Zincir",
+    "subtitleChain": "Sırayla, son futbolcuyla aynı kulüpte oynamış birini söyle. Bulamayan ya da yanlış söyleyen turu kaybeder; üç tur alan kazanır."
   },
   "difficulty": {
     "easy": "Kolay",
@@ -178,7 +180,8 @@
     "grid": "XOX",
     "duel": "Kart Düellosu",
     "draft": "Kadro Kur",
-    "higher": "Hangisi Yüksek"
+    "higher": "Hangisi Yüksek",
+    "chain": "Zincir"
   },
   "leagues": {
     "TR1": "Süper Lig",
@@ -272,5 +275,22 @@
     "wrongOpponent": "Rakip bilemedi",
     "timeout": "Süre doldu",
     "byScore": "Bütün eller oynandı"
+  },
+  "chain": {
+    "round": "Tur {{round}} · {{target}} tur alan kazanır",
+    "rule": "Son futbolcuyla aynı kulüpte oynamış birini söyle",
+    "scope": "Ortak kulüp Süper Lig ya da Avrupa'nın beş büyük liginden biri olmalı. Aynı turda bir ad iki kez söylenemez.",
+    "last": "Son halka",
+    "via": "Bağlantı: {{club}}",
+    "say": "Futbolcu söyle",
+    "searchTitle": "{{name}} ile aynı kulüpte oynayan",
+    "yourTurn": "Sıra sende",
+    "opponentTurn": "Sıra rakipte",
+    "wrong": "{{name}}: ortak kulüp yok",
+    "used": "{{name}} zaten söylendi",
+    "timeout": "Süre doldu",
+    "roundToYou": "tur senin",
+    "roundToRival": "tur rakibin",
+    "byScore": "Üç tur tamamlandı"
   }
 }

@@ -1,5 +1,6 @@
 import { GAME_IDS, type GameId, type GameView, type PlayResult } from '@sportapps/protocol';
 
+import { chainCardIds, finishChainView } from '@/features/chain/online';
 import { draftCardIds, finishDraftView } from '@/features/draft/online';
 import { duelCardIds, finishDuelView } from '@/features/duel/online';
 import { finishHigherView, higherCardIds } from '@/features/higher/online';
@@ -11,6 +12,7 @@ export const GAME_LABELS = {
   duel: 'games.duel',
   draft: 'games.draft',
   higher: 'games.higher',
+  chain: 'games.chain',
 } as const satisfies Record<GameId, string>;
 
 export const GAME_ACCENTS = {
@@ -18,6 +20,7 @@ export const GAME_ACCENTS = {
   duel: 'home.titleAccentDuel',
   draft: 'home.titleAccentDraft',
   higher: 'home.titleAccentHigher',
+  chain: 'home.titleAccentChain',
 } as const satisfies Record<GameId, string>;
 
 export const GAME_SUBTITLES = {
@@ -25,6 +28,7 @@ export const GAME_SUBTITLES = {
   duel: 'home.subtitleDuel',
   draft: 'home.subtitleDraft',
   higher: 'home.subtitleHigher',
+  chain: 'home.subtitleChain',
 } as const satisfies Record<GameId, string>;
 
 export function parseGame(value: string | undefined): GameId {
@@ -39,6 +43,8 @@ export function gameCardIds(state: GameView): number[] {
       return draftCardIds(state.view);
     case 'higher':
       return higherCardIds(state.view);
+    case 'chain':
+      return chainCardIds(state.view);
   }
 }
 
@@ -50,5 +56,7 @@ export function finishGameView(state: GameView, result: PlayResult): GameView {
       return { game: 'draft', view: finishDraftView(state.view, result) };
     case 'higher':
       return { game: 'higher', view: finishHigherView(state.view, result) };
+    case 'chain':
+      return { game: 'chain', view: finishChainView(state.view, result) };
   }
 }
