@@ -1,0 +1,12 @@
+{
+  "tr": {
+    "stems": ["emre", "kaan", "mert", "burak", "ozan", "arda", "yigit", "berk", "can", "efe", "onur", "umut", "baris", "deniz", "kerem", "tolga", "serkan", "hakan", "volkan", "selim", "furkan", "enes", "alper", "cenk", "murat", "eren", "batu", "kuzey", "tuna", "doruk", "ege", "bora", "sinan", "taylan", "oguz", "ilker", "gokhan", "samet", "kadir", "yusuf"],
+    "suffixes": ["1905", "1907", "1903", "1967", "34", "06", "35", "61", "07", "16", "10", "9", "99", "98", "97", "96", "01", "02", "03", "04"],
+    "tags": ["gs", "fb", "bjk", "ts", "cimbom", "kartal", "aslan", "kanarya"]
+  },
+  "default": {
+    "stems": ["alex", "leo", "max", "sam", "nico", "luca", "marco", "david", "tom", "ben", "dani", "pablo", "hugo", "adam", "jonas", "erik", "ivan", "omar", "karim", "milan", "rafa", "theo", "noah", "liam", "mateo"],
+    "suffixes": ["7", "9", "10", "11", "99", "98", "97", "2000", "23", "77", "04", "05", "88", "21"],
+    "tags": ["fc", "cf", "utd", "city", "cule", "blanco", "gooner", "red"]
+  }
+}

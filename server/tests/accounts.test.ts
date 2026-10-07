@@ -17,6 +17,7 @@ const config: ServerConfig = {
   host: '127.0.0.1',
   port: 0,
   databasePath: ':memory:',
+  footballDatabasePath: '',
   sessionDays: 90,
   googleClientIds: [GOOGLE_CLIENT_ID],
   appleClientIds: [],

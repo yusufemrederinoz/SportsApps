@@ -40,6 +40,28 @@ const MIGRATIONS: readonly string[] = [
   CREATE INDEX sessions_user ON sessions (user_id);
   CREATE INDEX sessions_expiry ON sessions (expires_at);
   `,
+  `
+  CREATE TABLE matches (
+    id TEXT PRIMARY KEY,
+    kind TEXT NOT NULL,
+    market TEXT NOT NULL,
+    difficulty INTEGER NOT NULL,
+    grid_id INTEGER NOT NULL,
+    x_user_id TEXT REFERENCES users (id) ON DELETE SET NULL,
+    o_user_id TEXT REFERENCES users (id) ON DELETE SET NULL,
+    x_username TEXT NOT NULL,
+    o_username TEXT NOT NULL,
+    winner TEXT,
+    reason TEXT NOT NULL,
+    x_cells INTEGER NOT NULL,
+    o_cells INTEGER NOT NULL,
+    move_count INTEGER NOT NULL,
+    started_at INTEGER NOT NULL,
+    finished_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE INDEX matches_x_user ON matches (x_user_id, finished_at);
+  CREATE INDEX matches_o_user ON matches (o_user_id, finished_at);
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

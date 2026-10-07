@@ -8,6 +8,7 @@ import {
   type IdentityProvider,
   type IdentitySignInRequest,
   type LoginRequest,
+  type MatchHistoryResponse,
   type RegisterRequest,
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
@@ -16,6 +17,10 @@ import type { IdentityVerifiers } from '../accounts/identity';
 import { createAccountService, type AuthenticatedSession } from '../accounts/service';
 import type { ServerConfig } from '../config';
 import type { Database } from '../database';
+import type { FootballLibrary } from '../football/library';
+import { registerPlayGateway } from '../play/gateway';
+import { createMatchHistory } from '../play/history';
+import { createLobby, type LobbyOptions } from '../play/lobby';
 import { ApiError } from './errors';
 import { createRateLimiter } from './rate-limit';
 
@@ -24,11 +29,14 @@ const MINUTE = 60 * 1000;
 const BEARER = 'Bearer ';
 const TOKEN_MAX_LENGTH = 8192;
 const USERNAME_INPUT_MAX_LENGTH = 64;
+const HISTORY_PAGE_SIZE = 30;
 
 export interface AppDependencies {
   database: Database;
   config: ServerConfig;
   verifiers?: IdentityVerifiers;
+  football?: FootballLibrary;
+  play?: Partial<Omit<LobbyOptions, 'library' | 'history'>>;
   now?: () => number;
   logger?: boolean;
 }
@@ -63,6 +71,20 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     now,
   });
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
+  const history = createMatchHistory(database);
+
+  if (dependencies.football) {
+    const lobby = createLobby({
+      now,
+      isUsernameTaken: accounts.isUsernameTaken,
+      onError: (error) => app.log.error(error),
+      ...dependencies.play,
+      library: dependencies.football,
+      history,
+    });
+    registerPlayGateway(app, { accounts, lobby, dataVersion: dependencies.football.dataVersion, now });
+    app.addHook('onClose', () => lobby.shutdown());
+  }
 
   const session = (request: FastifyRequest): AuthenticatedSession | null => {
     const header = request.headers.authorization;
@@ -134,6 +156,11 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
 
   app.get(`${API_PREFIX}/me`, (request): AccountResponse => ({ account: accounts.account(requireSession(request).user) }));
+
+  app.get(
+    `${API_PREFIX}/matches`,
+    (request): MatchHistoryResponse => ({ matches: history.list(requireSession(request).user.id, HISTORY_PAGE_SIZE) }),
+  );
 
   return app;
 }

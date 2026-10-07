@@ -128,6 +128,10 @@ export function createAccountService(database: Database, options: AccountService
       return repository.toAccount(user);
     },
 
+    isUsernameTaken(username: string): boolean {
+      return !isUsernameFree(username);
+    },
+
     async register(input: RegisterRequest): Promise<AuthResponse> {
       const email = input.email.trim();
       const username = input.username.trim();
