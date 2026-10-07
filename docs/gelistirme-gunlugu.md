@@ -419,6 +419,31 @@ Aynı oturumda yapılan küçük düzeltmeler:
 - Türkçe arayüzde yabancı adlar artık Türkçe kuralla büyütülmüyor ("MANCHESTER CITY", "LIVERPOOL"); yerli kulüp, ülke ve yerli oyuncu adları Türkçe kuralla büyütülüyor ("BEŞİKTAŞ", "BREZİLYA").
 - Kartta iki kelimelik adların ikinci kelimesi kayboluyordu; ad artık bandın tamamına yayılıyor.
 
+### Yeni oyun modları — plan, istatistikler ve Kart Düellosu
+
+Kullanıcı iki YouTube videosunu (indirmeden, yalnızca sayfa bilgisi ve önizleme kareleriyle) inceletti ve uygulamanın yalnızca XOX olmayacağını, bu videolardaki gibi oyunlar da içereceğini söyledi. Kurallar kullanıcının düzeltmeleriyle netleşti, önerdiğim yedi mod da istendi. Dokuz modun kuralları ve yapım sırası [oyun-modlari.md](oyun-modlari.md) belgesinde.
+
+**İstatistik kaynağı.** Mevcut Transfermarkt veri setinde maç kayıtları 2012'den başlıyor; gol ve asist toplamları eski oyuncular için eksik kalıyordu. Kullanıcının yönlendirmesiyle başka bir ücretsiz kaynak arandı. `salimt/football-datasets` (Transfermarkt'tan türetilmiş, Kaggle'da CC0) sezon sezon maç, gol, asist ve kart veriyor; kapsamadığı oyuncular için Vikiveri'nin kulüp kayıtlarındaki maç ve gol sayıları kullanılıyor. Sonuç: 29.624 oyuncunun kariyer toplamı; cevap olabilen 1.889 oyuncunun 1.818'inde istatistik (%96), 1.392'sinde asist (%74). Piyasa değeri ve millî maç sayısı da uygulama veritabanına eklendi.
+
+**Ortak oturum altyapısı.** Sunucudaki lobi, XOX'a bağlı olmaktan çıkarıldı: her mod bir oda üreticisi veriyor, lobi eşleştirme, arkadaş odası, kopma, hükmen bitiş ve maç kaydını mod ne olursa olsun aynı kurallarla yürütüyor. Maç kaydına mod sütunu eklendi. XOX'un mesajları ve testleri değişmeden geçti.
+
+**Kart Düellosu.** Kural motoru (`packages/game-core`), sunucu odası, bot ve uygulama ekranları yazıldı:
+
+- Kart seçme ekranı: konsept başlığı ve sayaç, 7 kart yuvası, konsepte göre süzülen arama (arama penceresi 7 kart dolana kadar açık kalıyor), "Rastgele tamamla" ve "Hazırım".
+- Tur ekranı: skor tablosu ve sayaç, soru levhası, ortada iki kart yeri (rakibin oynadığı kart kapalı görünür), altta el; kart seçilince öne çıkar, "Bu kartı oyna" ile gönderilir.
+- Açılış: iki kart çevrilir, değerler ve "+1" belirir, kaybeden kart soluklaşır, "Tur senin / Tur rakibin / Tur berabere" yazısı ve sesler.
+- Sonuç: XOX ile aynı sonuç ekranı.
+
+Doğrulama: çalışan geliştirme sunucusunda betikle bota karşı tam maç (7 tur, 82 saniye); emülatörde bota karşı tam maç (kart seçimi, aramayla 5 kart, rastgele tamamlama, 7 tur, sonuç ekranı); betikle kurulan arkadaş odasına emülatörden kodla katılma ve maçtan ayrılınca rakibin hükmen kazanması.
+
+Emülatörde bulunan ve düzeltilen iki sorun: kartlar açıkken sayaç kırmızı "0" gösteriyordu; el bir sıraya inince yukarı kayıyordu (artık ekranın altına sabit).
+
+Veriyle ilgili gözlemler:
+
+- Vikiveri'den gelen sayılar yalnızca lig maçlarını kapsıyor; birinci kaynaktan gelen oyuncularla aynı soruda karşılaşınca fark doğuyor. Bilinirliği 45 ve üzeri oyuncuların %20'si Vikiveri kaynaklı (Hagi, Sneijder, Sergen Yalçın gibi).
+- "Eksik kariyer" işareti güvenilir çıkmadı; düelloda kullanılmıyor.
+- Teknik direktör ve başkan olarak tanınan bazı adlar (Süleyman Seba gibi) oyuncu kaydıyla havuzda; oyuncu kariyerleri olduğu için çıkarılmadı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -456,3 +481,12 @@ Aynı oturumda yapılan küçük düzeltmeler:
 | `490dc7b` | 7 Ekim | Sunucu paketleme dosyası ve barındırma seçenekleri |
 | `51ef979` | 7 Ekim | Tek görsel hata verince üretimin sürmesi |
 | `7e61dc9` | 7 Ekim | Üretilen 1.232 görselin kaynak kayıtları (uygulama veritabanı) |
+| `e48d9b6` | 7 Ekim | Belgeler: görsel üretiminin sonuçları |
+| `09caf5d` | 7 Ekim | Kariyer istatistikleri (ikinci açık veri seti ve Vikiveri), oyun modları planı |
+| `ebc4b81` | 7 Ekim | Piyasa değeri ve millî maç sayısının uygulama veritabanına eklenmesi |
+| `40a0f08` | 7 Ekim | Kart Düellosu kuralları (kural motoru) |
+| `cb9507a` | 7 Ekim | Kart Düellosu mesajları ve ortak veri ifadeleri |
+| `7fa425b` | 7 Ekim | Sunucuda birden fazla mod: oda üreticileri, Kart Düellosu odası ve botu |
+| `16e17b1` | 7 Ekim | Düello sürelerinin protokolde paylaşılması |
+| `bb4a295` | 7 Ekim | Uygulamada konsepte göre futbolcu arama |
+| `8c54ca2` | 7 Ekim | Uygulamada Kart Düellosu ekranları ve oyun seçimi |

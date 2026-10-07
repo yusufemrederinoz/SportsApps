@@ -407,11 +407,12 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | Uygulamadan sunucuya | Anlamı |
 |---|---|
 | `hello` | Selamlama: jeton, protokol sürümü, veri sürümü |
-| `queue` | Rastgele rakip sırasına gir (pazar, zorluk) |
-| `create-room` | Arkadaş odası kur |
+| `queue` | Rastgele rakip sırasına gir (mod, pazar, zorluk; mod verilmezse XOX) |
+| `create-room` | Arkadaş odası kur (mod, pazar, zorluk) |
 | `join-room` | Kodla odaya katıl |
 | `cancel` | Sıradan ya da kurulan odadan çık |
-| `answer` | Hamle: maç, sıra numarası, hücre, oyuncu kimliği |
+| `answer` | XOX hamlesi: maç, sıra numarası, hücre, oyuncu kimliği |
+| `act` | Yeni modların hamlesi: maç ve moda özgü eylem (düelloda el gönderme ya da kart oynama) |
 | `leave` | Maçtan ayrıl (hükmen kaybeder) |
 | `ping` | Bağlantıyı canlı tut |
 
@@ -421,7 +422,9 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | `queued`, `room`, `idle` | Sırada, oda kuruldu (kod), boşta |
 | `match` | Maçın tam durumu: ızgara, taraflar, kullanıcı adları, hamle listesi, kalan süre. Maç başında ve yeniden bağlanınca gelir |
 | `move` | Bir hamle: cevap (alındı, yanlış, daha önce kullanıldı) ya da süre dolması; yanında yeni sıranın kalan süresi |
-| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, hükmen) |
+| `session` | Yeni modlarda maçın tam durumu: mod, taraflar, kullanıcı adları ve oyuncunun görünümü. Maç başında ve yeniden bağlanınca gelir |
+| `view` | Yeni modlarda her değişiklikten sonra oyuncunun görebildiği durum. Gizli bilgi (rakibin eli, açılmamış soru) içinde yoktur |
+| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, puan, hükmen) |
 | `opponent` | Rakibin bağlantısı koptu ya da geri geldi |
 | `error` | Hata kodu |
 
@@ -433,17 +436,20 @@ Sunucu, sıranın kalan süresini milisaniye olarak gönderir; uygulama bunu ken
 |---|---|
 | `src/play/gateway.ts` | Bağlantıyı kabul eder, selamlamayı ve jetonu denetler, mesajları ayrıştırır, bağlantı başına mesaj sınırı uygular |
 | `src/play/messages.ts` | Gelen mesajın biçimini doğrular |
-| `src/play/lobby.ts` | Eşleştirme sırası, arkadaş odaları, oyuncu durumu, kopma ve geri dönüş |
-| `src/play/room.ts` | Tek bir maç: durum, cevap doğrulama, sıra süresi, sonuç |
+| `src/play/lobby.ts` | Eşleştirme sırası, arkadaş odaları, oyuncu durumu, kopma ve geri dönüş; moddan bağımsız |
+| `src/play/live-room.ts` | Lobinin bir maçtan beklediği arayüz (`LiveRoom`) ve oda üreticisinin aldığı bağlam (`RoomContext`) |
+| `src/play/grid-room.ts` | XOX oda üreticisi: ızgara seçer, maç odasını ve botu bağlar |
+| `src/play/room.ts` | Tek bir XOX maçı: durum, cevap doğrulama, sıra süresi, sonuç |
+| `src/play/duel-room.ts` | Kart Düellosu oda üreticisi: konsept seçimi, el doğrulama ve tamamlama, soru seçimi, tur ve açılış süreleri, bot |
 | `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
 | `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler |
-| `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar |
+| `src/football/library.ts` | Futbol veritabanını salt okunur açar: ızgara seçimi, cevap doğrulama, bilinen cevaplar, düello konseptleri ve kart değerleri |
 
 Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-data` paketindedir. Kural motoru da ortaktır (`packages/game-core`).
 
 ### Kurallar
 
-- **Eşleştirme.** Sıra pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyen biri varsa onunla eşleşir. Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
+- **Eşleştirme.** Sıra mod, pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyen biri varsa onunla eşleşir. Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
 - **Tek bağlantı.** Aynı hesap ikinci bir cihazdan bağlanırsa eski bağlantı kapatılır ve yeni bağlantı kaldığı yerden devam eder.
 - **Bot.** Sırada 6–11 saniye içinde rakip çıkmazsa maç bota karşı başlar. Bot, protokolde hiçbir yerde işaretlenmez; gerçek oyuncu gibi kullanıcı adı taşır (pazara göre ad havuzu, bir kısmı misafir adı biçiminde) ve hamlelerini 2,5–9 saniye düşünerek yapar. Bilemediği sırada bazen yanlış ama akla yatkın bir oyuncu söyler (satıra uyan, sütuna uymayan), bazen süreyi doldurur.
 - **Bot seviyesi.** Seçilen zorlukla başlar. Oyuncunun son beş online maçında en az üç sonuç varsa: galibiyet oranı %70 ve üzerindeyse bir seviye güçlenir, %30 ve altındaysa bir seviye zayıflar.
@@ -451,7 +457,8 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 - **Kopma.** Maçtaki oyuncunun bağlantısı koparsa rakibe bildirilir ve maç sürer. 30 saniye içinde dönerse maçın tam durumu gönderilir. Dönmezse hükmen kaybeder. Uygulama kopunca kendiliğinden yeniden bağlanmayı dener (artan aralıklarla, yaklaşık 20 saniye).
 - **Ayrılma.** Maç ekranından çıkan oyuncu hükmen kaybeder.
 - **Arkadaş odası.** Oda kuran oyuncuya beş karakterli bir kod verilir (karışabilecek 0, O, 1, I harfleri yoktur). Kod on dakika geçerlidir. Oda sahibi genel sırayla eşleşmez.
-- **Maç kaydı.** Her biten maç `matches` tablosuna yazılır. Oyuncu kendi maçlarını `GET /matches` ile alır; rakibin bot olup olmadığı kayıtta da tutulmaz.
+- **Maç kaydı.** Her biten maç `matches` tablosuna yazılır (mod sütunuyla). Oyuncu kendi maçlarını `GET /matches` ile alır; rakibin bot olup olmadığı kayıtta da tutulmaz. Düelloda hücre sayısı sütunlarında puanlar durur.
+- **Kart Düellosu.** Kurallar ve süreler [oyun-modlari.md](oyun-modlari.md) belgesinde. Sunucu: el kilitlenene kadar rakibin yalnızca hazır olup olmadığı görünür; tur sırasında rakibin yalnızca kart oynayıp oynamadığı görünür, kart kimliği tur çözülünce gelir. Gönderilen el en çok 7 farklı kart içerebilir ve hepsi konsepte uymalıdır; eksik kalanı sunucu tamamlar. Soru ölçütleri, iki elin bütün kartlarında değeri bilinenler arasından karıştırılarak seçilir. Konsept üyeliği ve kart değerleri `packages/football-data/src/duel.ts` içindeki ortak ifadelerle hesaplanır; uygulama aynı ifadeyle konsepte göre arama yapar.
 
 ### Uygulama parçaları
 
@@ -459,7 +466,9 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 |---|---|
 | `src/online/play-client.ts` | Bağlantı istemcisi: selamlama, canlı tutma, kopunca yeniden bağlanma |
 | `src/features/match/online.ts` | Sunucu mesajlarını maç oturumuna çevirir (yerel oyunla aynı oturum yapısı) |
-| `src/features/match/use-online-match.ts` | Online maçın kancası: arama, oda, oynama, hata durumları |
+| `src/features/match/use-online-match.ts` | Online maçın kancası: arama, oda, oynama, hata durumları; XOX ve düello mesajlarını birlikte işler |
+| `src/features/duel/*` | Kart Düellosu: görünüm (`duel-view`), kart seçimi (`hand-picker`), tur masası (`duel-table`), kapalı kart, sesler ve titreşim, konsept başlıkları ve değer biçimleri (`labels`) |
+| `src/features/games.ts` | Oyun listesi ve adları; ana ekrandaki oyun seçimi buradan beslenir |
 | `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
 | `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
 | `src/app/friend.tsx` | Oda kurma ve kodla katılma ekranı |
@@ -509,10 +518,10 @@ Açılış akışı:
 
 | Paket | Test sayısı | Neyi denetler |
 |---|---|---|
-| Veri hattı | 38 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı |
-| Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
-| Sunucu | 60 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (38): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı |
-| Uygulama | 60 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması |
+| Veri hattı | 48 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (8): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları |
+| Kural motoru | 34 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş |
+| Sunucu | 80 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç |
+| Uygulama | 70 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -542,3 +551,5 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Sıralama puanı yok; bot seviyesi yalnızca son maç sonuçlarına bakıyor.
 - Uygulama arka plana alınınca bağlantı kopar; 30 saniyeden uzun kalınırsa maç hükmen kaybedilir.
 - Sunucu şifresiz HTTP ile çalışıyor; yayında önüne TLS sonlandıran bir katman gerekir.
+- Kart Düellosu yalnızca online; bota karşı internetsiz oynanamıyor. Turnuva konseptleri ("Dünya Kupası'nda oynamış") veri olmadığı için yok.
+- Düelloda Vikiveri kaynaklı oyuncuların sayıları yalnızca lig maçlarını kapsıyor; diğerleri bütün resmî maçları. Aynı soruda karşılaşabiliyorlar.

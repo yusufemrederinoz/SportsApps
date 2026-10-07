@@ -18,7 +18,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 | Kimlik | Ekrandaki ad | Kaynak | Durum |
 |---|---|---|---|
 | `grid` | Futbol XOX | İlk mod | Yayında |
-| `duel` | Kart Düellosu | Kullanıcının istediği (yarışma programı biçimi) | Yapılıyor |
+| `duel` | Kart Düellosu | Kullanıcının istediği (yarışma programı biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
 | `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Sırada |
 | `higher` | Hangisi Yüksek | Öneri | Sırada |
 | `chain` | Zincir | Öneri | Sırada |
@@ -39,8 +39,18 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 Kararlar:
 
 - Bir futbolcu iki oyuncunun elinde de olabilir; seçimler gizli olduğu için engellenemez.
-- Sorular, iki elin 14 kartının hepsinde değeri bilinen ölçütlerden seçilir. Böylece istatistiği olmayan bir kart yüzünden haksız soru çıkmaz.
+- Sorular, iki elin 14 kartının hepsinde değeri bilinen ölçütlerden seçilir. Böylece istatistiği olmayan bir kart yüzünden haksız soru çıkmaz. Böyle ölçüt 7'den azsa sorular tekrar eder (aynı ölçüt ikinci kez sorulabilir).
 - Süre dolunca seçim yapmayan oyuncunun eli ya da kartı rastgele tamamlanır.
+
+Uygulanan hâli (7 Ekim 2026):
+
+- **Konseptler.** "Süper Lig tarihindeki yabancılar", "Yurt dışında oynamış yerli oyuncular", bir kulübün forması giymiş oyuncular, bir ülkenin futbolcuları, bir ligin oyuncuları. Konsept türü önce eşit olasılıkla, sonra o türün içinden seçilir; 36 kulüp konsepti olduğu hâlde kulüp konsepti beşte bir olasılıkla çıkar. Bir konseptin açılabilmesi için bilinirliği 45 ve üzeri, karşılaştırılabilir en az 25 oyuncusu olmalı. Türkiye pazarında 54 konsept var.
+- **Kart havuzu.** Konsepte uyan ve kariyer istatistiği olan (en az bir maçı ve doğum yılı bilinen) her futbolcu seçilebilir; bilinirlik şartı yoktur. Arama yalnızca konsepte uyanları gösterir.
+- **Ölçütler.** Kariyer golü, asist, maç, sarı kart, maç başına gol (iki basamak), en yüksek piyasa değeri, millî maç, yaşı büyük olan, yaşı küçük olan. Yaş soruları doğum yılıyla karşılaştırılır.
+- **Süreler.** Kart seçimi 90 saniye, her tur 20 saniye, kartların açık kaldığı ara 4,5 saniye. Sunucu ağ gecikmesi için 1,5 saniye pay bırakır.
+- **Eksik el.** Oyuncu "Rastgele tamamla" ile seçtiği kartları gönderir; sunucu eksikleri konseptin tanınmış 60 oyuncusu arasından rastgele doldurur. Süre dolarken uygulama o ana kadar seçilenleri kendiliğinden gönderir.
+- **Bot.** Konseptin tanınmış 60 oyuncusundan el kurar. Her ölçütte en iyi kartı aday sayar; zorluk 1'de bunlardan 1, zorluk 2'de 4, zorluk 3'te 7 tanesini alır, kalanı rastgeledir. Turda soruya en uygun kartı zorluğa göre %30, %60 ya da %85 olasılıkla oynar. Kart seçimini 9–26 saniyede, rakip hazır olunca 1,5–4 saniyede bitirir; turda 2–7 saniye düşünür.
+- **"Dünya Kupası'nda oynamış oyuncular"** gibi turnuva konseptleri henüz yok: veritabanında turnuva katılımı tutulmuyor.
 
 ### Kadro Kur (`draft`)
 
@@ -95,7 +105,8 @@ Kurallar:
 
 - Oyuncunun istatistiği bir kaynaktan gelir: birinci kaynakta varsa oradan, yoksa Vikiveri'den. İki kaynağın sayıları toplanmaz.
 - Her oyuncu için hangi ölçütlerin bilindiği tutulur. Asist yalnızca birinci kaynakta vardır.
-- Erken sezonları eksik görünen oyuncular (veride ilk sezonu, doğum yılına göre beklenenden geç başlayanlar) "eksik kariyer" olarak işaretlenir ve toplam soran sorularda kullanılmaz.
+- Erken sezonları eksik görünen oyuncular (veride ilk sezonu, doğum yılına göre beklenenden geç başlayanlar) "eksik kariyer" olarak işaretlenir. Bu işaret düelloda kullanılmıyor: Avrupa'ya geç gelen oyuncuları da (örnek: Mbaye Diagne) eksik saydığı için güvenilir çıkmadı.
+- Vikiveri'den gelen sayılar yalnızca lig maçlarını kapsar; birinci kaynak bütün resmî maçları sayar. İki kaynaktan gelen oyuncular aynı soruda karşılaşabilir; bu fark şimdilik kabul edildi (bilinirliği 45 ve üzeri oyuncuların %20'si Vikiveri kaynaklı).
 - Dakika verisi birinci kaynakta seyrek olduğu için kullanılmaz.
 
 Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbest lisansla yayımlanmıştır. Sayılar olgu olduğu için telif konusu olmaz, ama Transfermarkt'ın kullanım koşulları ve veritabanı hakkı açısından risk mevcut kaynağımızla aynı türdendir. Site doğrudan kazınmaz.
@@ -104,8 +115,8 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 
 | Mod | Gereken | Durum |
 |---|---|---|
-| `duel` | Konsept üyeliği (kulüp, lig, uyruk), kariyer istatistikleri, piyasa değeri, millî maç, yaş | İstatistik aktarımı yapılıyor |
-| `draft` | Kulüp üyeliği, mevki, kariyer istatistikleri | İstatistik aktarımı yapılıyor |
+| `duel` | Konsept üyeliği (kulüp, lig, uyruk), kariyer istatistikleri, piyasa değeri, millî maç, yaş | Hazır |
+| `draft` | Kulüp üyeliği, mevki, kariyer istatistikleri | Hazır |
 | `higher` | Piyasa değeri, millî maç, yaş, istatistik | Hazır ölçütlerle başlar |
 | `chain` | Kulüp üyeliği | Hazır |
 | `rare` | Izgara ölçütleri, bilinirlik puanı | Hazır |
@@ -116,14 +127,14 @@ Risk: iki Transfermarkt türevi kaynak da üçüncü kişilerce kazınıp serbes
 ## Teknik yaklaşım
 
 - **Kural motoru.** Her modun kuralları `packages/game-core` içinde saf fonksiyonlarla yazılır ve testleri orada durur.
-- **Oturum protokolü.** XOX'un mesajları değişmez. Yeni modlar ortak bir oturum mesajı kullanır: sunucu her değişiklikten sonra oyuncuya kendi görebildiği durumu ("görünüm") ve onu tetikleyen olayı gönderir; uygulama görünümü çizer, hamleyi `act` mesajıyla yollar.
-- **Sunucu.** Her mod için bir "ev sahibi" vardır: kural motorunu veritabanına ve saate bağlar, botu oynatır. Eşleştirme sırası mod başınadır.
-- **Uygulama.** Ana ekran mod seçimine dönüşür. Her modun kendi ekranı vardır; bağlantı, arama ve hata ekranları ortaktır.
+- **Oturum protokolü.** XOX'un mesajları değişmez. Yeni modlar maç başında ve yeniden bağlanınca `session` (tam durum), her değişiklikten sonra `view` (oyuncunun görebildiği durum) alır; hamle `act` mesajıyla gider. Ayrıntı teknik mimaride.
+- **Sunucu.** Her mod bir "oda üreticisi" verir (`RoomFactory`); lobi hangi modda olursa olsun aynı eşleştirme, arkadaş odası, kopma ve maç kaydı kurallarını uygular. Eşleştirme sırası mod, pazar ve zorluk başınadır.
+- **Uygulama.** Ana ekranda oyun seçimi var. Her modun kendi ekranı vardır; bağlantı, arama ve hata ekranları ortaktır. Arkadaş odasına kodla katılan oyuncu modu bilmez; ekran sunucudan gelen ilk mesaja göre açılır.
 
 ## Yapım sırası
 
-1. İstatistik aktarımı ve ortak oturum altyapısı.
-2. Kart Düellosu.
+1. İstatistik aktarımı ve ortak oturum altyapısı. (Tamam)
+2. Kart Düellosu. (Tamam)
 3. Kadro Kur.
 4. Hangisi Yüksek, Zincir.
 5. En Az Bilinen, Açık Artırma.

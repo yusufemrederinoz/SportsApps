@@ -4,7 +4,7 @@ Son güncelleme: 7 Ekim 2026
 
 Adımlar bağımlılık sırasına göre dizilmiştir. Süre tahmini yoktur; Adım 0'daki kararlar kapandıktan sonra eklenir. Kararların gerekçesi [proje-yonelimi.md](proje-yonelimi.md) içindedir.
 
-Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 3 → 7 → 6 → 8 → 9 → 10. Adım 3 ve 7, Adım 5'in ardından yapıldı.
+Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 3 → 7 → 7B → 6 → 8 → 9 → 10. Adım 3 ve 7, Adım 5'in ardından yapıldı. Adım 7B (yeni oyun modları) kullanıcının isteğiyle yayından önceye alındı.
 
 ## Adım 0 — Açık kararları kapat
 
@@ -223,6 +223,20 @@ Kalanlar:
 
 Bitti sayılır: Tanınmış oyuncuların kartları uygulamada görünür; atıf ekranı eksiksizdir.
 
+## Adım 7B — Yeni oyun modları
+
+Durum: sürüyor (7 Ekim 2026'da başladı). Kurallar ve yapım sırası [oyun-modlari.md](oyun-modlari.md) belgesinde.
+
+Yapılanlar:
+
+- Kariyer istatistikleri: ikinci açık veri seti ve Vikiveri yedeği; piyasa değeri ve millî maç sayısı.
+- Sunucuda moddan bağımsız lobi ve oda üreticileri; maç kaydında mod.
+- Kart Düellosu: kural motoru, sunucu odası ve bot, uygulama ekranları, ana ekranda oyun seçimi, arkadaş odasında mod. Emülatörde bota karşı ve arkadaş odasında denendi.
+
+Sıradakiler: Kadro Kur, Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, Kariyer Yolu, İlk 10.
+
+Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; her biri için kural testleri, sunucu testleri ve emülatörde baştan sona bir maç vardır.
+
 ## Adım 8 — Gelir modeli ve mağaza hazırlığı
 
 - Reklam ve uygulama içi satın alma eklenir.
@@ -243,5 +257,5 @@ Bitti sayılır: Uygulama iki mağazada yayındadır.
 ## Adım 10 — Yayın sonrası
 
 - Veri hattı haftalık çalışır; yeni veritabanı uygulamaya güncelleme olarak iner.
-- İkinci oyun modu eklenir. İlk aday: "iki takım, bir oyuncu".
+- Yeni modlar Adım 7B'ye alındı; yayından sonra kullanıcı ilgisine göre yenileri eklenir.
 - Yorumlar ve eşleşme süreleri izlenir.
