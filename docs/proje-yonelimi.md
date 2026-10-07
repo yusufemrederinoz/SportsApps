@@ -18,7 +18,7 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Veri | Yalnızca ücretsiz kaynaklar |
 | Kulüp logosu | Gerçek logo kullanılmaz |
 | Oyuncu görseli | Olacak. Oyuncunun fotoğrafı bulunur ve bir araçla çizgi film tarzına çevrilir |
-| Görsel dönüştürme | Yerel ekran kartı var. Pilotta yerel yapay zekâ ve klasik filtre karşılaştırılır |
+| Görsel dönüştürme | Yerel ekran kartında SDXL ile çizime çevirme. Pilotta klasik filtreyle karşılaştırıldı; filtre logoları koruduğu için elendi |
 | Veri kaynağı | transfermarkt-datasets ile Wikidata birleştirilir |
 | İlk sürümün lig kapsamı | Süper Lig ve beş büyük lig (İngiltere, İspanya, İtalya, Almanya, Fransa) |
 | Sunucu | Kendi sunucumuz: Node.js ve WebSocket |
@@ -49,6 +49,7 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Bot seviyesi | Seçilen zorlukla başlar; oyuncunun son online sonuçlarına göre bir seviye güçlenir ya da zayıflar |
 | Kopan bağlantı | Oyuncu 30 saniye içinde dönerse maç sürer, dönmezse hükmen kaybeder. Maçtan çıkan da hükmen kaybeder |
 | Arkadaş daveti | Beş karakterli oda kodu, on dakika geçerli |
+| Oyuncu görselleri | Üretildi. Fotoğrafı uygun olmayan oyuncuda kart görselsiz kalır |
 | Arayüz incelemesi | Geliştirme makinesine Android emülatörü kuruldu (7 Ekim 2026). Görünüm önce emülatörde, sonra telefonda incelenir |
 | Belgeleme | Yapılan her iş `docs` altında düzenli olarak belgelenir |
 | Git düzeni | Küçük commitlerle doğrudan `main` dalına gönderilir. Commitlerde Claude imzası olmaz |
@@ -105,7 +106,9 @@ Kaynak olarak Wikidata'nın işaret ettiği Wikimedia Commons fotoğrafları ön
 - 200 fotoğraflık örneklemde lisansların yaklaşık %70'i CC BY-SA, %15'i CC BY, %13'ü CC0 veya kamu malı.
 - Yükümlülük: uygulamada her görselin yazarını ve lisansını gösteren bir "Görsel kaynakları" ekranı. CC BY-SA fotoğraflardan üretilen çizimler de aynı lisansla paylaşılmış sayılır.
 - Fotoğrafı olmayan oyuncular için genel tasarımlı bir yedek kart gerekir.
-- Dönüştürme yöntemi, 20–30 oyunculuk bir pilotla seçilir. Adaylar: yerel ekran kartında çalışan yapay zekâ ve klasik filtre.
+- Dönüştürme yöntemi pilotla seçildi (7 Ekim 2026): yerel ekran kartında SDXL. Fotoğraf önce arka plandan ve forma logolarından temizlenir, sonra çizime çevrilir, en son arka plandan ayrılıp kartın zeminine oturtulur.
+- Kullanılan modellerin hepsi ticari kullanıma izin veren lisanslıdır. Yüz tanıma modeli kullanılmaz.
+- Görseller sunucudan verilir; uygulama paketine girmez.
 
 Serbest lisans fotoğrafın telifini çözer; oyuncunun kişilik hakkı riski sürer. Bu risk bilinerek alınmıştır.
 

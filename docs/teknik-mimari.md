@@ -31,10 +31,11 @@ SportApps/
 │   ├── game-core/        Uygulama ve sunucunun ortak kural motoru
 │   └── football-data/    Uygulama ve sunucunun ortak kullandığı veritabanı sorguları
 ├── data/                 Veri hattı (Python)
-│   ├── pipeline/         Hattın kodu
+│   ├── pipeline/         Veri hattının kodu
+│   ├── portraits/        Görsel hattının kodu (yerel yapay zekâ)
 │   ├── overrides/        Elle düzeltme tabloları
 │   ├── tests/            Veri testleri
-│   ├── build/            Üretilen veritabanı ve rapor (depoya girmez)
+│   ├── build/            Üretilen veritabanı, rapor ve oyuncu görselleri (depoya girmez)
 │   └── .cache/           İndirilen ham veri (depoya girmez)
 └── docs/                 Belgeler
 ```
@@ -192,6 +193,62 @@ Tam veritabanından farkları:
 - Bilinirlik puanı 20'nin altındaki oyuncular için satır tutulmaz; bu oyuncular yine geçerli cevaptır.
 - Ad araması için `player_search` adında tam metin dizini (FTS5) vardır.
 
+## Görsel hattı
+
+Konum: `data/portraits`. Oyuncu fotoğraflarını çizim tarzında, arka planı saydam kart görsellerine çevirir. Veri hattından ayrıdır: ekran kartı ve dış paketler ister, bu yüzden kendi Python ortamında çalışır.
+
+### Kurulum ve komutlar
+
+| İş | Komut (`data` klasöründe) |
+|---|---|
+| Ortamı kurmak | `python -m venv .venv-imaging`, ardından `.venv-imaging\Scripts\pip install torch torchvision --index-url https://download.pytorch.org/whl/cu128` ve `.venv-imaging\Scripts\pip install -r portraits/requirements.txt` |
+| Hattın tamamı | `.venv-imaging\Scripts\python -m portraits all` |
+| Tek aşama | `fetch`, `crop`, `enlarge`, `stylize`, `export` (örnek: `python -m portraits stylize --limit 50`) |
+| Karşılaştırma sayfası üretmek | `.venv-imaging\Scripts\python -m portraits.pilot 8 0` |
+
+Her aşama kaldığı yerden devam eder; yarıda kesilen çalıştırma yeniden başlatılabilir. `fetch` ve `export` dış paket istemez, sistem Python'u ile de çalışır.
+
+### Aşamalar
+
+| Aşama | Dosya | Yaptığı |
+|---|---|---|
+| `fetch` | `sources.py` | Hedef oyuncuların Commons fotoğrafı için yazar ve lisans bilgisini çeker, serbest lisanslı olanların 1280 piksellik kopyasını indirir |
+| `crop` | `faces.py` | Yüzü bulur, baş ve omuzları içine alan kare kırpar. Uygun olmayan fotoğrafı nedeniyle birlikte işaretler |
+| `enlarge` | `faces.py` | Yüzü küçük kalan fotoğrafların yüksek çözünürlüklü kopyasını indirip yeniden dener |
+| `stylize` | `stylize.py`, `matting.py` | Arka planı ve forma üzerindeki logoları temizler, kırpımı çizime çevirir, sonucu arka plandan ayırır |
+| `export` | `publish.py` | Üretilen görsellerin yazar ve lisans kaydını iki veritabanına yazar, veri sürümünü yeniler |
+
+Hedef: Türkiye pazarında bilinirlik puanı 32 ve üzeri olan, yani ızgaralarda cevap olarak çıkabilen oyuncular.
+
+### Kurallar
+
+- **Lisans.** Yalnızca değiştirilmiş kopyaya izin veren lisanslar kabul edilir: CC0, kamu malı, CC BY, CC BY-SA. Ticari kullanımı ya da türev işi yasaklayan (NC, ND) lisanslar ve lisansı okunamayan dosyalar elenir.
+- **Yüz.** YuNet ile bulunur. Büyük yüzlerde algılayıcı güvenini yitirdiği için görüntü üç ölçekte taranır. Yüzü 64 pikselden dar olan, tam profilden duran, başı kadrajdan taşan ya da kadrajda benzer büyüklükte ikinci bir yüz bulunan fotoğraf kullanılmaz.
+- **Kırpma.** Karenin kenarı yüzün 2,5 katıdır. Fotoğraf dar ise 1,9 kata kadar küçülür ve kare fotoğrafın içine kaydırılır; yine de sığmayan kısım düz koyu renkle doldurulur. Çizim bittikten sonra görsel, yüz yatayda ortada olacak şekilde hizalanır.
+- **Çözünürlük.** Kırpım kaynağı 300 pikselden küçükse görsel üretilmez; düşük çözünürlüklü kaynakta benzerlik kayboluyor.
+- **Ön temizlik.** Çizimden önce arka plan düz koyu renge, çene çizgisinin altındaki giysi tek renge çevrilir. Böylece sponsor panoları, kulüp armaları ve forma yazıları çizime geçmez.
+- **Çizim.** SDXL, görüntüden görüntüye kipte çalışır (güç 0,66; 24 adım). Yüz hatlarını korumak için ControlNet yalnızca baş bölgesindeki kenar çizgileriyle beslenir (ağırlık 0,8).
+- **Çıktı.** 512×512, saydam arka planlı WebP; ortalama 25 KB. `data/build/portraits/<oyuncu kimliği>.webp` olarak yazılır ve depoya girmez.
+
+### Modeller
+
+| Model | Görevi | Lisans |
+|---|---|---|
+| Stable Diffusion XL base 1.0 | Çizim | CreativeML Open RAIL++-M (ticari kullanıma izin verir) |
+| ControlNet Canny SDXL 1.0 | Yüz hatlarını koruma | Open RAIL++ |
+| SDXL VAE fp16 fix | Yarım duyarlıklı kod çözücü | MIT |
+| BiRefNet | Arka plan ayırma | MIT |
+| YuNet | Yüz bulma | MIT |
+
+Yüz tanıma ya da kimlik eşleme modeli kullanılmaz. Modeller yaklaşık 10 GB yer tutar ve `data/.cache/portraits/models` ile Hugging Face önbelleğine iner.
+
+### Uygulamaya ulaşması
+
+- Görsellerin listesi, yazar ve lisansla birlikte veritabanındaki `player_portraits` tablosundadır. `export` bu tabloyu uygulama veritabanında yerinde günceller ve `version.json` içindeki veri sürümünü yeniler; sürüm değişince uygulama yeni veritabanını açar.
+- Görsel dosyalarını sunucu verir: `GET /v1/portraits/<kimlik>.webp`. Klasör `PORTRAITS_PATH` ile ayarlanır (varsayılan `data/build/portraits`). Cevap bir hafta önbelleklenir; adres veri sürümünü taşıdığı için yeni üretimde önbellek kendiliğinden yenilenir.
+- Kart, veritabanında görseli kayıtlı oyuncu için görseli yükler ve cihazda saklar. Görseli olmayan ya da sunucuya ulaşılamayan durumda kart eski hâliyle görünür.
+- "Görsel kaynakları" ekranı (hesap ekranından açılır) her görselin oyuncusunu, yazarını ve lisansını listeler; satıra dokununca kaynak fotoğraf açılır. Çizimler kaynak fotoğrafla aynı lisansla paylaşılır.
+
 ## Kural motoru
 
 Konum: `packages/game-core`. Saf TypeScript; ağ, veritabanı ya da arayüz bilmez. Aynı kod hem uygulamada hem sunucuda çalışacak.
@@ -267,6 +324,7 @@ Ortam değişkenleriyle verilir; hepsinin varsayılanı vardır.
 | `PORT` | `4000` | Kapı |
 | `DATABASE_PATH` | `server/data/sportapps.sqlite` | Sunucu veritabanı dosyası |
 | `FOOTBALL_DATABASE_PATH` | `app/assets/data/football.db` | Cevapların doğrulandığı futbol veritabanı. Dosya yoksa sunucu açılır ama online maç kapalı kalır |
+| `PORTRAITS_PATH` | `data/build/portraits` | Oyuncu görsellerinin durduğu klasör |
 | `SESSION_DAYS` | `90` | Oturum ömrü |
 | `GOOGLE_CLIENT_IDS` | boş | Kabul edilen Google istemci kimlikleri, virgülle ayrılır |
 | `APPLE_CLIENT_IDS` | boş | Kabul edilen Apple uygulama kimlikleri, virgülle ayrılır |
@@ -287,6 +345,7 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `POST /auth/logout` | Oturumu kapatır |
 | `GET /me` | Oturumdaki hesabı döndürür |
 | `GET /matches` | Oturumdaki oyuncunun son online maçları |
+| `GET /portraits/<kimlik>.webp` | Oyuncu görseli |
 | `GET /play` (WebSocket) | Online maçın canlı bağlantısı |
 
 Giriş ve kayıt uçları, geçerli bir oturumla gelen isteği "zaten giriş yapılmış" hatasıyla reddeder; önce çıkış yapılmalıdır. Kullanıcı adını değiştiren bir uç yoktur.
@@ -432,9 +491,9 @@ Açılış akışı:
 
 | Paket | Test sayısı | Neyi denetler |
 |---|---|---|
-| Veri hattı | 23 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme |
+| Veri hattı | 38 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı |
 | Kural motoru | 24 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme |
-| Sunucu | 57 | Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (38): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı |
+| Sunucu | 60 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (38): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı |
 | Uygulama | 60 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
@@ -443,12 +502,15 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 
 - Arayüz Android emülatöründe görülerek doğrulanıyor; iOS'ta hiç denenmedi.
 - Sesler yer tutucu, bayraklar emoji.
-- Türkçe arayüzde yabancı kulüp ve oyuncu adları da Türkçe kuralla büyük harfe çevriliyor ("MANCHESTER CİTY"). Adın diline göre büyütme henüz yok.
+- Büyük harfe çevirme adın diline göre yapılıyor: yerli lig kulüpleri, ülke adları ve yerli oyuncular arayüz diliyle, diğerleri dilden bağımsız kuralla. Yabancı ülke vatandaşı olup Türkçe adı olan oyuncularda ("Özil") noktalı İ çıkmaz.
 - npm, onaylanmamış paketlerin kurulum betiklerini çalıştırmıyor. Skia'nın kurulum betiği bu yüzden çalışmadı. Expo Go ile sorun olmaz; ilk yerel derlemeden önce `npm approve-scripts @shopify/react-native-skia` gerekir.
 - Oyuncu kimlikleri kaynak kimliklerinden türetiliyor; yayından önce kalıcı bir kimlik kaydına geçilmeli.
 - Tarihsiz Wikidata kayıtları cevap olarak kabul edildiği için hatalı kabuller olabilir (örnek: bir kulüp başkanının oyuncu olarak görünmesi).
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Uygulama veritabanı (13 MB) depoya ikili dosya olarak giriyor; her veri güncellemesi depo geçmişini büyütür.
+- Oyuncu görselleri depoda değil; yalnızca üretildiği bilgisayarda (`data/build/portraits`). Sunucu başka bir yere taşınırken bu klasör de taşınmalı ya da bir depolama servisine yüklenmeli.
+- Görseller elle gözden geçirilmedi. Otomatik elemeye rağmen kötü çıkan çizimler olabilir; tek tek silmek için dosyayı silip `export` çalıştırmak yeterli.
+- Fotoğrafı elenen tanınmış oyuncular için başka bir Commons fotoğrafı seçme yolu (elle düzeltme tablosu) henüz yok.
 - Web hedefi kurulmadı; veritabanı kütüphanesinin web desteği ek ayar ister.
 - Giriş akışı emülatörde baştan sona doğrulandı; gerçek telefonda düzeltmeden sonra henüz denenmedi.
 - Üye, sunucuya ulaşılamayan bir ağda uygulamayı açarsa ana ekran en çok 8 saniye gecikir; hesap bilgisi cihazda saklanmadığı için istek zaman aşımı bekleniyor.

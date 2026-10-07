@@ -4,7 +4,7 @@ Son güncelleme: 7 Ekim 2026
 
 Adımlar bağımlılık sırasına göre dizilmiştir. Süre tahmini yoktur; Adım 0'daki kararlar kapandıktan sonra eklenir. Kararların gerekçesi [proje-yonelimi.md](proje-yonelimi.md) içindedir.
 
-Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 6 → 8 → 9 → 10. Adım 3 ertelendi; Adım 7 ondan sonra herhangi bir zamanda yapılabilir.
+Sıra: 0 → 1 → 2 → 4 → 4B → 5 → 3 → 7 → 6 → 8 → 9 → 10. Adım 3 ve 7, Adım 5'in ardından yapıldı.
 
 ## Adım 0 — Açık kararları kapat
 
@@ -62,14 +62,13 @@ Bitti sayılır: Her zorluk seviyesinde en az 1.000 geçerli ızgara vardır (ö
 
 ## Adım 3 — Görsel hattı pilotu
 
-Durum: ertelendi (7 Ekim 2026). Önce sunucu tarafı yapılacak.
+Durum: tamamlandı (7 Ekim 2026).
 
-- 20–30 oyuncu için Commons fotoğrafı ile yazar ve lisans bilgisi çekilir.
-- Yüz kırpılır; yerel ekran kartında çalışan yapay zekâ ile klasik filtre yan yana denenir.
-- Yöntem; benzerlik, tutarlılık ve görsel başına maliyete göre seçilir.
-- Fotoğrafı olmayanlar için yedek kart tasarlanır.
-
-Bitti sayılır: Tarz ve araç seçilir, görsel başına maliyet bilinir.
+- Commons fotoğrafı ile yazar ve lisans bilgisi çekildi; yalnızca değiştirilmiş kopyaya izin veren lisanslar alındı.
+- Yüz bulunup baş ve omuzlar kırpıldı.
+- Yerel ekran kartında çalışan model ile klasik filtre yan yana denendi. Model seçildi: klasik filtre logoları ve arka planı koruyor.
+- Görsel başına maliyet: RTX 5080'de yaklaşık 8 saniye; para ödenen bir servis yok.
+- Yedek kart: görseli olmayan oyuncuda kart, görselsiz mevcut tasarımıyla görünür.
 
 ## Adım 4 — Uygulama iskeleti ve offline XOX
 
@@ -191,10 +190,20 @@ Bitti sayılır: Bir maçın sonucu puana ve lider tablosuna yansır; günlük b
 
 ## Adım 7 — Görsellerin toplu üretimi ve kart koleksiyonu
 
-- Seçilen yöntemle fotoğrafı olan oyuncuların kartları üretilir; önce en tanınmışlar.
-- En tanınmış oyuncuların kartları elle gözden geçirilir.
-- Görseller bir depolama servisinden sunulur, cihazda önbelleğe alınır.
-- "Görsel kaynakları" ekranı yazar ve lisans verisinden otomatik oluşturulur.
+Durum: büyük kısmı tamamlandı (7 Ekim 2026).
+
+Yapılanlar:
+
+- Izgaralarda cevap olarak çıkabilen oyuncular için (Türkiye pazarı, bilinirlik 32 ve üzeri) toplu üretim.
+- Görseller sunucudan veriliyor, uygulama cihazda saklıyor.
+- "Görsel kaynakları" ekranı yazar ve lisans verisinden kendiliğinden oluşuyor.
+
+Kalanlar:
+
+- En tanınmış oyuncuların görsellerini elle gözden geçirmek; kötü çıkanları silmek.
+- Fotoğrafı elenen tanınmış oyuncular için başka bir Commons fotoğrafı seçebilmek (elle düzeltme tablosu).
+- Görselleri bir depolama servisine taşımak (barındırma kararıyla birlikte).
+- Kart koleksiyonu.
 
 Bitti sayılır: Tanınmış oyuncuların kartları uygulamada görünür; atıf ekranı eksiksizdir.
 

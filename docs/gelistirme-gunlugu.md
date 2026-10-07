@@ -350,6 +350,54 @@ Yan değişiklikler:
 
 Dikkat: yeni çalışma alanı paketi eklendiği için çalışan Expo sunucusu yeniden başlatılmalı (`npx expo start`); yoksa "Unable to resolve @sportapps/football-data" hatası verir.
 
+### Adım 3 ve 7 — Oyuncu görselleri (yerel yapay zekâ)
+
+Ertelenen görsel işi yapıldı: pilot, yöntem seçimi, toplu üretim ve uygulamaya bağlama. Hattın ayrıntısı [teknik-mimari.md](teknik-mimari.md) içindeki "Görsel hattı" bölümünde.
+
+Kararlar (soru sormadan, ücretsiz ve en az riskli seçenekle verildi):
+
+| Konu | Karar | Neden |
+|---|---|---|
+| Fotoğraf kaynağı | Wikimedia Commons, yalnızca CC0, kamu malı, CC BY ve CC BY-SA | Değiştirilmiş kopyaya izin veren tek kaynak; yönelim belgesindeki kararla aynı |
+| Yöntem | Yerel ekran kartında SDXL ile çizime çevirme | Ücretsiz, veri bilgisayardan çıkmıyor, ticari kullanıma izin veren lisans |
+| Benzerliği koruma | ControlNet, yalnızca baş bölgesinin kenar çizgileriyle | Yüz hatları kalıyor, giysi ve arka plan serbestçe yeniden çiziliyor |
+| Logolar | Çizimden önce arka plan düz renge, giysi tek renge çevriliyor | "Gerçek logo yok" kuralı; forma armaları ve sponsor panoları çizime geçmiyor |
+| Kart görünümü | Arka planı saydam kesim, kartın metalik zemini üstünde | EA FC kartlarındaki görünüm; koyu kare bir fotoğraf kartın içinde yama gibi dururdu |
+| Yüz tanıma modeli | Kullanılmadı | Benzerliği artıran hazır modellerin lisansı ticari kullanıma izin vermiyor |
+| Dağıtım | Görselleri sunucu veriyor, uygulama cihazda saklıyor | 1.000'den fazla görsel uygulama paketini onlarca MB büyütürdü |
+| Kaynak gösterme | Uygulamada "Görsel kaynakları" ekranı | CC BY ve CC BY-SA yazar ve lisansın gösterilmesini şart koşuyor |
+
+Pilotta denenenler:
+
+| Deneme | Sonuç |
+|---|---|
+| Klasik filtre (kenar koruyan yumuşatma, renk azaltma, çizgi) | Fotoğrafın posterleşmiş hâli; logolar, yazılar ve arka plan aynen kalıyor. Elendi |
+| Model, güç 0,50 | Fazla fotoğraf gibi; armalar okunuyor |
+| Model, güç 0,74 | Çizim tarzı güçlü ama benzerlik kayboluyor |
+| Model, güç 0,66 ve ön temizlik | Seçildi: tanınır yüz, düz forma, temiz kesim |
+
+Yolda çözülen sorunlar:
+
+| Sorun | Çözüm |
+|---|---|
+| Model indirmesi takıldı | Hugging Face'in yeni aktarım katmanı kapatıldı; büyük dosyalar çok bağlantılı indiriciyle alındı |
+| Sponsor panoları ve armalar çizime geçti | Çizimden önce arka plan ayırma ve giysiyi tek renge çevirme |
+| Baş elipsinin dışındaki saç forma sanıldı | Çene çizgisinin üstü olduğu gibi bırakılıyor |
+| Büyük yüzlerde "yüz yok" | Algılayıcı büyük yüzde güvenini yitiriyor; görüntü üç ölçekte taranıyor |
+| Kenara yakın duran oyuncu eleniyordu | Kırpma kutusu fotoğrafın içine kaydırılıyor; çizim sonradan yüze göre ortalanıyor |
+| Yakın çekim portreler eleniyordu | Kenarlar düz renkle dolduruluyor; kesik omuzlar kartta isim bandının altında kalıyor |
+| Düşük çözünürlüklü kaynakta yüz başkasına benziyor | 300 pikselden küçük kaynaktan görsel üretilmiyor |
+| Kadrajda iki kişi, tam profil, kesik baş | Otomatik eleniyor |
+
+Sayılar (Türkiye pazarı, bilinirlik 32 ve üzeri): 1.889 oyuncunun 1.665'inde Commons fotoğrafı var; bunların 1.647'si serbest lisanslı. Otomatik elemeden sonra 1.322 fotoğraf kırpıldı. Görsel başına üretim süresi RTX 5080'de yaklaşık 8 saniye; maliyet yalnızca elektrik.
+
+Uygulama tarafı: kart, görseli olan oyuncuda görseli metalik zeminin üstünde gösteriyor; görsel yoksa eski hâliyle kalıyor. Emülatörde gerçek bir maçta doğrulandı.
+
+Aynı oturumda yapılan küçük düzeltmeler:
+
+- Türkçe arayüzde yabancı adlar artık Türkçe kuralla büyütülmüyor ("MANCHESTER CITY", "LIVERPOOL"); yerli kulüp, ülke ve yerli oyuncu adları Türkçe kuralla büyütülüyor ("BEŞİKTAŞ", "BREZİLYA").
+- Kartta iki kelimelik adların ikinci kelimesi kayboluyordu; ad artık bandın tamamına yayılıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -377,3 +425,9 @@ Dikkat: yeni çalışma alanı paketi eklendiği için çalışan Expo sunucusu 
 | `5a5203a` | 7 Ekim | Ortak futbol sorguları paketi |
 | `fc6cf3d` | 7 Ekim | Sunucuda online maç: maç odası, eşleştirme, bot, maç kaydı |
 | `2011c7c` | 7 Ekim | Uygulamada online maç, arkadaş odası ve maç geçmişi |
+| `c157ce9` | 7 Ekim | Belgeler: online maç ve arkadaş odası |
+| `a6cb610` | 7 Ekim | Görsel hattı: Commons fotoğrafından çizim |
+| `0062178` | 7 Ekim | Sunucuda görsel dosyalarının sunulması |
+| `2ed7bec` | 7 Ekim | Kartlarda görsel ve "Görsel kaynakları" ekranı |
+| `b52c4f6` | 7 Ekim | Adın diline göre büyük harf, kartta tam ad |
+| `7fc5278` | 7 Ekim | Görsel hattında kırpmanın sağlamlaştırılması |
