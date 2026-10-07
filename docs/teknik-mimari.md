@@ -595,7 +595,8 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Maçlar ve eşleştirme sırası da bellekte; sunucu yeniden başlarsa süren maçlar kaybolur ve tek sunucudan fazlası çalıştırılamaz.
 - Online maç iki gerçek telefonla henüz denenmedi; emülatör ile betikle bağlanan ikinci oyuncu arasında baştan sona oynandı.
 - Bot, rakibe bot olduğunu söylemiyor. Bu bilinçli bir ürün kararı; mağaza kuralları ya da kullanıcı tepkisi gerektirirse kullanım koşullarında belirtilmeli.
-- Sıralama puanı yok; bot seviyesi yalnızca son maç sonuçlarına bakıyor.
+- Bot seviyesi yalnızca son maç sonuçlarına bakıyor; oyuncunun puanını hesaba katmıyor (gizli botun puanı oyuncununkine yakın seçiliyor).
+- Lider tablosu yok.
 - Uygulama arka plana alınınca bağlantı kopar; 30 saniyeden uzun kalınırsa maç hükmen kaybedilir.
 - Sunucu şifresiz HTTP ile çalışıyor; yayında önüne TLS sonlandıran bir katman gerekir.
 - Kart Düellosu yalnızca online; bota karşı internetsiz oynanamıyor. Turnuva konseptleri ("Dünya Kupası'nda oynamış") veri olmadığı için yok.
