@@ -21,8 +21,10 @@ import {
   type HigherLibrary,
   type HigherTiming,
 } from '../src/play/higher-room';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const BOT_WAIT = { minimum: 4000, maximum: 4000 };
 const TIMING: HigherTiming = { ...DEFAULT_HIGHER_TIMING, botAnswerMilliseconds: { minimum: 3000, maximum: 3000 } };
@@ -58,6 +60,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -135,10 +138,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(4_000_000);
   seed = 9;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { higher: createHigherRoomFactory(library, TIMING) },
+    games: { higher: capturing(createHigherRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -226,6 +230,27 @@ describe('higher or lower matches', () => {
     expect(view.scores[side]).toBe(1);
     vi.advanceTimersByTime(TIMING.revealMilliseconds);
     expect(first.view()).toMatchObject({ phase: 'answering', turn: side });
+  });
+
+  it('skips a question without breaking the streak and reveals one value', () => {
+    const { first, active } = pair();
+    const player = active();
+    const side = player.session().side;
+    const room = lastRoom(rooms);
+    choose(player, better(player.view()));
+    vi.advanceTimersByTime(TIMING.revealMilliseconds);
+    const before = first.view().question;
+    expect(room.useJoker(side === 'x' ? 'o' : 'x', 'pass', {})).toEqual({ error: 'invalid-action' });
+    expect(room.useJoker(side, 'pass', {})).toEqual({ reveal: { kind: 'pass' } });
+    const after = first.view();
+    expect(after).toMatchObject({ phase: 'answering', turn: side, streak: 1 });
+    expect(after.question?.cards).not.toEqual(before?.cards);
+    const shown = room.useJoker(side, 'reveal-value', {});
+    expect(shown).toMatchObject({ reveal: { kind: 'value' } });
+    if ('reveal' in shown && shown.reveal.kind === 'value') {
+      expect(after.question?.cards).toContain(shown.reveal.footballerId);
+      expect(shown.reveal.value).toBe(metricValue(rowOf(shown.reveal.footballerId), after.question?.metric ?? 'goals'));
+    }
   });
 
   it('passes the turn after a wrong answer or when time runs out', () => {

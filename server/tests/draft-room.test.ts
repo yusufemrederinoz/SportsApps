@@ -13,8 +13,10 @@ import {
   type DraftTiming,
 } from '../src/play/draft-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
+import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
+import { capturing, lastRoom } from './capture';
 
 const CLUBS = Array.from({ length: 10 }, (_, index) => 101 + index);
 const POSITIONS = ['GK', 'DF', 'MF', 'FW'] as const;
@@ -51,6 +53,7 @@ let database: Database;
 let history: MatchHistory;
 let lobby: Lobby;
 let seed: number;
+let rooms: LiveRoom[];
 
 function random(): number {
   seed = (seed * 1103515245 + 12345) % 2147483648;
@@ -126,10 +129,11 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.setSystemTime(3_000_000);
   seed = 5;
+  rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
   lobby = createLobby({
-    games: { draft: createDraftRoomFactory(library, TIMING) },
+    games: { draft: capturing(createDraftRoomFactory(library, TIMING), rooms) },
     hasMarket: (market) => market === 'tr' || market === 'empty',
     history,
     random,
@@ -226,6 +230,21 @@ describe('picking footballers', () => {
     expect(view).toMatchObject({ phase: 'playing', round: 2, picked: { x: false, o: false } });
     expect(view.clubs).toHaveLength(2);
     expect(view.clubs[1]).not.toBe(opening);
+  });
+
+  it('adds fifteen seconds to the round and shows assists until the player has picked', () => {
+    const { first } = pair();
+    const side = first.session().side;
+    const room = lastRoom(rooms);
+    expect(room.useJoker(side, 'show-assists', {})).toEqual({ reveal: { kind: 'assists', round: 1 } });
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 15 } });
+    expect(first.view().deadlineIn).toBe(TIMING.pickMilliseconds + 15000);
+    vi.advanceTimersByTime(PICK_TIMEOUT);
+    expect(first.view().phase).toBe('playing');
+    choose(first, footballer(club(first), 3));
+    expect(room.useJoker(side, 'extra-time', {})).toEqual({ error: 'invalid-action' });
+    vi.advanceTimersByTime(15000);
+    expect(first.view().phase).toBe('pause');
   });
 
   it('passes the round for a player who runs out of time and leaves the slot empty', () => {

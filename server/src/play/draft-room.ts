@@ -18,6 +18,7 @@ import {
 } from '@sportapps/game-core';
 import {
   DRAFT_PICK_SECONDS,
+  EXTRA_TIME_SECONDS,
   type DraftView,
   type DraftViewPhase,
   type PlayDifficulty,
@@ -286,7 +287,22 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
         }
       },
 
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        if (stage !== 'playing' || state.picked[side]) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'extra-time') {
+          const seconds = EXTRA_TIME_SECONDS.draft ?? 0;
+          deadline += seconds * SECOND;
+          schedule(expire, Math.max(0, deadline - now()) + TURN_GRACE_MILLISECONDS);
+          broadcast();
+          return { reveal: { kind: 'time', seconds } };
+        }
+        if (joker === 'show-assists') {
+          return { reveal: { kind: 'assists', round: state.round + 1 } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
 
       record: () => ({

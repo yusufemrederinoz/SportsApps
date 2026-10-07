@@ -292,7 +292,27 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
-      useJoker: NO_JOKER,
+      useJoker(side, joker) {
+        if (stage !== 'answering' || state.turn !== side) {
+          return { error: 'invalid-action' };
+        }
+        if (joker === 'pass') {
+          const next = createQuestion(rows, used, asked, difficulty, random);
+          if (!next) {
+            return { error: 'invalid-action' };
+          }
+          stopTimers();
+          question = next;
+          remember(question);
+          ask();
+          return { reveal: { kind: 'pass' } };
+        }
+        if (joker === 'reveal-value') {
+          const index = random() < 0.5 ? 0 : 1;
+          return { reveal: { kind: 'value', footballerId: question.cards[index], value: question.values[index] } };
+        }
+        return NO_JOKER();
+      },
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'higher',
