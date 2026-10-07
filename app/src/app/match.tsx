@@ -18,7 +18,7 @@ import { DuelMatchView } from '@/features/duel/duel-view';
 import { HigherMatchView } from '@/features/higher/higher-view';
 import { RareMatchView } from '@/features/rare/rare-view';
 import { TopTenMatchView } from '@/features/top-ten/top-ten-view';
-import { parseGame } from '@/features/games';
+import { GAME_LABELS, parseGame } from '@/features/games';
 import { JokerBar } from '@/features/jokers/joker-bar';
 import { JokerContext, type MatchJokers } from '@/features/jokers/joker-context';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
@@ -152,6 +152,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
           phase={online.phase === 'playing' ? 'connecting' : online.phase}
           failure={online.failure}
           roomCode={online.roomCode}
+          gameLabel={t(GAME_LABELS[game])}
           onRetry={online.playAgain}
           onLeave={quit}
         />

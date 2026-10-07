@@ -161,6 +161,8 @@
     "cancel": "Cancel",
     "roomTitle": "Room code",
     "roomHint": "Your friend enters this code to join.",
+    "roomShare": "Share the code",
+    "roomShareText": "Let's play {{game}}! Open \"Play a friend\", go to \"Join a room\" and enter this code: {{code}}",
     "opponentAway": "Your opponent lost connection. Waiting…",
     "reconnecting": "Reconnecting…",
     "failedTitle": "No match",

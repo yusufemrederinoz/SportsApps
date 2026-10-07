@@ -161,6 +161,8 @@
     "cancel": "Vazgeç",
     "roomTitle": "Oda kodu",
     "roomHint": "Arkadaşın katılmak için bu kodu girer.",
+    "roomShare": "Kodu paylaş",
+    "roomShareText": "{{game}} oynayalım! \"Arkadaşınla oyna\" ekranında \"Odaya katıl\" bölümüne bu kodu yaz: {{code}}",
     "opponentAway": "Rakibinin bağlantısı koptu. Bekleniyor…",
     "reconnecting": "Yeniden bağlanılıyor…",
     "failedTitle": "Maç kurulamadı",

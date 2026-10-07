@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Share, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   FadeIn,
@@ -57,11 +57,12 @@ interface OnlineLobbyProps {
   phase: Exclude<OnlinePhase, 'playing'>;
   failure: OnlineFailure | null;
   roomCode: string | null;
+  gameLabel: string;
   onRetry: () => void;
   onLeave: () => void;
 }
 
-export function OnlineLobby({ phase, failure, roomCode, onRetry, onLeave }: OnlineLobbyProps) {
+export function OnlineLobby({ phase, failure, roomCode, gameLabel, onRetry, onLeave }: OnlineLobbyProps) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
 
@@ -104,6 +105,9 @@ export function OnlineLobby({ phase, failure, roomCode, onRetry, onLeave }: Onli
             <ThemedText themeColor="textSecondary" style={styles.centered}>
               {t('online.roomHint')}
             </ThemedText>
+            <ThemedText type="smallBold" themeColor="gold" style={styles.centered}>
+              {t('friend.createGame', { game: gameLabel })}
+            </ThemedText>
           </>
         ) : (
           <>
@@ -122,7 +126,15 @@ export function OnlineLobby({ phase, failure, roomCode, onRetry, onLeave }: Onli
           </>
         )}
       </Animated.View>
-      <ActionButton label={t('online.cancel')} onPress={onLeave} variant="secondary" />
+      <View style={styles.actions}>
+        {hosting ? (
+          <ActionButton
+            label={t('online.roomShare')}
+            onPress={() => void Share.share({ message: t('online.roomShareText', { game: gameLabel, code: roomCode }) }).catch(() => undefined)}
+          />
+        ) : null}
+        <ActionButton label={t('online.cancel')} onPress={onLeave} variant="secondary" />
+      </View>
     </Screen>
   );
 }
