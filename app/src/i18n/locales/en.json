@@ -398,7 +398,7 @@
     "gamePoints": "Your points in this game: {{points}}",
     "levelUp": "New level: {{level}}",
     "unranked": "Unranked match",
-    "unrankedHint": "Points and goals are earned only in online matches."
+    "unrankedHint": "Points and goals are earned only in \"Online match\" games."
   },
   "progress": {
     "level": "Level {{level}}",

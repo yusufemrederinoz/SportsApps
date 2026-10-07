@@ -398,7 +398,7 @@
     "gamePoints": "Bu oyundaki puanın: {{points}}",
     "levelUp": "Yeni seviye: {{level}}",
     "unranked": "Puansız maç",
-    "unrankedHint": "Puan ve gol yalnızca online maçlarda kazanılır."
+    "unrankedHint": "Puan ve gol yalnızca \"Online maç\" eşleşmelerinde kazanılır."
   },
   "progress": {
     "level": "Seviye {{level}}",
