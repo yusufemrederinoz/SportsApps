@@ -186,6 +186,19 @@ describe('client message parsing', () => {
       difficulty: 3,
       game: 'rare',
     });
+    expect(parseClientMessage('{"type":"joker","matchId":"m","joker":"hint","target":{"cell":{"row":1,"column":2}}}')).toEqual({
+      type: 'joker',
+      matchId: 'm',
+      joker: 'hint',
+      target: { cell: { row: 1, column: 2 } },
+    });
+    expect(parseClientMessage('{"type":"joker","matchId":"m","joker":"pass"}')).toEqual({
+      type: 'joker',
+      matchId: 'm',
+      joker: 'pass',
+      target: {},
+    });
+    expect(parseClientMessage('{"type":"joker","matchId":"m","joker":"steal"}')).toBeNull();
     expect(parseClientMessage('{"type":"create-room","market":"tr","difficulty":1,"game":"duel"}')).toEqual({
       type: 'create-room',
       market: 'tr',

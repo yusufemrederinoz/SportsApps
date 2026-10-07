@@ -2,6 +2,9 @@ import type { Side } from '@sportapps/game-core';
 import type {
   ClientMessage,
   GameId,
+  JokerId,
+  JokerReveal,
+  JokerTarget,
   MatchKind,
   MatchOutcome,
   PlayDifficulty,
@@ -33,6 +36,10 @@ export interface MatchRecord {
   startedAt: number;
 }
 
+export type JokerResult = { error: PlayErrorCode } | { reveal: JokerReveal };
+
+export const NO_JOKER = (): JokerResult => ({ error: 'joker-unavailable' });
+
 export interface LiveRoom {
   readonly id: string;
   readonly kind: MatchKind;
@@ -43,6 +50,7 @@ export interface LiveRoom {
   greeting(side: Side, opponentConnected: boolean): ServerMessage;
   handle(side: Side, message: ClientMessage): PlayErrorCode | null;
   forfeit(side: Side): void;
+  useJoker(side: Side, joker: JokerId, target: JokerTarget): JokerResult;
   finishedAt(): number | null;
   record(): MatchRecord;
   dispose(): void;

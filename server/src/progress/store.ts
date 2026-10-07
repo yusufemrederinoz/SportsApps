@@ -8,6 +8,7 @@ import {
   type DailyStatus,
   type GameId,
   type GameStanding,
+  type GoalReason,
   type MatchOutcome,
   type PlayDifficulty,
   type PlayerProgress,
@@ -181,6 +182,11 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     progress,
 
     wallet: (userId: string): WalletResponse => wallet.statement(userId),
+
+    goalsOf: (userId: string): number => wallet.balance(userId),
+
+    spendGoals: (userId: string, amount: number, reason: GoalReason, reference: string): number =>
+      wallet.credit(userId, -amount, reason, reference),
 
     settle(match: RankedMatch, result: PlayResult): Record<Side, PointsChange | null> {
       return transaction(database, () => {

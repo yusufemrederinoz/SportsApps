@@ -64,6 +64,7 @@ const scoreRoom: RoomFactory = (context) => {
       return null;
     },
     forfeit: (side) => finish(opponentOf(side), 'forfeit'),
+    useJoker: (_, joker) => (joker === 'hint' ? { reveal: { kind: 'count', count: 7 } } : { error: 'invalid-action' }),
     finishedAt: () => finishedAt,
     record: () => ({
       game: 'grid',
@@ -317,6 +318,62 @@ describe('matchmaking by points', () => {
     vi.advanceTimersByTime(12000);
     queue(high);
     expect(lobby.counts()).toMatchObject({ queued: 0, matches: 1 });
+  });
+});
+
+describe('jokers', () => {
+  const useJoker = (client: Client, joker: 'hint' | 'extra-time' | 'pass') =>
+    lobby.handle(client.player.id, { type: 'joker', matchId: matchIdOf(client), joker });
+
+  it('charges goals, keeps the reveal private and allows two per match', () => {
+    const first = join();
+    const second = join();
+    queue(first);
+    queue(second);
+    useJoker(first, 'hint');
+    expect(first.of('joker')[0]).toMatchObject({
+      side: rooms[0]?.seats.x.userId === first.player.id ? 'x' : 'o',
+      joker: 'hint',
+      reveal: { kind: 'count', count: 7 },
+      used: 1,
+      goals: WELCOME_GOALS - 3,
+    });
+    expect(second.of('joker')[0]).toMatchObject({ joker: 'hint', reveal: null, used: 1 });
+    expect(second.of('joker')[0]).not.toHaveProperty('goals');
+    useJoker(first, 'hint');
+    useJoker(first, 'hint');
+    expect(first.of('joker')).toHaveLength(2);
+    expect(first.of('error').at(-1)?.code).toBe('joker-limit');
+    expect(progress.wallet(first.player.id).entries.slice(0, 2).map((entry) => entry.reason)).toEqual(['joker', 'joker']);
+    expect(progress.goalsOf(first.player.id)).toBe(WELCOME_GOALS - 6);
+  });
+
+  it('refuses jokers of other games, jokers that do not apply now and empty wallets without charging', () => {
+    const first = join();
+    const second = join();
+    queue(first);
+    queue(second);
+    useJoker(first, 'pass');
+    expect(first.of('error').at(-1)?.code).toBe('joker-unavailable');
+    useJoker(first, 'extra-time');
+    expect(first.of('error').at(-1)?.code).toBe('invalid-action');
+    database.prepare('UPDATE wallets SET goals = 2 WHERE user_id = ?').run(first.player.id);
+    useJoker(first, 'hint');
+    expect(first.of('error').at(-1)?.code).toBe('not-enough-goals');
+    expect(first.of('joker')).toHaveLength(0);
+    expect(progress.goalsOf(first.player.id)).toBe(2);
+  });
+
+  it('replays the jokers of the match after a reconnect', () => {
+    const first = join();
+    const second = join();
+    queue(first);
+    queue(second);
+    useJoker(second, 'hint');
+    lobby.disconnect(first.player.id, first);
+    first.received.length = 0;
+    lobby.connect(first.player, first);
+    expect(first.of('joker')).toEqual([expect.objectContaining({ joker: 'hint', reveal: null, used: 1 })]);
   });
 });
 

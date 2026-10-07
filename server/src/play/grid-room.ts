@@ -2,7 +2,7 @@ import { countCells } from '@sportapps/game-core';
 
 import type { FootballLibrary } from '../football/library';
 import { DEFAULT_BOT_TIMING, botLevelFor, createBotPlayer, type BotTiming } from './bot';
-import { SIDES, type LiveRoom, type RoomFactory } from './live-room';
+import { NO_JOKER, SIDES, type LiveRoom, type RoomFactory } from './live-room';
 import { createMatchRoom } from './room';
 
 export function createGridRoomFactory(library: FootballLibrary, timing: BotTiming = DEFAULT_BOT_TIMING): RoomFactory {
@@ -64,6 +64,7 @@ export function createGridRoomFactory(library: FootballLibrary, timing: BotTimin
         return room.answer(side, message.turnNumber, message.cell, message.footballerId);
       },
       forfeit: room.forfeit,
+      useJoker: NO_JOKER,
       finishedAt: room.finishedAt,
       record: () => ({
         game: 'grid',

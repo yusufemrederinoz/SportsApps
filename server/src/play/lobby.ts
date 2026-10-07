@@ -2,12 +2,16 @@ import { randomUUID } from 'node:crypto';
 
 import { opponentOf, type Side } from '@sportapps/game-core';
 import {
+  GAME_JOKERS,
+  JOKERS_PER_MATCH,
+  JOKER_PRICE,
   ROOM_CODE_ALPHABET,
   ROOM_CODE_LENGTH,
   isRoomCode,
   normalizeRoomCode,
   type ClientMessage,
   type GameId,
+  type JokerUse,
   type PlayDifficulty,
   type PlayErrorCode,
   type PlayResult,
@@ -84,6 +88,7 @@ interface HostedRoom {
 interface ActiveMatch {
   room: LiveRoom;
   forfeits: Map<string, ReturnType<typeof setTimeout>>;
+  jokers: JokerUse[];
 }
 
 const IDLE: Status = { kind: 'idle' };
@@ -249,7 +254,7 @@ export function createLobby(options: LobbyOptions) {
       });
       return;
     }
-    matches.set(room.id, { room, forfeits: new Map() });
+    matches.set(room.id, { room, forfeits: new Map(), jokers: [] });
     humans.forEach((player) => {
       const member = members.get(player.id);
       if (member) {
@@ -339,6 +344,49 @@ export function createLobby(options: LobbyOptions) {
     startMatch('room', room.game, room.market, room.difficulty, hostMember.player, member.player);
   };
 
+  const jokerMessage = (active: ActiveMatch, use: JokerUse, viewer: Side): Extract<ServerMessage, { type: 'joker' }> => ({
+    type: 'joker',
+    matchId: active.room.id,
+    side: use.side,
+    joker: use.joker,
+    reveal: use.side === viewer ? use.reveal : null,
+    used: active.jokers.filter((entry) => entry.side === use.side).indexOf(use) + 1,
+  });
+
+  const useJoker = (member: Member, message: Extract<ClientMessage, { type: 'joker' }>) => {
+    const userId = member.player.id;
+    const found = activeFor(member, message.matchId);
+    if (!found) {
+      fail(userId, 'not-in-match');
+      return;
+    }
+    const { active, side } = found;
+    if (!GAME_JOKERS[active.room.game].includes(message.joker)) {
+      fail(userId, 'joker-unavailable');
+      return;
+    }
+    const used = active.jokers.filter((entry) => entry.side === side).length;
+    if (used >= JOKERS_PER_MATCH) {
+      fail(userId, 'joker-limit');
+      return;
+    }
+    if (!progress || progress.goalsOf(userId) < JOKER_PRICE) {
+      fail(userId, 'not-enough-goals');
+      return;
+    }
+    const outcome = active.room.useJoker(side, message.joker, message.target ?? {});
+    if ('error' in outcome) {
+      fail(userId, outcome.error);
+      return;
+    }
+    const goals = progress.spendGoals(userId, JOKER_PRICE, 'joker', `${active.room.id}:${side}:${used}`);
+    const use: JokerUse = { side, joker: message.joker, reveal: outcome.reveal };
+    active.jokers.push(use);
+    send(userId, { ...jokerMessage(active, use, side), goals });
+    const rival = opponentOf(side);
+    send(active.room.seats[rival].userId, jokerMessage(active, use, rival));
+  };
+
   const activeFor = (member: Member, matchId: string): { active: ActiveMatch; side: Side } | null => {
     if (member.status.kind !== 'playing' || member.status.matchId !== matchId) {
       return null;
@@ -372,6 +420,7 @@ export function createLobby(options: LobbyOptions) {
           clearForfeit(active, player.id);
           const rivalId = active.room.seats[opponentOf(side)].userId;
           connection.send(active.room.greeting(side, isConnected(rivalId)));
+          active.jokers.forEach((use) => connection.send(jokerMessage(active, use, side)));
           send(rivalId, { type: 'opponent', matchId: active.room.id, connected: true });
         }
       }
@@ -467,6 +516,9 @@ export function createLobby(options: LobbyOptions) {
           }
           return;
         }
+        case 'joker':
+          useJoker(member, message);
+          return;
         case 'leave': {
           const found = activeFor(member, message.matchId);
           if (!found) {

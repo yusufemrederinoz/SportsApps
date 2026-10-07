@@ -23,7 +23,7 @@ import {
 
 import type { FootballLibrary } from '../football/library';
 import { botLevelFor } from './bot';
-import { SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
+import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
 const SECOND = 1000;
@@ -292,6 +292,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
           finish({ winner: side === 'x' ? 'o' : 'x', reason: 'forfeit' });
         }
       },
+      useJoker: NO_JOKER,
       finishedAt: () => finishedAt,
       record: () => ({
         game: 'higher',
