@@ -76,7 +76,7 @@ Kurallar:
 | Bileşen | Kural |
 |---|---|
 | Metal plaka (`MetalPlate`) | Köşesi kesik metalik yüzey. Kaplama verilirse metalik, verilmezse koyu çelik. Skor panelleri ve mod kartları bundan yapılır |
-| Mod kartı | Ana ekrandaki iki büyük giriş. Bota karşı altın, iki kişi mavi kaplama |
+| Mod kartı | Ana ekrandaki büyük girişler: online maç neon, arkadaş odası çelik, bota karşı altın kaplama |
 | Zorluk seçici | Üç dilim; seçili olan volt dolgu ve ışıma |
 | Izgara zemini | Tek bir Skia tuvali: başlık plakaları, boş yuvalar ve köşedeki üç renkli marka işareti |
 | Başlık plakası | Koyu çelik, ince kenar, ızgaraya bakan kenarında volt çizgi |

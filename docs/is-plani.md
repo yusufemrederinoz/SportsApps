@@ -235,6 +235,7 @@ Yapılanlar:
 - Kadro Kur: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
 - Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
 - Kulüplere katılış ve ayrılış yılları uygulama veritabanında.
+- İlk geri bildirim düzeltmeleri: her modda "Bota karşı" girişi (sıra beklemeden), aynı cihazda iki kişilik modun kaldırılması, Kart Düellosu ve Hangisi Yüksek'te soru tekrarının önlenmesi, seçilen oyunun listede ortalanması, kart seçerken seçilen kartların arama penceresinde görünmesi, arama sonuçlarından bayrağın kaldırılması, ikinci tekil metinlerin düzeltilmesi, bağlantı hatasında "Tekrar dene".
 
 Kalanlar:
 

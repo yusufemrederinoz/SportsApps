@@ -287,7 +287,7 @@ Expo SDK 57, React Native 0.86, React 19, TypeScript 6, Expo Router.
 | Konum | İçerik |
 |---|---|
 | `src/app/_layout.tsx` | Kök yerleşim: çeviri altyapısı, tema, veritabanı sağlayıcısı |
-| `src/app/index.tsx` | Ana ekran: zorluk seçimi, bota karşı ve aynı cihazda iki kişi |
+| `src/app/index.tsx` | Ana ekran: oyun ve zorluk seçimi; online, arkadaş odası ve bota karşı girişleri |
 | `src/app/match.tsx` | Maç ekranı: skor, ızgara, süre, sonuç |
 | `src/features/match/session.ts` | Maç oturumu: kural motorunu geri bildirim ve süreyle sarar |
 | `src/features/match/use-match.ts` | Izgarayı yükler, süreyi işletir, bot hamlelerini oynatır |
@@ -409,6 +409,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 |---|---|
 | `hello` | Selamlama: jeton, protokol sürümü, veri sürümü |
 | `queue` | Rastgele rakip sırasına gir (mod, pazar, zorluk; mod verilmezse XOX) |
+| `play-bot` | Sıraya girmeden bota karşı maç aç (mod, pazar, zorluk) |
 | `create-room` | Arkadaş odası kur (mod, pazar, zorluk) |
 | `join-room` | Kodla odaya katıl |
 | `cancel` | Sıradan ya da kurulan odadan çık |
@@ -459,14 +460,14 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 
 - **Eşleştirme.** Sıra mod, pazar ve zorluk başınadır. Sıraya giren oyuncu, aynı sırada bekleyen biri varsa onunla eşleşir. Bir oyuncu aynı anda yalnızca bir durumda olabilir (boşta, sırada, oda sahibi, maçta); maçtayken sıraya giremez.
 - **Tek bağlantı.** Aynı hesap ikinci bir cihazdan bağlanırsa eski bağlantı kapatılır ve yeni bağlantı kaldığı yerden devam eder.
-- **Bot.** Sırada 6–11 saniye içinde rakip çıkmazsa maç bota karşı başlar. Bot, protokolde hiçbir yerde işaretlenmez; gerçek oyuncu gibi kullanıcı adı taşır (pazara göre ad havuzu, bir kısmı misafir adı biçiminde) ve hamlelerini 2,5–9 saniye düşünerek yapar. Bilemediği sırada bazen yanlış ama akla yatkın bir oyuncu söyler (satıra uyan, sütuna uymayan), bazen süreyi doldurur.
+- **Bot.** Sırada 6–11 saniye içinde rakip çıkmazsa maç bota karşı başlar. Bot, protokolde hiçbir yerde işaretlenmez; gerçek oyuncu gibi kullanıcı adı taşır (pazara göre ad havuzu, bir kısmı misafir adı biçiminde) ve hamlelerini 2,5–9 saniye düşünerek yapar. Bilemediği sırada bazen yanlış ama akla yatkın bir oyuncu söyler (satıra uyan, sütuna uymayan), bazen süreyi doldurur. Oyuncu ana ekranda "Bota karşı" seçerse uygulama `play-bot` gönderir; sunucu sıraya hiç sokmadan aynı botla maçı hemen açar. Bu maçta botun adı "Bot"tur ve maç kaydında türü `bot` olarak tutulur.
 - **Bot seviyesi.** Seçilen zorlukla başlar. Oyuncunun son beş online maçında en az üç sonuç varsa: galibiyet oranı %70 ve üzerindeyse bir seviye güçlenir, %30 ve altındaysa bir seviye zayıflar.
 - **Sıra süresi.** 20 saniye. Sunucu, ağ gecikmesi için 1,5 saniye pay bırakır; süre dolunca sırayı kendisi geçirir.
 - **Kopma.** Maçtaki oyuncunun bağlantısı koparsa rakibe bildirilir ve maç sürer. 30 saniye içinde dönerse maçın tam durumu gönderilir. Dönmezse hükmen kaybeder. Uygulama kopunca kendiliğinden yeniden bağlanmayı dener (artan aralıklarla, yaklaşık 20 saniye).
 - **Ayrılma.** Maç ekranından çıkan oyuncu hükmen kaybeder.
 - **Arkadaş odası.** Oda kuran oyuncuya beş karakterli bir kod verilir (karışabilecek 0, O, 1, I harfleri yoktur). Kod on dakika geçerlidir. Oda sahibi genel sırayla eşleşmez.
 - **Maç kaydı.** Her biten maç `matches` tablosuna yazılır (mod sütunuyla). Oyuncu kendi maçlarını `GET /matches` ile alır; rakibin bot olup olmadığı kayıtta da tutulmaz. Düelloda hücre sayısı sütunlarında puanlar durur.
-- **Kart Düellosu.** Kurallar ve süreler [oyun-modlari.md](oyun-modlari.md) belgesinde. Sunucu: el kilitlenene kadar rakibin yalnızca hazır olup olmadığı görünür; tur sırasında rakibin yalnızca kart oynayıp oynamadığı görünür, kart kimliği tur çözülünce gelir. Gönderilen el en çok 7 farklı kart içerebilir ve hepsi konsepte uymalıdır; eksik kalanı sunucu tamamlar. Soru ölçütleri, iki elin bütün kartlarında değeri bilinenler arasından karıştırılarak seçilir. Konsept üyeliği ve kart değerleri `packages/football-data/src/duel.ts` içindeki ortak ifadelerle hesaplanır; uygulama aynı ifadeyle konsepte göre arama yapar.
+- **Kart Düellosu.** Kurallar ve süreler [oyun-modlari.md](oyun-modlari.md) belgesinde. Sunucu: el kilitlenene kadar rakibin yalnızca hazır olup olmadığı görünür; tur sırasında rakibin yalnızca kart oynayıp oynamadığı görünür, kart kimliği tur çözülünce gelir. Gönderilen el en çok 7 farklı kart içerebilir ve hepsi konsepte uymalıdır; eksik kalanı sunucu tamamlar. Maçın 7 sorusu hep farklıdır: önce iki elin bütün kartlarında değeri bilinen ölçütler (yeterliyse yalnızca bir yaş sorusuyla), eksik kalırsa en çok kartta bilinen ölçütler alınır ve sıra karıştırılır. Konsept üyeliği ve kart değerleri `packages/football-data/src/duel.ts` içindeki ortak ifadelerle hesaplanır; uygulama aynı ifadeyle konsepte göre arama yapar.
 
 ### Uygulama parçaları
 
@@ -489,7 +490,7 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/app/friend.tsx` | Oda kurma ve kodla katılma ekranı |
 | `src/features/account/match-history.tsx` | Hesap ekranındaki son maçlar listesi |
 
-Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ulaşılamıyorsa online kartlar açıklayıcı bir hata ekranı gösterir; bota karşı ve iki kişilik yerel oyun etkilenmez.
+Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ulaşılamıyorsa online kartlar açıklayıcı bir hata ekranı ve "Tekrar dene" düğmesi gösterir; XOX'un internetsiz bot maçı etkilenmez.
 
 ## Uygulamada hesap
 
@@ -526,7 +527,7 @@ Açılış akışı:
 - **Hata dayanıklılığı.** Kayıtlı oturum okunamazsa uygulama tanıtım ekranından devam eder ve hatayı terminale yazar.
 - **Klavye.** Form ekranı klavye yüksekliği kadar alt boşluk ekler ve odaklanan alanı yukarı kaydırır. Klavye kütüphanesi kullanılmadı, çünkü Expo Go içinde gelmiyor.
 - **Sunucu adresi.** `EXPO_PUBLIC_API_URL` verilmişse o kullanılır. Verilmemişse geliştirme sırasında Expo'nun çalıştığı bilgisayarın adresi ve 4000 kapısı kendiliğinden kullanılır; ayar gerekmez.
-- **Çevrimdışı.** Sunucuya ulaşılamazsa misafir girişi yine içeri alır; bota karşı ve iki kişilik oyun çalışmaya devam eder.
+- **Çevrimdışı.** Sunucuya ulaşılamazsa misafir girişi yine içeri alır; XOX'ta bota karşı oyun çalışmaya devam eder.
 - **Ertelendi.** Google ve Apple girişinin uygulama tarafı sonraya bırakıldı. Sunucu tarafı hazır.
 
 ## Testler
@@ -535,7 +536,7 @@ Açılış akışı:
 |---|---|---|
 | Veri hattı | 49 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (9): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları, kulüp yıllarının uygulama veritabanında tutarlılığı |
 | Kural motoru | 66 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş. En Az Bilinen (3): tur kazananı, gizli cevap, bitiş. Açık Artırma (5): teklif sırası ve sınırları, ispat, süre dolması, en yüksek teklif, bitiş. İlk 10 (4): sıraya göre puan, can kaybı, canı biten oyuncunun atlanması, bitiş. Kariyer Yolu (4): puanın açık ipucuna göre azalması, yeni ipucu ve sıra geçişi, son tahmin hakkı, bitiş |
-| Sunucu | 146 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (39): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (19): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (9), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; altısı için de gerçek veritabanıyla bota karşı tam maç |
+| Sunucu | 152 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (42): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, sıraya girmeden bot maçı, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (20): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (11), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; altısı için de gerçek veritabanıyla bota karşı tam maç |
 | Uygulama | 88 | Çeviri dosyalarının uyumu, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi, giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1) |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.

@@ -508,6 +508,21 @@ Kariyer Yolu: kural motoru, sunucu odası, bot ve uygulama ekranı eklendi. Ekra
 
 Böylece planlanan dokuz modun hepsi online (bot ve arkadaş odası dahil) oynanır durumda. Bütün modlarda ortak olan karar: bot "bilemediği" durumda süreyi doldurmak yerine akla yatkın yanlış bir cevap veriyor; insan oyuncu boşuna beklemiyor.
 
+### İlk geri bildirim düzeltmeleri
+
+Kullanıcının dokuz modu denedikten sonraki listesi:
+
+- **"Maç kurulamadı" hatası.** Sebep, geliştirme sırasında API sunucusunun durdurulmuş olmasıydı; sunucu yeniden açıldı ve betikle 9 mod × 3 zorluğun hepsinde maç kurulduğu doğrulandı. Hata ekranına "Tekrar dene" düğmesi eklendi; sunucuya ulaşılamıyor mesajı bağlantıyı kontrol etmeyi öneriyor.
+- **Her modda bota karşı.** Protokole `play-bot` mesajı eklendi: sunucu sıraya sokmadan "Bot" adlı rakiple maçı hemen açar (maç kaydında tür `bot`). Ana ekranda "Bota karşı" kartı artık her modda var; XOX'ta eskisi gibi internetsiz oynanıyor.
+- **İki kişilik mod kaldırıldı.** XOX'taki "İki kişi" (aynı telefonda sırayla) girişi ve ona ait metinler silindi; yerel maç yalnızca bota karşı.
+- **Soru tekrarı.** Kart Düellosu'nda 14 kartın hepsinde bilinen ölçüt 7'den az olunca sorular baştan dönüyordu. Artık 7 soru hep farklı; eksik kalırsa en çok kartta bilinen ölçütler ekleniyor (değeri bilinmeyen kart o soruda kaybeder). Asist ve sarı kart verisi olmayan oyuncular çoğunlukla eski yıldızlar (Maradona, Hagi, Metin Oktay); onları havuzdan çıkarmak yerine bu yol seçildi. Hangisi Yüksek'te soru türleri sırayla dönüyor; yedisi sorulmadan biri tekrar gelmiyor, aynısı art arda gelmiyor. Diğer modlarda aynı maçta birebir tekrar yoktu (her tur farklı hücre, liste ya da futbolcu).
+- **Oyun seçimi ortalanıyor.** Ana ekrandaki yatay listede seçilen oyun ekranın ortasına kayıyor (kenardakiler için mümkün olduğu kadar).
+- **Kart seçerken seçilenler görünüyor.** Kart Düellosu'nun arama penceresinde alttaki "Tamam (x/7)" yazısının üstünde seçilen kartlar ve boş yerler küçük kartlar olarak duruyor; düğme yalnızca "Tamam".
+- **Arama sonuçlarında bayrak yok.** Uyruğu bilmek bazı modlarda (XOX'ta ülke başlığı, En Az Bilinen, Açık Artırma) cevabı ele veriyordu; arama satırında artık yalnızca mevki, ad ve doğum yılı var.
+- **Metin dili.** Kendi adımızın "Sen" olarak üçüncü şahıs kalıplarına girdiği yerler düzeltildi: Açık Artırma'da "Sen saydı" yerine "Saydın!" / "Sayamadın", rakip için "Rakip saydı"; son teklif "Senin teklifin" / "Rakibin teklifi"; XOX'ta "Sıra: Sen" yerine "Sıra sende" / "Sıra rakipte". Sonuç alt satırları ("Üç turu ilk alan kazandı" gibi) ve bazı mod açıklamaları daha anlaşılır yazıldı.
+
+Doğrulama: 152 sunucu ve 88 uygulama testi; betikle 27 bot maçının hemen kurulması; emülatörde ana ekran (ortalama, her modda Bota karşı kartı), düelloda bota karşı maçın beklemeden açılması, bayraksız arama satırı ve kart tepsisi, XOX'ta "Sıra sende". Emülatör bu oturumda birkaç kez kendiliğinden kapandı; tepsinin dolu hâli ve Açık Artırma'nın yeni metinleri ekranda görülemedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -593,3 +608,14 @@ Böylece planlanan dokuz modun hepsi online (bot ve arkadaş odası dahil) oynan
 | `f171bd2` | 7 Ekim | Sunucuda Kariyer Yolu odası ve botu |
 | `b37d734` | 7 Ekim | Kariyer Yolu'nda 3–8 kulüplü kariyer sınırı |
 | `c2ed18f` | 7 Ekim | Uygulamada Kariyer Yolu ekranı |
+| `7006644` | 7 Ekim | Belgeler: Kariyer Yolu ve tamamlanan modlar |
+| `3a984e4` | 7 Ekim | Arama sonuçlarından bayrağın kaldırılması |
+| `5acabd0` | 7 Ekim | İki kişilik modun kaldırılması, ikinci tekil metinler |
+| `07b7a54` | 7 Ekim | Sunucuda sıraya girmeden bot maçı (`play-bot`) |
+| `4f0d24c` | 7 Ekim | "ONLINE" başlığının Latin büyük harfle kalması |
+| `712cc55` | 7 Ekim | Seçilen oyunun listede ortalanması |
+| `62cc21a` | 7 Ekim | Her modda Bota karşı girişi |
+| `ca5472b` | 7 Ekim | Düello aramasında seçilen kartlar |
+| `9df0f31` | 7 Ekim | Kart Düellosu'nda yedi farklı soru |
+| `6094ce4` | 7 Ekim | Hangisi Yüksek'te soru türlerinin sırayla dönmesi |
+| `c200157` | 7 Ekim | Bağlantı hatasında Tekrar dene |

@@ -6,7 +6,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 
 ## Ortak ilkeler
 
-- Her mod iki kişiliktir ve online oynanır; rakip çıkmazsa gerçek oyuncu gibi görünen bot gelir. Arkadaş odası her modda çalışır.
+- Her mod iki kişiliktir ve online oynanır; rakip çıkmazsa gerçek oyuncu gibi görünen bot gelir. Arkadaş odası her modda çalışır. Ana ekrandaki "Bota karşı" girişi her modda beklemeden "Bot" adlı rakiple maç açar (XOX'ta bu maç internetsiz, telefonda oynanır).
 - Maçın sahibi sunucudur: cevabı, istatistiği ve süreyi sunucu belirler. Uygulama yalnızca hamle gönderir ve sunucunun gönderdiği görünümü çizer.
 - Gizli bilgi (rakibin eli, henüz açılmamış soru) uygulamaya hiç gönderilmez.
 - Yeni modlar önce yalnızca online çalışır (bot dahil). İnternetsiz oynanış, mod oturduktan sonra eklenir. XOX'un internetsiz modları olduğu gibi kalır.
@@ -39,7 +39,7 @@ Uygulama yalnızca XOX olmayacak; aynı veriyle oynanan, hepsi sıra tabanlı do
 Kararlar:
 
 - Bir futbolcu iki oyuncunun elinde de olabilir; seçimler gizli olduğu için engellenemez.
-- Sorular, iki elin 14 kartının hepsinde değeri bilinen ölçütlerden seçilir. Böylece istatistiği olmayan bir kart yüzünden haksız soru çıkmaz. Böyle ölçüt 7'den azsa sorular tekrar eder (aynı ölçüt ikinci kez sorulabilir).
+- Bir maçta 7 sorunun hepsi farklıdır. Önce iki elin 14 kartının hepsinde değeri bilinen ölçütler kullanılır; yeterince istatistik varsa yaş sorularından yalnızca biri ("yaşı büyük" ya da "yaşı küçük") sorulur. Hepsinde bilinen ölçüt 7'den azsa kalan sorular en çok kartta bilinen ölçütlerden tamamlanır; o soruda değeri bilinmeyen kart kaybeder ve değeri "?" görünür. Bu durum çoğunlukla asist ve sarı kart verisi olmayan eski yıldızlarda (Hagi, Maradona, Metin Oktay gibi) çıkar.
 - Süre dolunca seçim yapmayan oyuncunun eli ya da kartı rastgele tamamlanır.
 
 Uygulanan hâli (7 Ekim 2026):
@@ -83,7 +83,7 @@ Uygulanan hâli (7 Ekim 2026):
 Uygulanan hâli (7 Ekim 2026):
 
 - **Eller.** Her oyuncunun 3 eli var (toplam 6). Bir el, oyuncu bilemeyene ya da üst üste 5 doğruya ulaşana kadar sürer; böylece iki taraf da eşit sayıda el oynar ve tek bir oyuncu maçı baştan sona tutamaz.
-- **Sorular.** Kariyer golü, asist, maç, en yüksek piyasa değeri, millî maç, kim daha yaşlı, kim daha genç. İki futbolcu da o ölçütte değeri bilinen, bilinirliği zorluğa göre (55, 45, 35 ve üzeri) olan oyunculardan seçilir. Değerler arasında zorluğa göre fark aranır: oranla 1,5 / 1,25 / 1,1 kat; yaşta 5 / 3 / 1 yıl. Bir futbolcu aynı maçta iki kez çıkmaz.
+- **Sorular.** Kariyer golü, asist, maç, en yüksek piyasa değeri, millî maç, kim daha yaşlı, kim daha genç. İki futbolcu da o ölçütte değeri bilinen, bilinirliği zorluğa göre (55, 45, 35 ve üzeri) olan oyunculardan seçilir. Değerler arasında zorluğa göre fark aranır: oranla 1,5 / 1,25 / 1,1 kat; yaşta 5 / 3 / 1 yıl. Bir futbolcu aynı maçta iki kez çıkmaz. Sorular sırayla döner: yedi soru türünün hepsi sorulmadan biri ikinci kez gelmez ve aynı soru türü art arda iki kez sorulmaz.
 - **Süre.** Cevap 10 saniye; cevaptan sonra değerler 2,5 saniye açık kalır. Süre dolarsa yanlış sayılır.
 - **Bot.** Zorluğa göre %62, %75 ya da %88 olasılıkla doğru kartı seçer; 2–6 saniye düşünür.
 
