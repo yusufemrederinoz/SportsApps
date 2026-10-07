@@ -26,7 +26,7 @@ interface MatchViewProps {
   secondsLeft: number;
   canPlay: boolean;
   names: Record<Side, string>;
-  opponentSide: Side | null;
+  opponentSide: Side;
   tag: string;
   turnLabel: string;
   resultTitle: string;

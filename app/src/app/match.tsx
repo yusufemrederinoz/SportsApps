@@ -21,15 +21,15 @@ import { parseGame } from '@/features/games';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
-import { BOT_SIDE, useMatch, type MatchMode } from '@/features/match/use-match';
+import { BOT_SIDE, useMatch } from '@/features/match/use-match';
 import { useOnlineMatch, type OnlineEntry } from '@/features/match/use-online-match';
 import { useUppercase } from '@/i18n/uppercase';
 
-function LocalMatch({ mode, difficulty }: { mode: MatchMode; difficulty: Difficulty }) {
+function BotMatch({ difficulty }: { difficulty: Difficulty }) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
-  const { unavailable, setup, session, secondsLeft, canPlay, answer, restart } = useMatch(mode, difficulty);
+  const { unavailable, setup, session, secondsLeft, canPlay, answer, restart } = useMatch(difficulty);
 
   if (unavailable || !setup || !session) {
     return (
@@ -44,15 +44,8 @@ function LocalMatch({ mode, difficulty }: { mode: MatchMode; difficulty: Difficu
 
   const { match } = session;
   const { result } = match;
-  const names =
-    mode === 'bot'
-      ? { x: BOT_SIDE === 'x' ? t('match.bot') : t('match.you'), o: BOT_SIDE === 'o' ? t('match.bot') : t('match.you') }
-      : { x: t('match.sideX'), o: t('match.sideO') };
-  const resultTitle = !result?.winner
-    ? t('match.draw')
-    : mode === 'bot'
-      ? t(result.winner === BOT_SIDE ? 'match.youLose' : 'match.youWin')
-      : t('match.winner', { name: names[result.winner] });
+  const names = { x: BOT_SIDE === 'x' ? t('match.bot') : t('match.you'), o: BOT_SIDE === 'o' ? t('match.bot') : t('match.you') };
+  const resultTitle = !result?.winner ? t('match.draw') : t(result.winner === BOT_SIDE ? 'match.youLose' : 'match.youWin');
 
   return (
     <MatchView
@@ -62,9 +55,9 @@ function LocalMatch({ mode, difficulty }: { mode: MatchMode; difficulty: Difficu
       secondsLeft={secondsLeft}
       canPlay={canPlay}
       names={names}
-      opponentSide={mode === 'bot' ? BOT_SIDE : null}
+      opponentSide={BOT_SIDE}
       tag={t(DIFFICULTY_LABELS[difficulty])}
-      turnLabel={t('match.turn', { name: names[match.turn] })}
+      turnLabel={t(match.turn === BOT_SIDE ? 'match.turnRival' : 'match.turnYours')}
       resultTitle={resultTitle}
       resultDetail={t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells')}
       playAgainLabel={t('match.playAgain')}
@@ -243,7 +236,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
       names={names}
       opponentSide={rival}
       tag={t(DIFFICULTY_LABELS[setup.difficulty])}
-      turnLabel={match.turn === setup.side ? t('match.turnYours') : t('match.turn', { name: names[rival] })}
+      turnLabel={t(match.turn === setup.side ? 'match.turnYours' : 'match.turnRival')}
       resultTitle={resultTitle}
       resultDetail={resultDetail}
       playAgainLabel={playAgainLabel}
@@ -277,7 +270,7 @@ export default function MatchRoute() {
       {params.mode === 'online' ? (
         <OnlineMatch entry={onlineEntry(params.entry, params.code)} difficulty={difficulty} game={parseGame(params.game)} />
       ) : (
-        <LocalMatch mode={params.mode === 'bot' ? 'bot' : 'local'} difficulty={difficulty} />
+        <BotMatch difficulty={difficulty} />
       )}
     </EntryGate>
   );

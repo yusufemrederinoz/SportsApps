@@ -42,8 +42,6 @@
     "difficulty": "Difficulty",
     "modeBotTitle": "Versus bot",
     "modeBotHint": "Play alone against the bot.",
-    "modeLocalTitle": "Two players",
-    "modeLocalHint": "Share one phone and take turns.",
     "modeOnlineTitle": "Online match",
     "modeOnlineHint": "Play a real opponent.",
     "modeFriendTitle": "Play a friend",
@@ -58,7 +56,7 @@
     "titleAccentChain": "Chain",
     "subtitleChain": "Take turns naming someone who played at the same club as the last footballer. Miss or get it wrong and you lose the round; three rounds win.",
     "titleAccentRare": "Least Known",
-    "subtitleRare": "Name a footballer who fits both criteria, hidden from your opponent. The less known right answer takes the round.",
+    "subtitleRare": "Both of you name a footballer who fits both criteria; answers stay hidden. If both are right, the less known footballer takes the round.",
     "titleAccentAuction": "Auction",
     "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time.",
     "titleAccentTopTen": "Top 10",
@@ -80,11 +78,8 @@
   "match": {
     "loading": "Preparing the grid…",
     "unavailable": "No grid is available.",
-    "sideX": "Player X",
-    "sideO": "Player O",
     "you": "You",
     "bot": "Bot",
-    "turn": "Turn: {{name}}",
     "secondsLeft": "{{seconds}} seconds left",
     "stampCorrect": "Correct!",
     "stampWrong": "Wrong!",
@@ -93,7 +88,6 @@
     "stampBotPassed": "Bot passed",
     "youWin": "You win!",
     "youLose": "You lose",
-    "winner": "{{name}} wins",
     "draw": "Draw",
     "byLine": "Three in a line",
     "byCells": "More cells",
@@ -103,7 +97,8 @@
     "turnYours": "Your turn",
     "byForfeitWin": "Your opponent left the match",
     "byForfeitLoss": "You left the match",
-    "newOpponent": "New opponent"
+    "newOpponent": "New opponent",
+    "turnRival": "Your opponent's turn"
   },
   "search": {
     "placeholder": "Type a footballer's name",
@@ -158,7 +153,7 @@
     "opponentAway": "Your opponent lost connection. Waiting…",
     "reconnecting": "Reconnecting…",
     "failedTitle": "No match",
-    "failureOffline": "The server could not be reached.",
+    "failureOffline": "Could not reach the server. Check your connection and try again.",
     "failureSignedOut": "Online play needs a connection to your account. Try again when you are online.",
     "failureOutdated": "Update the app to play online.",
     "failureReplaced": "You are playing on another device.",
@@ -226,7 +221,7 @@
     "questionGoals": "More career goals wins",
     "questionAssists": "More career assists wins",
     "questionAppearances": "More career matches wins",
-    "questionYellowCards": "More yellow cards wins",
+    "questionYellowCards": "More career yellow cards wins",
     "questionGoalRate": "More goals per match wins",
     "questionMarketValue": "The higher peak market value wins",
     "questionCaps": "More international caps wins",
@@ -303,7 +298,7 @@
     "timeout": "Time is up",
     "roundToYou": "your round",
     "roundToRival": "their round",
-    "byScore": "Three rounds won"
+    "byScore": "First to three rounds"
   },
   "rare": {
     "round": "Round {{round}}/{{total}}",
@@ -328,7 +323,7 @@
     "criteria": "Criteria",
     "rule": "How many footballers fitting both can you name? Your opponent raises or says \"Prove it\".",
     "noBid": "No bid yet",
-    "lastBid": "{{name}} bid",
+    "lastBid": "Their bid",
     "bidLabel": "Bid {{bid}} names",
     "progress": "{{named}}/{{bid}} right names",
     "openBid": "Make the first bid",
@@ -336,17 +331,18 @@
     "opponentThinking": "Your opponent is thinking…",
     "proveYours": "Name {{bid}}!",
     "proveTheirs": "Your opponent must name {{bid}}",
-    "proved": "{{name}} proved it",
-    "failed": "{{name}} fell short",
-    "you": "You",
+    "proved": "Your opponent proved it",
+    "failed": "Your opponent fell short",
     "less": "Lower",
     "more": "Higher",
     "raise": "I can name {{amount}}",
     "challenge": "Prove it",
     "name": "Name a footballer",
     "searchDone": "Close ({{named}}/{{bid}})",
-    "byScore": "Two rounds won",
-    "lastBidYours": "Your bid"
+    "byScore": "First to two rounds",
+    "lastBidYours": "Your bid",
+    "provedYours": "You proved it!",
+    "failedYours": "You fell short"
   },
   "topTen": {
     "round": "List {{round}}/{{total}}",
@@ -378,6 +374,6 @@
     "solvedByYou": "You got it!",
     "solvedByRival": "Your opponent got it",
     "unsolved": "Nobody got it",
-    "byScore": "Four footballers played"
+    "byScore": "All four footballers played"
   }
 }

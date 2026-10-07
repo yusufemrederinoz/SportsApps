@@ -14,7 +14,6 @@ import { AccentFinishes, Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radi
 import type { Difficulty } from '@/data/types';
 import { GAMES, GAME_ACCENTS, GAME_LABELS, GAME_SUBTITLES } from '@/features/games';
 import { DIFFICULTIES, DIFFICULTY_LABELS } from '@/features/match/difficulty';
-import type { MatchMode } from '@/features/match/use-match';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
@@ -27,8 +26,7 @@ function HomeScreen() {
   const [game, setGame] = useState<GameId>('grid');
   const accountLabel = auth.status === 'signed-in' ? auth.account.username : t('account.offline');
   const accent = t(GAME_ACCENTS[game]);
-  const start = (mode: MatchMode) =>
-    router.push({ pathname: '/match', params: { mode, difficulty: String(difficulty) } });
+  const startBot = () => router.push({ pathname: '/match', params: { mode: 'bot', difficulty: String(difficulty) } });
   const startOnline = () =>
     router.push({ pathname: '/match', params: { mode: 'online', entry: 'queue', difficulty: String(difficulty), game } });
   const openFriend = () => router.push({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
@@ -141,20 +139,7 @@ function HomeScreen() {
             onPress={openFriend}
           />
           {game === 'grid' ? (
-            <>
-              <ModeCard
-                title={t('home.modeBotTitle')}
-                hint={t('home.modeBotHint')}
-                finish={Finishes.x}
-                onPress={() => start('bot')}
-              />
-              <ModeCard
-                title={t('home.modeLocalTitle')}
-                hint={t('home.modeLocalHint')}
-                finish={Finishes.o}
-                onPress={() => start('local')}
-              />
-            </>
+            <ModeCard title={t('home.modeBotTitle')} hint={t('home.modeBotHint')} finish={Finishes.x} onPress={startBot} />
           ) : null}
         </Animated.View>
       </ScrollView>

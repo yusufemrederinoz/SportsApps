@@ -8,7 +8,7 @@ import type { MatchSession } from './session';
 
 export const URGENT_SECONDS = 5;
 
-export function useMatchEffects(session: MatchSession | null, secondsLeft: number, opponentSide: Side | null) {
+export function useMatchEffects(session: MatchSession | null, secondsLeft: number, opponentSide: Side) {
   const gridId = session?.match.grid.id ?? null;
   const feedback = session?.feedback ?? null;
   const result = session?.match.result ?? null;

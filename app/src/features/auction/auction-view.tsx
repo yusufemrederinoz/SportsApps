@@ -152,9 +152,9 @@ export function AuctionMatchView({
     if (view.outcome && !running) {
       const { prover, winner } = view.outcome;
       const proved = prover === winner;
-      const who = prover === side ? t('auction.you') : names[rival];
+      const key = prover === side ? (proved ? 'auction.provedYours' : 'auction.failedYours') : proved ? 'auction.proved' : 'auction.failed';
       return {
-        text: t(proved ? 'auction.proved' : 'auction.failed', { name: who }),
+        text: t(key),
         color: winner === side ? 'positive' : 'negative',
       };
     }
@@ -240,7 +240,7 @@ export function AuctionMatchView({
               ? t('auction.noBid')
               : view.bidder === side
                 ? t('auction.lastBidYours')
-                : t('auction.lastBid', { name: names[view.bidder] }),
+                : t('auction.lastBid'),
           )}
         </ThemedText>
         <Animated.View key={bidKey} entering={BID_POP}>

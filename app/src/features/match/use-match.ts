@@ -23,8 +23,6 @@ import type { Difficulty, FootballerSummary, GridView, Market } from '@/data/typ
 
 import { reduceSession, secondsLeft, startSession, type MatchSession } from './session';
 
-export type MatchMode = 'local' | 'bot';
-
 export const BOT_SIDE: Side = 'o';
 
 const TICK_MILLISECONDS = 250;
@@ -37,7 +35,7 @@ interface MatchSetup {
   minimumFame: number;
 }
 
-export function useMatch(mode: MatchMode, difficulty: Difficulty) {
+export function useMatch(difficulty: Difficulty) {
   const database = useSQLiteContext();
   const { i18n } = useTranslation();
   const language = i18n.language;
@@ -96,7 +94,7 @@ export function useMatch(mode: MatchMode, difficulty: Difficulty) {
     return () => clearInterval(interval);
   }, [active]);
 
-  const botToMove = mode === 'bot' && active && session.match.turn === BOT_SIDE;
+  const botToMove = active && session.match.turn === BOT_SIDE;
 
   useEffect(() => {
     if (!botToMove || !session || !setup) {
