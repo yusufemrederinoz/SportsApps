@@ -1,3 +1,5 @@
+import type { DuelAction, DuelView } from './duel';
+
 export const PLAY_PATH = '/play';
 export const PLAY_PROTOCOL_VERSION = 1;
 export const ROOM_CODE_LENGTH = 5;
@@ -5,7 +7,9 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
-export type PlayFinishReason = 'line' | 'cells' | 'forfeit';
+export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
+export const GAME_IDS = ['grid', 'duel'] as const;
+export type GameId = (typeof GAME_IDS)[number];
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
 export interface PlayCell {
@@ -45,6 +49,17 @@ export interface MatchSnapshot {
   opponentConnected: boolean;
 }
 
+export interface SessionSnapshot {
+  matchId: string;
+  game: 'duel';
+  market: string;
+  difficulty: PlayDifficulty;
+  side: PlaySide;
+  usernames: Record<PlaySide, string>;
+  opponentConnected: boolean;
+  view: DuelView;
+}
+
 export type PlayErrorCode =
   | 'unauthorized'
   | 'outdated-client'
@@ -57,15 +72,17 @@ export type PlayErrorCode =
   | 'stale-turn'
   | 'cell-taken'
   | 'room-not-found'
+  | 'invalid-action'
   | 'replaced';
 
 export type ClientMessage =
   | { type: 'hello'; token: string; protocol: number; dataVersion: string }
-  | { type: 'queue'; market: string; difficulty: PlayDifficulty }
-  | { type: 'create-room'; market: string; difficulty: PlayDifficulty }
+  | { type: 'queue'; market: string; difficulty: PlayDifficulty; game?: GameId }
+  | { type: 'create-room'; market: string; difficulty: PlayDifficulty; game?: GameId }
   | { type: 'join-room'; code: string }
   | { type: 'cancel' }
   | { type: 'answer'; matchId: string; turnNumber: number; cell: PlayCell; footballerId: number }
+  | { type: 'act'; matchId: string; action: DuelAction }
   | { type: 'leave'; matchId: string }
   | { type: 'ping' };
 
@@ -75,6 +92,8 @@ export type ServerMessage =
   | { type: 'room'; code: string }
   | { type: 'idle' }
   | { type: 'match'; match: MatchSnapshot }
+  | { type: 'session'; session: SessionSnapshot }
+  | { type: 'view'; matchId: string; view: DuelView }
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
   | { type: 'finished'; matchId: string; result: PlayResult }
   | { type: 'opponent'; matchId: string; connected: boolean }
@@ -96,6 +115,7 @@ export type MatchOutcome = 'win' | 'loss' | 'draw';
 
 export interface MatchSummary {
   id: string;
+  game: GameId;
   finishedAt: number;
   difficulty: PlayDifficulty;
   opponent: string;

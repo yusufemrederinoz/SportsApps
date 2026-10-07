@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sportapps/game-core": "*"
+    "@sportapps/game-core": "*",
+    "@sportapps/protocol": "*"
   },
   "devDependencies": {
     "typescript": "~6.0.3"
