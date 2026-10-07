@@ -9,7 +9,7 @@ import type {
   ServerMessage,
 } from '@sportapps/protocol';
 
-export type MatchKind = 'queue' | 'room';
+export type MatchKind = 'queue' | 'bot' | 'room';
 
 export interface WaitRange {
   minimum: number;

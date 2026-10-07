@@ -389,6 +389,37 @@ describe('bot opponent', () => {
   });
 });
 
+describe('chosen bot matches', () => {
+  it('starts a bot match at once without joining the queue', () => {
+    const human = join();
+    const waiting = join();
+    queue(waiting);
+    lobby.handle(human.player.id, { type: 'play-bot', market: 'tr', difficulty: 2 });
+
+    const match = human.match();
+    expect(match.usernames[match.side === 'x' ? 'o' : 'x']).toBe('Bot');
+    expect(waiting.of('match')).toHaveLength(0);
+    expect(lobby.counts()).toMatchObject({ queued: 1, matches: 1 });
+  });
+
+  it('stores the finished bot match as a bot match', () => {
+    const human = join();
+    lobby.handle(human.player.id, { type: 'play-bot', market: 'tr', difficulty: 1 });
+    lobby.handle(human.player.id, { type: 'leave', matchId: human.match().matchId });
+
+    expect(history.list(human.player.id)[0]).toMatchObject({ opponent: 'Bot', outcome: 'loss' });
+    const row = database.prepare('SELECT kind FROM matches').get() as { kind: string };
+    expect(row.kind).toBe('bot');
+  });
+
+  it('refuses a bot match while the player is busy', () => {
+    const human = join();
+    queue(human);
+    lobby.handle(human.player.id, { type: 'play-bot', market: 'tr', difficulty: 1 });
+    expect(human.of('error').at(-1)?.code).toBe('busy');
+  });
+});
+
 describe('friend rooms', () => {
   it('starts a private match when a friend enters the room code', () => {
     const host = join();

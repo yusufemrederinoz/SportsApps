@@ -95,6 +95,7 @@ export type PlayErrorCode =
 export type ClientMessage =
   | { type: 'hello'; token: string; protocol: number; dataVersion: string }
   | { type: 'queue'; market: string; difficulty: PlayDifficulty; game?: GameId }
+  | { type: 'play-bot'; market: string; difficulty: PlayDifficulty; game?: GameId }
   | { type: 'create-room'; market: string; difficulty: PlayDifficulty; game?: GameId }
   | { type: 'join-room'; code: string }
   | { type: 'cancel' }

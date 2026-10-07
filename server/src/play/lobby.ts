@@ -21,6 +21,7 @@ import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type
 const ADAPTATION_MATCHES = 5;
 const DIFFICULTIES: readonly number[] = [1, 2, 3];
 const DEFAULT_GAME: GameId = 'grid';
+const CHOSEN_BOT_NAME = 'Bot';
 
 export interface Connection {
   send(message: ServerMessage): void;
@@ -187,7 +188,7 @@ export function createLobby(options: LobbyOptions) {
       username.toLowerCase() === first.username.toLowerCase() || isUsernameTaken(username);
     const rival: Seat = second
       ? { userId: second.id, username: second.username }
-      : { userId: null, username: createBotName(market, taken, random) };
+      : { userId: null, username: kind === 'bot' ? CHOSEN_BOT_NAME : createBotName(market, taken, random) };
     const seats = {
       [firstSide]: { userId: first.id, username: first.username },
       [opponentOf(firstSide)]: rival,
@@ -372,6 +373,7 @@ export function createLobby(options: LobbyOptions) {
           send(userId, { type: 'pong' });
           return;
         case 'queue':
+        case 'play-bot':
         case 'create-room': {
           const game = message.game ?? DEFAULT_GAME;
           if (member.status.kind !== 'idle') {
@@ -384,6 +386,8 @@ export function createLobby(options: LobbyOptions) {
           }
           if (message.type === 'queue') {
             enqueue(member, game, message.market, message.difficulty);
+          } else if (message.type === 'play-bot') {
+            startMatch('bot', game, message.market, message.difficulty, member.player, null);
           } else {
             host(member, game, message.market, message.difficulty);
           }

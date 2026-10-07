@@ -180,6 +180,12 @@ describe('client message parsing', () => {
       difficulty: 2,
       game: 'grid',
     });
+    expect(parseClientMessage('{"type":"play-bot","market":"tr","difficulty":3,"game":"rare"}')).toEqual({
+      type: 'play-bot',
+      market: 'tr',
+      difficulty: 3,
+      game: 'rare',
+    });
     expect(parseClientMessage('{"type":"create-room","market":"tr","difficulty":1,"game":"duel"}')).toEqual({
       type: 'create-room',
       market: 'tr',

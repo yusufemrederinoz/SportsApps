@@ -87,6 +87,7 @@ export function parseClientMessage(raw: string): ClientMessage | null {
         ? { type: 'hello', token: fields.token, protocol: fields.protocol, dataVersion: fields.dataVersion }
         : null;
     case 'queue':
+    case 'play-bot':
     case 'create-room':
       return text(fields.market, SHORT_TEXT_MAX_LENGTH) && difficulty(fields.difficulty) && game(fields.game)
         ? { type: fields.type, market: fields.market, difficulty: fields.difficulty, game: fields.game ?? 'grid' }
