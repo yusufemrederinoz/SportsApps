@@ -19,8 +19,9 @@ const STROKE = 7;
 const GLOW = 7;
 const INSET = STROKE / 2 + GLOW;
 
-const RING = Skia.Path.Make();
-RING.addArc(rect(INSET, INSET, SIZE - INSET * 2, SIZE - INSET * 2), -90, 360);
+const RING = Skia.PathBuilder.Make()
+  .addArc(rect(INSET, INSET, SIZE - INSET * 2, SIZE - INSET * 2), -90, 360)
+  .build();
 
 interface TurnTimerProps {
   turnEndsAt: number;

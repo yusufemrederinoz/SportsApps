@@ -18,7 +18,7 @@ type MetalPlateProps = PropsWithChildren<{
 }>;
 
 export function platePath(width: number, height: number, radius: number, cut: PlateCut, cutSize: number) {
-  const path = Skia.Path.Make();
+  const path = Skia.PathBuilder.Make();
   const left = cut === 'left' ? cutSize : 0;
   const right = cut === 'right' ? cutSize : 0;
   path.moveTo(left > 0 ? left : radius, 0);
@@ -39,7 +39,7 @@ export function platePath(width: number, height: number, radius: number, cut: Pl
     path.quadTo(0, 0, radius, 0);
   }
   path.close();
-  return path;
+  return path.build();
 }
 
 export function MetalPlate({ finish, cut = 'none', cutSize = 14, radius = 10, style, children }: MetalPlateProps) {

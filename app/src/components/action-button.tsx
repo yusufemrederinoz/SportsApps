@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.55)',
   },
   label: {
+    flex: 1,
     fontFamily: Fonts.display,
     fontSize: 24,
     lineHeight: 26,

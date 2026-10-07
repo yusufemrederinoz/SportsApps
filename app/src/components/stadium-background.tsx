@@ -16,13 +16,13 @@ const BREATH_MILLISECONDS = 5200;
 
 function beamPath(width: number, height: number, fromLeft: boolean) {
   const flip = (x: number) => (fromLeft ? x : width - x);
-  const path = Skia.Path.Make();
+  const path = Skia.PathBuilder.Make();
   path.moveTo(flip(-width * 0.2), -height * 0.05);
   path.lineTo(flip(width * 0.16), -height * 0.05);
   path.lineTo(flip(width * 0.86), height * 0.82);
   path.lineTo(flip(width * 0.38), height * 0.82);
   path.close();
-  return path;
+  return path.build();
 }
 
 export function StadiumBackground() {

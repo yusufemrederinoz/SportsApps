@@ -54,9 +54,12 @@ export function FeedbackStamp({ feedback }: { feedback: Feedback }) {
 
 const styles = StyleSheet.create({
   container: {
+    alignSelf: 'stretch',
     alignItems: 'center',
   },
   stamp: {
+    alignSelf: 'stretch',
+    textAlign: 'center',
     fontFamily: Fonts.display,
     fontSize: 44,
     lineHeight: 46,

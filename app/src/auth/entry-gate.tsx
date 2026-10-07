@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter, type Href } from 'expo-router';
+import { useFocusEffect, useNavigation } from 'expo-router';
 import { useCallback, type PropsWithChildren } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 
@@ -10,10 +10,10 @@ import type { Entry } from './session';
 
 type Destination = Exclude<Entry, 'loading'>;
 
-const ROUTES: Record<Destination, Href> = {
-  onboarding: '/onboarding',
-  welcome: '/welcome',
-  app: '/',
+const ROUTE_NAMES: Record<Destination, string> = {
+  onboarding: 'onboarding',
+  welcome: 'welcome',
+  app: 'index',
 };
 
 function Waiting() {
@@ -24,17 +24,13 @@ function Waiting() {
   );
 }
 
-function Leave({ to }: { to: Href }) {
-  const router = useRouter();
+function Leave({ to }: { to: string }) {
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
-      if (router.canDismiss()) {
-        router.dismissAll();
-      } else {
-        router.replace(to);
-      }
-    }, [router, to]),
+      navigation.reset({ index: 0, routes: [{ name: to as never }] });
+    }, [navigation, to]),
   );
 
   return <Waiting />;
@@ -46,7 +42,7 @@ export function EntryGate({ allow, children }: PropsWithChildren<{ allow: Destin
     return <Waiting />;
   }
   if (entry !== allow) {
-    return <Leave to={ROUTES[entry]} />;
+    return <Leave to={ROUTE_NAMES[entry]} />;
   }
   return children;
 }
