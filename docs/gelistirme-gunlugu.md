@@ -291,6 +291,36 @@ Küçük ekler: hesap durumu yüklenirken dönen bir gösterge çıkıyor; "misa
 
 Doğrulama: 44 uygulama testi (giriş kararı için 4 yeni), tip denetimi, lint, Android paketleme geçiyor. Bu araçlar çalışma anındaki bir takılmayı yakalayamaz; düzeltme telefonda henüz doğrulanmadı.
 
+### Android emülatörü ve açılış hatasının kök nedeni
+
+Telefondaki hatayı uzaktan okumak mümkün olmadı (Expo Go'nun JS motoru uzaktan hata ayıklamaya izin vermiyor). Bunun üzerine bilgisayara Android emülatörü kuruldu.
+
+Kurulum:
+
+| Bileşen | Yer | Not |
+|---|---|---|
+| Android SDK (platform araçları, emülatör, Android 16 sistem görüntüsü) | `%LOCALAPPDATA%\Android\Sdk` | Yaklaşık 6 GB |
+| JDK 17 (taşınabilir) | `%LOCALAPPDATA%\Android\jdk-17` | Yalnızca SDK araçları için. Sistemdeki Java 8'e ve PATH'e dokunulmadı |
+| Sanal cihaz `sportapps` | `%USERPROFILE%\.android\avd` | Pixel 7, Android 16, Türkçe |
+
+Android SDK lisansları kurulum sırasında kabul edildi. Kullanım komutları [teknik-mimari.md](teknik-mimari.md) içinde.
+
+Kök neden: önceki sürüm emülatörde çalıştırılınca takılma birebir yeniden üretildi. `expo-sqlite`'ın `SQLiteProvider` bileşeni yalnızca çocukları değiştiğinde yeniden çizilmiyor; karşılaştırması `children`'ı yok sayıyor. Önceki sürümde "yazı tipleri hazır" bilgisi bu bileşenin içinden bir alt bileşene prop olarak geçiyordu. Bilgi alt bileşene hiç ulaşmadı, açılış ekranı da hiç kapanmadı. Bir önceki başlıktaki düzeltme bu yapıyı zaten kaldırmıştı; emülatörde ilk açılış, ikinci açılış ve Türkçe açılış doğrulandı.
+
+Kural: `DatabaseProvider` altına yalnızca sabit öğe konur; değişen bilgi context ile taşınır.
+
+Emülatörde bulunan diğer hatalar:
+
+| Hata | Neden | Düzeltme |
+|---|---|---|
+| Kayıt ya da girişten sonra ekran dönen göstergede kalıyor | Kapı, önce üst ekranları kapatıp sonra yönlendiriyordu; iki adım yarışıyordu | Yığın tek adımda sıfırlanıyor |
+| Düğmelerde son kelime görünmüyor ("GİRİŞ YAP" yerine "GİRİŞ") | Android, eğik başlık yazı tipini harf aralığıyla birlikte dar ölçüyor; son kelime görünmeyen ikinci satıra düşüyor | Düğme yazısı ve damga yazısı satırı dolduruyor; genişlik artık ölçüme bağlı değil |
+| Geliştirme modunda ekranı kapatan Skia uyarıları | Eski yol çizim arayüzü kullanılıyordu | Yeni yol kurucu arayüzüne geçildi |
+
+Emülatörde doğrulanan akış: tanıtım, karşılama, hesap oluşturma (klavye açıkken alanlar görünür), çıkış, giriş, ana ekranda geri tuşu (uygulamadan çıkar), üye olarak yeniden açılış (doğrudan ana ekran), misafir olarak yeniden açılış (karşılama), maç ekranı.
+
+Not: emülatör pencereli ve donanım hızlandırmalı çalışırken ekran kartı bağlamı kaybolunca çöktü. Gözetimsiz çalışmada penceresiz ve yazılım tabanlı çizimle başlatılıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -313,3 +343,4 @@ Doğrulama: 44 uygulama testi (giriş kararı için 4 yeni), tip denetimi, lint,
 | `829de6d` | 7 Ekim | Uygulamada hesap istemcisi ve hesap ekranı |
 | `a00409b` | 7 Ekim | Giriş akışının yeniden yazılması: tanıtım, karşılama, ayrı hesaplar |
 | `d4e1dd0` | 7 Ekim | Açılışta takılmanın giderilmesi: ekran kapısı, hataya dayanıklı oturum yükleme |
+| `82f0857` | 7 Ekim | Emülatörde bulunan hatalar: giriş sonrası takılma, kırpılan düğme yazıları, Skia uyarıları |

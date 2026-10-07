@@ -119,7 +119,7 @@ Durum: sürüyor. Dört dilime ayrıldı.
 
 ### 5A — Hesaplar
 
-Durum: ilk denemeden sonra yeniden yazıldı. Cihazda açılışta takıldı; düzeltme yapıldı, cihazda doğrulama bekliyor (7 Ekim 2026).
+Durum: tamamlandı (7 Ekim 2026). Açılışta takılmanın kök nedeni bulundu ve giderildi; akış Android emülatöründe baştan sona doğrulandı. Gerçek telefonda son bir deneme bekliyor.
 
 Yapılanlar:
 
@@ -141,7 +141,7 @@ Yapılanlar:
 
 Kalanlar:
 
-- Açılıştaki takılmanın düzeldiğini ve yeni akışı telefonda doğrulamak.
+- Düzeltilmiş akışı gerçek telefonda bir kez denemek.
 - Şifre sıfırlama, e-posta doğrulama ve hesap silme.
 
 Ertelenenler:

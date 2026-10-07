@@ -58,6 +58,21 @@ Depo npm çalışma alanı (workspaces) olarak kuruludur: kökteki `package.json
 
 Veri hattı Python 3.12 ile yazıldı ve dış paket gerektirmez. Uygulama Node 24 ve npm 11 ile kuruldu.
 
+### Android emülatörü
+
+Bilgisayarda `sportapps` adlı sanal cihaz kuruludur (Pixel 7, Android 16, Türkçe). Android SDK `%LOCALAPPDATA%\Android\Sdk` altındadır; Expo bu varsayılan yeri kendisi bulur, ayar gerekmez.
+
+| İş | Komut |
+|---|---|
+| Emülatörü pencereli başlatmak | `%LOCALAPPDATA%\Android\Sdk\emulator\emulator.exe -avd sportapps` |
+| Emülatörü penceresiz başlatmak | aynı komut, sonuna `-no-window -gpu swiftshader_indirect` |
+| Uygulamayı emülatörde açmak | emülatör açıkken `app` klasöründe `npx expo start --android` (ya da çalışan Expo terminalinde `a`) |
+| Ekran görüntüsü almak | `%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe exec-out screencap -p > ekran.png` |
+| Uygulama günlüklerini okumak | `adb logcat -s ReactNativeJS:V` |
+| Uygulama verisini sıfırlamak (ilk açılışı denemek için) | `adb shell pm clear host.exp.exponent` |
+
+SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o komut için `%LOCALAPPDATA%\Android\jdk-17` yapılır. Sistemdeki Java sürümü değişmedi.
+
 ## Veri hattı
 
 ### Kaynaklar
@@ -322,7 +337,9 @@ Açılış akışı:
 
 - **Misafir hesabı cihazda kalır.** Cihazda iki ayrı jeton saklanır: misafir jetonu ve üye jetonu. "Misafir olarak devam et" her seferinde aynı misafir hesabını açar; yeni misafir yalnızca eski jeton artık kabul edilmiyorsa oluşur.
 - **Çıkış.** Üye çıkışı sunucudaki oturumu kapatır. Misafir çıkışı yalnızca karşılama ekranına döndürür; misafir hesabı durur.
-- **Ekran koruması.** Her ekran `EntryGate` ile sarılıdır. Hesap durumundan dört sonuçtan biri çıkar: yükleniyor, tanıtım, karşılama, oyun. Ekran kendi grubunda değilse kapı önce yığındaki üst ekranları kapatır, sonra doğru ekrana geçer. Ana ekran, maç ve hesap "oyun" grubundadır; giriş ve kayıt "karşılama" grubundadır.
+- **Ekran koruması.** Her ekran `EntryGate` ile sarılıdır. Hesap durumundan dört sonuçtan biri çıkar: yükleniyor, tanıtım, karşılama, oyun. Ekran kendi grubunda değilse kapı ekran yığınını tek adımda sıfırlar ve doğru ekranı açar; geri tuşu eski gruba dönmez. Ana ekran, maç ve hesap "oyun" grubundadır; giriş ve kayıt "karşılama" grubundadır.
+- **Veritabanı sağlayıcısının altı sabit kalır.** `expo-sqlite`'ın `SQLiteProvider` bileşeni çocukları değişince yeniden çizilmez. `DatabaseProvider` altına değişen prop taşıyan bileşen konmaz; değişen bilgi context ile taşınır.
+- **Tek satırlık başlık yazıları satırı doldurur.** Android, eğik başlık yazı tipini harf aralığıyla birlikte dar ölçüyor. Genişliği içeriğe göre belirlenen kutuda son kelime görünmeyen ikinci satıra düşer. Bu yazılar `flex: 1` ya da tam genişlik ve ortalı hizalama ile yerleştirilir.
 - **Açılış ekranı.** Yalnızca yazı tipleri yüklenince kapanır; hesap durumunu beklemez. Hesap durumu yüklenirken ekranda dönen bir gösterge durur.
 - **Hata dayanıklılığı.** Kayıtlı oturum okunamazsa uygulama tanıtım ekranından devam eder ve hatayı terminale yazar.
 - **Klavye.** Form ekranı klavye yüksekliği kadar alt boşluk ekler ve odaklanan alanı yukarı kaydırır. Klavye kütüphanesi kullanılmadı, çünkü Expo Go içinde gelmiyor.
@@ -343,15 +360,16 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 
 ## Bilinen eksikler
 
-- Uygulama gerçek cihazda ya da tarayıcıda görülerek denenmedi; paketleme, tip denetimi, lint ve testlerle doğrulandı.
-- Yeni görünüm cihazda henüz incelenmedi; sesler yer tutucu, bayraklar emoji.
+- Arayüz Android emülatöründe görülerek doğrulanıyor; iOS'ta hiç denenmedi.
+- Sesler yer tutucu, bayraklar emoji.
+- Türkçe arayüzde yabancı kulüp ve oyuncu adları da Türkçe kuralla büyük harfe çevriliyor ("MANCHESTER CİTY"). Adın diline göre büyütme henüz yok.
 - npm, onaylanmamış paketlerin kurulum betiklerini çalıştırmıyor. Skia'nın kurulum betiği bu yüzden çalışmadı. Expo Go ile sorun olmaz; ilk yerel derlemeden önce `npm approve-scripts @shopify/react-native-skia` gerekir.
 - Oyuncu kimlikleri kaynak kimliklerinden türetiliyor; yayından önce kalıcı bir kimlik kaydına geçilmeli.
 - Tarihsiz Wikidata kayıtları cevap olarak kabul edildiği için hatalı kabuller olabilir (örnek: bir kulüp başkanının oyuncu olarak görünmesi).
 - Wikidata'dan gelen 5 binden fazla eski İngiliz oyuncunun uyruğu İngiltere yerine Birleşik Krallık.
 - Uygulama veritabanı (13 MB) depoya ikili dosya olarak giriyor; her veri güncellemesi depo geçmişini büyütür.
 - Web hedefi kurulmadı; veritabanı kütüphanesinin web desteği ek ayar ister.
-- Yeni giriş akışı (tanıtım, karşılama, giriş, kayıt, hesap) cihazda henüz baştan sona denenmedi. İlk denemede uygulama açılışta takıldı; düzeltme cihazda doğrulanmayı bekliyor.
+- Giriş akışı emülatörde baştan sona doğrulandı; gerçek telefonda düzeltmeden sonra henüz denenmedi.
 - Üye, sunucuya ulaşılamayan bir ağda uygulamayı açarsa ana ekran en çok 8 saniye gecikir; hesap bilgisi cihazda saklanmadığı için istek zaman aşımı bekleniyor.
 - Misafir hesabı kalıcı hesaba dönüşmediği için misafirken oynanan maçlar üye hesabına taşınmaz.
 - Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
