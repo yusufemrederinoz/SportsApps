@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { ServerConfig } from '../src/config';
 import { openDatabase, type Database } from '../src/database';
 import { buildApp } from '../src/http/app';
+import { codeMailHtml } from '../src/mail/layout';
 import { createResendMailer, type Mail } from '../src/mail/mailer';
 
 const config: ServerConfig = {
@@ -101,6 +102,19 @@ describe('password reset', () => {
     time += 2 * MINUTE;
     await forgot(member.email, 'tr');
     expect(outbox[2]?.subject).toContain('şifre sıfırlama');
+    expect(outbox[0]?.html).toContain('<html lang="en">');
+    expect(outbox[2]?.html).toContain('<html lang="tr">');
+    expect(outbox[2]?.html).toContain('ŞİFRE SIFIRLAMA');
+  });
+
+  it('carries the code in both the plain and the designed body', async () => {
+    await forgot(member.email);
+    const code = lastCode();
+    expect(outbox[0]?.text).toContain(`kodun: ${code}`);
+    expect(outbox[0]?.html).toContain(`>${code}</td>`);
+    expect(outbox[0]?.html).toContain('15 dakika');
+    expect(outbox[0]?.html).toContain('&quot;Şifremi unuttum&quot;');
+    expect(outbox[0]?.html).not.toContain('{{');
   });
 
   it('refuses a wrong, expired or overused code and a weak password', async () => {
@@ -157,14 +171,30 @@ describe('mail service', () => {
     }) as unknown as typeof fetch;
     const refusing = (async () => new Response('{}', { status: 403 })) as unknown as typeof fetch;
     const settings = { apiKey: 'key-1', from: 'ChallengeGoal <support@example.com>' };
-    const mail = { to: 'player@example.com', subject: 'Code', text: 'Your code' };
+    const mail = { to: 'player@example.com', subject: 'Code', text: 'Your code', html: '<p>Your code</p>' };
 
     await createResendMailer(settings, accepting)(mail);
     expect(requests[0]).toEqual({
       url: 'https://api.resend.com/emails',
       authorization: 'Bearer key-1',
-      body: { from: settings.from, to: ['player@example.com'], subject: 'Code', text: 'Your code' },
+      body: { from: settings.from, to: ['player@example.com'], subject: 'Code', text: 'Your code', html: '<p>Your code</p>' },
     });
     await expect(createResendMailer(settings, refusing)(mail)).rejects.toThrow('403');
+  });
+
+  it('escapes everything it places in the designed body', () => {
+    const html = codeMailHtml({
+      language: 'en',
+      preview: 'a < b',
+      title: '<script>',
+      intro: 'Tom & "Jerry"',
+      code: '123456',
+      instructions: "it's",
+      footnote: 'x > y',
+    });
+    expect(html).not.toContain('<script>');
+    expect(html).toContain('&lt;script&gt;');
+    expect(html).toContain('Tom &amp; &quot;Jerry&quot;');
+    expect(html).toContain('it&#39;s');
   });
 });

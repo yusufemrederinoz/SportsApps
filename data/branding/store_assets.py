@@ -24,6 +24,7 @@ FEATURE_MARGIN = 48
 FEATURE_GAP = 18
 FEATURE_RING = 0.5
 FEATURE_CENTER = (0.55, 0.57)
+MAIL_MARK_SIZE = 144
 WHITE = (246, 248, 251)
 MUTED = (155, 168, 186)
 
@@ -89,6 +90,7 @@ def site(out):
     out.mkdir(parents=True, exist_ok=True)
     icon = app_icon(1024)
     fitted_emblem(512).save(out / 'mark.png')
+    fitted_emblem(512).resize((MAIL_MARK_SIZE, MAIL_MARK_SIZE), Image.LANCZOS).save(out / 'mail-mark.png')
     icon.resize((180, 180), Image.LANCZOS).convert('RGB').save(out / 'apple-touch-icon.png')
     icon.resize((64, 64), Image.LANCZOS).convert('RGB').save(out / 'favicon.png')
     feature('FUTBOL BİLGİ OYUNLARI', SHARE_SIZE).convert('RGB').save(out / 'share.png')
