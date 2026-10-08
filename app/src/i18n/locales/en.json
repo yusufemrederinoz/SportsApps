@@ -126,6 +126,7 @@
     "cancel": "Cancel"
   },
   "account": {
+    "adPrivacy": "Ad preferences",
     "title": "Account",
     "back": "Back",
     "offline": "Offline",
@@ -457,7 +458,15 @@
     "guestAction": "My account",
     "offline": "You need to be online to use the store.",
     "unsupported": "This version has no store.",
-    "payment": "You pay with your {{store}} account. Goals are added to your account right after the purchase."
+    "payment": "You pay with your {{store}} account. Goals are added to your account right after the purchase.",
+    "adTitle": "Watch an ad",
+    "adWatch": "Watch an ad, earn {{goals}} goals",
+    "adLeft": "Left today: {{left}}",
+    "adLoading": "Getting an ad ready…",
+    "adCrediting": "Adding your reward…",
+    "adSpent": "Done for today. Come back tomorrow.",
+    "adUnavailable": "No ad right now. Tap to try again.",
+    "adPending": "Your reward will be added in a moment."
   },
   "daily": {
     "title": "Daily reward",

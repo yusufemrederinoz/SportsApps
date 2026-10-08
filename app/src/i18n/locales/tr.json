@@ -126,6 +126,7 @@
     "cancel": "Vazgeç"
   },
   "account": {
+    "adPrivacy": "Reklam tercihleri",
     "title": "Hesap",
     "back": "Geri",
     "offline": "Çevrimdışı",
@@ -457,7 +458,15 @@
     "guestAction": "Hesabım",
     "offline": "Mağaza için çevrimiçi olman gerekir.",
     "unsupported": "Bu sürümde mağaza yok.",
-    "payment": "Ödeme {{store}} hesabınla yapılır. Goller satın almadan hemen sonra hesabına eklenir."
+    "payment": "Ödeme {{store}} hesabınla yapılır. Goller satın almadan hemen sonra hesabına eklenir.",
+    "adTitle": "Reklam izle",
+    "adWatch": "Reklam izle, {{goals}} gol kazan",
+    "adLeft": "Bugün kalan: {{left}}",
+    "adLoading": "Reklam hazırlanıyor…",
+    "adCrediting": "Ödülün yazılıyor…",
+    "adSpent": "Bugünlük bitti. Yarın yine gel.",
+    "adUnavailable": "Şu an reklam yok. Dokun, tekrar dene.",
+    "adPending": "Ödülün birazdan hesabına eklenecek."
   },
   "daily": {
     "title": "Günlük ödül",

@@ -65,7 +65,17 @@
         }
       ],
       "expo-notifications",
-      "expo-iap"
+      "expo-iap",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-1202798518025462~3080265885",
+          "iosAppId": "ca-app-pub-1202798518025462~9095009895",
+          "delayAppMeasurementInit": true,
+          "userTrackingUsageDescription": "Your device identifier is used to show you more relevant ads.",
+          "skAdNetworkItems": ["cstr6suwn9.skadnetwork"]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

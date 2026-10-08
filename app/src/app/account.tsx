@@ -12,6 +12,7 @@ import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
+import { AdPrivacyLink } from '@/features/account/ad-privacy-link';
 import { MatchHistory } from '@/features/account/match-history';
 import { useUppercase } from '@/i18n/uppercase';
 
@@ -96,6 +97,7 @@ function AccountScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
+        <AdPrivacyLink />
         <Pressable accessibilityRole="link" onPress={() => router.push('/credits')} style={styles.credits}>
           <ThemedText type="label" themeColor="textSecondary" style={styles.creditsLabel}>
             {`${uppercase(t('account.credits'))} ›`}

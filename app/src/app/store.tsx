@@ -11,9 +11,11 @@ import { ActionButton } from '@/components/action-button';
 import { GoalIcon } from '@/components/goal-icon';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
+import { adsBuiltIn, rewardedAdUnit } from '@/constants/ads';
 import { Colors, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import { useProgress } from '@/features/progress/use-progress';
 import { GoalShop } from '@/features/store/goal-shop';
+import { RewardedGoals } from '@/features/store/rewarded-goals';
 import { useUppercase } from '@/i18n/uppercase';
 
 const STORE_NAME = Platform.OS === 'ios' ? 'App Store' : 'Google Play';
@@ -30,7 +32,8 @@ function StoreScreen() {
   const pulse = useSharedValue(1);
   const balanceStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() }] }));
   const balance = credited ?? progress?.goals ?? null;
-  const isGuest = state.status === 'signed-in' && state.account.isGuest;
+  const account = state.status === 'signed-in' ? state.account : null;
+  const isGuest = account?.isGuest === true;
 
   useEffect(() => {
     if (credited !== null) {
@@ -82,6 +85,10 @@ function StoreScreen() {
           </View>
         </Animated.View>
         <ThemedText themeColor="textSecondary">{t('store.hint')}</ThemedText>
+
+        {token && account && adsBuiltIn && rewardedAdUnit ? (
+          <RewardedGoals token={token} userId={account.id} unitId={rewardedAdUnit} onGoals={setCredited} />
+        ) : null}
 
         {shop()}
 

@@ -1,6 +1,7 @@
 import {
   API_PREFIX,
   type AccountResponse,
+  type AdStatusResponse,
   type ApiErrorCode,
   type ApiErrorResponse,
   type AuthResponse,
@@ -111,6 +112,7 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     progress: (token: string) => request<ProgressResponse>('GET', '/progress', { token }),
     claimDaily: (token: string) => request<DailyRewardResponse>('POST', '/daily', { token }),
     wallet: (token: string) => request<WalletResponse>('GET', '/wallet', { token }),
+    ads: (token: string) => request<AdStatusResponse>('GET', '/ads', { token }),
     purchase: (token: string, purchase: PurchaseRequest) =>
       request<PurchaseResponse>('POST', '/purchases', { token, body: purchase }),
     leaderboard: (token: string, period: LeaderboardPeriod, game: GameId | null) =>
