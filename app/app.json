@@ -19,7 +19,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.challengegoal.app"
+      "package": "com.challengegoal.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "output": "static",
@@ -44,6 +50,13 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "backgroundColor": "#060A18"
+    "backgroundColor": "#060A18",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b4bfd1e3-6874-48de-8140-6b6428c61ae7"
+      }
+    },
+    "owner": "coptorbasi"
   }
 }
