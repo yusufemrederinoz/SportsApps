@@ -655,6 +655,10 @@ Kalanlar: Avrupa rıza mesajına ChallengeGoal uygulamalarının eklenmesi, iOS 
 
 Doğrulama: 225 sunucu ve 113 uygulama testi; uygulama ayarının ürettiği Android izin listesi ve AdMob kimlikleri denetlendi. Reklamlı ilk derleme sırada; cihazda henüz denenmedi.
 
+Reklamlı ilk iki derleme Gradle aşamasında düştü: `react-native-google-mobile-ads` 17.2.0'ın Android betiği `app.json`'u bulup içinde kendi kök anahtarını göremeyince tanımsız bir özelliğe erişiyor (betikte yanlış yazılmış bir değişken adı). Eklentiye `androidSdk: "classic"` verildi (betik o satırı atlıyor) ve aynı kimlikler `app.json` köküne `react-native-google-mobile-ads` anahtarıyla da yazıldı. Yerelde Android derleme ortamı olmadığı için düzeltme ancak Expo'daki yeni derlemeyle doğrulanacak.
+
+Play Console tarafı sürüyor: kullanıcı uygulama içeriği formlarını (gizlilik, erişim, reklam, derecelendirme, hedef kitle, veri güvenliği, reklam kimliği) dolduruyor ve ilk mağazalı AAB'yi (sürüm kodu 2) dahili teste yüklüyor. Mağaza incelemecileri için `StoreReview` hesabı canlı sunucuda açıldı. `destek@challengegoal.app` için Cloudflare e-posta yönlendirmesi kuruldu; alan adının posta kayıtları yayında, deneme postasıyla teslimat henüz doğrulanmadı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
