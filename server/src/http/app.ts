@@ -10,6 +10,7 @@ import {
   PASSWORD_MAX_LENGTH,
   PUSH_PLATFORMS,
   type AccountResponse,
+  type AdStatusResponse,
   type ApiErrorResponse,
   type AuthResponse,
   type ChooseUsernameRequest,
@@ -36,6 +37,7 @@ import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest }
 
 import type { IdentityVerifiers } from '../accounts/identity';
 import { createAccountService, type AuthenticatedSession } from '../accounts/service';
+import { createAds, type AdRewardOutcome, type AdSettings } from '../ads/service';
 import type { ServerConfig } from '../config';
 import type { Database } from '../database';
 import type { FootballLibrary } from '../football/library';
@@ -79,6 +81,7 @@ export interface AppDependencies {
   football?: FootballLibrary;
   sendPush?: PushSender;
   purchaseVerifiers?: PurchaseVerifiers;
+  ads?: AdSettings;
   play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
     botTiming?: BotTiming;
     duelTiming?: Partial<DuelTiming>;
@@ -187,6 +190,9 @@ const HISTORY_QUERY = {
   },
 } as const;
 
+const NO_ADS: AdSettings = { units: [], verify: async () => false };
+const AD_REWARD_STATUS_CODES: Partial<Record<AdRewardOutcome, number>> = { forged: 400 };
+
 function errorBody(error: ApiError): ApiErrorResponse {
   return { error: { code: error.code } };
 }
@@ -204,6 +210,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
+  const ads = createAds(database, progress, dependencies.ads ?? NO_ADS, { now, timeZone: config.timeZone });
   const store = createStore(database, progress, dependencies.purchaseVerifiers ?? {}, now, (error) => app.log.warn(error));
   const notifications = createNotifications(database, {
     now,
@@ -395,6 +402,14 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.post(`${API_PREFIX}/daily`, (request): DailyRewardResponse => progress.claimDaily(requireSession(request).user.id));
 
   app.get(`${API_PREFIX}/wallet`, (request): WalletResponse => progress.wallet(requireSession(request).user.id));
+
+  app.get(`${API_PREFIX}/ads`, (request): AdStatusResponse => ads.status(requireSession(request).user.id));
+
+  app.get(`${API_PREFIX}/ads/reward`, async (request, reply) => {
+    const outcome = await ads.reward(request.raw.url?.split('?')[1] ?? '');
+    request.log.info({ outcome }, 'ad reward callback');
+    return reply.code(AD_REWARD_STATUS_CODES[outcome] ?? 200).send();
+  });
 
   app.get<{ Querystring: { period?: LeaderboardPeriod; game?: GameId } }>(
     `${API_PREFIX}/leaderboard`,

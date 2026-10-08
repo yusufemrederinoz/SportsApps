@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { createIdentityVerifier } from './accounts/identity';
+import { loadAdSettings } from './ads/setup';
 import { loadConfig } from './config';
 import { openDatabase } from './database';
 import { openFootballLibrary, readDataVersion } from './football/library';
@@ -22,6 +23,7 @@ const app = buildApp({
     apple: createIdentityVerifier('apple', config.appleClientIds),
   },
   purchaseVerifiers: loadPurchaseVerifiers(),
+  ads: loadAdSettings(),
 });
 
 if (!football) {

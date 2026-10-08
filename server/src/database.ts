@@ -166,6 +166,15 @@ const MIGRATIONS: readonly string[] = [
   ) STRICT;
   CREATE INDEX purchases_user ON purchases (user_id);
   `,
+  `
+  CREATE TABLE ad_rewards (
+    transaction_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    day TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE INDEX ad_rewards_user_day ON ad_rewards (user_id, day);
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
