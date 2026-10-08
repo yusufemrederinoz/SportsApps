@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>ChallengeGoal Paneli</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #05070a;
+        --background: #0a0d12;
+        --panel: #121821;
+        --raised: #1b2430;
+        --stroke: #2b3644;
+        --text: #f6f8fb;
+        --muted: #9ba8ba;
+        --volt: #c8ff2e;
+        --gold: #f3c653;
+        --blue: #5b9bff;
+        --red: #ff4d6a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--text);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        font-size: 15px;
+        line-height: 1.45;
+      }
+
+      header,
+      main {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding-top: 20px;
+        padding-bottom: 12px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 22px;
+        font-style: italic;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+      }
+
+      h1 span {
+        color: var(--volt);
+      }
+
+      h2 {
+        margin: 28px 0 10px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .status {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--volt);
+      }
+
+      .dot.stale {
+        background: var(--red);
+      }
+
+      button {
+        min-height: 36px;
+        padding: 0 14px;
+        border: 1px solid var(--stroke);
+        border-radius: 8px;
+        background: var(--panel);
+        color: var(--text);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button:hover {
+        border-color: var(--volt);
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 10px;
+      }
+
+      .card {
+        padding: 14px 16px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: var(--panel);
+      }
+
+      .card.live {
+        border-color: var(--volt);
+      }
+
+      .card b {
+        display: block;
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.1;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .card.live b {
+        color: var(--volt);
+      }
+
+      .card span {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .card small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 10px;
+      }
+
+      .box {
+        padding: 14px 16px;
+        border: 1px solid var(--stroke);
+        border-radius: 12px;
+        background: var(--panel);
+        overflow-x: auto;
+      }
+
+      .box h3 {
+        margin: 0 0 10px;
+        font-size: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+
+      th,
+      td {
+        padding: 6px 4px;
+        border-bottom: 1px solid var(--stroke);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      th:first-child,
+      td:first-child {
+        text-align: left;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      .chart {
+        display: grid;
+        grid-template-columns: repeat(14, 1fr);
+        align-items: end;
+        gap: 4px;
+        height: 120px;
+      }
+
+      .bar {
+        position: relative;
+        min-height: 2px;
+        border-radius: 4px 4px 0 0;
+        background: var(--blue);
+      }
+
+      .bar.today {
+        background: var(--volt);
+      }
+
+      .bar i {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: -18px;
+        font-size: 11px;
+        font-style: normal;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .axis {
+        display: grid;
+        grid-template-columns: repeat(14, 1fr);
+        gap: 4px;
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 10px;
+        text-align: center;
+      }
+
+      .note {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      form {
+        max-width: 380px;
+        margin: 14vh auto 0;
+        padding: 24px;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: var(--panel);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      input {
+        width: 100%;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 8px;
+        background: var(--ink);
+        color: var(--text);
+        font: inherit;
+      }
+
+      form button {
+        width: 100%;
+        min-height: 44px;
+        margin-top: 12px;
+        border-color: var(--volt);
+        background: var(--volt);
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .error {
+        min-height: 20px;
+        margin: 10px 0 0;
+        color: var(--red);
+        font-size: 13px;
+      }
+
+      [hidden] {
+        display: none !important;
+      }
+
+      footer {
+        max-width: 1240px;
+        margin: 28px auto;
+        padding: 0 20px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>CHALLENGE<span>GOAL</span> PANELİ</h1>
+      <div class="status" id="status" hidden>
+        <span class="dot" id="dot"></span>
+        <span id="updated"></span>
+        <button type="button" id="leave">Çıkış</button>
+      </div>
+    </header>
+
+    <form id="login" hidden>
+      <label for="key">Yönetim anahtarı</label>
+      <input id="key" type="password" autocomplete="current-password" required />
+      <button type="submit">Aç</button>
+      <p class="error" id="problem" role="alert"></p>
+    </form>
+
+    <main id="board" hidden>
+      <h2>Şu an</h2>
+      <div class="cards" id="live"></div>
+
+      <h2>Oyuncular</h2>
+      <div class="cards" id="users"></div>
+
+      <h2>Son 14 gün</h2>
+      <div class="columns" id="charts"></div>
+
+      <h2>Maçlar</h2>
+      <div class="cards" id="matches"></div>
+      <div class="columns" style="margin-top: 10px">
+        <div class="box"><h3>Oyuna göre</h3><table id="games"></table></div>
+        <div class="box"><h3>Türe göre</h3><table id="kinds"></table></div>
+      </div>
+
+      <h2>Gol, satın alma ve reklam</h2>
+      <div class="cards" id="money"></div>
+      <div class="columns" style="margin-top: 10px">
+        <div class="box"><h3>Satın almalar</h3><table id="products"></table></div>
+        <div class="box"><h3>Gol hareketleri</h3><table id="movements"></table></div>
+      </div>
+
+      <h2>Diğer</h2>
+      <div class="cards" id="other"></div>
+    </main>
+
+    <footer id="foot" hidden></footer>
+
+    <script>
+      const STORAGE_KEY = 'challengegoal-admin-key';
+      const REFRESH_INTERVAL = 5000;
+      const GAME_NAMES = {
+        grid: 'XOX',
+        duel: 'Kart Düellosu',
+        draft: 'Kadro Kur',
+        higher: 'Hangisi Yüksek',
+        chain: 'Zincir',
+        rare: 'En Az Bilinen',
+        auction: 'Açık Artırma',
+        'top-ten': 'İlk 10',
+        career: 'Kariyer Yolu',
+      };
+      const KIND_NAMES = { queue: 'Online sıra', bot: 'Bota karşı', room: 'Arkadaş odası' };
+      const REASON_NAMES = {
+        welcome: 'Hoş geldin hediyesi',
+        daily: 'Günlük ödül',
+        win: 'Galibiyet',
+        joker: 'Joker (harcama)',
+        puzzle: 'Bulmaca ödülü',
+        purchase: 'Satın alma',
+        ad: 'Reklam ödülü',
+      };
+      const PLATFORM_NAMES = { ios: 'App Store', android: 'Google Play' };
+
+      const element = (id) => document.getElementById(id);
+      const number = (value) => Number(value ?? 0).toLocaleString('tr-TR');
+      const money = (value) => Number(value ?? 0).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' });
+      const escapeText = (value) =>
+        String(value).replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
+
+      let timer = null;
+
+      function card(label, value, hint, live) {
+        return `<div class="card${live ? ' live' : ''}"><b>${escapeText(value)}</b><span>${escapeText(label)}</span>${
+          hint ? `<small>${escapeText(hint)}</small>` : ''
+        }</div>`;
+      }
+
+      function table(headers, lines) {
+        const head = `<tr>${headers.map((header) => `<th>${escapeText(header)}</th>`).join('')}</tr>`;
+        const body = lines.length
+          ? lines.map((line) => `<tr>${line.map((cell) => `<td>${escapeText(cell)}</td>`).join('')}</tr>`).join('')
+          : `<tr><td colspan="${headers.length}">Henüz kayıt yok</td></tr>`;
+        return head + body;
+      }
+
+      function chart(title, days, field) {
+        const highest = Math.max(1, ...days.map((day) => day[field]));
+        const bars = days
+          .map((day, index) => {
+            const height = Math.round((day[field] / highest) * 100);
+            const today = index === days.length - 1 ? ' today' : '';
+            return `<div class="bar${today}" style="height:${height}%" title="${escapeText(day.day)}: ${number(day[field])}"><i>${
+              day[field] ? number(day[field]) : ''
+            }</i></div>`;
+          })
+          .join('');
+        const axis = days.map((day) => `<span>${escapeText(day.day.slice(8))}</span>`).join('');
+        return `<div class="box"><h3>${escapeText(title)}</h3><div class="chart" style="margin-top:22px">${bars}</div><div class="axis">${axis}</div></div>`;
+      }
+
+      function duration(milliseconds) {
+        const hours = Math.floor(milliseconds / 3600000);
+        const days = Math.floor(hours / 24);
+        return days > 0 ? `${days} gün ${hours % 24} saat` : `${hours} saat ${Math.floor((milliseconds % 3600000) / 60000)} dk`;
+      }
+
+      function render(stats) {
+        const { live, users, active, matches, goals, purchases, ads, puzzle, devices, days, server } = stats;
+        const inMatches = Object.entries(live.matchesByGame)
+          .map(([game, count]) => `${GAME_NAMES[game] ?? game}: ${count}`)
+          .join(', ');
+
+        element('live').innerHTML = [
+          card('çevrimiçi oyuncu', number(live.online), 'son 5 dakikada uygulamayı kullanan', true),
+          card('süren maç', number(live.matches), inMatches || 'şu an maç yok', true),
+          card('sırada bekleyen', number(live.queued), 'rakip arayan oyuncu', true),
+          card('açık arkadaş odası', number(live.waitingRooms), 'kodla bekleyen oda', true),
+          card('canlı bağlantı', number(live.connected), 'maç ekranı açık olan'),
+        ].join('');
+
+        element('users').innerHTML = [
+          card('toplam hesap', number(users.total), `${number(users.members)} üye, ${number(users.guests)} misafir`),
+          card('bugün yeni', number(users.newToday), `son 7 günde ${number(users.newWeek)}`),
+          card('bugün aktif', number(active.today), 'oturumu bugün kullanılan hesap'),
+          card('7 günde aktif', number(active.week)),
+          card('30 günde aktif', number(active.month)),
+          card('e-posta ile üye', number(users.email)),
+          card('Google ile üye', number(users.google)),
+          card('Apple ile üye', number(users.apple)),
+        ].join('');
+
+        element('charts').innerHTML = [
+          chart('Günlük ödülünü alan oyuncu', days, 'dailyRewards'),
+          chart('Yeni hesap', days, 'newUsers'),
+          chart('Biten maç', days, 'matches'),
+          chart('Satın alma', days, 'purchases'),
+          chart('Ödül yazılan reklam', days, 'ads'),
+        ].join('');
+
+        element('matches').innerHTML = [
+          card('bugün biten maç', number(matches.today), `son 7 günde ${number(matches.week)}`),
+          card('toplam maç', number(matches.total)),
+          card('bugün gizli botla', number(matches.hiddenBotToday), 'rakip bulunamayan sıra maçı'),
+        ].join('');
+        element('games').innerHTML = table(
+          ['Oyun', 'Bugün', 'Toplam'],
+          matches.games.map((game) => [GAME_NAMES[game.name] ?? game.name, number(game.today), number(game.total)]),
+        );
+        element('kinds').innerHTML = table(
+          ['Tür', 'Bugün', 'Toplam'],
+          matches.kinds.map((kind) => [KIND_NAMES[kind.name] ?? kind.name, number(kind.today), number(kind.total)]),
+        );
+
+        element('money').innerHTML = [
+          card('satın alma', number(purchases.total), `bugün ${number(purchases.today)}`),
+          card('tahmini brüt tutar', money(purchases.listValue), 'Türkiye liste fiyatıyla; komisyon ve vergi düşülmeden'),
+          card('satılan gol', number(purchases.goals)),
+          card('ödül yazılan reklam', number(ads.total), `bugün ${number(ads.today)}`),
+          card('cüzdanlardaki gol', number(goals.inWallets), 'bütün oyuncuların toplam bakiyesi'),
+        ].join('');
+        element('products').innerHTML = table(
+          ['Paket', 'Mağaza', 'Adet', 'Gol'],
+          purchases.products.map((product) => [
+            product.productId,
+            PLATFORM_NAMES[product.platform] ?? product.platform,
+            number(product.count),
+            number(product.goals),
+          ]),
+        );
+        element('movements').innerHTML = table(
+          ['Neden', 'Hareket', 'Gol'],
+          goals.movements.map((movement) => [
+            REASON_NAMES[movement.reason] ?? movement.reason,
+            number(movement.count),
+            number(movement.amount),
+          ]),
+        );
+
+        element('other').innerHTML = [
+          card('bugün bulmacaya başlayan', number(puzzle.startedToday), `${number(puzzle.finishedToday)} oyuncu bitirdi`),
+          card('bildirim açık cihaz', number(devices.tokens), `${number(devices.users)} oyuncu`),
+          card('sunucu çalışma süresi', duration(stats.generatedAt - server.startedAt), `${number(server.memoryMegabytes)} MB bellek`),
+        ].join('');
+
+        element('updated').textContent = `Son güncelleme ${new Date(stats.generatedAt).toLocaleTimeString('tr-TR')}`;
+        element('foot').textContent = `Günler ${stats.timeZone} saatine göre sayılır. Sayfa ${REFRESH_INTERVAL / 1000} saniyede bir yenilenir.`;
+      }
+
+      function show(signedIn) {
+        element('login').hidden = signedIn;
+        element('board').hidden = !signedIn;
+        element('status').hidden = !signedIn;
+        element('foot').hidden = !signedIn;
+      }
+
+      function leave(message) {
+        clearInterval(timer);
+        timer = null;
+        localStorage.removeItem(STORAGE_KEY);
+        element('problem').textContent = message ?? '';
+        show(false);
+      }
+
+      async function refresh() {
+        const key = localStorage.getItem(STORAGE_KEY);
+        if (!key) {
+          leave();
+          return;
+        }
+        try {
+          const response = await fetch('/v1/admin/stats', { headers: { Authorization: `Bearer ${key}` }, cache: 'no-store' });
+          if (response.status === 401 || response.status === 404) {
+            leave('Anahtar kabul edilmedi.');
+            return;
+          }
+          if (response.status === 429) {
+            leave('Çok fazla yanlış deneme. Bir dakika sonra tekrar dene.');
+            return;
+          }
+          if (!response.ok) {
+            throw new Error(String(response.status));
+          }
+          render(await response.json());
+          element('dot').classList.remove('stale');
+          show(true);
+        } catch {
+          element('dot').classList.add('stale');
+          element('updated').textContent = 'Sunucuya ulaşılamıyor, yeniden deneniyor';
+        }
+      }
+
+      function start() {
+        clearInterval(timer);
+        timer = setInterval(refresh, REFRESH_INTERVAL);
+        void refresh();
+      }
+
+      element('login').addEventListener('submit', (event) => {
+        event.preventDefault();
+        localStorage.setItem(STORAGE_KEY, element('key').value.trim());
+        element('key').value = '';
+        element('problem').textContent = '';
+        start();
+      });
+      element('leave').addEventListener('click', () => leave());
+
+      if (localStorage.getItem(STORAGE_KEY)) {
+        start();
+      } else {
+        show(false);
+      }
+    </script>
+  </body>
+</html>

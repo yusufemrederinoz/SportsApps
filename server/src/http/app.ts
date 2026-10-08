@@ -1,4 +1,4 @@
-import { createReadStream } from 'node:fs';
+import { createReadStream, readFileSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -40,6 +40,8 @@ import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest }
 
 import type { IdentityVerifiers } from '../accounts/identity';
 import { createAccountService, type AuthenticatedSession } from '../accounts/service';
+import { createPresence, isAdminKey } from '../admin/access';
+import { NO_LIVE_PLAY, createAdminStats, type AdminStats, type LiveSnapshot } from '../admin/stats';
 import { createAds, type AdRewardOutcome, type AdSettings } from '../ads/service';
 import type { ServerConfig } from '../config';
 import type { Database } from '../database';
@@ -70,6 +72,9 @@ import { ApiError } from './errors';
 import { createRateLimiter } from './rate-limit';
 
 const AUTH_ATTEMPTS_PER_MINUTE = 30;
+const ADMIN_FAILURES_PER_MINUTE = 10;
+const ADMIN_PANEL = readFileSync(new URL('../admin/panel.html', import.meta.url), 'utf8');
+const ADMIN_PANEL_POLICY = "default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'";
 const MINUTE = 60 * 1000;
 const BEARER = 'Bearer ';
 const TOKEN_MAX_LENGTH = 8192;
@@ -84,6 +89,7 @@ export interface AppDependencies {
   verifiers?: IdentityVerifiers;
   football?: FootballLibrary;
   sendPush?: PushSender;
+  adminKey?: string;
   mailer?: Mailer;
   purchaseVerifiers?: PurchaseVerifiers;
   ads?: AdSettings;
@@ -220,6 +226,8 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     now,
   });
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
+  const adminFailures = createRateLimiter(ADMIN_FAILURES_PER_MINUTE, MINUTE, now);
+  const presence = createPresence(now);
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
@@ -236,6 +244,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   }
   let puzzles: Puzzles | null = null;
   let evict: (userId: string) => void = () => undefined;
+  let livePlay: () => LiveSnapshot = () => NO_LIVE_PLAY;
   let hasMarket: (market: string) => boolean = () => false;
 
   if (dependencies.football) {
@@ -277,12 +286,25 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     puzzles = createPuzzles(database, football, progress, { now, timeZone: config.timeZone });
     hasMarket = football.hasMarket;
     evict = lobby.evict;
+    livePlay = lobby.snapshot;
     app.addHook('onClose', () => lobby.shutdown());
   }
 
+  const adminStats = createAdminStats(database, {
+    now,
+    timeZone: config.timeZone,
+    live: () => livePlay(),
+    online: presence.count,
+    startedAt: now(),
+  });
+
   const session = (request: FastifyRequest): AuthenticatedSession | null => {
     const header = request.headers.authorization;
-    return header?.startsWith(BEARER) ? accounts.authenticate(header.slice(BEARER.length)) : null;
+    const current = header?.startsWith(BEARER) ? accounts.authenticate(header.slice(BEARER.length)) : null;
+    if (current) {
+      presence.touch(current.user.id);
+    }
+    return current;
   };
 
   const requireSession = (request: FastifyRequest): AuthenticatedSession => {
@@ -316,6 +338,31 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.setNotFoundHandler((_, reply) => reply.code(404).send(errorBody(new ApiError('not-found'))));
 
   app.get(`${API_PREFIX}/health`, () => ({ status: 'ok' }));
+
+  app.get('/admin', (_, reply) => {
+    if (!dependencies.adminKey) {
+      throw new ApiError('not-found');
+    }
+    return reply
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .header('Cache-Control', 'no-store')
+      .header('X-Robots-Tag', 'noindex, nofollow')
+      .header('Content-Security-Policy', ADMIN_PANEL_POLICY)
+      .send(ADMIN_PANEL);
+  });
+
+  app.get(`${API_PREFIX}/admin/stats`, (request, reply): AdminStats => {
+    const { adminKey } = dependencies;
+    if (!adminKey) {
+      throw new ApiError('not-found');
+    }
+    const header = request.headers.authorization;
+    if (!header?.startsWith(BEARER) || !isAdminKey(header.slice(BEARER.length), adminKey)) {
+      throw new ApiError(adminFailures.allow(request.ip) ? 'unauthorized' : 'rate-limited');
+    }
+    void reply.header('Cache-Control', 'no-store');
+    return adminStats.read();
+  });
 
   app.post(`${API_PREFIX}/auth/guest`, (request): AuthResponse => {
     startSignIn(request);

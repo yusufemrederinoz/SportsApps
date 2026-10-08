@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 
 import { createIdentityVerifier } from './accounts/identity';
+import { loadAdminKey } from './admin/access';
 import { loadAdSettings } from './ads/setup';
 import { loadConfig } from './config';
 import { openDatabase } from './database';
@@ -26,6 +27,7 @@ const app = buildApp({
   purchaseVerifiers: loadPurchaseVerifiers(),
   ads: loadAdSettings(),
   mailer: loadMailer(),
+  adminKey: loadAdminKey(),
 });
 
 if (!football) {

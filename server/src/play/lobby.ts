@@ -19,6 +19,7 @@ import {
   type ServerMessage,
 } from '@sportapps/protocol';
 
+import type { LiveSnapshot } from '../admin/stats';
 import { START_RATING } from '../progress/points';
 import type { Progress } from '../progress/store';
 import { BOT_TARGET_WIN_RATES, RANKED_TARGET_WIN_RATE, botLevelFor, createBotName } from './bot';
@@ -611,6 +612,21 @@ export function createLobby(options: LobbyOptions) {
         queued: Array.from(queues.values()).reduce((total, entries) => total + entries.length, 0),
         hosted: hosted.size,
         matches: matches.size,
+      };
+    },
+
+    snapshot(): LiveSnapshot {
+      const running = [...matches.values()].filter((active) => active.room.finishedAt() === null);
+      const matchesByGame: LiveSnapshot['matchesByGame'] = {};
+      running.forEach(({ room }) => {
+        matchesByGame[room.game] = (matchesByGame[room.game] ?? 0) + 1;
+      });
+      return {
+        connected: [...members.values()].filter((member) => member.connection !== null).length,
+        queued: [...queues.values()].reduce((total, entries) => total + entries.length, 0),
+        waitingRooms: hosted.size,
+        matches: running.length,
+        matchesByGame,
       };
     },
 
