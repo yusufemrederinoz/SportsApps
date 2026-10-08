@@ -175,6 +175,17 @@ const MIGRATIONS: readonly string[] = [
   ) STRICT;
   CREATE INDEX ad_rewards_user_day ON ad_rewards (user_id, day);
   `,
+  `
+  CREATE TABLE password_resets (
+    user_id TEXT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    code_hash TEXT NOT NULL,
+    attempts INTEGER NOT NULL,
+    requests INTEGER NOT NULL,
+    window_started_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER NOT NULL
+  ) STRICT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

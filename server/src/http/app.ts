@@ -9,6 +9,7 @@ import {
   GAME_IDS,
   PASSWORD_MAX_LENGTH,
   PUSH_PLATFORMS,
+  RESET_CODE_LENGTH,
   type AccountResponse,
   type AdStatusResponse,
   type ApiErrorResponse,
@@ -16,6 +17,7 @@ import {
   type ChooseUsernameRequest,
   type DailyPuzzleResponse,
   type DailyRewardResponse,
+  type ForgotPasswordRequest,
   type GameId,
   type IdentityProvider,
   type IdentitySignInRequest,
@@ -31,6 +33,7 @@ import {
   type PuzzleGuessResponse,
   type PuzzleRankingResponse,
   type RegisterRequest,
+  type ResetPasswordRequest,
   type WalletResponse,
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
@@ -51,6 +54,7 @@ import { registerPlayGateway } from '../play/gateway';
 import { createGridRoomFactory } from '../play/grid-room';
 import { DEFAULT_HIGHER_TIMING, createHigherRoomFactory, type HigherTiming } from '../play/higher-room';
 import { createMatchHistory } from '../play/history';
+import type { Mailer } from '../mail/mailer';
 import { createExpoSender, type PushSender } from '../notifications/sender';
 import { createNotifications } from '../notifications/service';
 import type { RoomFactory } from '../play/live-room';
@@ -80,6 +84,7 @@ export interface AppDependencies {
   verifiers?: IdentityVerifiers;
   football?: FootballLibrary;
   sendPush?: PushSender;
+  mailer?: Mailer;
   purchaseVerifiers?: PurchaseVerifiers;
   ads?: AdSettings;
   play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
@@ -128,6 +133,12 @@ const PUSH_TOKEN = {
   },
 } as const;
 const PUSH_TOKEN_REMOVAL = body({ token: text(PUSH_TOKEN_MAX_LENGTH) });
+const FORGOT_PASSWORD = body({ email: text(EMAIL_MAX_LENGTH), language: text(LANGUAGE_MAX_LENGTH) });
+const RESET_PASSWORD = body({
+  email: text(EMAIL_MAX_LENGTH),
+  code: text(RESET_CODE_LENGTH),
+  password: text(PASSWORD_MAX_LENGTH),
+});
 const PRODUCT_ID_MAX_LENGTH = 64;
 const PURCHASE_PROOF_MAX_LENGTH = 4096;
 const PURCHASE = {
@@ -204,6 +215,8 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const accounts = createAccountService(database, {
     sessionDays: config.sessionDays,
     verifiers: dependencies.verifiers,
+    mailer: dependencies.mailer,
+    onMailError: (error) => app.log.error(error),
     now,
   });
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
@@ -318,6 +331,25 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     startSignIn(request);
     return accounts.login(request.body);
   });
+
+  app.post<{ Body: ForgotPasswordRequest }>(
+    `${API_PREFIX}/auth/password/forgot`,
+    { schema: FORGOT_PASSWORD },
+    (request, reply) => {
+      startSignIn(request);
+      accounts.requestPasswordReset(request.body);
+      return reply.code(204).send();
+    },
+  );
+
+  app.post<{ Body: ResetPasswordRequest }>(
+    `${API_PREFIX}/auth/password/reset`,
+    { schema: RESET_PASSWORD },
+    (request): Promise<AuthResponse> => {
+      startSignIn(request);
+      return accounts.resetPassword(request.body);
+    },
+  );
 
   const identityRoute = (provider: IdentityProvider) =>
     app.post<{ Body: IdentitySignInRequest }>(

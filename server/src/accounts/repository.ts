@@ -19,6 +19,16 @@ export interface CredentialRow {
   password_hash: string;
 }
 
+export interface PasswordResetRow {
+  user_id: string;
+  code_hash: string;
+  attempts: number;
+  requests: number;
+  window_started_at: number;
+  created_at: number;
+  expires_at: number;
+}
+
 export interface SessionRow {
   token_hash: string;
   user_id: string;
@@ -112,6 +122,47 @@ export function createAccountRepository(database: Database) {
 
     deleteExpiredSessions(now: number): void {
       run('DELETE FROM sessions WHERE expires_at <= ?', now);
+    },
+
+    deleteUserSessions(userId: string): void {
+      run('DELETE FROM sessions WHERE user_id = ?', userId);
+    },
+
+    setPassword(userId: string, passwordHash: string): void {
+      run('UPDATE credentials SET password_hash = ? WHERE user_id = ?', passwordHash, userId);
+    },
+
+    findPasswordReset(userId: string): PasswordResetRow | undefined {
+      return one<PasswordResetRow>('SELECT * FROM password_resets WHERE user_id = ?', userId);
+    },
+
+    savePasswordReset(reset: PasswordResetRow): void {
+      run(
+        `INSERT INTO password_resets (user_id, code_hash, attempts, requests, window_started_at, created_at, expires_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT (user_id) DO UPDATE SET
+           code_hash = excluded.code_hash,
+           attempts = excluded.attempts,
+           requests = excluded.requests,
+           window_started_at = excluded.window_started_at,
+           created_at = excluded.created_at,
+           expires_at = excluded.expires_at`,
+        reset.user_id,
+        reset.code_hash,
+        reset.attempts,
+        reset.requests,
+        reset.window_started_at,
+        reset.created_at,
+        reset.expires_at,
+      );
+    },
+
+    countPasswordResetAttempt(userId: string): void {
+      run('UPDATE password_resets SET attempts = attempts + 1 WHERE user_id = ?', userId);
+    },
+
+    deletePasswordReset(userId: string): void {
+      run('DELETE FROM password_resets WHERE user_id = ?', userId);
     },
 
     setUsername(userId: string, username: string, usernameKey: string, now: number): void {

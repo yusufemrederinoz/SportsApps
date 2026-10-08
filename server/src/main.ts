@@ -6,6 +6,7 @@ import { loadConfig } from './config';
 import { openDatabase } from './database';
 import { openFootballLibrary, readDataVersion } from './football/library';
 import { buildApp } from './http/app';
+import { loadMailer } from './mail/setup';
 import { loadPurchaseVerifiers } from './store/setup';
 
 const config = loadConfig();
@@ -24,6 +25,7 @@ const app = buildApp({
   },
   purchaseVerifiers: loadPurchaseVerifiers(),
   ads: loadAdSettings(),
+  mailer: loadMailer(),
 });
 
 if (!football) {

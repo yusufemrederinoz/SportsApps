@@ -1,0 +1,14 @@
+{
+  "tr": {
+    "passwordReset": {
+      "subject": "ChallengeGoal şifre sıfırlama kodun: {{code}}",
+      "text": "Merhaba,\n\nChallengeGoal şifreni sıfırlamak için kodun: {{code}}\n\nKod {{minutes}} dakika geçerli. Uygulamada \"Şifremi unuttum\" ekranına bu kodu ve yeni şifreni yaz.\n\nBu isteği sen yapmadıysan bu e-postayı yok sayabilirsin; şifren değişmez.\n\nChallengeGoal"
+    }
+  },
+  "en": {
+    "passwordReset": {
+      "subject": "Your ChallengeGoal password reset code: {{code}}",
+      "text": "Hello,\n\nYour code to reset your ChallengeGoal password is: {{code}}\n\nThe code is valid for {{minutes}} minutes. Enter it with your new password on the \"Forgot password\" screen in the app.\n\nIf you did not ask for this, you can ignore this e-mail; your password stays the same.\n\nChallengeGoal"
+    }
+  }
+}

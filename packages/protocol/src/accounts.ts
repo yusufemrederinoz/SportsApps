@@ -5,6 +5,7 @@ export const USERNAME_MAX_LENGTH = 16;
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
 export const EMAIL_MAX_LENGTH = 254;
+export const RESET_CODE_LENGTH = 6;
 
 const USERNAME_PATTERN = /^[\p{L}\p{N}_]+$/u;
 const USERNAME_CHARACTER = /[\p{L}\p{N}_]/u;
@@ -43,6 +44,17 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+  language: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  code: string;
+  password: string;
+}
+
 export interface IdentitySignInRequest {
   token: string;
 }
@@ -71,6 +83,8 @@ export type ApiErrorCode =
   | 'invalid-username'
   | 'invalid-email'
   | 'invalid-password'
+  | 'invalid-reset-code'
+  | 'mail-unavailable'
   | 'provider-unavailable'
   | 'invalid-identity-token'
   | 'rate-limited'

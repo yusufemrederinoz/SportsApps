@@ -1,7 +1,8 @@
-import { randomInt, randomUUID } from 'node:crypto';
+import { createHash, randomInt, randomUUID } from 'node:crypto';
 
 import { normalizeName } from '@sportapps/game-core';
 import {
+  RESET_CODE_LENGTH,
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
   isValidEmail,
@@ -10,13 +11,17 @@ import {
   keepUsernameCharacters,
   type Account,
   type AuthResponse,
+  type ForgotPasswordRequest,
   type IdentityProvider,
   type LoginRequest,
   type RegisterRequest,
+  type ResetPasswordRequest,
 } from '@sportapps/protocol';
 
 import { transaction, type Database } from '../database';
 import { ApiError } from '../http/errors';
+import type { Mailer } from '../mail/mailer';
+import { passwordResetMail } from '../mail/texts';
 import type { IdentityVerifiers } from './identity';
 import { hashPassword, verifyPassword } from './passwords';
 import { createAccountRepository, type UserRow } from './repository';
@@ -27,6 +32,11 @@ const SESSION_REFRESH_INTERVAL = 60 * 60 * 1000;
 const GUEST_PREFIX = 'guest';
 const FALLBACK_PREFIX = 'player';
 const SUFFIX_DIGITS = 6;
+const MINUTE = 60 * 1000;
+const RESET_CODE_MINUTES = 15;
+const RESET_CODE_INTERVAL = MINUTE;
+const RESET_CODE_ATTEMPTS = 5;
+const RESET_CODES_PER_DAY = 5;
 const UNKNOWN_PASSWORD_HASH = [
   'scrypt',
   2 ** 15,
@@ -39,12 +49,18 @@ const UNKNOWN_PASSWORD_HASH = [
 export interface AccountServiceOptions {
   sessionDays: number;
   verifiers?: IdentityVerifiers;
+  mailer?: Mailer;
+  onMailError?: (error: unknown) => void;
   now?: () => number;
 }
 
 export interface AuthenticatedSession {
   user: UserRow;
   token: string;
+}
+
+function hashResetCode(userId: string, code: string): string {
+  return createHash('sha256').update(`${userId}:${code}`).digest('hex');
 }
 
 export function usernameKey(username: string): string {
@@ -56,6 +72,7 @@ export function createAccountService(database: Database, options: AccountService
   const now = options.now ?? Date.now;
   const sessionLifetime = options.sessionDays * DAY;
   const verifiers = options.verifiers ?? {};
+  const onMailError = options.onMailError ?? (() => undefined);
 
   function startSession(user: UserRow): AuthResponse {
     const time = now();
@@ -178,6 +195,62 @@ export function createAccountService(database: Database, options: AccountService
         throw new ApiError('invalid-credentials');
       }
       return startSession(user);
+    },
+
+    requestPasswordReset(input: ForgotPasswordRequest): void {
+      const { mailer } = options;
+      if (!mailer) {
+        throw new ApiError('mail-unavailable');
+      }
+      const credential = repository.findCredentialByEmailKey(input.email.trim().toLowerCase());
+      if (!credential) {
+        return;
+      }
+      const time = now();
+      const previous = repository.findPasswordReset(credential.user_id);
+      const sameDay = previous !== undefined && time - previous.window_started_at < DAY;
+      const tooSoon = previous !== undefined && time - previous.created_at < RESET_CODE_INTERVAL;
+      if (tooSoon || (previous && sameDay && previous.requests >= RESET_CODES_PER_DAY)) {
+        return;
+      }
+      const code = String(randomInt(10 ** RESET_CODE_LENGTH)).padStart(RESET_CODE_LENGTH, '0');
+      repository.savePasswordReset({
+        user_id: credential.user_id,
+        code_hash: hashResetCode(credential.user_id, code),
+        attempts: 0,
+        requests: previous && sameDay ? previous.requests + 1 : 1,
+        window_started_at: previous && sameDay ? previous.window_started_at : time,
+        created_at: time,
+        expires_at: time + RESET_CODE_MINUTES * MINUTE,
+      });
+      void mailer(passwordResetMail(credential.email, input.language, code, RESET_CODE_MINUTES)).catch(onMailError);
+    },
+
+    async resetPassword(input: ResetPasswordRequest): Promise<AuthResponse> {
+      if (!isValidPassword(input.password)) {
+        throw new ApiError('invalid-password');
+      }
+      const credential = repository.findCredentialByEmailKey(input.email.trim().toLowerCase());
+      const reset = credential ? repository.findPasswordReset(credential.user_id) : undefined;
+      if (!credential || !reset || reset.expires_at <= now() || reset.attempts >= RESET_CODE_ATTEMPTS) {
+        throw new ApiError('invalid-reset-code');
+      }
+      if (reset.code_hash !== hashResetCode(credential.user_id, input.code.trim())) {
+        repository.countPasswordResetAttempt(credential.user_id);
+        throw new ApiError('invalid-reset-code');
+      }
+      const passwordHash = await hashPassword(input.password);
+
+      return transaction(database, () => {
+        const user = repository.findUser(credential.user_id);
+        if (!user || repository.findPasswordReset(user.id)?.code_hash !== reset.code_hash) {
+          throw new ApiError('invalid-reset-code');
+        }
+        repository.setPassword(user.id, passwordHash);
+        repository.deletePasswordReset(user.id);
+        repository.deleteUserSessions(user.id);
+        return startSession(user);
+      });
     },
 
     async signInWithIdentity(provider: IdentityProvider, token: string): Promise<AuthResponse> {
