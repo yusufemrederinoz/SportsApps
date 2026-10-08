@@ -739,6 +739,15 @@ Sonuçlar:
 - **Google ile giriş.** Yeni kimliklerle derlenen sürümde "giriş tamamlanamadı" çıktı. Sunucuya istek gelmediği için hata cihazda, Google'ın penceresinde; en olası neden Play imzasıyla eşleşen Android istemcisinin eksik ya da yanlış olması. Kullanıcı Google Cloud'da denetleyecek; sonraki derleme hata kodunu gösterecek.
 - **Derleme kuralı.** Kullanıcı, onayı olmadan Expo'ya derleme gönderilmemesini istedi; kuyruktaki derleme iptal edildi.
 
+### Üçüncü cihaz denemesi, kart yerleşimi ve mağaza metinleri
+
+- **Google ile giriş.** Sorun Google Cloud'daki istemci ayarındaymış; kullanıcı düzeltti. Canlı veritabanında Google ile açılmış 3 hesap var.
+- **Ödüllü reklam.** Telefon AdMob'da deneme cihazı olarak eklenince reklam geldi; sunucu bildirimi doğrulayıp 2 golü yazdı. Uygulama mağazada yayımlanana kadar gerçek reklam gelmeyecek (`no-fill`).
+- **Armalar.** Kullanıcı tarayıcı önizlemesindeki 219 armayı onayladı.
+- **Kart yerleşimi.** Yeni portreler yalnızca baş olduğu için eski "üst gövde, kartın altına taşan" yerleşim uymuyordu. Altın ve mavi kart üzerinde deneme görseli çıkarıldı (`data/build/portrait-review/card-mock.jpg`); arkaya zemin dairesi koymadan, başı kartın sağ üstüne `contain` ile oturtmak seçildi. Zincir düğümleri ve Kadro Kur yuvaları da kare ve `contain` oldu. Cihazda henüz görülmedi.
+- **Mağaza metinleri.** Türkçe ve İngilizce ad, kısa açıklama, tam açıklama, App Store alt başlığı ve anahtar kelimeleri `docs/magaza-metinleri.md` dosyasına yazıldı; hepsi karakter sınırlarının içinde (betikle sayıldı). Ekran görüntüleri yeni portre ve armaları içeren derlemeden alınacak.
+- **Portre üretimi.** 22.28'de hâlâ indirme aşamasında: 10.783 kaynak fotoğrafın 3.873'ü inmişti (dakikada yaklaşık 65).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -915,3 +924,5 @@ Sonuçlar:
 | `dfee472` | 8 Ekim | Sonuç ekranında puan koruma |
 | `86c2c8d` | 8 Ekim | Portrelerin yalnızca baş kesimiyle çizilmesi, bulanık kaynak eleği, bilinirlik 20+ |
 | `910c175` | 8 Ekim | Üretilmiş kulüp armaları |
+| `8b17a16` | 8 Ekim | Armalar, puan koruma ve yeni portre tarzının belgelenmesi |
+| `8ca39d9` | 8 Ekim | Yalnızca baş portrelerin kartlara, zincir düğümlerine ve kadro yuvalarına oturtulması |

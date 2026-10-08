@@ -262,11 +262,11 @@ Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; he
 
 Durum: sürüyor (8 Ekim 2026). Uygulamanın adı ChallengeGoal; ilk sürümde ödüllü reklam ve gol satın alma olacak.
 
-Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canlı sunucu ve `challengegoal.app`; gizlilik, koşullar ve hesap silme sayfaları (taslak); hesap silme; Google ve Apple ile giriş ve bir kerelik kullanıcı adı seçimi; bildirimler; gol satın alma (dört paket, sunucu doğrulaması, mağaza ekranı; gerçek satın almayla denenmesi mağaza ürünlerinin açılmasını bekliyor); ödüllü reklam (AdMob birimleri, sunucu doğrulaması, mağaza ekranındaki satır); kullanılmayan Android izinlerinin temizlenmesi; şifre sıfırlama (Resend ile kod postası).
+Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canlı sunucu ve `challengegoal.app`; gizlilik, koşullar ve hesap silme sayfaları (taslak); hesap silme; Google ve Apple ile giriş ve bir kerelik kullanıcı adı seçimi; bildirimler; gol satın alma (dört paket, sunucu doğrulaması, mağaza ekranı; gerçek satın almayla denenmesi mağaza ürünlerinin açılmasını bekliyor); ödüllü reklam (AdMob birimleri, sunucu doğrulaması, mağaza ekranındaki satır); kullanılmayan Android izinlerinin temizlenmesi; şifre sıfırlama (Resend ile kod postası); Google Play'de dört ürünün açılması ve deneme kartıyla satın alma (sunucu doğruladı, goller yazıldı); ödüllü reklamın deneme cihazında uçtan uca çalışması; yönetim paneli; üretilmiş kulüp armaları; reklamla puan koruma; bağlantı uyarısı; mağaza metinleri (Türkçe ve İngilizce).
 
 `challengegoal.app` sitesi oyunun görünümüyle baştan yazıldı (kullanıcı ilk halini çok kötü bulmuştu); kullanıcının onayını bekliyor.
 
-Kalanlar: Google Play'de ürünlerin açılması ve iki mağazada deneme satın alması, ödüllü reklamın cihazda denenmesi ve AdMob rıza mesajları, Apple jetonunun hesap silmede iptali, mağaza sayfaları, ekran görüntüleri ve formlar, yasal metinlerin onayı, kalıcı oyuncu kimlikleri.
+Kalanlar: iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, Apple jetonunun hesap silmede iptali, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, kalıcı oyuncu kimlikleri, yeni portrelerin üretimi ve uygulamaya alınması.
 
 - Ödüllü reklam (AdMob; reklam başı 2 gol, günde en çok 5) ve uygulama içi gol satın alma eklenir. Misafir hesap satın alamaz, önce hesap açar. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.
