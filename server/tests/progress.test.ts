@@ -18,7 +18,7 @@ import { buildApp } from '../src/http/app';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
 import { seatSide, type LiveRoom, type RoomContext, type RoomFactory } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
-import { expectedScore, localDay, pointsChange, previousDay } from '../src/progress/points';
+import { START_RATING, expectedScore, keepLevel, localDay, pointsChange, previousDay, ratingChange } from '../src/progress/points';
 import { createProgress, type Progress } from '../src/progress/store';
 import { createWallet } from '../src/progress/wallet';
 
@@ -104,10 +104,10 @@ const queue = (client: Client, difficulty: 1 | 2 | 3 = 1) =>
   lobby.handle(client.player.id, { type: 'queue', market: 'tr', difficulty });
 const win = (client: Client) =>
   lobby.handle(client.player.id, { type: 'act', matchId: matchIdOf(client), action: { kind: 'name', footballerId: 1 } });
-const givePoints = (client: Client, points: number) =>
+const giveStanding = (client: Client, standing: { points?: number; rating?: number }) =>
   database
-    .prepare('INSERT INTO ratings (user_id, game, points, best_points, matches, updated_at) VALUES (?, ?, ?, ?, 0, 0)')
-    .run(client.player.id, 'grid', points, points);
+    .prepare('INSERT INTO ratings (user_id, game, points, best_points, rating, matches, updated_at) VALUES (?, ?, ?, ?, ?, 0, 0)')
+    .run(client.player.id, 'grid', standing.points ?? 0, standing.points ?? 0, standing.rating ?? START_RATING);
 
 function createTestLobby(botWait = BOT_WAIT) {
   return createLobby({
@@ -140,21 +140,33 @@ afterEach(() => {
 
 describe('points', () => {
   it('gives more for beating a stronger rival and on harder levels', () => {
-    expect(expectedScore(500, 500)).toBe(0.5);
-    expect(pointsChange(500, 500, 'win', 1)).toBe(25);
-    expect(pointsChange(500, 500, 'loss', 1)).toBe(-20);
-    expect(pointsChange(500, 500, 'draw', 1)).toBe(0);
-    expect(pointsChange(500, 500, 'win', 2)).toBe(30);
-    expect(pointsChange(500, 500, 'win', 3)).toBe(35);
-    expect(pointsChange(300, 700, 'win', 1)).toBeGreaterThan(pointsChange(700, 300, 'win', 1));
-    expect(pointsChange(2000, 0, 'win', 1)).toBe(10);
+    expect(expectedScore(1000, 1000)).toBe(0.5);
+    expect(pointsChange(1000, 1000, 'win', 1)).toBe(25);
+    expect(pointsChange(1000, 1000, 'loss', 1)).toBe(-10);
+    expect(pointsChange(1000, 1000, 'draw', 1)).toBe(0);
+    expect(pointsChange(1000, 1000, 'win', 2)).toBe(30);
+    expect(pointsChange(1000, 1000, 'win', 3)).toBe(35);
+    expect(pointsChange(800, 1200, 'win', 1)).toBeGreaterThan(pointsChange(1200, 800, 'win', 1));
+    expect(pointsChange(3000, 1000, 'win', 1)).toBe(10);
+    expect(pointsChange(800, 1200, 'loss', 1)).toBeGreaterThan(pointsChange(1200, 800, 'loss', 1));
+    expect(pointsChange(800, 1200, 'draw', 1)).toBeGreaterThan(0);
+    expect(pointsChange(1200, 800, 'draw', 1)).toBe(0);
   });
 
-  it('never takes a player below zero', () => {
-    expect(pointsChange(0, 0, 'loss', 1)).toBe(0);
-    expect(pointsChange(8, 0, 'loss', 1)).toBe(-8);
-    expect(pointsChange(5, 900, 'draw', 1)).toBeGreaterThan(0);
-    expect(pointsChange(3, 0, 'draw', 1)).toBeGreaterThanOrEqual(-3);
+  it('moves the hidden rating both ways by the same amount', () => {
+    expect(ratingChange(1000, 1000, 'win')).toBe(20);
+    expect(ratingChange(1000, 1000, 'loss')).toBe(-20);
+    expect(ratingChange(1000, 1000, 'draw')).toBe(0);
+    expect(ratingChange(1200, 800, 'win') + ratingChange(800, 1200, 'loss')).toBe(0);
+    expect(ratingChange(800, 1200, 'draw')).toBeGreaterThan(0);
+  });
+
+  it('never takes a player below zero or below their level', () => {
+    expect(keepLevel(0, -10, 0, 0)).toBe(0);
+    expect(keepLevel(8, -10, 8, 0)).toBe(0);
+    expect(keepLevel(100, -10, 100, 100)).toBe(100);
+    expect(keepLevel(60, -10, 305, 300)).toBe(55);
+    expect(keepLevel(60, 25, 305, 300)).toBe(85);
   });
 
   it('turns totals into levels', () => {
@@ -218,10 +230,10 @@ describe('daily rewards', () => {
 });
 
 describe('ranked matches', () => {
-  it('moves points after a public match and stores the change', () => {
+  it('moves points and the hidden rating after a public match', () => {
     const first = join();
     const second = join();
-    givePoints(second, 100);
+    giveStanding(second, { points: 150, rating: 1100 });
     queue(first, 2);
     queue(second, 2);
     win(first);
@@ -230,32 +242,49 @@ describe('ranked matches', () => {
     expect(gain).toMatchObject({ game: 'grid', points: gain?.change, total: gain?.change, previousLevel: 1 });
     expect(gain).toMatchObject({ goalsEarned: 1, goals: WELCOME_GOALS + 1 });
     expect(gain?.change).toBeGreaterThan(30);
-    expect(second.of('finished')[0]?.points).toMatchObject({ goalsEarned: 0, goals: WELCOME_GOALS });
-    expect(second.of('finished')[0]?.points?.change).toBeLessThan(-20);
+    expect(second.of('finished')[0]?.points).toMatchObject({ change: -13, points: 137, goalsEarned: 0, goals: WELCOME_GOALS });
     expect(history.list(first.player.id)[0]).toMatchObject({
       kind: 'queue',
       outcome: 'win',
       pointsChange: gain?.change,
       goalsEarned: 1,
     });
-    expect(progress.pointsOf(second.player.id, 'grid')).toBe(100 + (second.of('finished')[0]?.points?.change ?? 0));
+    expect(progress.ratingOf(first.player.id, 'grid')).toBe(START_RATING + 26);
+    expect(progress.ratingOf(second.player.id, 'grid')).toBe(1100 - 26);
+  });
+
+  it('starts everyone at the same hidden rating', () => {
+    const client = join();
+    expect(progress.ratingOf(client.player.id, 'grid')).toBe(START_RATING);
+    expect(progress.pointsOf(client.player.id, 'grid')).toBe(0);
   });
 
   it('reports a level up', () => {
     const first = join();
     const second = join();
-    givePoints(first, 90);
-    givePoints(second, 90);
+    giveStanding(first, { points: 90 });
+    giveStanding(second, { points: 90 });
     queue(first);
     queue(second);
     win(first);
     expect(first.of('finished')[0]?.points).toMatchObject({ points: 115, total: 115, level: 2, previousLevel: 1 });
   });
 
+  it('never drops a level after a loss', () => {
+    const first = join();
+    const second = join();
+    giveStanding(second, { points: 105 });
+    queue(first);
+    queue(second);
+    win(first);
+    expect(second.of('finished')[0]?.points).toMatchObject({ change: -5, points: 100, total: 100, level: 2, previousLevel: 2 });
+    expect(progress.ratingOf(second.player.id, 'grid')).toBe(START_RATING - 20);
+  });
+
   it('counts a forfeit as a loss', () => {
     const first = join();
     const second = join();
-    givePoints(first, 100);
+    giveStanding(first, { points: 50 });
     queue(first);
     queue(second);
     lobby.handle(first.player.id, { type: 'leave', matchId: matchIdOf(first) });
@@ -263,14 +292,14 @@ describe('ranked matches', () => {
     expect(history.list(first.player.id)[0]).toMatchObject({ outcome: 'loss', reason: 'forfeit' });
   });
 
-  it('ranks the hidden bot match and gives the bot points near the player', () => {
+  it('ranks the hidden bot match and gives the bot a rating near the player', () => {
     const client = join();
-    givePoints(client, 500);
+    giveStanding(client, { rating: 1300 });
     queue(client);
     vi.advanceTimersByTime(BOT_WAIT.maximum);
     const seats = rooms[0]?.seats;
     const botSide = seats?.x.userId === null ? 'x' : 'o';
-    expect(Math.abs((seats?.[botSide].points ?? 0) - 500)).toBeLessThanOrEqual(60);
+    expect(Math.abs((seats?.[botSide].rating ?? 0) - 1300)).toBeLessThanOrEqual(60);
     win(client);
     expect(client.of('finished')[0]?.points?.change).toBeGreaterThan(0);
   });
@@ -292,13 +321,13 @@ describe('ranked matches', () => {
   });
 });
 
-describe('matchmaking by points', () => {
+describe('matchmaking by rating', () => {
   it('pairs the closest player within reach', () => {
     const low = join();
     const high = join();
     const near = join();
-    givePoints(high, 1000);
-    givePoints(near, 80);
+    giveStanding(high, { rating: 2000 });
+    giveStanding(near, { points: 500, rating: 1080 });
     queue(low);
     queue(high);
     expect(lobby.counts()).toMatchObject({ queued: 2, matches: 0 });
@@ -313,7 +342,7 @@ describe('matchmaking by points', () => {
     lobby = createTestLobby({ minimum: 60000, maximum: 60000 });
     const low = join();
     const high = join();
-    givePoints(high, 1000);
+    giveStanding(high, { rating: 2000 });
     queue(low);
     vi.advanceTimersByTime(12000);
     queue(high);

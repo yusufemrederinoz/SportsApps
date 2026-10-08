@@ -1,15 +1,23 @@
 import type { MatchOutcome, PlayDifficulty } from '@sportapps/protocol';
 
 export const DEFAULT_TIME_ZONE = 'Europe/Istanbul';
+export const START_RATING = 1000;
 export const RATING_SCALE = 400;
 export const RATING_FACTOR = 40;
 export const WIN_BONUS = 5;
 export const MINIMUM_WIN = 10;
+export const LOSS_SHARE = 0.5;
 export const DIFFICULTY_GAIN: Record<PlayDifficulty, number> = { 1: 1, 2: 1.2, 3: 1.4 };
 const DAY = 24 * 60 * 60 * 1000;
 
 export function expectedScore(own: number, rival: number): number {
   return 1 / (1 + 10 ** ((rival - own) / RATING_SCALE));
+}
+
+export function ratingChange(own: number, rival: number, outcome: MatchOutcome): number {
+  const expected = expectedScore(own, rival);
+  const score = outcome === 'win' ? 1 : outcome === 'loss' ? 0 : 0.5;
+  return Math.round(RATING_FACTOR * (score - expected));
 }
 
 export function pointsChange(own: number, rival: number, outcome: MatchOutcome, difficulty: PlayDifficulty): number {
@@ -19,10 +27,15 @@ export function pointsChange(own: number, rival: number, outcome: MatchOutcome, 
     return Math.round(Math.max(MINIMUM_WIN, RATING_FACTOR * (1 - expected) + WIN_BONUS) * gain);
   }
   if (outcome === 'loss') {
-    return 0 - Math.min(own, Math.round(RATING_FACTOR * expected));
+    return 0 - Math.round(RATING_FACTOR * expected * LOSS_SHARE);
   }
   const shift = RATING_FACTOR * (0.5 - expected);
-  return shift > 0 ? Math.round(shift * gain) : 0 - Math.min(own, Math.round(-shift));
+  return shift > 0 ? Math.round(shift * gain) : 0;
+}
+
+export function keepLevel(current: number, change: number, total: number, levelFloor: number): number {
+  const lowest = current - Math.min(current, Math.max(0, total - levelFloor));
+  return Math.max(lowest, current + change);
 }
 
 export function localDay(time: number, timeZone: string): string {

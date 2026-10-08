@@ -23,7 +23,7 @@ export interface WaitRange {
 export interface Seat {
   userId: string | null;
   username: string;
-  points: number;
+  rating: number;
 }
 
 export interface MatchRecord {

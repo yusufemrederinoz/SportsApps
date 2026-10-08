@@ -27,7 +27,7 @@ function startRoom(startingSide: 'x' | 'o' = 'x'): { room: MatchRoom; recorded: 
     market: 'tr',
     difficulty: 1,
     grid: GRID,
-    seats: { x: { userId: 'user-x', username: 'Xavi', points: 0 }, o: { userId: 'user-o', username: 'Ozil', points: 0 } },
+    seats: { x: { userId: 'user-x', username: 'Xavi', rating: 1000 }, o: { userId: 'user-o', username: 'Ozil', rating: 1000 } },
     startingSide,
     library: { isCorrect },
     now: () => Date.now(),

@@ -20,12 +20,12 @@ import {
 } from '@sportapps/protocol';
 
 import { transaction, type Database } from '../database';
-import { DEFAULT_TIME_ZONE, localDay, pointsChange, previousDay } from './points';
+import { DEFAULT_TIME_ZONE, START_RATING, keepLevel, localDay, pointsChange, previousDay, ratingChange } from './points';
 import { createWallet } from './wallet';
 
 export interface RankedSeat {
   userId: string | null;
-  points: number;
+  rating: number;
 }
 
 export interface RankedMatch {
@@ -76,13 +76,14 @@ export function createProgress(database: Database, options: ProgressOptions = {}
   const timeZone = options.timeZone ?? DEFAULT_TIME_ZONE;
   const wallet = createWallet(database, now);
 
-  const selectPoints = database.prepare('SELECT points FROM ratings WHERE user_id = ? AND game = ?');
+  const selectStanding = database.prepare('SELECT points, rating FROM ratings WHERE user_id = ? AND game = ?');
   const selectRatings = database.prepare('SELECT game, points, best_points FROM ratings WHERE user_id = ?');
-  const upsertPoints = database.prepare(
-    `INSERT INTO ratings (user_id, game, points, best_points, matches, updated_at) VALUES (?, ?, ?, ?, 1, ?)
+  const upsertStanding = database.prepare(
+    `INSERT INTO ratings (user_id, game, points, best_points, rating, matches, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?)
      ON CONFLICT (user_id, game) DO UPDATE SET
        points = excluded.points,
        best_points = MAX(best_points, excluded.points),
+       rating = excluded.rating,
        matches = matches + 1,
        updated_at = excluded.updated_at`,
   );
@@ -105,10 +106,10 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     'SELECT winner, x_user_id FROM matches WHERE x_user_id = ? OR o_user_id = ? ORDER BY finished_at, rowid',
   );
 
-  const pointsOf = (userId: string, game: GameId): number => {
-    const row = selectPoints.get(userId, game) as { points: number } | undefined;
-    return row?.points ?? 0;
-  };
+  const standingOf = (userId: string, game: GameId) =>
+    selectStanding.get(userId, game) as { points: number; rating: number } | undefined;
+  const pointsOf = (userId: string, game: GameId): number => standingOf(userId, game)?.points ?? 0;
+  const ratingOf = (userId: string, game: GameId): number => standingOf(userId, game)?.rating ?? START_RATING;
 
   const ratingsOf = (userId: string) => selectRatings.all(userId) as unknown as RatingRow[];
   const dailyOf = (userId: string) => selectDaily.get(userId) as DailyRow | undefined;
@@ -180,6 +181,8 @@ export function createProgress(database: Database, options: ProgressOptions = {}
   return {
     pointsOf,
 
+    ratingOf,
+
     progress,
 
     wallet: (userId: string): WalletResponse => wallet.statement(userId),
@@ -202,14 +205,12 @@ export function createProgress(database: Database, options: ProgressOptions = {}
           const before = totalOf(userId);
           const current = pointsOf(userId, match.game);
           const outcome = outcomeFor(side, result.winner);
-          const change = pointsChange(
-            match.seats[side].points,
-            match.seats[opponentOf(side)].points,
-            outcome,
-            match.difficulty,
-          );
-          const points = Math.max(0, current + change);
-          upsertPoints.run(userId, match.game, points, points, now());
+          const own = match.seats[side].rating;
+          const rival = match.seats[opponentOf(side)].rating;
+          const change = pointsChange(own, rival, outcome, match.difficulty);
+          const points = keepLevel(current, change, before, levelFor(before).floor);
+          const rating = Math.max(0, own + ratingChange(own, rival, outcome));
+          upsertStanding.run(userId, match.game, points, points, rating, now());
           const goalsEarned = outcome === 'win' ? WIN_GOALS : 0;
           const goals =
             goalsEarned > 0 ? wallet.credit(userId, goalsEarned, 'win', match.id) : wallet.balance(userId);

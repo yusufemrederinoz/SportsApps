@@ -128,6 +128,9 @@ const MIGRATIONS: readonly string[] = [
   ) STRICT;
   CREATE INDEX puzzle_answers_cell ON puzzle_answers (day, market, cell, footballer_id);
   `,
+  `
+  ALTER TABLE ratings ADD COLUMN rating INTEGER NOT NULL DEFAULT 1000;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
