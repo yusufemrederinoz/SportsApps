@@ -774,6 +774,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - Denenemeyenler: puan koruma (reklam modülü gerekir), şifremi unuttum ekranı, zincir ve kadro ekranlarındaki portreler.
 - Not: Expo sunucusu `CI=1` ile başlatılırsa dosya değişikliklerini izlemez; emülatörde kod değişikliğini görmek için onsuz başlatılmalı.
 
+### Toplu portre üretimi: ara durum (9 Ekim 2026, 01.05)
+
+- **İndirme** (21.52–00.15): bilinirliği 20 ve üstü 10.783 oyuncunun 10.666'sının fotoğrafı serbest lisanslı ve indi; 117'si lisans yüzünden elendi.
+- **Kırpma** (00.15–00.27): 8.053 fotoğraf kullanılabilir yüz verdi. Elenenler: yüz bulunamadı 1.383, yüz dönük 530, bulanık 322, kalabalık 284, dar kadraj 94.
+- **Büyütme aşaması çöktü.** Küçük, bulanık ya da yüzü bulunamayan 2.544 fotoğrafın yüksek çözünürlüklü kopyası indirilirken tek bir indirme yarıda kesildi (`IncompleteRead`); indirme işlevi bu hatayı yakalamadığı için aşama durdu ve betik çizime geçti. Hiçbir kırpma değişmedi, yani çizim tutarlı girdilerle çalışıyor. İndirme işlevi düzeltildi; eksik büyük kaynaklar çizim sürerken ayrıca indiriliyor (çizimin okuduğu dosyalara dokunmaz).
+- **Çizim** 00.35'te başladı; hız dakikada 12 görsel (görsel başına 5 saniye; ilk ölçümdeki 3,7 saniyeye kesim ve kayıt dahil değildi). 8.053 görselin bitişi yaklaşık 11.45.
+- **Sonrası.** Çizim bitince büyütme aşaması yeniden çalıştırılacak, daha iyi kırpması çıkan oyuncuların görseli silinip yeniden çizilecek, yeni kurtarılanlar eklenecek. Çizim çalışırken kırpmalar değiştirilmemeli: çizim, yüz konumlarını başlarken okuyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -958,3 +966,5 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `b729993` | 8 Ekim | Kalıcı oyuncu kimliği kaydı |
 | `0681e03` | 8 Ekim | Kimlik kaydının belgelenmesi |
 | `77a2a18` | 8 Ekim | Bulmaca yüzde rozetinin bayrağın altına alınması |
+| `f2272dc` | 8 Ekim | Emülatör denemelerinin kaydı |
+| `85a6f94` | 9 Ekim | Yarım kalan indirmenin portre aşamalarını durdurmaması |
