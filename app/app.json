@@ -69,6 +69,7 @@
       [
         "react-native-google-mobile-ads",
         {
+          "androidSdk": "classic",
           "androidAppId": "ca-app-pub-1202798518025462~3080265885",
           "iosAppId": "ca-app-pub-1202798518025462~9095009895",
           "delayAppMeasurementInit": true,
@@ -89,5 +90,10 @@
       }
     },
     "owner": "coptorbasi"
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-1202798518025462~3080265885",
+    "ios_app_id": "ca-app-pub-1202798518025462~9095009895",
+    "delay_app_measurement_init": true
   }
 }
