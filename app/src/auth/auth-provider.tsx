@@ -1,4 +1,10 @@
-import type { IdentityProvider, LoginRequest, RegisterRequest, ResetPasswordRequest } from '@sportapps/protocol';
+import type {
+  IdentityProvider,
+  IdentitySignInRequest,
+  LoginRequest,
+  RegisterRequest,
+  ResetPasswordRequest,
+} from '@sportapps/protocol';
 import { createContext, use, useEffect, useState, type PropsWithChildren } from 'react';
 
 import { api } from '@/api';
@@ -26,7 +32,7 @@ interface AuthContextValue {
   register: (input: RegisterRequest) => Promise<void>;
   login: (input: LoginRequest) => Promise<void>;
   resetPassword: (input: ResetPasswordRequest) => Promise<void>;
-  signInWith: (provider: IdentityProvider, identityToken: string) => Promise<void>;
+  signInWith: (provider: IdentityProvider, identity: IdentitySignInRequest) => Promise<void>;
   chooseUsername: (username: string) => Promise<void>;
   leave: () => Promise<void>;
   remove: () => Promise<void>;
@@ -72,8 +78,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     register: async (input) => setState(await adoptMember(secureStore, await api.register(input))),
     login: async (input) => setState(await adoptMember(secureStore, await api.login(input))),
     resetPassword: async (input) => setState(await adoptMember(secureStore, await api.resetPassword(input))),
-    signInWith: async (provider, identityToken) =>
-      setState(await adoptMember(secureStore, await api.signInWithIdentity(provider, identityToken))),
+    signInWith: async (provider, identity) =>
+      setState(await adoptMember(secureStore, await api.signInWithIdentity(provider, identity))),
     chooseUsername: async (username) => setState(await chooseUsername(api, state, username)),
     leave: async () => setState(await leaveSession(api, secureStore)),
     remove: async () => setState(await deleteAccount(api, secureStore, state)),

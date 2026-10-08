@@ -57,6 +57,7 @@ export interface ResetPasswordRequest {
 
 export interface IdentitySignInRequest {
   token: string;
+  authorizationCode?: string;
 }
 
 export interface ChooseUsernameRequest {

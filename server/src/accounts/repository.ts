@@ -86,15 +86,35 @@ export function createAccountRepository(database: Database) {
       return one<{ user_id: string }>('SELECT user_id FROM identities WHERE provider = ? AND subject = ?', provider, subject)?.user_id;
     },
 
-    insertIdentity(provider: IdentityProvider, subject: string, userId: string, email: string | null, now: number): void {
+    insertIdentity(
+      provider: IdentityProvider,
+      subject: string,
+      userId: string,
+      email: string | null,
+      refreshToken: string | null,
+      now: number,
+    ): void {
       run(
-        'INSERT INTO identities (provider, subject, user_id, email, created_at) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO identities (provider, subject, user_id, email, refresh_token, created_at) VALUES (?, ?, ?, ?, ?, ?)',
         provider,
         subject,
         userId,
         email,
+        refreshToken,
         now,
       );
+    },
+
+    setIdentityRefreshToken(provider: IdentityProvider, subject: string, refreshToken: string): void {
+      run('UPDATE identities SET refresh_token = ? WHERE provider = ? AND subject = ?', refreshToken, provider, subject);
+    },
+
+    findRefreshTokens(userId: string, provider: IdentityProvider): string[] {
+      return many<{ refresh_token: string }>(
+        'SELECT refresh_token FROM identities WHERE user_id = ? AND provider = ? AND refresh_token IS NOT NULL',
+        userId,
+        provider,
+      ).map((row) => row.refresh_token);
     },
 
     insertSession(tokenHash: string, userId: string, now: number, expiresAt: number): void {

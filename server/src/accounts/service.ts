@@ -22,6 +22,7 @@ import { transaction, type Database } from '../database';
 import { ApiError } from '../http/errors';
 import type { Mailer } from '../mail/mailer';
 import { passwordResetMail } from '../mail/texts';
+import type { AppleTokens } from './apple-tokens';
 import type { IdentityVerifiers } from './identity';
 import { hashPassword, verifyPassword } from './passwords';
 import { createAccountRepository, type UserRow } from './repository';
@@ -51,6 +52,8 @@ export interface AccountServiceOptions {
   verifiers?: IdentityVerifiers;
   mailer?: Mailer;
   onMailError?: (error: unknown) => void;
+  appleTokens?: AppleTokens;
+  onAppleError?: (error: unknown) => void;
   now?: () => number;
 }
 
@@ -73,6 +76,18 @@ export function createAccountService(database: Database, options: AccountService
   const sessionLifetime = options.sessionDays * DAY;
   const verifiers = options.verifiers ?? {};
   const onMailError = options.onMailError ?? (() => undefined);
+  const onAppleError = options.onAppleError ?? (() => undefined);
+  const { appleTokens } = options;
+
+  async function refreshTokenOf(provider: IdentityProvider, authorizationCode: string | undefined): Promise<string | null> {
+    if (provider !== 'apple' || !authorizationCode || !appleTokens) {
+      return null;
+    }
+    return appleTokens.exchange(authorizationCode).catch((error: unknown) => {
+      onAppleError(error);
+      return null;
+    });
+  }
 
   function startSession(user: UserRow): AuthResponse {
     const time = now();
@@ -253,7 +268,7 @@ export function createAccountService(database: Database, options: AccountService
       });
     },
 
-    async signInWithIdentity(provider: IdentityProvider, token: string): Promise<AuthResponse> {
+    async signInWithIdentity(provider: IdentityProvider, token: string, authorizationCode?: string): Promise<AuthResponse> {
       const verify = verifiers[provider];
       if (!verify) {
         throw new ApiError('provider-unavailable');
@@ -261,15 +276,19 @@ export function createAccountService(database: Database, options: AccountService
       const identity = await verify(token).catch(() => {
         throw new ApiError('invalid-identity-token');
       });
+      const refreshToken = await refreshTokenOf(provider, authorizationCode);
 
       return transaction(database, () => {
         const existingUserId = repository.findIdentityUserId(provider, identity.subject);
         const existing = existingUserId ? repository.findUser(existingUserId) : undefined;
         if (existing) {
+          if (refreshToken) {
+            repository.setIdentityRefreshToken(provider, identity.subject, refreshToken);
+          }
           return startSession(existing);
         }
         const user = createUser(provisionalUsername(), false, true);
-        repository.insertIdentity(provider, identity.subject, user.id, identity.email, now());
+        repository.insertIdentity(provider, identity.subject, user.id, identity.email, refreshToken, now());
         return startSession(user);
       });
     },
@@ -295,8 +314,12 @@ export function createAccountService(database: Database, options: AccountService
       repository.deleteSession(hashToken(token));
     },
 
-    deleteAccount(userId: string): void {
+    async deleteAccount(userId: string): Promise<void> {
+      const refreshTokens = appleTokens ? repository.findRefreshTokens(userId, 'apple') : [];
       transaction(database, () => repository.deleteUser(userId));
+      for (const refreshToken of refreshTokens) {
+        await appleTokens?.revoke(refreshToken).catch(onAppleError);
+      }
     },
 
     removeExpiredSessions(): void {

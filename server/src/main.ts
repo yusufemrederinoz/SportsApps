@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 
+import { loadAppleTokens } from './accounts/apple-tokens';
 import { createIdentityVerifier } from './accounts/identity';
 import { loadAdminKey } from './admin/access';
 import { loadAdSettings } from './ads/setup';
@@ -24,6 +25,7 @@ const app = buildApp({
     google: createIdentityVerifier('google', config.googleClientIds),
     apple: createIdentityVerifier('apple', config.appleClientIds),
   },
+  appleTokens: loadAppleTokens(),
   purchaseVerifiers: loadPurchaseVerifiers(),
   ads: loadAdSettings(),
   mailer: loadMailer(),

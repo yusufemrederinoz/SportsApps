@@ -39,6 +39,7 @@ import {
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
 
+import type { AppleTokens } from '../accounts/apple-tokens';
 import type { IdentityVerifiers } from '../accounts/identity';
 import { createAccountService, type AuthenticatedSession } from '../accounts/service';
 import { createPresence, isAdminKey } from '../admin/access';
@@ -79,6 +80,7 @@ const ADMIN_PANEL_POLICY = "default-src 'none'; style-src 'unsafe-inline'; scrip
 const MINUTE = 60 * 1000;
 const BEARER = 'Bearer ';
 const TOKEN_MAX_LENGTH = 8192;
+const AUTHORIZATION_CODE_MAX_LENGTH = 1024;
 const USERNAME_INPUT_MAX_LENGTH = 64;
 const HISTORY_PAGE_SIZE = 30;
 const PORTRAIT_FILE = /^\d{1,12}\.webp$/;
@@ -88,6 +90,7 @@ export interface AppDependencies {
   database: Database;
   config: ServerConfig;
   verifiers?: IdentityVerifiers;
+  appleTokens?: AppleTokens;
   football?: FootballLibrary;
   sendPush?: PushSender;
   adminKey?: string;
@@ -123,7 +126,14 @@ const REGISTER = body({
   username: text(USERNAME_INPUT_MAX_LENGTH),
 });
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
-const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
+const IDENTITY = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['token'],
+    properties: { token: text(TOKEN_MAX_LENGTH), authorizationCode: text(AUTHORIZATION_CODE_MAX_LENGTH) },
+  },
+} as const;
 const USERNAME = body({ username: text(USERNAME_INPUT_MAX_LENGTH) });
 const PUSH_TOKEN_MAX_LENGTH = 200;
 const LANGUAGE_MAX_LENGTH = 16;
@@ -224,6 +234,8 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     verifiers: dependencies.verifiers,
     mailer: dependencies.mailer,
     onMailError: (error) => app.log.error(error),
+    appleTokens: dependencies.appleTokens,
+    onAppleError: (error) => app.log.error(error),
     now,
   });
   const authAttempts = createRateLimiter(AUTH_ATTEMPTS_PER_MINUTE, MINUTE, now);
@@ -405,7 +417,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       { schema: IDENTITY },
       (request): Promise<AuthResponse> => {
         startSignIn(request);
-        return accounts.signInWithIdentity(provider, request.body.token);
+        return accounts.signInWithIdentity(provider, request.body.token, request.body.authorizationCode);
       },
     );
   identityRoute('google');
@@ -441,10 +453,10 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     return reply.code(204).send();
   });
 
-  app.delete(`${API_PREFIX}/account`, (request, reply) => {
+  app.delete(`${API_PREFIX}/account`, async (request, reply) => {
     const { user } = requireSession(request);
     evict(user.id);
-    accounts.deleteAccount(user.id);
+    await accounts.deleteAccount(user.id);
     return reply.code(204).send();
   });
 

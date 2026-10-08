@@ -10,6 +10,7 @@ import {
   type ForgotPasswordRequest,
   type GameId,
   type IdentityProvider,
+  type IdentitySignInRequest,
   type LeaderboardPeriod,
   type LeaderboardResponse,
   type LoginRequest,
@@ -105,8 +106,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     forgotPassword: (input: ForgotPasswordRequest) => request<void>('POST', '/auth/password/forgot', { body: input }),
     resetPassword: (input: ResetPasswordRequest) =>
       request<AuthResponse>('POST', '/auth/password/reset', { body: input }),
-    signInWithIdentity: (provider: IdentityProvider, identityToken: string) =>
-      request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
+    signInWithIdentity: (provider: IdentityProvider, identity: IdentitySignInRequest) =>
+      request<AuthResponse>('POST', '/auth/' + provider, { body: identity }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
     deleteAccount: (token: string) => request<void>('DELETE', '/account', { token }),
     registerPushToken: (token: string, device: PushTokenRequest) =>

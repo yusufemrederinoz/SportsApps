@@ -1,4 +1,4 @@
-import type { IdentityProvider } from '@sportapps/protocol';
+import type { IdentityProvider, IdentitySignInRequest } from '@sportapps/protocol';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,12 +13,12 @@ import { useUppercase } from '@/i18n/uppercase';
 
 import { useAuth } from './auth-provider';
 import { ERROR_KEYS } from './error-messages';
-import { requestAppleToken, requestGoogleToken } from './identity';
+import { requestAppleIdentity, requestGoogleIdentity } from './identity';
 
 const PROBLEM_MAX_LENGTH = 60;
-const REQUESTS: Record<IdentityProvider, () => Promise<string | null>> = {
-  google: requestGoogleToken,
-  apple: requestAppleToken,
+const REQUESTS: Record<IdentityProvider, () => Promise<IdentitySignInRequest | null>> = {
+  google: requestGoogleIdentity,
+  apple: requestAppleIdentity,
 };
 
 function problemOf(error: unknown): string {
@@ -62,9 +62,9 @@ export function IdentityButtons() {
     setBusy(true);
     setMessage(null);
     try {
-      const token = await REQUESTS[provider]();
-      if (token) {
-        await signInWith(provider, token);
+      const identity = await REQUESTS[provider]();
+      if (identity) {
+        await signInWith(provider, identity);
         haptics.success();
       }
     } catch (error) {

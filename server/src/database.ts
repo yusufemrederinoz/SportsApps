@@ -197,6 +197,9 @@ const MIGRATIONS: readonly string[] = [
     PRIMARY KEY (match_id, user_id)
   ) STRICT;
   `,
+  `
+  ALTER TABLE identities ADD COLUMN refresh_token TEXT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
