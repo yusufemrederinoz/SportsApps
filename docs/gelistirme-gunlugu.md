@@ -688,6 +688,22 @@ Kullanıcı anlık oyuncu sayısını ve uygulama istatistiklerini görebileceğ
 
 Doğrulama: 240 sunucu testi; canlıda sayfa açılıyor, anahtarsız istek reddediliyor, anahtarla gelen sayılar (9 hesap, 3 maç, 6 bildirim cihazı) veritabanıyla uyumlu; sayfa bu veriyle tarayıcıda çizdirilip bakıldı.
 
+### İkinci cihaz denemesi ve kullanıcı istekleri
+
+Sürüm kodu 8 telefonda denendi:
+
+- **Satın alma çalıştı.** Deneme satın alması ("Test kartı, her zaman onaylanır") Play'de onaylandı; sunucu Play'e sorup doğruladı ve 30 golü yazdı. Play ürünü fiyatsız döndürdüğü için sorunun kaynağı, fiyatın ve satın alma anahtarının Play'in satın alma seçeneğinde gelmesiydi; ürünlerin yayılma gecikmesi de etkili olmuş olabilir, ikisi ayrıştırılamadı.
+- **Reklam `no-fill` dönüyor.** Rıza adımı geçiyor, istek Google'a ulaşıyor ama reklam gelmiyor. AdMob, uygulama bir mağazada yayınlanıp bağlanana ve incelenene kadar gerçek reklam gönderimini sınırlıyor. Golün reklamdan sonra yazılması ancak test cihazına gelen deneme reklamıyla sınanabilecek; henüz sınanmadı.
+
+Kullanıcının istekleri:
+
+- **Bağlantı ve görsel uyarısı.** Rakip bir uygulamadaki açılış notunu örnek gösterdi. Bizde kulüp logosu olmadığı için logo cümlesi alınmadı; "hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir" ve "futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir" cümleleri tanıtım, karşılama ve rakip arama ekranlarına, görsel kaynakları ekranına, kullanım koşullarına ve siteye eklendi.
+- **İnternet uyarısı.** Cihazın bağlantısı kesilince bütün ekranların üstünde kırmızı bir şerit çıkıyor (`expo-network`); maçtaysa 30 saniye kuralını da söylüyor.
+- **Klavye.** Futbolcu arama penceresi açılınca klavye kendiliğinden gelmiyordu. Android'de pencere hazır olmadan odaklanan alan klavyeyi açmıyor, sonraki odaklama da "zaten odaklı" diye yok sayılıyordu; alan artık pencere açıldıktan sonra odaklanıyor, klavye gelmediyse bir kez daha deneniyor.
+- **Yönetim paneli** ve **şirket hesabı** ayrı başlıklarda.
+
+Bu üç değişiklik cihazda henüz denenmedi; sürüm kodu 9 derlemesiyle gelecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
