@@ -642,6 +642,19 @@ Uygulama tarafı (reklamı gösterme, rıza penceresi, iOS izleme izni, mağaza 
 
 Doğrulama: 225 sunucu testi; canlı sunucuda uç, imzasız yoklamaya 200, sahte imzaya 400 dönüyor. Gerçek bir reklamla henüz denenmedi.
 
+### Ödüllü reklam: uygulama ve AdMob
+
+Kullanıcı var olan bir AdMob hesabında ChallengeGoal'ın Android ve iOS uygulamalarını ve birer ödüllü reklam birimini açtı, ikisine de sunucu doğrulama adresini yazdı. AdMob'un "URL'yi doğrula" isteği sunucu günlüğünde görüldü; Google'ın gerçek imzası bizim kodda doğrulandı.
+
+- **Uygulama.** Mağaza ekranının üstünde "Reklam izle" satırı: reklam önceden yüklenir, izlenince uygulama sunucuya golün yazılıp yazılmadığını sorar (en çok 12 saniye), yazıldıysa bakiyeyi günceller. Misafir de izleyebilir. Reklam kütüphanesi olmayan derlemede (Expo Go) satır görünmez.
+- **Rıza.** Reklam istenmeden önce Google'ın rıza akışı çalışır (Avrupa'da rıza penceresi; Türkiye'de pencere çıkmaz). Rıza seçeneği gereken oyuncuya hesap ekranında "Reklam tercihleri" bağlantısı görünür.
+- **Site.** `app-ads.txt` `challengegoal.app` kökünde yayınlandı. Gizlilik politikasına bildirim anahtarı eklendi.
+- **İzinler.** Ses kütüphanesi varsayılan olarak mikrofon, arka plan servisi ve iOS'ta arka plan sesi izinlerini ekliyordu; uygulama yalnızca kısa efekt çaldığı için hepsi kapatıldı. Şablondan gelen ekran üstü pencere ve depolama izinleri de çıkarıldı. Bunlar Google Play'de ek beyan ve inceleme sorusu demekti.
+
+Kalanlar: Avrupa rıza mesajına ChallengeGoal uygulamalarının eklenmesi, iOS için IDFA açıklama mesajı (iOS derlemesine kadar bekliyor), gerçek cihazda reklamın ve golün yazılmasının denenmesi.
+
+Doğrulama: 225 sunucu ve 113 uygulama testi; uygulama ayarının ürettiği Android izin listesi ve AdMob kimlikleri denetlendi. Reklamlı ilk derleme sırada; cihazda henüz denenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -803,3 +816,7 @@ Doğrulama: 225 sunucu testi; canlı sunucuda uç, imzasız yoklamaya 200, sahte
 | `33132cd` | 8 Ekim | Yayınlanmamış uygulamada App Store sandbox doğrulaması, reddedilen satın almaların günlüğü |
 | `f37070b` | 8 Ekim | Mağaza anahtarlarının API kapsayıcısına bağlanması |
 | `cd622d4` | 8 Ekim | Ödüllü reklamın imzalı AdMob bildirimiyle yazılması, günlük sınır |
+| `ce9298a` | 8 Ekim | `app-ads.txt` |
+| `3548d9d` | 8 Ekim | Kullanılmayan mikrofon, arka plan sesi, ekran üstü pencere ve depolama izinlerinin kaldırılması |
+| `f084aa3` | 8 Ekim | Mağazada ödüllü reklam satırı, rıza akışı, reklam tercihleri bağlantısı |
+| `0a9c423` | 8 Ekim | Gizlilik politikasında bildirim verisi |
