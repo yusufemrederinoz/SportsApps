@@ -13,6 +13,8 @@ import {
   type LoginRequest,
   type MatchHistoryResponse,
   type ProgressResponse,
+  type PurchaseRequest,
+  type PurchaseResponse,
   type PushTokenRequest,
   type PuzzleGuessRequest,
   type PuzzleGuessResponse,
@@ -109,6 +111,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     progress: (token: string) => request<ProgressResponse>('GET', '/progress', { token }),
     claimDaily: (token: string) => request<DailyRewardResponse>('POST', '/daily', { token }),
     wallet: (token: string) => request<WalletResponse>('GET', '/wallet', { token }),
+    purchase: (token: string, purchase: PurchaseRequest) =>
+      request<PurchaseResponse>('POST', '/purchases', { token, body: purchase }),
     leaderboard: (token: string, period: LeaderboardPeriod, game: GameId | null) =>
       request<LeaderboardResponse>('GET', `/leaderboard${query({ period, game: game ?? undefined })}`, { token }),
     puzzle: (token: string, market: string) => request<DailyPuzzleResponse>('GET', `/puzzle${query({ market })}`, { token }),

@@ -20,5 +20,9 @@ export const ERROR_KEYS = {
   'puzzle-finished': 'errors.puzzleFinished',
   'cell-taken': 'errors.cellTaken',
   'puzzle-unavailable': 'errors.puzzleUnavailable',
+  'purchase-invalid': 'errors.purchaseInvalid',
+  'purchase-used': 'errors.purchaseUsed',
+  'guest-purchase': 'errors.guestPurchase',
+  'store-unavailable': 'errors.storeUnavailable',
   internal: 'errors.internal',
 } as const satisfies Record<RequestErrorCode, string>;

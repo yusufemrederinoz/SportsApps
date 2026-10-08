@@ -172,7 +172,11 @@
     "internal": "Something went wrong. Try again.",
     "puzzleFinished": "Today's puzzle is over.",
     "cellTaken": "This cell is already filled.",
-    "puzzleUnavailable": "The puzzle is not available right now."
+    "puzzleUnavailable": "The puzzle is not available right now.",
+    "purchaseInvalid": "The purchase could not be verified.",
+    "purchaseUsed": "This purchase was already added to another account.",
+    "guestPurchase": "You need a member account to buy goals.",
+    "storeUnavailable": "The store cannot verify purchases right now. Try again in a moment."
   },
   "online": {
     "connecting": "Connecting",
@@ -431,7 +435,29 @@
     "goals": "{{goals}} goals",
     "gamePoints": "Your points: {{points}}",
     "toNext": "{{points}} points to the next level",
-    "open": "Level {{level}}, {{points}} points, {{goals}} goals. Open history and stats."
+    "open": "Level {{level}}, {{points}} points. Open history and stats.",
+    "openStore": "{{goals}} goals. Open the goal store."
+  },
+  "store": {
+    "title": "Goal store",
+    "back": "Back",
+    "balance": "Your goals",
+    "hint": "Spend goals on jokers during matches.",
+    "buy": "Buy {{goals}} goals, {{price}}",
+    "connecting": "Connecting to the store…",
+    "loading": "Loading packs…",
+    "empty": "Packs cannot be shown right now.",
+    "unavailable": "The store could not be reached.",
+    "retry": "Try again",
+    "granted": "+{{goals}} goals added to your account",
+    "pending": "Your payment is waiting for approval. Your goals arrive once it is approved.",
+    "failed": "The purchase could not be completed.",
+    "notCredited": "The goals could not be added. If you were charged, it is retried when you open the store again.",
+    "guest": "You need a member account to buy goals. Sign out on the account screen and create one; points and goals of the guest account do not move to the new account.",
+    "guestAction": "My account",
+    "offline": "You need to be online to use the store.",
+    "unsupported": "This version has no store.",
+    "payment": "You pay with your {{store}} account. Goals are added to your account right after the purchase."
   },
   "daily": {
     "title": "Daily reward",

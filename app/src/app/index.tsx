@@ -58,7 +58,11 @@ function HomeScreen() {
     <Screen contentStyle={styles.screen}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.accountRow}>
-          {progress ? <ProgressChip progress={progress} onPress={() => router.push('/history')} /> : <View />}
+          {progress ? (
+            <ProgressChip progress={progress} onPress={() => router.push('/history')} onGoalsPress={() => router.push('/store')} />
+          ) : (
+            <View />
+          )}
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={`${t('home.account')}: ${accountLabel}`}

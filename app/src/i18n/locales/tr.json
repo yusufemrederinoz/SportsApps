@@ -172,7 +172,11 @@
     "internal": "Bir şeyler ters gitti. Tekrar dene.",
     "puzzleFinished": "Bugünün bulmacası bitti.",
     "cellTaken": "Bu hücre zaten dolu.",
-    "puzzleUnavailable": "Bulmaca şu an kullanılamıyor."
+    "puzzleUnavailable": "Bulmaca şu an kullanılamıyor.",
+    "purchaseInvalid": "Satın alma doğrulanamadı.",
+    "purchaseUsed": "Bu satın alma başka bir hesaba işlenmiş.",
+    "guestPurchase": "Gol satın almak için üye hesabı gerekir.",
+    "storeUnavailable": "Mağaza şu an doğrulama yapamıyor. Biraz sonra tekrar dene."
   },
   "online": {
     "connecting": "Bağlanıyor",
@@ -431,7 +435,29 @@
     "goals": "{{goals}} gol",
     "gamePoints": "Puanın: {{points}}",
     "toNext": "Sonraki seviyeye {{points}} puan",
-    "open": "Seviye {{level}}, {{points}} puan, {{goals}} gol. Geçmiş ve istatistikleri aç."
+    "open": "Seviye {{level}}, {{points}} puan. Geçmiş ve istatistikleri aç.",
+    "openStore": "{{goals}} gol. Gol mağazasını aç."
+  },
+  "store": {
+    "title": "Gol mağazası",
+    "back": "Geri",
+    "balance": "Gol bakiyen",
+    "hint": "Golü maç içinde joker almak için harcarsın.",
+    "buy": "{{goals}} gol satın al, {{price}}",
+    "connecting": "Mağazaya bağlanıyor…",
+    "loading": "Paketler yükleniyor…",
+    "empty": "Paketler şu an gösterilemiyor.",
+    "unavailable": "Mağazaya ulaşılamadı.",
+    "retry": "Tekrar dene",
+    "granted": "+{{goals}} gol hesabına eklendi",
+    "pending": "Ödemen onay bekliyor. Onaylanınca gollerin eklenir.",
+    "failed": "Satın alma tamamlanamadı.",
+    "notCredited": "Goller eklenemedi. Ücret alındıysa mağazayı yeniden açtığında tekrar denenir.",
+    "guest": "Gol satın almak için üye hesabı gerekir. Hesap ekranından çıkış yapıp hesap oluşturabilirsin; misafir hesabındaki puan ve goller yeni hesaba taşınmaz.",
+    "guestAction": "Hesabım",
+    "offline": "Mağaza için çevrimiçi olman gerekir.",
+    "unsupported": "Bu sürümde mağaza yok.",
+    "payment": "Ödeme {{store}} hesabınla yapılır. Goller satın almadan hemen sonra hesabına eklenir."
   },
   "daily": {
     "title": "Günlük ödül",
