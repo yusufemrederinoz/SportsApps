@@ -634,6 +634,14 @@ Canlı anahtarlarla deneme iki şey gösterdi:
 
 Doğrulama: 219 sunucu ve 108 uygulama testi; canlı sunucuda satın alma ucu geçici bir hesapla iki mağaza için denendi (uydurma makbuz reddedildi, hesap silindi). Gerçek satın alma henüz denenmedi: Google'da ürünler açılmadı, Apple'da ürünler taslak.
 
+### Ödüllü reklam: sunucu
+
+Reklam ödülünü uygulama değil Google bildirir (AdMob'un sunucu taraflı doğrulaması): reklam bitince Google, `GET /ads/reward` adresini imzalı bir istekle çağırır. Sunucu imzayı Google'ın yayınladığı açık anahtarla doğrular, reklam biriminin bizimki olduğuna bakar, oyuncuya 2 gol yazar; günde en çok 5 reklam sayılır. Böylece uygulamayı kurcalayan biri kendine gol yazdıramaz.
+
+Uygulama tarafı (reklamı gösterme, rıza penceresi, iOS izleme izni, mağaza ekranındaki "reklam izle" satırı) AdMob kimliklerini bekliyor; kullanıcı AdMob hesabını ve reklam birimlerini açıyor. Sunucuda reklam birimi tanımlanana kadar hiçbir istek gol yazmaz.
+
+Doğrulama: 225 sunucu testi; canlı sunucuda uç, imzasız yoklamaya 200, sahte imzaya 400 dönüyor. Gerçek bir reklamla henüz denenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -794,3 +802,4 @@ Doğrulama: 219 sunucu ve 108 uygulama testi; canlı sunucuda satın alma ucu ge
 | `0cae329` | 8 Ekim | Gol mağazası ekranı ve ana ekrandan giriş |
 | `33132cd` | 8 Ekim | Yayınlanmamış uygulamada App Store sandbox doğrulaması, reddedilen satın almaların günlüğü |
 | `f37070b` | 8 Ekim | Mağaza anahtarlarının API kapsayıcısına bağlanması |
+| `cd622d4` | 8 Ekim | Ödüllü reklamın imzalı AdMob bildirimiyle yazılması, günlük sınır |
