@@ -13,6 +13,8 @@ export const ERROR_KEYS = {
   'invalid-username': 'errors.invalidUsername',
   'invalid-email': 'errors.invalidEmail',
   'invalid-password': 'errors.invalidPassword',
+  'invalid-reset-code': 'errors.invalidResetCode',
+  'mail-unavailable': 'errors.mailUnavailable',
   'provider-unavailable': 'errors.providerUnavailable',
   'invalid-identity-token': 'errors.invalidIdentityToken',
   'rate-limited': 'errors.rateLimited',

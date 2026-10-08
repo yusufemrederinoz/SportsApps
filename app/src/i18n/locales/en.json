@@ -33,6 +33,17 @@
     "submit": "Sign in",
     "switch": "Create a new account"
   },
+  "forgot": {
+    "title": "Forgot password",
+    "link": "Forgot password",
+    "hint": "Enter the e-mail address of your account. We will send a 6-digit code to reset your password.",
+    "send": "Send code",
+    "sent": "If an account uses {{email}}, we sent the code. It is valid for 15 minutes. Check your spam folder if it is not in your inbox.",
+    "code": "Code",
+    "newPassword": "New password",
+    "submit": "Change password",
+    "again": "Ask for a new code"
+  },
   "register": {
     "title": "Create account",
     "submit": "Create account",
@@ -167,6 +178,8 @@
     "invalidUsername": "Usernames are 3 to 16 letters, digits or underscores.",
     "invalidEmail": "Enter a valid email address.",
     "invalidPassword": "The password does not meet the rules.",
+    "invalidResetCode": "The code is wrong or has expired. Ask for a new one.",
+    "mailUnavailable": "E-mail cannot be sent right now. Try again in a moment.",
     "providerUnavailable": "This sign-in method is not available yet.",
     "invalidIdentityToken": "Sign-in could not be verified. Try again.",
     "rateLimited": "Too many attempts. Wait a minute and try again.",

@@ -58,6 +58,11 @@ function LoginScreen() {
         label={t('login.submit')}
         onPress={() => void submit(() => login({ email: email.trim(), password }), incomplete ? 'validation' : null)}
       />
+      <Pressable accessibilityRole="button" onPress={() => router.push('/forgot-password')} style={styles.switch}>
+        <ThemedText type="label" themeColor="textSecondary">
+          {uppercase(t('forgot.link'))}
+        </ThemedText>
+      </Pressable>
       <Pressable accessibilityRole="button" onPress={() => router.replace('/register')} style={styles.switch}>
         <ThemedText type="label" themeColor="volt">
           {uppercase(t('login.switch'))}

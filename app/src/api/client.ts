@@ -7,6 +7,7 @@ import {
   type AuthResponse,
   type DailyPuzzleResponse,
   type DailyRewardResponse,
+  type ForgotPasswordRequest,
   type GameId,
   type IdentityProvider,
   type LeaderboardPeriod,
@@ -21,6 +22,7 @@ import {
   type PuzzleGuessResponse,
   type PuzzleRankingResponse,
   type RegisterRequest,
+  type ResetPasswordRequest,
   type WalletResponse,
 } from '@sportapps/protocol';
 
@@ -99,6 +101,9 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     me: (token: string) => request<AccountResponse>('GET', '/me', { token }),
     register: (input: RegisterRequest) => request<AuthResponse>('POST', '/auth/register', { body: input }),
     login: (input: LoginRequest) => request<AuthResponse>('POST', '/auth/login', { body: input }),
+    forgotPassword: (input: ForgotPasswordRequest) => request<void>('POST', '/auth/password/forgot', { body: input }),
+    resetPassword: (input: ResetPasswordRequest) =>
+      request<AuthResponse>('POST', '/auth/password/reset', { body: input }),
     signInWithIdentity: (provider: IdentityProvider, identityToken: string) =>
       request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),

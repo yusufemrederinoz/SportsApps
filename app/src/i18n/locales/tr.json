@@ -33,6 +33,17 @@
     "submit": "Giriş yap",
     "switch": "Yeni hesap oluştur"
   },
+  "forgot": {
+    "title": "Şifremi unuttum",
+    "link": "Şifremi unuttum",
+    "hint": "Hesabının e-posta adresini yaz. Şifreni sıfırlaman için 6 haneli bir kod gönderelim.",
+    "send": "Kod gönder",
+    "sent": "{{email}} adresine kayıtlı bir hesap varsa kodu gönderdik. Kod 15 dakika geçerli. Gelen kutunda yoksa istenmeyen klasörüne bak.",
+    "code": "Kod",
+    "newPassword": "Yeni şifre",
+    "submit": "Şifreyi değiştir",
+    "again": "Kodu yeniden iste"
+  },
   "register": {
     "title": "Hesap oluştur",
     "submit": "Hesap oluştur",
@@ -167,6 +178,8 @@
     "invalidUsername": "Kullanıcı adı 3-16 karakter olmalı; harf, rakam ya da alt çizgi içerebilir.",
     "invalidEmail": "Geçerli bir e-posta adresi yaz.",
     "invalidPassword": "Şifre kurallara uymuyor.",
+    "invalidResetCode": "Kod yanlış ya da süresi dolmuş. Yeni kod iste.",
+    "mailUnavailable": "E-posta şu an gönderilemiyor. Biraz sonra tekrar dene.",
     "providerUnavailable": "Bu giriş yöntemi henüz kullanılamıyor.",
     "invalidIdentityToken": "Giriş doğrulanamadı. Tekrar dene.",
     "rateLimited": "Çok fazla deneme yapıldı. Bir dakika bekleyip tekrar dene.",
