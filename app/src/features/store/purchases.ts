@@ -11,6 +11,31 @@ export function purchaseRequest(purchase: StorePurchase, platform: PushPlatform)
   return proof && goalPack(purchase.productId) ? { platform, productId: purchase.productId, proof } : null;
 }
 
+export interface StoreOffer {
+  displayPrice: string;
+  offerTokenAndroid?: string | null;
+  purchaseOptionIdAndroid?: string | null;
+}
+
+export interface StoreProduct {
+  displayPrice: string;
+  discountOffers?: readonly StoreOffer[] | null;
+  productStatusAndroid?: string | null;
+}
+
+export interface Listing {
+  price: string;
+  offerToken: string | null;
+}
+
+export const PURCHASE_OPTION = 'buy';
+
+export function listingOf(product: StoreProduct): Listing {
+  const offers = product.discountOffers ?? [];
+  const offer = offers.find((entry) => entry.purchaseOptionIdAndroid === PURCHASE_OPTION) ?? offers[0];
+  return { price: product.displayPrice || offer?.displayPrice || '', offerToken: offer?.offerTokenAndroid ?? null };
+}
+
 export type ShopStatus = 'unavailable' | 'connecting' | 'loading' | 'empty' | 'ready';
 
 export function shopStatus(shop: { failed: boolean; connected: boolean; loaded: boolean; products: number }): ShopStatus {

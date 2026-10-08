@@ -16,7 +16,7 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { useUppercase } from '@/i18n/uppercase';
 
-import { purchaseRequest, shopStatus } from './purchases';
+import { listingOf, purchaseRequest, shopStatus, type Listing } from './purchases';
 
 const PRODUCT_IDS = GOAL_PACKS.map((pack) => pack.productId);
 const CREDITED_ELSEWHERE = 'purchase-used';
@@ -116,7 +116,10 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
     }
   }, [connected, load]);
 
-  const status = shopStatus({ failed, connected, loaded, products: products.length });
+  const listings = new Map(products.map((product) => [product.id, listingOf(product)]));
+  const priced = [...listings.values()].filter((listing) => listing.price).length;
+  const status = shopStatus({ failed, connected, loaded, products: priced });
+  const refusal = products.map((product) => ('productStatusAndroid' in product ? product.productStatusAndroid : null)).find(Boolean);
 
   const retry = () => {
     setFailed(false);
@@ -127,29 +130,30 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
     }
   };
 
-  const buy = (productId: string) => {
+  const buy = (productId: string, listing: Listing) => {
     haptics.select();
     setNotice(null);
     setBuying(productId);
-    void requestPurchase({ request: { apple: { sku: productId }, google: { skus: [productId] } }, type: 'in-app' }).catch(() =>
-      setBuying(null),
-    );
+    void requestPurchase({
+      request: { apple: { sku: productId }, google: { skus: [productId], offerToken: listing.offerToken } },
+      type: 'in-app',
+    }).catch(() => setBuying(null));
   };
 
   return (
     <View style={styles.container}>
       {GOAL_PACKS.map((pack, index) => {
-        const product = products.find((entry) => entry.id === pack.productId);
+        const listing = listings.get(pack.productId);
         const busy = buying === pack.productId;
-        const disabled = !product || buying !== null;
+        const disabled = !listing?.price || buying !== null;
         return (
           <Animated.View key={pack.productId} entering={FadeInDown.duration(Motion.base).delay(index * STAGGER)}>
             <Pressable
               accessibilityRole="button"
-              accessibilityLabel={t('store.buy', { goals: pack.goals, price: product?.displayPrice ?? '' })}
+              accessibilityLabel={t('store.buy', { goals: pack.goals, price: listing?.price ?? '' })}
               accessibilityState={{ disabled, busy }}
               disabled={disabled}
-              onPress={() => buy(pack.productId)}
+              onPress={() => listing && buy(pack.productId, listing)}
               style={({ pressed }) => [styles.pack, pressed && styles.packPressed, disabled && !busy && styles.packDisabled]}>
               <GoalIcon size={30} />
               <ThemedText style={styles.amount}>{uppercase(t('progress.goals', { goals: pack.goals }))}</ThemedText>
@@ -157,7 +161,7 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
                 {busy ? (
                   <ActivityIndicator color={Colors.onAccent} />
                 ) : (
-                  <ThemedText style={styles.priceText}>{product?.displayPrice ?? '—'}</ThemedText>
+                  <ThemedText style={styles.priceText}>{listing?.price || '—'}</ThemedText>
                 )}
               </View>
             </Pressable>
@@ -167,6 +171,7 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
       {status === 'ready' ? null : (
         <ThemedText type="small" themeColor={status === 'unavailable' ? 'negative' : 'textSecondary'} style={styles.centered}>
           {t(STATUS_KEYS[status])}
+          {status === 'empty' && refusal ? ` (${refusal})` : ''}
         </ThemedText>
       )}
       {status === 'unavailable' || status === 'empty' ? (
