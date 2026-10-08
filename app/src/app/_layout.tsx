@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import { AuthProvider } from '@/auth/auth-provider';
+import { OfflineBanner } from '@/components/offline-banner';
 import { Colors } from '@/constants/theme';
 import { DatabaseProvider } from '@/data/database-provider';
 
@@ -55,6 +56,7 @@ export default function RootLayout() {
       <AuthProvider>
         <DatabaseProvider>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
+          <OfflineBanner />
         </DatabaseProvider>
       </AuthProvider>
     </ThemeProvider>

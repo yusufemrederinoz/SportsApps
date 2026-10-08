@@ -2,7 +2,7 @@ import type { DuelConcept } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Keyboard, Modal, Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { FlatList, Keyboard, Modal, Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -16,7 +16,7 @@ import { URGENT_SECONDS } from './use-match-effects';
 
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const NO_ROLE = '-';
-const FOCUS_DELAY = 250;
+const FOCUS_DELAYS = [300, 800];
 
 export type SearchFilter =
   | { kind: 'concept'; concept: DuelConcept }
@@ -83,7 +83,23 @@ export function FootballerSearch({
     };
   }, [database, market, filterKey, text]);
 
-  useEffect(() => () => Keyboard.dismiss(), []);
+  useEffect(() => {
+    const openKeyboard = () => {
+      const field = input.current;
+      if (!field || Keyboard.isVisible()) {
+        return;
+      }
+      if (field.isFocused()) {
+        field.blur();
+      }
+      field.focus();
+    };
+    const timers = FOCUS_DELAYS.map((delay) => setTimeout(openKeyboard, delay));
+    return () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      Keyboard.dismiss();
+    };
+  }, []);
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const resultKey = results.map((footballer) => footballer.id).join(',');
@@ -110,7 +126,7 @@ export function FootballerSearch({
   const urgent = secondsLeft !== null && secondsLeft <= URGENT_SECONDS;
 
   return (
-    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose} onShow={() => setTimeout(() => input.current?.focus(), FOCUS_DELAY)}>
+    <Modal visible animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={styles.container}>
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.header}>
@@ -128,7 +144,7 @@ export function FootballerSearch({
           </View>
           <TextInput
             ref={input}
-            autoFocus
+            autoFocus={Platform.OS === 'ios'}
             autoCorrect={false}
             autoCapitalize="words"
             accessibilityLabel={t('search.placeholder')}

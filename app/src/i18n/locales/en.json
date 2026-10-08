@@ -16,8 +16,14 @@
     "login": "Sign in",
     "register": "Create account",
     "guestHint": "Your guest account stays on this phone.",
-    "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up.",
+    "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up."
+  },
+  "legal": {
     "notice": "ChallengeGoal is not affiliated with any club, league, federation or footballer. Footballer images are AI-generated illustrations, not real photographs."
+  },
+  "network": {
+    "offline": "No internet connection",
+    "offlineHint": "Check your connection. In a match you lose if you are not back within 30 seconds."
   },
   "identity": {
     "or": "or",

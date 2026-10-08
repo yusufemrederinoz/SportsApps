@@ -7,6 +7,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
+import { LegalNotice } from '@/components/legal-notice';
 import { GoalIcon } from '@/components/goal-icon';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -116,6 +117,7 @@ function OnboardingScreen() {
           ))}
         </View>
         <ActionButton label={t(last ? 'onboarding.start' : 'onboarding.next')} onPress={advance} />
+        <LegalNotice />
       </Animated.View>
     </Screen>
   );

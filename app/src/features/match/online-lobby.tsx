@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
+import { LegalNotice } from '@/components/legal-notice';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, Motion, Radius, Spacing } from '@/constants/theme';
@@ -134,6 +135,7 @@ export function OnlineLobby({ phase, failure, roomCode, gameLabel, onRetry, onLe
           />
         ) : null}
         <ActionButton label={t('online.cancel')} onPress={onLeave} variant="secondary" />
+        <LegalNotice />
       </View>
     </Screen>
   );

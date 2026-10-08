@@ -7,6 +7,7 @@ import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
+import { LegalNotice } from '@/components/legal-notice';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Brand } from '@/constants/brand';
@@ -55,9 +56,7 @@ function WelcomeScreen() {
         <ThemedText type="small" themeColor="textSecondary" style={styles.hint}>
           {t('welcome.guestHint')}
         </ThemedText>
-        <ThemedText type="small" themeColor="textSecondary" style={styles.notice}>
-          {t('welcome.notice')}
-        </ThemedText>
+        <LegalNotice />
       </Animated.View>
     </Screen>
   );
@@ -104,11 +103,5 @@ const styles = StyleSheet.create({
   },
   hint: {
     textAlign: 'center',
-  },
-  notice: {
-    textAlign: 'center',
-    fontSize: 12,
-    lineHeight: 16,
-    opacity: 0.8,
   },
 });

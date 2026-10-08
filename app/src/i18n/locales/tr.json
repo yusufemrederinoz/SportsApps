@@ -16,8 +16,14 @@
     "login": "Giriş yap",
     "register": "Hesap oluştur",
     "guestHint": "Misafir hesabın bu telefonda kalır.",
-    "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla.",
+    "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla."
+  },
+  "legal": {
     "notice": "ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir."
+  },
+  "network": {
+    "offline": "İnternet bağlantısı yok",
+    "offlineHint": "Bağlantını kontrol et. Maçtaysan 30 saniye içinde dönmezsen maçı kaybedersin."
   },
   "identity": {
     "or": "ya da",
