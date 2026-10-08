@@ -347,6 +347,9 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `POST /auth/google`, `POST /auth/apple` | Sağlayıcının verdiği kimlik jetonuyla giriş |
 | `POST /auth/logout` | Oturumu kapatır |
 | `GET /me` | Oturumdaki hesabı döndürür |
+| `POST /account/username` | Google ya da Apple ile açılan yeni hesabın kullanıcı adını bir kez belirler; sonra kilitlenir |
+| `DELETE /account` | Hesabı ve ona ait her şeyi kalıcı siler; süren maçı hükmen bitirir, bağlantıyı kapatır |
+| `POST /push-token`, `DELETE /push-token` | Cihazın bildirim anahtarını oyuncuya kaydeder ya da siler |
 | `GET /matches` | Oyuncunun maçları; `game`, `before` (bitiş zamanı) ve `limit` ile süzülür, sayfalanır. Cevapta `more` daha eski maç olup olmadığını söyler |
 | `GET /progress` | Toplam puan, seviye, gol, günlük seri, genel sonuçlar ve oyun oyun puan |
 | `POST /daily` | Günün ödülünü verir; gün içinde ikinci istekte ödül boş döner |
@@ -358,7 +361,7 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `GET /portraits/<kimlik>.webp` | Oyuncu görseli |
 | `GET /play` (WebSocket) | Online maçın canlı bağlantısı |
 
-Giriş ve kayıt uçları, geçerli bir oturumla gelen isteği "zaten giriş yapılmış" hatasıyla reddeder; önce çıkış yapılmalıdır. Kullanıcı adını değiştiren bir uç yoktur.
+Giriş ve kayıt uçları, geçerli bir oturumla gelen isteği "zaten giriş yapılmış" hatasıyla reddeder; önce çıkış yapılmalıdır. Kullanıcı adı değiştirilemez; tek istisna, Google ya da Apple ile açılan hesabın ilk girişteki bir kerelik seçimidir (hesap geçici `player######` adıyla ve `username_pending` işaretiyle açılır, uygulama ad seçilmeden içeri almaz).
 
 Hata cevabı hep aynı biçimdedir: `{ "error": { "code": "..." } }`. Kodların tam listesi `packages/protocol` içindedir; uygulama her kodu kendi dilindeki mesaja çevirir.
 
@@ -399,6 +402,15 @@ Depo kökündeki `Dockerfile`, sunucuyu yalnızca üretim bağımlılıklarıyla
 
 Dockerfile bu bilgisayarda Docker ile derlenmedi (Docker kapalıydı); içindeki adımlar temiz bir klasörde elle uygulanıp sunucu çalıştırılarak denendi.
 
+### Canlı ortam (8 Ekim 2026)
+
+- **Sunucu.** Contabo Cloud VPS (Almanya), Ubuntu 24.04, `37.60.248.54`. Şifreyle SSH kapalı, güvenlik duvarı yalnızca 22, 80 ve 443'e izin veriyor, otomatik güvenlik güncellemeleri ve fail2ban açık.
+- **Alan adı.** `challengegoal.app` (Cloudflare, yalnızca DNS). API `https://api.challengegoal.app`, site `https://challengegoal.app` (gizlilik, koşullar, hesap silme sayfaları `deploy/site` altında).
+- **Yerleşim.** `/opt/challengegoal` altında Docker Compose: `api` (depo kökündeki `Dockerfile`) ve TLS sertifikasını kendisi alan `caddy`. Veriler `/opt/challengegoal/data` (veritabanı ve `portraits/`), ayarlar aynı klasördeki `.env` (`TIME_ZONE`, `TRUST_PROXY=1`, `GOOGLE_CLIENT_IDS`, `APPLE_CLIENT_IDS`, `NOTIFICATIONS=1`).
+- **Dağıtım.** Depo kökünde `sh deploy/deploy.sh` (görselleri de göndermek için `sh deploy/deploy.sh portraits`): son commit'i sunucuya açar, imajı orada derler, kapsayıcıları yeniler. Şema geçişleri açılışta uygulanır.
+- **Yedek.** Her gece `deploy/backup.sh` veritabanının tutarlı kopyasını `/opt/challengegoal/backups` altına alır, 14 günden eskileri siler. Günlükler journald'da en çok 90 gün tutulur.
+- **Uygulama derlemeleri.** Expo'nun bulut derlemesi (EAS, proje `@coptorbasi/challengegoal`): `development` (geliştirme istemcisi), `preview` (canlı sunucuya bağlı APK) ve `production` (mağaza) profilleri `app/eas.json` içinde. `google-services.json` depoda değil; EAS'ta `GOOGLE_SERVICES_JSON` dosya değişkeni olarak duruyor ve `app/app.config.ts` onu okuyor. iOS derlemesi ilk seferde etkileşimli çalıştırılır.
+
 ### Hesap kuralları
 
 - **Misafir.** Oyuncu "misafir olarak devam et" dediğinde açılır. Kullanıcı adı `guest` ve altı rakamdır. Misafir hesabı cihaza bağlıdır ve kalıcı hesaba dönüşmez.
@@ -408,7 +420,8 @@ Dockerfile bu bilgisayarda Docker ile derlenmedi (Docker kapalıydı); içindeki
 - **Oturum.** Rastgele 256 bitlik jeton; veritabanında yalnızca özeti durur. Kullanıldıkça ömrü uzar.
 - **Yanlış giriş.** Bilinmeyen e-posta ile yanlış şifre aynı cevabı ve aynı süreyi verir; hangi e-postaların kayıtlı olduğu anlaşılmaz.
 - **İstek sınırı.** Giriş ve kayıt uçları adres başına dakikada 30 istekle sınırlıdır.
-- **Google ve Apple.** Sunucu, sağlayıcının imzaladığı jetonu sağlayıcının açık anahtarlarıyla doğrular ve yalnızca bizim istemci kimliklerimize kesilmiş jetonları kabul eder.
+- **Google ve Apple.** Sunucu, sağlayıcının imzaladığı jetonu sağlayıcının açık anahtarlarıyla doğrular ve yalnızca bizim istemci kimliklerimize kesilmiş jetonları kabul eder. Uygulamada giriş ve kayıt ekranlarının altında "Google ile devam et" (iki platform) ve Apple düğmesi (yalnız iOS) var; yeni hesap ilk girişte kullanıcı adını seçer.
+- **Hesap silme.** Hesap ekranındaki "Hesabı sil" onaydan sonra hesabı, girişleri, puanları, golleri, günlük ödül ve bulmaca kayıtlarını siler. Rakiplerin geçmişindeki maçlar kalır; silinen oyuncunun adı boşaltılır ve uygulama "Silinmiş oyuncu" yazar. Misafir silinince cihazdaki misafir anahtarı da unutulur.
 
 ## Online maç
 
@@ -531,6 +544,21 @@ Kurallar (7 Ekim 2026):
 
 Uygulamada: ana ekranın sol üstünde seviye, toplam puan ve gol; oyun seçiminin yanında seçili oyundaki puan. Ana ekran her görünüşünde ve uygulama arka plandan dönünce günlük ödülü ister; sunucu günde bir kez verir, ödül varsa pencere çıkar. Maç sonunda puan değişimi, kazanılan gol ve seviye atlama gösterilir. Geçmiş ekranı genel sayıları, oyun oyun puan ve sonuçları, oyuna göre süzülen maç listesini ve gol hareketlerini gösterir.
 
+## Bildirimler
+
+Uygulama `expo-notifications` ile izin ister (ilk günlük ödül penceresi kapandıktan sonra), Expo bildirim anahtarını alır ve cihaz diliyle birlikte sunucuya kaydeder. Bildirime dokununca bulmaca bildirimi bulmacayı, haftalık sonuç lider tablosunu açar. Expo Go'da bildirim yoktur; kendi derlememiz gerekir.
+
+Sunucu on dakikada bir bakar ve Expo'nun bildirim servisine gönderir (`src/notifications`). Saatler sunucunun `TIME_ZONE` saat dilimine göredir:
+
+| Bildirim | Ne zaman | Kime |
+|---|---|---|
+| Günün bulmacası | 10.00–12.00 | Son 3 günde giriş yapmış, bugünün bulmacasını oynamamış oyuncu |
+| Haftalık sonuç | Pazartesi 10.00–12.00 | Geçen hafta puanlı maç oynamış oyuncu; o gün bulmaca bildirimi yerine gider |
+| Seri hatırlatması | 19.00–21.00 | En az 2 günlük serisi olup bugün ödülünü almamış oyuncu |
+| Geri dönüş | 19.00–21.00 | Son girişi tam 3 ya da 7 gün önce olan oyuncu |
+
+Aynı bildirim aynı gün bir oyuncuya bir kez gider (`notification_log`). Servisin "kayıtlı değil" dediği anahtar silinir. Metinler `messages.json` içinde, cihazın diliyle (Türkçe ya da İngilizce) yazılır. Zamanlayıcı yalnızca `NOTIFICATIONS=1` iken çalışır.
+
 ## Lider tablosu ve günün bulmacası
 
 - **Lider tablosu.** Tüm zamanlar tablosu `ratings` tablosundan gelir (genelde puanların toplamı, oyunda o oyunun puanı). Haftalık tablo, bu haftanın pazartesi 00.00'ından (sunucunun `TIME_ZONE` saat dilimi) bu yana biten puanlı maçlardaki puan değişimlerinin toplamıdır; yalnızca o hafta puanlı maç oynayanlar görünür. Sıralama SQL `RANK()` ile; eşit puanlılar aynı sırayı alır. Satırdaki seviye her zaman toplam puandan.
@@ -591,8 +619,8 @@ Açılış akışı:
 |---|---|---|
 | Veri hattı | 49 | Bilinen cevaplar, söylenti kayıtları, ad dilleri, ızgara kuralları, uygulama veritabanı, ad sadeleştirme. Görsel hattı (15): lisans süzgeci, yazar adı, kırpma, profil ve kalabalık kadraj elemesi, yayınlanan kayıtların tutarlılığı. İstatistikler (9): kaynak seçimi, kariyerin tam olup olmadığı, kulüp toplamları, kulüp yıllarının uygulama veritabanında tutarlılığı |
 | Kural motoru | 66 | Maç akışı, bitiş koşulları, bot, ad sadeleştirme. Kart Düellosu (10): el kuralları, aynı anda oynama, eşitlik, bilinmeyen değer, bitiş. Kadro Kur (6): yuva yerleşimi, önce seçenin alması, tur başına tek seçim, pas, bitiş. Hangisi Yüksek (5): doğru kart, seri ve el geçişi, eşit el sayısı. Zincir (5): halka ekleme, tur kaybı, kısalan süre, bitiş. En Az Bilinen (3): tur kazananı, gizli cevap, bitiş. Açık Artırma (5): teklif sırası ve sınırları, ispat, süre dolması, en yüksek teklif, bitiş. İlk 10 (4): sıraya göre puan, can kaybı, canı biten oyuncunun atlanması, bitiş. Kariyer Yolu (4): puanın açık ipucuna göre azalması, yeni ipucu ve sıra geçişi, son tahmin hakkı, bitiş |
-| Sunucu | 197 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (42): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, sıraya girmeden bot maçı, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (20): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (11), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; beşi için gerçek veritabanıyla bota karşı tam maç, En Az Bilinen için sunucunun bu modu kabul etmediği. Puan, seviye ve gol (19): puan ve güç puanı hesabı, seviyenin düşmemesi, herkesin aynı güçle başlaması, seviye eşikleri, gün sınırı, cüzdan ve hoş geldin hediyesi, aynı dayanağa ikinci gol yazılmaması, günlük seri, puanlı maçta puan ve gol, seviye atlama, hükmen kayıp, gizli botun güç puanı, puansız maçlar, güce yakın eşleştirme ve bekledikçe genişleyen aralık, komşu zorlukla eşleşme ve Kolay–Zor ayrımı, oyuna özel bot seviyesi ve kaydı, ilerleme özeti, uç noktalar. Jokerler (12): gol düşme ve gizli bilgi, maçta iki joker sınırı, başka modun jokeri, geçersiz anda ve yetersiz bakiyede ücretsiz ret, yeniden bağlanınca tekrar gönderme; dokuz modun jokerleri. Lider tablosu ve bulmaca (9): hafta sınırı, tüm zamanlar ve oyun tabloları, haftalık toplam, aynı gün aynı ızgara, hak düşme ve dolu hücre, nadirlik puanı ve sıralama, bitiş ödülü, uç noktalar |
-| Uygulama | 97 | Çeviri dosyalarının uyumu, oyuncu tarafının öne alınması, bağlantı istemcisinin ilk bağlantıda erken vazgeçmesi ve hazır olmayan bağlantıyı düşürmesi, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi (geçmiş süzgeci, günlük ödül, ilerleme ve cüzdan istekleri dahil), giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1), joker ipucunun baş harfleri |
+| Sunucu | 208 | Görsel dosyalarının sunulması (3). Hesaplar (19): misafir, kayıt, giriş, çıkış, oturum süresi, şifre kuralları, Google jetonu doğrulama, istek sınırı. Online maç (42): maç odası kuralları, eşleştirme, aynı oyuncunun iki maça düşmemesi, bot, sıraya girmeden bot maçı, kopma ve geri dönüş, hükmen bitiş, arkadaş odası, gerçek bağlantı üzerinden baştan sona maç, maç kaydı, mesaj ayrıştırma. Kart Düellosu (20): ayrı sıralar, konseptsiz pazar, el doğrulama ve tamamlama, gizli bilgi, soru seçimi, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, geri dönüş, bot; gerçek veritabanıyla bota karşı tam maç. Kadro Kur (12): kulüpsüz pazar, seçim doğrulama, dolu mevki, ara ve yeni kulüp, süre dolması, puanla bitiş ve kayıt, hükmen bitiş, bot seçimleri; gerçek veritabanıyla bota karşı tam maç. Hangisi Yüksek (11), Zincir (9), En Az Bilinen (8), Açık Artırma (9), İlk 10 (8) ve Kariyer Yolu (9): soru, ölçüt, liste ve gizli futbolcu üretimi, sıra ya da gizli cevap, teklif ve ispat, açılış, süre dolması, bitiş ve kayıt, bot; beşi için gerçek veritabanıyla bota karşı tam maç, En Az Bilinen için sunucunun bu modu kabul etmediği. Puan, seviye ve gol (19): puan ve güç puanı hesabı, seviyenin düşmemesi, herkesin aynı güçle başlaması, seviye eşikleri, gün sınırı, cüzdan ve hoş geldin hediyesi, aynı dayanağa ikinci gol yazılmaması, günlük seri, puanlı maçta puan ve gol, seviye atlama, hükmen kayıp, gizli botun güç puanı, puansız maçlar, güce yakın eşleştirme ve bekledikçe genişleyen aralık, komşu zorlukla eşleşme ve Kolay–Zor ayrımı, oyuna özel bot seviyesi ve kaydı, ilerleme özeti, uç noktalar. Jokerler (12): gol düşme ve gizli bilgi, maçta iki joker sınırı, başka modun jokeri, geçersiz anda ve yetersiz bakiyede ücretsiz ret, yeniden bağlanınca tekrar gönderme; dokuz modun jokerleri. Lider tablosu ve bulmaca (9): hafta sınırı, tüm zamanlar ve oyun tabloları, haftalık toplam, aynı gün aynı ızgara, hak düşme ve dolu hücre, nadirlik puanı ve sıralama, bitiş ödülü, uç noktalar |
+| Uygulama | 103 | Çeviri dosyalarının uyumu, oyuncu tarafının öne alınması, bağlantı istemcisinin ilk bağlantıda erken vazgeçmesi ve hazır olmayan bağlantıyı düşürmesi, sorgular (gerçek veritabanına karşı; konsepte göre arama ve konsept adları dahil), maç oturumu, bayrak, istek istemcisi (geçmiş süzgeci, günlük ödül, ilerleme ve cüzdan istekleri dahil), giriş akışı, açılışta hangi ekranın açılacağı, sunucu hamlelerinin oturuma işlenmesi, bağlantı istemcisinin yeniden bağlanması. Kart Düellosu (8): konsept başlıkları ve büyük harf kuralı, soru ve değer biçimleri, görünümden kart listesi. Kadro Kur (5): kulübe ve boş mevkiye göre arama, kulüp adı, görünüm yardımcıları. Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu (her biri 2): görünüm yardımcıları; ızgara başlığının adı (1), joker ipucunun baş harfleri |
 
 Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüyle açar; yani sorgular gerçek veriye karşı çalışır.
 
@@ -614,7 +642,10 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Üye, sunucuya ulaşılamayan bir ağda uygulamayı açarsa ana ekran en çok 8 saniye gecikir; hesap bilgisi cihazda saklanmadığı için istek zaman aşımı bekleniyor.
 - Misafir hesabı kalıcı hesaba dönüşmediği için misafirken oynanan maçlar üye hesabına taşınmaz.
 - Şifre sıfırlama ve e-posta doğrulama yok; e-posta gönderen bir servis gerektiriyor.
-- Hesap silme yok; mağazalar hesap açılan uygulamalarda bunu şart koşuyor.
+- Apple ile giriş yapan hesap silinince Apple jetonu henüz iptal edilmiyor; Apple bunu şart koşuyor, iOS gönderiminden önce eklenmeli.
+- Google ve Apple girişi, kullanıcı adı seçimi, hesap silme ve bildirimler gerçek telefonda henüz denenmedi; iOS hiç denenmedi (yalnızca derlendi).
+- Bildirimleri uygulama içinden tek tek kapatma ayarı yok; yalnızca sistem izni var.
+- Canlı sunucunun yedekleri aynı sunucuda duruyor; sunucu dışına kopya alınmıyor.
 - İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.
 - Maçlar ve eşleştirme sırası da bellekte; sunucu yeniden başlarsa süren maçlar kaybolur ve tek sunucudan fazlası çalıştırılamaz.
 - Online maç iki gerçek telefonla henüz denenmedi; emülatör ile betikle bağlanan ikinci oyuncu arasında baştan sona oynandı.

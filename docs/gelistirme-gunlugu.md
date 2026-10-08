@@ -599,6 +599,24 @@ Seçenekli sorularla verilen kararlar ve yapılanlar:
 
 Doğrulama: 197 sunucu, 66 kural motoru ve 97 uygulama testi (hedefe göre bot seviyesi, aynı oyunun bot maçları, kayıtta bot seviyesi, komşu zorlukla eşleşme, Kolay–Zor ayrımı, aynı zorluğun önceliği, kapalı mod). Emülatör kapalı olduğu için bu turdaki arayüz değişiklikleri (oyun listesi, "8 oyun") ekranda denenmedi.
 
+### Yayın hazırlığı: ChallengeGoal
+
+Uygulamanın adı **ChallengeGoal**, paket kimliği `com.challengegoal.app` oldu. Kullanıcı yayın adımlarını belge olarak değil sohbette adım adım istedi; hesap ve onay gerektiren işleri kendisi yaptı (Apple Developer, App Store Connect kaydı ve anahtarları, Google Cloud istemci kimlikleri, Firebase, Contabo sunucusu, alan adı). `challengegoal.com` bir satıcıda olduğu için `challengegoal.app` alındı.
+
+Yapılanlar:
+
+- **Kimlik ve ikon.** Uygulama adı, paket kimlikleri, karşılama ekranında marka adı; yarısı altın yarısı mavi top ve neon çizgiden oluşan ikon (`data/branding/icons.py` ile üretiliyor).
+- **Derleme.** EAS projesi ve profilleri; ilk Android ve iOS derlemeleri başarıyla bitti (uygulama iOS için ilk kez derlendi).
+- **Canlı sunucu.** Contabo'da güvenlik sıkılaştırması, Docker Compose, Caddy ile TLS, günlük yedek, 90 günlük günlük saklama; `api.challengegoal.app` çalışıyor, 1.232 görsel yüklendi. İstek sınırı gerçek adresi görsün diye sunucu vekile güveniyor (`TRUST_PROXY`).
+- **Yasal sayfalar.** Gizlilik politikası ve KVKK metni, kullanım koşulları, hesap silme sayfası `challengegoal.app` üzerinde. Taslaktır; kullanıcının ve mümkünse bir hukukçunun onayını bekliyor.
+- **Hesap silme.** Uygulamada ve sunucuda; rakip geçmişinde ad "Silinmiş oyuncu" oluyor.
+- **Google ve Apple ile giriş.** Giriş ve kayıt ekranlarında; yeni hesap ilk girişte kullanıcı adını bir kez seçiyor (seçenekli soruyla karar verildi; e-postadan ad üretmek e-postanın bir kısmını gösteriyordu).
+- **Bildirimler.** Kullanıcının isteğiyle plana eklendi; dört bildirimin dördü de seçildi (günün bulmacası, haftalık sonuç, seri hatırlatması, geri dönüş). Sunucuda zamanlayıcı ve Expo bildirim servisi, uygulamada izin, kayıt ve dokununca yönlendirme.
+
+Kalanlar: şifre sıfırlama, gol satın alma, ödüllü reklam, Apple jetonunun silmede iptali, mağaza sayfaları ve formlar, Google'ın 12 kişilik 14 günlük kapalı testi.
+
+Doğrulama: 208 sunucu ve 103 uygulama testi; canlı sunucuda sağlık ucu, misafir hesap açma, Google ucunun açık olduğu, görsellerin ve sayfaların sunulduğu denendi. Yeni özellikler telefonda henüz denenmedi (emülatör kapalı, deneme derlemesi sırada).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -744,3 +762,14 @@ Doğrulama: 197 sunucu, 66 kural motoru ve 97 uygulama testi (hedefe göre bot s
 | `7d4af49` | 8 Ekim | Komşu zorlukla eşleşme |
 | `4d89d1c` | 8 Ekim | Zincir, Açık Artırma ve Kariyer Yolu'nda uzun süreler |
 | `1c9f1df` | 8 Ekim | En Az Bilinen'in şimdilik kaldırılması |
+| `eec9807` | 8 Ekim | Belgeler: oyun dengesi |
+| `2c345f6` | 8 Ekim | ChallengeGoal adı ve ikonu |
+| `97c4075` | 8 Ekim | EAS derleme ayarları |
+| `c11c49a` | 8 Ekim | Sunucuda hesap silme |
+| `2fa9b89` | 8 Ekim | Hesap ekranında hesap silme |
+| `8e0ee4a` | 8 Ekim | Canlı ortam dağıtımı, vekile güven |
+| `14c32cf` | 8 Ekim | Google ve Apple ile giriş |
+| `4d5f60e` | 8 Ekim | Yeni Google ve Apple hesabının bir kerelik kullanıcı adı seçimi (sunucu) |
+| `069860d` | 8 Ekim | Kullanıcı adı seçme ekranı |
+| `91d1da4` | 8 Ekim | Sunucudan bildirimler |
+| `9f5bddb` | 8 Ekim | Cihazın bildirim kaydı ve dokununca yönlendirme |
