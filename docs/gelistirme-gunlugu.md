@@ -613,9 +613,26 @@ Yapılanlar:
 - **Google ve Apple ile giriş.** Giriş ve kayıt ekranlarında; yeni hesap ilk girişte kullanıcı adını bir kez seçiyor (seçenekli soruyla karar verildi; e-postadan ad üretmek e-postanın bir kısmını gösteriyordu).
 - **Bildirimler.** Kullanıcının isteğiyle plana eklendi; dört bildirimin dördü de seçildi (günün bulmacası, haftalık sonuç, seri hatırlatması, geri dönüş). Sunucuda zamanlayıcı ve Expo bildirim servisi, uygulamada izin, kayıt ve dokununca yönlendirme.
 
-Kalanlar: şifre sıfırlama, gol satın alma, ödüllü reklam, Apple jetonunun silmede iptali, mağaza sayfaları ve formlar, Google'ın 12 kişilik 14 günlük kapalı testi.
+Kalanlar: şifre sıfırlama, ödüllü reklam, Apple jetonunun silmede iptali, mağaza sayfaları ve formlar, Google'ın 12 kişilik 14 günlük kapalı testi.
 
 Doğrulama: 208 sunucu ve 103 uygulama testi; canlı sunucuda sağlık ucu, misafir hesap açma, Google ucunun açık olduğu, görsellerin ve sayfaların sunulduğu denendi. Yeni özellikler telefonda henüz denenmedi (emülatör kapalı, deneme derlemesi sırada).
+
+### Gol satın alma
+
+Kullanıcı dört paketi seçti (30 gol ₺39,99; 100 gol ₺99,99; 250 gol ₺199,99; 600 gol ₺399,99), ilk alışa özel teşvik istemedi. Ürün kimlikleri `goals_cg_30`, `goals_cg_100`, `goals_cg_250`, `goals_cg_600`; App Store Connect'te taslak olarak açıldı.
+
+- **Sunucu.** `POST /purchases` satın almayı mağazanın kendisine sorar (App Store Server API, Google Play Developer API), golü kayıt defterine bir kez yazar. Misafir satın alamaz. Aynı satın alma başka hesaba işlenmişse reddedilir, aynı hesaba ikinci kez gelirse gol eklemeden güncel bakiye döner.
+- **Uygulama.** Ana ekrandaki gol sayacı artık mağazayı açıyor (seviye kısmı geçmişi açmaya devam ediyor). Mağaza ekranı fiyatları mağazadan alır, satın almayı sunucuya onaylatır, sonra işlemi kapatır. Sunucu golü yazmadan işlem kapatılmaz; yarım kalan satın alma mağaza her açıldığında yeniden denenir.
+- **Anahtarlar.** Apple'ın uygulama içi satın alma anahtarı ve Google Play servis hesabı anahtarı sunucuda `/opt/challengegoal/secrets` altında; depoda değil.
+
+Canlı anahtarlarla deneme iki şey gösterdi:
+
+1. Apple'ın canlı ucu, uygulama henüz yayınlanmadığı için anahtarı 401 ile reddediyor; aynı anahtar sandbox ucunda kabul ediliyor. Doğrulayıcı 401'de duruyordu; mağaza incelemesi satın almayı sandbox'ta denediği için bu, incelemede satın almanın başarısız olması demekti. Artık 401'de de sandbox'a geçiyor; iki uç da reddederse "mağazaya ulaşılamıyor" dönüyor.
+2. Google servis hesabı jeton alabiliyor ama Play, paket adını henüz tanımıyor ("No application was found"); ilk uygulama paketi (AAB) yüklenene kadar böyle kalacak.
+
+İlk taslakta uygulama, sunucunun "geçersiz" dediği satın almayı da kapatıyordu. Sunucu yanılırsa oyuncu parasını ödeyip golünü alamayacağı için kaldırıldı: uygulama yalnızca gol yazıldığında ya da satın alma başka hesaba işlenmişse işlemi kapatır. Reddedilen her doğrulama sunucu günlüğüne yazılıyor.
+
+Doğrulama: 219 sunucu ve 108 uygulama testi; canlı sunucuda satın alma ucu geçici bir hesapla iki mağaza için denendi (uydurma makbuz reddedildi, hesap silindi). Gerçek satın alma henüz denenmedi: Google'da ürünler açılmadı, Apple'da ürünler taslak.
 
 ## Commit listesi
 
@@ -773,3 +790,7 @@ Doğrulama: 208 sunucu ve 103 uygulama testi; canlı sunucuda sağlık ucu, misa
 | `069860d` | 8 Ekim | Kullanıcı adı seçme ekranı |
 | `91d1da4` | 8 Ekim | Sunucudan bildirimler |
 | `9f5bddb` | 8 Ekim | Cihazın bildirim kaydı ve dokununca yönlendirme |
+| `8b4a6b9` | 8 Ekim | Satın almanın Apple ve Google ile doğrulanması, gol paketlerinin bir kez yazılması |
+| `0cae329` | 8 Ekim | Gol mağazası ekranı ve ana ekrandan giriş |
+| `33132cd` | 8 Ekim | Yayınlanmamış uygulamada App Store sandbox doğrulaması, reddedilen satın almaların günlüğü |
+| `f37070b` | 8 Ekim | Mağaza anahtarlarının API kapsayıcısına bağlanması |
