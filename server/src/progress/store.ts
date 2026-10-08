@@ -1,6 +1,7 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import {
   GAME_IDS,
+  WELCOME_GOALS,
   WIN_GOALS,
   dailyGoals,
   levelFor,
@@ -239,7 +240,7 @@ export function createProgress(database: Database, options: ProgressOptions = {}
         const goals = dailyGoals(streak);
         upsertDaily.run(userId, streak, Math.max(streak, row?.best_streak ?? 0), today, now());
         wallet.credit(userId, goals, 'daily', today);
-        return { goals, streak };
+        return row ? { goals, streak } : { goals, streak, welcomeGoals: WELCOME_GOALS };
       });
       return { reward, progress: progress(userId) };
     },

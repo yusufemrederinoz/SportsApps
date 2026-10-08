@@ -72,6 +72,7 @@ export interface ProgressResponse {
 export interface DailyReward {
   goals: number;
   streak: number;
+  welcomeGoals?: number;
 }
 
 export interface DailyRewardResponse {

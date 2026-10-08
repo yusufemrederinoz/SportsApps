@@ -196,7 +196,7 @@ describe('goals', () => {
 describe('daily rewards', () => {
   it('pays goals once a day and more as the streak grows', () => {
     const { player } = join();
-    expect(progress.claimDaily(player.id).reward).toEqual({ goals: 1, streak: 1 });
+    expect(progress.claimDaily(player.id).reward).toEqual({ goals: 1, streak: 1, welcomeGoals: WELCOME_GOALS });
     expect(progress.claimDaily(player.id).reward).toBeNull();
     vi.setSystemTime(START + DAY);
     expect(progress.claimDaily(player.id).reward).toEqual({ goals: 2, streak: 2 });
@@ -428,7 +428,7 @@ describe('progress routes', () => {
 
     expect((await call('GET', '/progress')).status).toBe(401);
     const daily = await call<DailyRewardResponse>('POST', '/daily', token);
-    expect(daily.body.reward).toEqual({ goals: 1, streak: 1 });
+    expect(daily.body.reward).toEqual({ goals: 1, streak: 1, welcomeGoals: WELCOME_GOALS });
     const again = await call<DailyRewardResponse>('POST', '/daily', token);
     expect(again.body.reward).toBeNull();
     const current = await call<ProgressResponse>('GET', '/progress', token);
