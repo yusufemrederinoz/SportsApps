@@ -12,4 +12,4 @@ tar -C "$REPO/deploy" -c compose.yaml Caddyfile backup.sh site | $REMOTE "tar -x
 if [ "${1:-}" = "portraits" ]; then
   tar -C "$REPO/data/build/portraits" -c . | $REMOTE "tar -x -C $ROOT/data/portraits && chown -R 1000:1000 $ROOT/data/portraits"
 fi
-$REMOTE "cd $ROOT && touch .env && docker compose up -d --build && docker compose ps"
+$REMOTE "cd $ROOT && touch .env && docker compose up -d --build && docker compose restart caddy && docker compose ps"
