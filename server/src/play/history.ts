@@ -49,7 +49,7 @@ export function createMatchHistory(database: Database) {
   );
   const selectBotResults = database.prepare(
     `SELECT winner, x_user_id FROM matches
-     WHERE (x_user_id = ? OR o_user_id = ?) AND game = ? AND (x_user_id IS NULL OR o_user_id IS NULL)
+     WHERE (x_user_id = ? OR o_user_id = ?) AND game = ? AND bot_level IS NOT NULL
      ORDER BY finished_at DESC, rowid DESC LIMIT ?`,
   );
   const selectForUser = database.prepare(

@@ -112,6 +112,12 @@ export function createAccountRepository(database: Database) {
       run('DELETE FROM sessions WHERE expires_at <= ?', now);
     },
 
+    deleteUser(userId: string): void {
+      run("UPDATE matches SET x_username = '' WHERE x_user_id = ?", userId);
+      run("UPDATE matches SET o_username = '' WHERE o_user_id = ?", userId);
+      run('DELETE FROM users WHERE id = ?', userId);
+    },
+
     toAccount(user: UserRow): Account {
       const credential = one<{ email: string }>('SELECT email FROM credentials WHERE user_id = ?', user.id);
       const identities = many<{ provider: IdentityProvider; email: string | null }>(

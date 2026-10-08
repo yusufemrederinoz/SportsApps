@@ -342,6 +342,30 @@ describe('bot level', () => {
   });
 });
 
+describe('eviction', () => {
+  it('forfeits the match of a removed player and drops the connection', () => {
+    const leaver = join();
+    const rival = join();
+    let closed = false;
+    leaver.close = () => {
+      closed = true;
+    };
+    queue(leaver);
+    queue(rival);
+    lobby.evict(leaver.player.id);
+    expect(rival.of('finished')[0]?.result).toMatchObject({ reason: 'forfeit' });
+    expect(closed).toBe(true);
+    expect(lobby.counts()).toMatchObject({ matches: 0 });
+  });
+
+  it('takes a waiting player out of the queue', () => {
+    const waiting = join();
+    queue(waiting);
+    lobby.evict(waiting.player.id);
+    expect(lobby.counts()).toMatchObject({ queued: 0 });
+  });
+});
+
 describe('matchmaking by rating', () => {
   it('pairs the closest player within reach', () => {
     const low = join();
@@ -533,6 +557,44 @@ describe('progress routes', () => {
     const next = await call<MatchHistoryResponse>('GET', '/matches?game=duel&limit=2&before=1002', token);
     expect(next.body).toEqual({ matches: [expect.objectContaining({ id: 'match-0' })], more: false });
     expect((await call('GET', '/matches?game=chess', token)).status).toBe(400);
+    await app.close();
+  });
+
+  it('deletes an account with everything it owns', async () => {
+    vi.useRealTimers();
+    const app = buildApp({ database, config, now: () => Date.now() });
+    const call = async <T>(method: 'GET' | 'POST' | 'DELETE', url: string, token?: string, payload?: object) => {
+      const response = await app.inject({
+        method,
+        url: `/v1${url}`,
+        headers: token ? { authorization: `Bearer ${token}` } : {},
+        ...(payload ? { payload } : {}),
+      });
+      return { status: response.statusCode, body: response.body ? (response.json() as T) : (null as T) };
+    };
+    const member = { username: 'Leaver', email: 'leaver@example.com', password: 'Abcdefg1' };
+    const { token, account } = (await call<{ token: string; account: { id: string } }>('POST', '/auth/register', undefined, member)).body;
+    await call('POST', '/daily', token);
+    database
+      .prepare(
+        `INSERT INTO matches (id, kind, game, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username,
+           winner, reason, x_cells, o_cells, move_count, started_at, finished_at)
+         VALUES ('kept', 'room', 'grid', 'tr', 1, 0, ?, NULL, 'Leaver', 'rival', 'x', 'score', 1, 0, 1, 0, 1)`,
+      )
+      .run(account.id);
+
+    expect((await call('DELETE', '/account')).status).toBe(401);
+    expect((await call('DELETE', '/account', token)).status).toBe(204);
+    expect((await call('GET', '/me', token)).status).toBe(401);
+    const count = (table: string) =>
+      Number((database.prepare(`SELECT COUNT(*) AS total FROM ${table} WHERE user_id = ?`).get(account.id) as { total: number }).total);
+    expect(['credentials', 'sessions', 'wallets', 'goal_ledger', 'daily_rewards'].map(count)).toEqual([0, 0, 0, 0, 0]);
+    expect({ ...database.prepare("SELECT x_user_id, x_username, o_username FROM matches WHERE id = 'kept'").get() }).toEqual({
+      x_user_id: null,
+      x_username: '',
+      o_username: 'rival',
+    });
+    expect((await call('POST', '/auth/register', undefined, member)).status).toBe(200);
     await app.close();
   });
 });

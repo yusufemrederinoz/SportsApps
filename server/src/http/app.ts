@@ -164,6 +164,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
   let puzzles: Puzzles | null = null;
+  let evict: (userId: string) => void = () => undefined;
   let hasMarket: (market: string) => boolean = () => false;
 
   if (dependencies.football) {
@@ -204,6 +205,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     registerPlayGateway(app, { accounts, lobby, dataVersion: football.dataVersion, now });
     puzzles = createPuzzles(database, football, progress, { now, timeZone: config.timeZone });
     hasMarket = football.hasMarket;
+    evict = lobby.evict;
     app.addHook('onClose', () => lobby.shutdown());
   }
 
@@ -277,6 +279,13 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
 
   app.get(`${API_PREFIX}/me`, (request): AccountResponse => ({ account: accounts.account(requireSession(request).user) }));
+
+  app.delete(`${API_PREFIX}/account`, (request, reply) => {
+    const { user } = requireSession(request);
+    evict(user.id);
+    accounts.deleteAccount(user.id);
+    return reply.code(204).send();
+  });
 
   app.get<{ Params: { file: string } }>(`${API_PREFIX}/portraits/:file`, async (request, reply) => {
     const { file } = request.params;

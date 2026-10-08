@@ -510,6 +510,25 @@ export function createLobby(options: LobbyOptions) {
       );
     },
 
+    evict(userId: string): void {
+      const member = members.get(userId);
+      if (!member) {
+        return;
+      }
+      if (member.status.kind === 'playing') {
+        const active = matches.get(member.status.matchId);
+        const side = active?.room.sideOf(userId);
+        if (active && side) {
+          clearForfeit(active, userId);
+          active.room.forfeit(side);
+        }
+      } else {
+        release(member);
+      }
+      member.connection?.close();
+      members.delete(userId);
+    },
+
     handle(userId: string, message: ClientMessage): void {
       const member = members.get(userId);
       if (!member?.connection) {

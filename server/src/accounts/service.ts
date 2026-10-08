@@ -195,6 +195,10 @@ export function createAccountService(database: Database, options: AccountService
       repository.deleteSession(hashToken(token));
     },
 
+    deleteAccount(userId: string): void {
+      transaction(database, () => repository.deleteUser(userId));
+    },
+
     removeExpiredSessions(): void {
       repository.deleteExpiredSessions(now());
     },
