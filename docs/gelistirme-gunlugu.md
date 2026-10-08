@@ -704,6 +704,33 @@ Kullanıcının istekleri:
 
 Bu üç değişiklik cihazda henüz denenmedi; sürüm kodu 9 derlemesiyle gelecek.
 
+### Görsel verisini büyütme araştırması (8 Ekim 2026)
+
+Kullanıcı portrelerin çoğunu kötü ve yetersiz buldu, kulüp arması da istedi ve rakip bir uygulamanın (Tactico) oynanış videosunu örnek gösterdi. Videodan çıkanlar: rakibin armaları gerçek logo değil, tek kalkan kalıbına kulüp renkleri, basit bir desen ve kısaltma konarak üretilmiş; portreleri hep aynı kalıpta (yalnızca baş, düz zemin); az bilinen oyuncuların da görseli var; yenilince geri sayımla "puanı koru" düğmesi çıkıp ödüllü reklamla kaybedilen puanı geri veriyor.
+
+Ölçümler (`data/build/football.sqlite` ve Wikimedia uçları):
+
+| Ölçüm | Sonuç |
+|---|---|
+| Veritabanındaki futbolcu | 72.435 |
+| Wikidata'da ana fotoğrafı (Commons) olan | 22.553 (%31) |
+| Şu anki hedef (bilinirlik 32+) | 1.889 oyuncu; 1.665'inin fotoğrafı var, 1.232 portre üretildi |
+| Bilinirlik 25+ | 4.661 oyuncu, 4.203'ünün fotoğrafı var |
+| Bilinirlik 20+ | 13.165 oyuncu, 10.783'ünün fotoğrafı var |
+| Lisans eleği | 1.665 fotoğrafın 18'i serbest değil |
+| Yüz eleği (1.647 fotoğraf) | 1.169 uygun; 242 "dar kadraj", 119 yüz yok, 68 profilden, 49 kalabalık |
+| Ana fotoğrafı olmayanlarda başka Commons dosyası | 120 kişilik örneklemde 5 (%4) |
+| Kulüp renkleri, Wikidata "resmî renk" | 219 kulübün 122'sinde; adlar doğru, renk kodları genel (sarı = FFFF00), desen yok |
+| Kulüp renkleri, Wikipedia forma şablonu | 177 kulüpte gövde rengi var ama çoğu sezonluk desen görselinin altındaki zemin; güvenilir değil |
+
+Sonuçlar:
+
+- Portre sayısını sınırlayan fotoğraf yokluğu değil, hedef eşiği. Aynı serbest lisanslı kaynakla eşik düşürülerek portre sayısı birkaç katına çıkarılabilir.
+- "Dar kadraj" yüzünden elenen fotoğraflar, rakipteki gibi yalnızca başı alan kesimle kullanılabilir hâle gelir.
+- Ana fotoğrafı olmayan oyuncular için Commons'ta başka dosya aramak verimsiz; onlara portre yerine çizim avatar gerekir.
+- Arma renkleri için otomatik kaynaklar yetersiz; 219 kulüp elle derlenip denetlenecek kadar az.
+- Telifli fotoğraf kaynaklarından (ör. Transfermarkt, ajans fotoğrafları) üretim yapılmayacak.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
