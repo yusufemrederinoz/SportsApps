@@ -13,6 +13,7 @@ import {
   type LoginRequest,
   type MatchHistoryResponse,
   type ProgressResponse,
+  type PushTokenRequest,
   type PuzzleGuessRequest,
   type PuzzleGuessResponse,
   type PuzzleRankingResponse,
@@ -99,6 +100,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
       request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
     deleteAccount: (token: string) => request<void>('DELETE', '/account', { token }),
+    registerPushToken: (token: string, device: PushTokenRequest) =>
+      request<void>('POST', '/push-token', { token, body: device }),
     chooseUsername: (token: string, username: string) =>
       request<AccountResponse>('POST', '/account/username', { token, body: { username } }),
     matches: (token: string, filter: HistoryFilter = {}) =>

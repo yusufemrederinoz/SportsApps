@@ -9,3 +9,4 @@ dist/
 .env.*
 server/data/
 data/.venv-imaging/
+app/google-services.json

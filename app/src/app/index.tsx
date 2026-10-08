@@ -20,6 +20,7 @@ import { ProgressChip } from '@/features/progress/progress-chip';
 import { useProgress } from '@/features/progress/use-progress';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
+import { usePush } from '@/notifications/use-push';
 
 function HomeScreen() {
   const { t } = useTranslation();
@@ -27,6 +28,7 @@ function HomeScreen() {
   const router = useRouter();
   const { state: auth } = useAuth();
   const { progress, reward, dismissReward } = useProgress({ claimDaily: true });
+  usePush(progress !== null && reward === null);
   const [difficulty, setDifficulty] = useState<Difficulty>(1);
   const [game, setGame] = useState<GameId>('grid');
   const gameScroller = useRef<ScrollView>(null);
