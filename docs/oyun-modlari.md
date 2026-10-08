@@ -60,7 +60,7 @@ Kararlar (7 Ekim 2026): herkes aynı gün aynı XOX ızgarasını çözer (Türk
 | `draft` | Kadro Kur | Kullanıcının istediği (kadro kurma biçimi) | Yayında (online, bot ve arkadaş odası dahil) |
 | `higher` | Hangisi Yüksek | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `chain` | Zincir | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
-| `rare` | En Az Bilinen | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
+| `rare` | En Az Bilinen | Öneri | Şimdilik kaldırıldı (8 Ekim 2026): maçların %16–30'u berabere bitiyordu. Kod duruyor; uygulamada görünmüyor, sunucu kabul etmiyor |
 | `auction` | Açık Artırma | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `career` | Kariyer Yolu | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
 | `top-ten` | İlk 10 | Öneri | Yayında (online, bot ve arkadaş odası dahil) |
@@ -134,7 +134,7 @@ Uygulanan hâli (7 Ekim 2026):
 - **Başlangıç.** Her tur, tanınmış (bilinirliği 55 ve üzeri) ve veritabanında en az 3 kulübü olan bir futbolcuyla açılır; aynı maçta başlangıç futbolcusu tekrarlanmaz. Turu başlatan oyuncu her turda değişir.
 - **Ortak kulüp.** Veritabanındaki kulüpler Süper Lig ve Avrupa'nın beş büyük liginden; bu liglerin dışındaki bir kulüpte birlikte oynamak bağlantı sayılmaz. Ekranda bu yazıyor ve her bağlantının hangi kulüpten kurulduğu gösteriliyor (iki futbolcunun birden fazla ortak kulübü varsa önce yerli lig kulübü).
 - **Tekrar.** Bir ad aynı turda iki kez söylenemez; arama penceresi zincirdekileri zaten göstermiyor.
-- **Süre.** Zincir uzadıkça kısalır: 20 saniyeyle başlar, her iki halkada 2 saniye azalır, en az 8 saniye. Tur sonu 3 saniye gösterilir.
+- **Süre.** Zincir uzadıkça kısalır: 20 saniyeyle başlar, her iki halkada 2 saniye azalır, en az 12 saniye (8 Ekim 2026'ya kadar 8; telefonda isim yazmaya yetmiyordu). Tur sonu 3 saniye gösterilir.
 - **Bot.** Ortak kulüplü tanınmış futbolculardan seçer. Zorluğa göre ve zincir uzadıkça artan bir olasılıkla pes eder; pes ederken süreyi doldurmak yerine yanlış bir ad söyler (insan oyuncu boşuna beklemesin diye).
 
 ### En Az Bilinen (`rare`)
@@ -156,7 +156,7 @@ Uygulanan hâli (7 Ekim 2026):
 
 - **Ölçütler.** Seçilen zorluktaki bir ızgaranın, bilinirliği 32 ve üzeri en az 6 cevabı olan hücreleri; maç en çok üç tur, iki tur alan kazanır. Turu açan oyuncu her turda değişir.
 - **Teklif.** Teklif bir öncekinden büyük olmalı, en çok 12. İlk teklif zorunlu ("Say bakalım" ancak bir teklif varken denebilir). Teklif sırası 15 saniye; süresi dolan oyuncu, ortada teklif yoksa 1 demiş, varsa "Say bakalım" demiş sayılır. 12'ye çıkan teklif doğrudan ispata gider.
-- **İspat.** Süre 8 saniye + teklif başına 5 saniye. Yazılan doğru isimler yeşil, yanlışlar üstü çizili görünür; yanlış isim süreden yer ama turu bitirmez. Hedefe ulaşınca tur hemen biter.
+- **İspat.** Süre 10 saniye + teklif başına 7 saniye (8 Ekim 2026'ya kadar 8 + 5). Yazılan doğru isimler yeşil, yanlışlar üstü çizili görünür; yanlış isim süreden yer ama turu bitirmez. Hedefe ulaşınca tur hemen biter.
 - **Bot.** Hücrenin tanınmış cevaplarının zorluğa göre %35, %55 ya da %75'ini "bilir"; bildiği kadar (kolay ve orta seviyede bazen bir fazla) teklif verir, aşılınca "Say bakalım" der. İspatta bildiklerini 3–6 saniye arayla yazar; bildikleri biterse süreyi beklemeden pes eder.
 
 ### Kariyer Yolu (`career`)
@@ -168,7 +168,7 @@ Uygulanan hâli (7 Ekim 2026):
 - **Futbolcular.** Maçta 4 gizli futbolcu var. Bilinirliği zorluğa göre 65, 55 ya da 45 ve üzeri; bütün kulüplerinin katılış yılı bilinen ve 3–8 kulübü olan futbolcular seçilir (daha uzun kariyerler tek ekrana sığmıyor).
 - **İpuçları.** Kulüpler katılış yılına göre sıralanır ve yıllarıyla gösterilir ("2001–2003 FC Metz"). Yalnızca Süper Lig ve beş büyük ligin kulüpleri var; bu ekranda yazıyor.
 - **Puan.** Bir kulüp açıkken bilen, kulüp sayısı kadar puan alır; her yeni kulüp puanı bir azaltır (en az 1). Yanlış ya da süresi dolan tahmin yeni bir kulüp açar ve sırayı geçirir. Bütün kulüpler açıldıktan sonra bir tahmin hakkı daha var; kimse bilemezse tur puansız biter. Futbolcuyu ilk tahmin eden her turda değişir.
-- **Süre.** Tahmin başına 15 saniye; tur sonunda bütün kariyer ve futbolcunun kartı 5 saniye gösterilir.
+- **Süre.** Tahmin başına 20 saniye (8 Ekim 2026'ya kadar 15); tur sonunda bütün kariyer ve futbolcunun kartı 5 saniye gösterilir.
 - **Bot.** Açık kulüp sayısıyla artan bir olasılıkla bilir (zorluğa göre başlangıç %12, %22 ya da %32; her kulüpte +%15). Bilemediğinde gizli futbolcuyla aynı kulüpte oynamış birini söyler.
 
 ### İlk 10 (`top-ten`)

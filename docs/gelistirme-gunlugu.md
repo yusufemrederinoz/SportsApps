@@ -586,6 +586,19 @@ Sunucu: `ratings` tablosuna `rating` sütunu (geçiş 6, mevcut kayıtlar 1000);
 
 Doğrulama: 192 sunucu testi (eşit güçte ±20 güç ve +25/−10 puan, güçsüzün beraberlikte kazanması, seviye eşiğinde kaybın kesilmesi, herkesin 1000 ile başlaması, güce göre eşleştirme); yerel veritabanında geçiş uygulandı.
 
+### Oyun dengesi
+
+Her mod ve zorlukta 100'er bot–bot maçı oynatan bir ölçüm betiği yazıldı (sanal saatle, gerçek veritabanıyla; depoya girmedi). Bulgular: hiçbir modda başlayan tarafın anlamlı avantajı yok; En Az Bilinen'de maçların %16–30'u, XOX kolayda %18'i, Kart Düellosu'nda %11–17'si berabere; maçlar çoğunlukla 1–2,5 dakika, Zincir zorda ortalama 3,5 dakika. Koddan görülenler: bot seviyesi bütün oyunlardan ve arkadaş maçlarından karışık son beş maça bakıyordu; online sıra 9 oyun × 3 zorluk = 27 parçaya bölünüyordu; bazı süreler telefonda isim yazmaya dardı.
+
+Seçenekli sorularla verilen kararlar ve yapılanlar:
+
+- **Bot seviyesi.** Hedef, oyuncunun bota karşı kazanma oranı: Kolay %65, Orta %50, Zor %35, gizli botta %50. Seviye lobide, aynı oyundaki son beş bot maçına göre hedefin ±0,2 dışına çıkınca bir kademe kayıyor; odaya veriliyor ve maç kaydına yazılıyor (`bot_level`, geçiş 7). Ayarlar beta verisiyle bu hedeflere çekilecek.
+- **Sıra.** Zorluk korunuyor; aynı zorlukta rakip yoksa 3 saniye sonra komşu zorlukla eşleşiliyor, sorular düşük olanın zorluğunda. Kolay ile Zor eşleşmiyor.
+- **Süreler.** Zincir'in en kısa turu 8 → 12 sn; Açık Artırma ispatı 8 + 5/isim → 10 + 7/isim; Kariyer Yolu turu 15 → 20 sn. Bot–bot maç süreleri değişmedi (botlar süre dolmadan oynuyor); pay yalnızca insana.
+- **En Az Bilinen.** Kullanıcının kararıyla şimdilik kaldırıldı. Kod ve testleri duruyor; protokolde `PAUSED_GAME_IDS`, sunucu bu modu kabul etmiyor, uygulama listelerde göstermiyor. Tanıtım ve karşılamadaki oyun sayısı listeden geliyor ("8 oyun").
+
+Doğrulama: 197 sunucu, 66 kural motoru ve 97 uygulama testi (hedefe göre bot seviyesi, aynı oyunun bot maçları, kayıtta bot seviyesi, komşu zorlukla eşleşme, Kolay–Zor ayrımı, aynı zorluğun önceliği, kapalı mod). Emülatör kapalı olduğu için bu turdaki arayüz değişiklikleri (oyun listesi, "8 oyun") ekranda denenmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -726,3 +739,8 @@ Doğrulama: 192 sunucu testi (eşit güçte ±20 güç ve +25/−10 puan, güçs
 | `b8e990d` | 8 Ekim | Belgeler: tanıtımın yenilenmesi ve kalan kararlar |
 | `c542441` | 8 Ekim | Gizli güç puanıyla eşleştirme, düşmeyen seviye |
 | `76f5de8` | 8 Ekim | Tanıtımda seviyenin düşmediği |
+| `e5cfcd7` | 8 Ekim | Belgeler: gizli güç puanı |
+| `dfcd59a` | 8 Ekim | Oyuna özel, hedefe göre bot seviyesi ve kaydı |
+| `7d4af49` | 8 Ekim | Komşu zorlukla eşleşme |
+| `4d89d1c` | 8 Ekim | Zincir, Açık Artırma ve Kariyer Yolu'nda uzun süreler |
+| `1c9f1df` | 8 Ekim | En Az Bilinen'in şimdilik kaldırılması |

@@ -243,7 +243,8 @@ Yapılanlar:
 - Sunucuda moddan bağımsız lobi ve oda üreticileri; maç kaydında mod.
 - Kart Düellosu: kural motoru, sunucu odası ve bot, uygulama ekranları, ana ekranda oyun seçimi, arkadaş odasında mod. Emülatörde bota karşı ve arkadaş odasında denendi.
 - Kadro Kur: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
-- Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
+- Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi. En Az Bilinen 8 Ekim'de beraberlikler yüzünden şimdilik kaldırıldı.
+- Denge (8 Ekim): her mod ve zorlukta 100'er bot–bot maçıyla ölçüm (taraf avantajı yok; beraberlik ve süreler); bot seviyesinin oyuna özel ve hedef kazanma oranına göre ayarlanması, maç kaydına yazılması; komşu zorlukla eşleşme; Zincir, Açık Artırma ve Kariyer Yolu'nda yazmaya yetecek süreler.
 - Kulüplere katılış ve ayrılış yılları uygulama veritabanında.
 - Tanıtımın dokuz oyunu, puan ve seviyeyi, golü ve jokerleri anlatacak biçimde yenilenmesi; ilk günlük ödülde hoş geldin hediyesi (8 Ekim).
 - İlk geri bildirim düzeltmeleri: her modda "Bota karşı" girişi (sıra beklemeden), aynı cihazda iki kişilik modun kaldırılması, Kart Düellosu ve Hangisi Yüksek'te soru tekrarının önlenmesi, seçilen oyunun listede ortalanması, kart seçerken seçilen kartların arama penceresinde görünmesi, arama sonuçlarından bayrağın kaldırılması, ikinci tekil metinlerin düzeltilmesi, bağlantı hatasında "Tekrar dene".
@@ -251,7 +252,7 @@ Yapılanlar:
 Kalanlar:
 
 - Gerçek telefonlarda iki kişiyle her modun denenmesi; süre ve puan dengesinin oyuncu geri bildirimine göre ayarlanması.
-- Bot zorluklarının mod mod gözden geçirilmesi (şu an kurallar tahmine dayalı).
+- Bot ayarlarının beta verisiyle hedef kazanma oranlarına (Kolay %65, Orta %50, Zor %35) çekilmesi.
 - Kart Düellosu ve diğer modlar için internetsiz (bota karşı) oyun.
 - Turnuva katılımı verisi ("Dünya Kupası'nda oynamış") ve transfer yönü konseptleri.
 
