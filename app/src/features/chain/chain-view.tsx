@@ -9,6 +9,7 @@ import Animated, { FadeIn, FadeInDown, FadeInRight } from 'react-native-reanimat
 
 import { portraitUrl } from '@/api';
 import { ActionButton } from '@/components/action-button';
+import { ClubCrest } from '@/components/club-crest';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -35,6 +36,7 @@ import { chainCardIds, chainClubIds } from './online';
 const CARD_HEIGHT_SHARE = 0.2;
 const MAXIMUM_CARD_SIZE = 180;
 const NODE_SIZE = 40;
+const CREST_SIZE = 28;
 
 function initials(name: string): string {
   return name
@@ -308,9 +310,12 @@ export function ChainMatchView({
             watermark={false}
           />
         ) : null}
-        <ThemedText type="smallBold" themeColor="gold" style={styles.centered}>
-          {linkClub ? t('chain.via', { club: nameUppercase(linkClub.name, linkClub.local) }) : ' '}
-        </ThemedText>
+        <View style={styles.via}>
+          {current?.clubId ? <ClubCrest clubId={current.clubId} size={CREST_SIZE} /> : null}
+          <ThemedText type="smallBold" themeColor="gold" style={styles.centered}>
+            {linkClub ? t('chain.via', { club: nameUppercase(linkClub.name, linkClub.local) }) : ' '}
+          </ThemedText>
+        </View>
       </View>
 
       <View style={styles.status}>
@@ -455,6 +460,13 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     justifyContent: 'center',
     gap: Spacing.one,
+  },
+  via: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    minHeight: CREST_SIZE,
   },
   centered: {
     textAlign: 'center',

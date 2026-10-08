@@ -12,6 +12,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import { ClubCrest } from '@/components/club-crest';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, Radius } from '@/constants/theme';
 import type { GridView, HeaderView } from '@/data/types';
@@ -24,6 +25,7 @@ import { FootballerCard, type CardEmphasis } from './footballer-card';
 import type { MatchSession } from './session';
 
 const GAP = 6;
+const CREST_SIZE = 34;
 const TRACKS = BOARD_SIZE + 1;
 const INDEXES = Array.from({ length: BOARD_SIZE }, (_, index) => index);
 const SHAKE_STEPS = [-11, 10, -7, 6, -3, 0];
@@ -80,6 +82,7 @@ export function Board({ gridView, session, disabled, selected, cellCaption, onSe
 
   const headerLabel = (header: HeaderView) => (
     <View style={styles.headerContent} accessible accessibilityLabel={header.name}>
+      {header.kind === 'club' ? <ClubCrest clubId={header.referenceId} size={CREST_SIZE} /> : null}
       {flagEmoji(header.countryCode) ? (
         <ThemedText style={styles.flag}>{flagEmoji(header.countryCode)}</ThemedText>
       ) : null}

@@ -6,6 +6,7 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown, FadeInLeft } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
+import { ClubCrest } from '@/components/club-crest';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -27,6 +28,7 @@ import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@
 const CARD_HEIGHT_SHARE = 0.17;
 const MAXIMUM_CARD_SIZE = 150;
 const DOT_SIZE = 12;
+const CREST_SIZE = 26;
 
 interface CareerMatchViewProps {
   career: OnlineCareer;
@@ -228,6 +230,7 @@ export function CareerMatchView({
                   <ThemedText type="label" themeColor="gold" style={styles.years}>
                     {clue.lastYear && clue.lastYear !== clue.firstYear ? `${clue.firstYear}–${clue.lastYear}` : String(clue.firstYear)}
                   </ThemedText>
+                  <ClubCrest clubId={clue.clubId} size={CREST_SIZE} />
                   <ThemedText type="smallBold" numberOfLines={1} style={styles.club}>
                     {club ? nameUppercase(club.name, club.local) : ''}
                   </ThemedText>

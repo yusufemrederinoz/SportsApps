@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { ActionButton } from '@/components/action-button';
+import { ClubCrest } from '@/components/club-crest';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -30,6 +31,7 @@ import { useDraftEffects } from './use-draft-effects';
 
 const SLOT_HEIGHT_SHARE = 0.058;
 const MAXIMUM_SLOT_SIZE = 60;
+const CREST_SIZE = 40;
 
 interface DraftMatchViewProps {
   draft: OnlineDraft;
@@ -189,9 +191,12 @@ export function DraftMatchView({
           <ThemedText type="label" themeColor="volt">
             {uppercase(t('draft.clubLabel'))}
           </ThemedText>
-          <ThemedText style={styles.club} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-            {clubTitle}
-          </ThemedText>
+          <View style={styles.clubRow}>
+            {clubId !== null ? <ClubCrest clubId={clubId} size={CREST_SIZE} /> : null}
+            <ThemedText style={styles.club} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+              {clubTitle}
+            </ThemedText>
+          </View>
           <ThemedText type="small" themeColor="textSecondary">
             {t('draft.target')}
           </ThemedText>
@@ -282,7 +287,13 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.two,
     gap: Spacing.half,
   },
+  clubRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
   club: {
+    flexShrink: 1,
     fontFamily: Fonts.display,
     fontSize: 30,
     lineHeight: 32,
