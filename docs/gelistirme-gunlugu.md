@@ -682,6 +682,12 @@ Kullanıcı reklamlı sürümü (sürüm kodu 4) telefonda denedi; mağaza ekran
 
 Kullanıcı sitenin çok kötü göründüğünü söyledi. `challengegoal.app` oyunun renkleri ve yazı tipleriyle baştan yazıldı: örnek XOX ızgaralı giriş, sekiz oyunun kartları, özellikler, sık sorulanlar, iletişim; İngilizce sayfa (`/en`); yasal sayfalar aynı görünüme alındı. Yazı tipleri ve görseller sitenin içinden sunuluyor (dış kaynak yok). Masaüstü ve telefon genişliğinde tarayıcıda çizdirilip bakıldı. `deploy` klasöründeki satır sonu kuralı görsel ve yazı tipi dosyalarını depoda bozuyordu; ikili dosya olarak işaretlendi.
 
+### Yönetim paneli
+
+Kullanıcı anlık oyuncu sayısını ve uygulama istatistiklerini görebileceği bir panel istedi. Dış bir analiz servisi yerine sunucunun içine küçük bir panel konuldu: veriler zaten kendi veritabanımızda, canlı maç bilgisi sunucunun belleğinde. Adres `https://api.challengegoal.app/admin`; yalnızca kullanıcıda duran anahtarla açılıyor. Ayrıntı teknik mimaride "Yönetim paneli" bölümünde.
+
+Doğrulama: 240 sunucu testi; canlıda sayfa açılıyor, anahtarsız istek reddediliyor, anahtarla gelen sayılar (9 hesap, 3 maç, 6 bildirim cihazı) veritabanıyla uyumlu; sayfa bu veriyle tarayıcıda çizdirilip bakıldı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -852,3 +858,4 @@ Kullanıcı sitenin çok kötü göründüğünü söyledi. `challengegoal.app` 
 | `dcabab7` | 8 Ekim | Google giriş istemcilerinin tek projeye taşınması |
 | `8cdaf9b` | 8 Ekim | E-postayla gönderilen kodla şifre sıfırlama (sunucu) |
 | `63bb1d2` | 8 Ekim | Şifremi unuttum ekranı |
+| `122b66d` | 8 Ekim | Yönetim paneli: anlık ve günlük istatistikler |
