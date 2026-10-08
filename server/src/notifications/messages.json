@@ -1,0 +1,38 @@
+{
+  "tr": {
+    "puzzle": {
+      "title": "Günün bulmacası hazır",
+      "body": "Bugünün ızgarası seni bekliyor. 9 hakkın var."
+    },
+    "weekly": {
+      "title": "Geçen haftanın sonucu",
+      "body": "Haftayı {{rank}}. sırada bitirdin. Yeni hafta başladı!"
+    },
+    "streak": {
+      "title": "Serini kaybetme",
+      "body": "{{streak}} günlük serin bugün bitiyor. Girip ödülünü al."
+    },
+    "comeback": {
+      "title": "Maça dönme vakti",
+      "body": "Rakiplerin seni bekliyor. Günlük ödülün de hazır."
+    }
+  },
+  "en": {
+    "puzzle": {
+      "title": "Today's puzzle is ready",
+      "body": "A new grid is waiting for you. You have 9 guesses."
+    },
+    "weekly": {
+      "title": "Last week's result",
+      "body": "You finished the week in place {{rank}}. A new week has started!"
+    },
+    "streak": {
+      "title": "Keep your streak",
+      "body": "Your {{streak}}-day streak ends today. Come in and collect your reward."
+    },
+    "comeback": {
+      "title": "Time for a match",
+      "body": "Your rivals are waiting, and your daily reward is ready."
+    }
+  }
+}

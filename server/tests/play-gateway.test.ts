@@ -35,6 +35,7 @@ const config: ServerConfig = {
   appleClientIds: [],
   timeZone: 'Europe/Istanbul',
   trustProxy: false,
+  notifications: false,
 };
 
 interface Client {

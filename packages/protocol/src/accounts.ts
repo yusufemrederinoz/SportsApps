@@ -51,6 +51,15 @@ export interface ChooseUsernameRequest {
   username: string;
 }
 
+export const PUSH_PLATFORMS = ['ios', 'android'] as const;
+export type PushPlatform = (typeof PUSH_PLATFORMS)[number];
+
+export interface PushTokenRequest {
+  token: string;
+  platform: PushPlatform;
+  language: string;
+}
+
 export type ApiErrorCode =
   | 'validation'
   | 'unauthorized'

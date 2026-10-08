@@ -3,28 +3,30 @@ import { stat } from 'node:fs/promises';
 import { join } from 'node:path';
 
 import {
+  ACTIVE_GAME_IDS,
   API_PREFIX,
   EMAIL_MAX_LENGTH,
-  ACTIVE_GAME_IDS,
   GAME_IDS,
   PASSWORD_MAX_LENGTH,
+  PUSH_PLATFORMS,
   type AccountResponse,
-  type ChooseUsernameRequest,
   type ApiErrorResponse,
   type AuthResponse,
+  type ChooseUsernameRequest,
   type DailyPuzzleResponse,
   type DailyRewardResponse,
   type GameId,
-  type LeaderboardPeriod,
-  type LeaderboardResponse,
-  type PuzzleGuessRequest,
-  type PuzzleGuessResponse,
-  type PuzzleRankingResponse,
   type IdentityProvider,
   type IdentitySignInRequest,
+  type LeaderboardPeriod,
+  type LeaderboardResponse,
   type LoginRequest,
   type MatchHistoryResponse,
   type ProgressResponse,
+  type PushTokenRequest,
+  type PuzzleGuessRequest,
+  type PuzzleGuessResponse,
+  type PuzzleRankingResponse,
   type RegisterRequest,
   type WalletResponse,
 } from '@sportapps/protocol';
@@ -45,6 +47,8 @@ import { registerPlayGateway } from '../play/gateway';
 import { createGridRoomFactory } from '../play/grid-room';
 import { DEFAULT_HIGHER_TIMING, createHigherRoomFactory, type HigherTiming } from '../play/higher-room';
 import { createMatchHistory } from '../play/history';
+import { createExpoSender, type PushSender } from '../notifications/sender';
+import { createNotifications } from '../notifications/service';
 import type { RoomFactory } from '../play/live-room';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
@@ -69,6 +73,7 @@ export interface AppDependencies {
   config: ServerConfig;
   verifiers?: IdentityVerifiers;
   football?: FootballLibrary;
+  sendPush?: PushSender;
   play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
     botTiming?: BotTiming;
     duelTiming?: Partial<DuelTiming>;
@@ -100,6 +105,21 @@ const REGISTER = body({
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
 const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
 const USERNAME = body({ username: text(USERNAME_INPUT_MAX_LENGTH) });
+const PUSH_TOKEN_MAX_LENGTH = 200;
+const LANGUAGE_MAX_LENGTH = 16;
+const PUSH_TOKEN = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['token', 'platform', 'language'],
+    properties: {
+      token: text(PUSH_TOKEN_MAX_LENGTH),
+      platform: { type: 'string', enum: [...PUSH_PLATFORMS] },
+      language: text(LANGUAGE_MAX_LENGTH),
+    },
+  },
+} as const;
+const PUSH_TOKEN_REMOVAL = body({ token: text(PUSH_TOKEN_MAX_LENGTH) });
 const MARKET_MAX_LENGTH = 8;
 const LEADERBOARD_QUERY = {
   querystring: {
@@ -165,6 +185,15 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
+  const notifications = createNotifications(database, {
+    now,
+    timeZone: config.timeZone,
+    send: dependencies.sendPush ?? createExpoSender(),
+    onError: (error) => app.log.error(error),
+  });
+  if (config.notifications) {
+    app.addHook('onClose', notifications.start());
+  }
   let puzzles: Puzzles | null = null;
   let evict: (userId: string) => void = () => undefined;
   let hasMarket: (market: string) => boolean = () => false;
@@ -287,6 +316,17 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     { schema: USERNAME },
     (request): AccountResponse => ({ account: accounts.chooseUsername(requireSession(request).user, request.body.username) }),
   );
+
+  app.post<{ Body: PushTokenRequest }>(`${API_PREFIX}/push-token`, { schema: PUSH_TOKEN }, (request, reply) => {
+    const { token, platform, language } = request.body;
+    notifications.register(requireSession(request).user.id, token, platform, language);
+    return reply.code(204).send();
+  });
+
+  app.delete<{ Body: { token: string } }>(`${API_PREFIX}/push-token`, { schema: PUSH_TOKEN_REMOVAL }, (request, reply) => {
+    notifications.unregister(requireSession(request).user.id, request.body.token);
+    return reply.code(204).send();
+  });
 
   app.delete(`${API_PREFIX}/account`, (request, reply) => {
     const { user } = requireSession(request);

@@ -137,6 +137,23 @@ const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE users ADD COLUMN username_pending INTEGER NOT NULL DEFAULT 0;
   `,
+  `
+  CREATE TABLE push_tokens (
+    token TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    platform TEXT NOT NULL,
+    language TEXT NOT NULL,
+    updated_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE INDEX push_tokens_user ON push_tokens (user_id);
+  CREATE TABLE notification_log (
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,
+    day TEXT NOT NULL,
+    sent_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, kind, day)
+  ) STRICT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

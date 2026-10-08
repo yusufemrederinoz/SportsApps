@@ -24,6 +24,7 @@ const config: ServerConfig = {
   appleClientIds: [],
   timeZone: 'Europe/Istanbul',
   trustProxy: false,
+  notifications: false,
 };
 const credentials = { email: 'Arda@Example.com', password: 'Correct-horse-9', username: 'Arda_10' };
 
