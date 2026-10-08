@@ -357,6 +357,41 @@ describe('matchmaking by rating', () => {
     expect(high.of('opponent')).toHaveLength(0);
   });
 
+  it('pairs a neighbouring difficulty after a short wait and plays the easier one', () => {
+    const easy = join();
+    const medium = join();
+    queue(easy, 1);
+    queue(medium, 2);
+    expect(lobby.counts()).toMatchObject({ queued: 2, matches: 0 });
+    vi.advanceTimersByTime(3000);
+    expect(lobby.counts()).toMatchObject({ queued: 0, matches: 1 });
+    expect(matchIdOf(easy)).toBe(matchIdOf(medium));
+    expect(rooms.at(-1)?.difficulty).toBe(1);
+  });
+
+  it('never pairs easy with hard', () => {
+    const easy = join();
+    const hard = join();
+    queue(easy, 1);
+    queue(hard, 3);
+    vi.advanceTimersByTime(3500);
+    expect(lobby.counts()).toMatchObject({ queued: 2, matches: 0 });
+  });
+
+  it('prefers the same difficulty', () => {
+    const first = join();
+    const neighbour = join();
+    const same = join();
+    queue(first, 2);
+    vi.advanceTimersByTime(1000);
+    queue(neighbour, 1);
+    vi.advanceTimersByTime(1000);
+    queue(same, 2);
+    expect(matchIdOf(same)).toBe(matchIdOf(first));
+    expect(rooms.at(-1)?.difficulty).toBe(2);
+    expect(lobby.counts()).toMatchObject({ queued: 1, matches: 1 });
+  });
+
   it('reaches further the longer a player waits', () => {
     lobby.shutdown();
     lobby = createTestLobby({ minimum: 60000, maximum: 60000 });

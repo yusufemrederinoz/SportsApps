@@ -32,6 +32,7 @@ const CHOSEN_BOT_NAME = 'Bot';
 const BOT_RATING_SPREAD = 60;
 const MATCH_WINDOW_BASE = 150;
 const MATCH_WINDOW_PER_SECOND = 75;
+const NEIGHBOR_WAIT_MILLISECONDS = 3000;
 const SECOND = 1000;
 
 export interface Connection {
@@ -53,6 +54,7 @@ export interface LobbyOptions {
   random?: () => number;
   isUsernameTaken?: (username: string) => boolean;
   botWaitMilliseconds?: WaitRange;
+  neighborWaitMilliseconds?: number;
   disconnectGraceMilliseconds?: number;
   roomLifetimeMilliseconds?: number;
   onError?: (error: unknown) => void;
@@ -73,8 +75,9 @@ interface Member {
 interface QueueEntry {
   userId: string;
   rating: number;
+  difficulty: PlayDifficulty;
   since: number;
-  botTimer: ReturnType<typeof setTimeout>;
+  timers: ReturnType<typeof setTimeout>[];
 }
 
 interface HostedRoom {
@@ -101,6 +104,7 @@ export function createLobby(options: LobbyOptions) {
   const random = options.random ?? Math.random;
   const isUsernameTaken = options.isUsernameTaken ?? (() => false);
   const botWait = options.botWaitMilliseconds ?? { minimum: 6000, maximum: 11000 };
+  const neighborWait = options.neighborWaitMilliseconds ?? NEIGHBOR_WAIT_MILLISECONDS;
   const disconnectGrace = options.disconnectGraceMilliseconds ?? 30000;
   const roomLifetime = options.roomLifetimeMilliseconds ?? 10 * 60 * 1000;
   const reportError = options.onError ?? (() => undefined);
@@ -135,7 +139,7 @@ export function createLobby(options: LobbyOptions) {
     const entries = queues.get(key) ?? [];
     const remaining = entries.filter((entry) => {
       if (entry.userId === userId) {
-        clearTimeout(entry.botTimer);
+        entry.timers.forEach((timer) => clearTimeout(timer));
         return false;
       }
       return true;
@@ -301,34 +305,70 @@ export function createLobby(options: LobbyOptions) {
   const matchWindow = (entry: QueueEntry) =>
     MATCH_WINDOW_BASE + (MATCH_WINDOW_PER_SECOND * Math.max(0, now() - entry.since)) / SECOND;
 
+  const isNeighbor = (first: PlayDifficulty, second: PlayDifficulty) => Math.abs(first - second) === 1;
+  const lowerOf = (first: PlayDifficulty, second: PlayDifficulty): PlayDifficulty => (first < second ? first : second);
+
   const enqueue = (member: Member, game: GameId, market: string, difficulty: PlayDifficulty) => {
-    const key = `${game}:${market}:${difficulty}`;
+    const key = `${game}:${market}`;
     const entries = queues.get(key) ?? [];
-    const rating = progress?.ratingOf(member.player.id, game) ?? START_RATING;
+    const userId = member.player.id;
+    const rating = progress?.ratingOf(userId, game) ?? START_RATING;
     const distance = (entry: QueueEntry) => Math.abs(entry.rating - rating);
+    const pairable = (entry: QueueEntry) =>
+      entry.difficulty === difficulty || (isNeighbor(entry.difficulty, difficulty) && now() - entry.since >= neighborWait);
     const waiting = entries
       .filter(
         (entry) =>
-          entry.userId !== member.player.id && isConnected(entry.userId) && distance(entry) <= matchWindow(entry),
+          entry.userId !== userId && isConnected(entry.userId) && distance(entry) <= matchWindow(entry) && pairable(entry),
       )
-      .sort((first, second) => distance(first) - distance(second))[0];
+      .sort(
+        (first, second) =>
+          Number(first.difficulty !== difficulty) - Number(second.difficulty !== difficulty) ||
+          distance(first) - distance(second),
+      )[0];
     const rival = waiting ? members.get(waiting.userId) : undefined;
     if (waiting && rival) {
       leaveQueue(waiting.userId, key);
-      startMatch('queue', game, market, difficulty, rival.player, member.player);
+      startMatch('queue', game, market, lowerOf(waiting.difficulty, difficulty), rival.player, member.player);
       return;
     }
+    const stillQueued = () => {
+      const current = members.get(userId);
+      return current?.status.kind === 'queued' && current.status.key === key ? current : null;
+    };
     const wait = botWait.minimum + random() * Math.max(0, botWait.maximum - botWait.minimum);
     const botTimer = setTimeout(() => {
-      const current = members.get(member.player.id);
-      if (current?.status.kind === 'queued' && current.status.key === key) {
-        leaveQueue(current.player.id, key);
+      const current = stillQueued();
+      if (current) {
+        leaveQueue(userId, key);
         startMatch('queue', game, market, difficulty, current.player, null);
       }
     }, wait);
-    queues.set(key, [...entries, { userId: member.player.id, rating, since: now(), botTimer }]);
+    const neighborTimer = setTimeout(() => {
+      const current = stillQueued();
+      const own = queues.get(key)?.find((entry) => entry.userId === userId);
+      if (!current || !own) {
+        return;
+      }
+      const neighbor = (queues.get(key) ?? [])
+        .filter(
+          (entry) =>
+            entry.userId !== userId &&
+            isConnected(entry.userId) &&
+            isNeighbor(entry.difficulty, difficulty) &&
+            distance(entry) <= Math.max(matchWindow(entry), matchWindow(own)),
+        )
+        .sort((first, second) => distance(first) - distance(second))[0];
+      const rival = neighbor ? members.get(neighbor.userId) : undefined;
+      if (neighbor && rival) {
+        leaveQueue(neighbor.userId, key);
+        leaveQueue(userId, key);
+        startMatch('queue', game, market, lowerOf(neighbor.difficulty, difficulty), rival.player, current.player);
+      }
+    }, neighborWait);
+    queues.set(key, [...entries, { userId, rating, difficulty, since: now(), timers: [botTimer, neighborTimer] }]);
     member.status = { kind: 'queued', key };
-    send(member.player.id, { type: 'queued' });
+    send(userId, { type: 'queued' });
   };
 
   const host = (member: Member, game: GameId, market: string, difficulty: PlayDifficulty) => {
@@ -556,7 +596,7 @@ export function createLobby(options: LobbyOptions) {
     },
 
     shutdown(): void {
-      queues.forEach((entries) => entries.forEach((entry) => clearTimeout(entry.botTimer)));
+      queues.forEach((entries) => entries.forEach((entry) => entry.timers.forEach((timer) => clearTimeout(timer))));
       queues.clear();
       hosted.forEach((room) => clearTimeout(room.expiry));
       hosted.clear();
