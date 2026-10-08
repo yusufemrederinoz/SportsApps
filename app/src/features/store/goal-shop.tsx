@@ -97,7 +97,7 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
         void recover().catch(() => undefined);
       } else if (error.code !== ErrorCode.UserCancelled) {
         haptics.error();
-        setNotice({ text: t('store.failed'), good: false });
+        setNotice({ text: `${t('store.failed')} (${String(error.code ?? error.message)})`, good: false });
       }
     },
     onError: () => setFailed(true),

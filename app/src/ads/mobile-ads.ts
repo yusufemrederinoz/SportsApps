@@ -7,28 +7,46 @@ import mobileAds, {
   TestIds,
 } from 'react-native-google-mobile-ads';
 
-let preparation: Promise<boolean> | null = null;
+const PROBLEM_MAX_LENGTH = 80;
 
-async function prepare(): Promise<boolean> {
-  const consent = await AdsConsent.gatherConsent().catch(() => AdsConsent.getConsentInfo());
-  if (consent.canRequestAds) {
-    await mobileAds().initialize();
-  }
-  return consent.canRequestAds;
+const CONSENT_PROBLEM = 'consent';
+const SETUP_PROBLEM = 'setup';
+
+let preparation: Promise<string | null> | null = null;
+
+export function problemOf(error: unknown): string {
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  const detail = typeof code === 'string' && code.length > 0 ? code : String(message ?? error);
+  return detail.split('/').pop()?.slice(0, PROBLEM_MAX_LENGTH) ?? '';
 }
 
-export function prepareAds(): Promise<boolean> {
-  preparation ??= prepare().catch(() => {
-    preparation = null;
-    return false;
+async function prepare(): Promise<string | null> {
+  let refusal: string | null = null;
+  const consent = await AdsConsent.gatherConsent().catch((error: unknown) => {
+    refusal = problemOf(error);
+    return AdsConsent.getConsentInfo();
   });
-  return preparation;
+  if (!consent.canRequestAds) {
+    return refusal ? `${CONSENT_PROBLEM}: ${refusal}` : CONSENT_PROBLEM;
+  }
+  await mobileAds().initialize();
+  return null;
+}
+
+export function prepareAds(): Promise<string | null> {
+  preparation ??= prepare().catch((error: unknown) => `${SETUP_PROBLEM}: ${problemOf(error)}`);
+  return preparation.then((problem) => {
+    if (problem) {
+      preparation = null;
+    }
+    return problem;
+  });
 }
 
 export interface RewardedAdEvents {
   onLoaded: () => void;
   onClosed: (earned: boolean) => void;
-  onError: () => void;
+  onError: (problem: string) => void;
 }
 
 export interface LoadedRewardedAd {
@@ -46,10 +64,10 @@ export function loadRewardedAd(unitId: string, userId: string, events: RewardedA
     earned = true;
   });
   ad.addAdEventListener(AdEventType.CLOSED, () => events.onClosed(earned));
-  ad.addAdEventListener(AdEventType.ERROR, events.onError);
+  ad.addAdEventListener(AdEventType.ERROR, (error) => events.onError(problemOf(error)));
   ad.load();
   return {
-    show: () => void ad.show().catch(events.onError),
+    show: () => void ad.show().catch((error: unknown) => events.onError(problemOf(error))),
     release: () => ad.removeAllListeners(),
   };
 }

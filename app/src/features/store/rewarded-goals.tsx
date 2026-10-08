@@ -37,6 +37,7 @@ export function RewardedGoals({ token, userId, unitId, onGoals }: RewardedGoalsP
   const [offline, setOffline] = useState(false);
   const [phase, setPhase] = useState<AdPhase>('preparing');
   const [round, setRound] = useState(0);
+  const [problem, setProblem] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ text: string; good: boolean } | null>(null);
   const ad = useRef<LoadedRewardedAd | null>(null);
   const latest = useRef<AdStatusResponse | null>(null);
@@ -92,17 +93,23 @@ export function RewardedGoals({ token, userId, unitId, onGoals }: RewardedGoalsP
 
     void (async () => {
       const ads = await import('@/ads/mobile-ads');
-      const allowed = await ads.prepareAds();
+      const refusal = await ads.prepareAds();
       if (!active) {
         return;
       }
-      if (!allowed) {
-        setPhase('unavailable');
+      const fail = (detail: string) => {
+        if (active) {
+          setProblem(detail);
+          setPhase('unavailable');
+        }
+      };
+      if (refusal) {
+        fail(refusal);
         return;
       }
       loaded = ads.loadRewardedAd(unitId, userId, {
         onLoaded: () => active && setPhase('ready'),
-        onError: () => active && setPhase('unavailable'),
+        onError: fail,
         onClosed: (earned) => {
           if (active) {
             void (earned ? credit() : next());
@@ -130,6 +137,7 @@ export function RewardedGoals({ token, userId, unitId, onGoals }: RewardedGoalsP
       ad.current?.show();
     } else {
       setOffline(false);
+      setProblem(null);
       setPhase('loading');
       setRound((value) => value + 1);
     }
@@ -148,6 +156,7 @@ export function RewardedGoals({ token, userId, unitId, onGoals }: RewardedGoalsP
           <ThemedText style={styles.title}>{uppercase(t('store.adTitle'))}</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
             {t(phase === 'crediting' ? 'store.adCrediting' : HINT_KEYS[state], { left: status?.remaining ?? 0 })}
+            {state === 'unavailable' && problem ? ` (${problem})` : ''}
           </ThemedText>
         </View>
         <View style={styles.reward}>
