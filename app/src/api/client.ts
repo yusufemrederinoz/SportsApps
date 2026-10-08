@@ -14,6 +14,7 @@ import {
   type LeaderboardResponse,
   type LoginRequest,
   type MatchHistoryResponse,
+  type PointProtectionResponse,
   type ProgressResponse,
   type PurchaseRequest,
   type PurchaseResponse,
@@ -118,6 +119,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     claimDaily: (token: string) => request<DailyRewardResponse>('POST', '/daily', { token }),
     wallet: (token: string) => request<WalletResponse>('GET', '/wallet', { token }),
     ads: (token: string) => request<AdStatusResponse>('GET', '/ads', { token }),
+    pointProtection: (token: string, matchId: string) =>
+      request<PointProtectionResponse>('GET', `/matches/${encodeURIComponent(matchId)}/protection`, { token }),
     purchase: (token: string, purchase: PurchaseRequest) =>
       request<PurchaseResponse>('POST', '/purchases', { token, body: purchase }),
     leaderboard: (token: string, period: LeaderboardPeriod, game: GameId | null) =>

@@ -23,6 +23,21 @@ export async function awaitAdReward(
   return null;
 }
 
+export async function awaitProtection(
+  fetchProtection: () => Promise<{ points: number }>,
+  wait: (milliseconds: number) => Promise<void>,
+  checks: number = AD_REWARD_CHECKS,
+): Promise<number> {
+  for (let check = 0; check < checks; check += 1) {
+    await wait(AD_REWARD_CHECK_INTERVAL);
+    const current = await fetchProtection().catch(() => null);
+    if (current && current.points > 0) {
+      return current.points;
+    }
+  }
+  return 0;
+}
+
 export type AdPhase = 'preparing' | 'loading' | 'ready' | 'showing' | 'crediting' | 'unavailable';
 
 export type AdRowState = 'spent' | 'busy' | 'ready' | 'unavailable';

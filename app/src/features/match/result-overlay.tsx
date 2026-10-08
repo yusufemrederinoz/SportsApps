@@ -19,7 +19,8 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MaxContentWidth, Motion, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
 
-import { MatchRewardContext, signed } from './match-reward';
+import { MatchRewardContext, ProtectedMatchContext, signed } from './match-reward';
+import { PointProtection } from './point-protection';
 import { WinBurst } from './win-burst';
 
 const RAY_COUNT = 12;
@@ -81,6 +82,7 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
   const uppercase = useUppercase();
   const color = TONE_COLORS[tone];
   const outcome = use(MatchRewardContext);
+  const protectedMatchId = use(ProtectedMatchContext);
   const reward = outcome === 'unranked' ? null : outcome;
   const levelUp = reward !== null && reward.level > reward.previousLevel;
 
@@ -132,6 +134,9 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
               </Animated.View>
             ) : null}
           </Animated.View>
+        ) : null}
+        {reward && reward.change < 0 && protectedMatchId ? (
+          <PointProtection key={protectedMatchId} matchId={protectedMatchId} lost={-reward.change} />
         ) : null}
         {outcome === 'unranked' ? (
           <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)} style={styles.unranked}>

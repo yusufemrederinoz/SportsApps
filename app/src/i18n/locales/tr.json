@@ -447,7 +447,12 @@
     "gamePoints": "Bu oyundaki puanın: {{points}}",
     "levelUp": "Yeni seviye: {{level}}",
     "unranked": "Puansız maç",
-    "unrankedHint": "Puan ve gol yalnızca \"Online maç\" eşleşmelerinde kazanılır."
+    "unrankedHint": "Puan ve gol yalnızca \"Online maç\" eşleşmelerinde kazanılır.",
+    "protect": "Puanını koru",
+    "protectHint": "Reklam izle, kaybettiğin {{points}} puanı geri al.",
+    "protecting": "Puanın geri yazılıyor…",
+    "protected": "Puanın korundu: +{{points}}",
+    "protectPending": "Puanın birazdan geri eklenecek."
   },
   "progress": {
     "level": "Seviye {{level}}",

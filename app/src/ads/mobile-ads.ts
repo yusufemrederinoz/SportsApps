@@ -54,9 +54,14 @@ export interface LoadedRewardedAd {
   release: () => void;
 }
 
-export function loadRewardedAd(unitId: string, userId: string, events: RewardedAdEvents): LoadedRewardedAd {
+export function loadRewardedAd(
+  unitId: string,
+  userId: string,
+  events: RewardedAdEvents,
+  customData?: string,
+): LoadedRewardedAd {
   const ad = RewardedAd.createForAdRequest(__DEV__ ? TestIds.REWARDED : unitId, {
-    serverSideVerificationOptions: { userId },
+    serverSideVerificationOptions: customData ? { userId, customData } : { userId },
   });
   let earned = false;
   ad.addAdEventListener(RewardedAdEventType.LOADED, events.onLoaded);

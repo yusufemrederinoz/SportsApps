@@ -447,7 +447,12 @@
     "gamePoints": "Your points in this game: {{points}}",
     "levelUp": "New level: {{level}}",
     "unranked": "Unranked match",
-    "unrankedHint": "Points and goals are earned only in \"Online match\" games."
+    "unrankedHint": "Points and goals are earned only in \"Online match\" games.",
+    "protect": "Protect your points",
+    "protectHint": "Watch an ad and get back the {{points}} points you lost.",
+    "protecting": "Giving your points back…",
+    "protected": "Points protected: +{{points}}",
+    "protectPending": "Your points will be back in a moment."
   },
   "progress": {
     "level": "Level {{level}}",

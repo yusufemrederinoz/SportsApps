@@ -23,7 +23,7 @@ import { JokerBar } from '@/features/jokers/joker-bar';
 import { JokerContext, type MatchJokers } from '@/features/jokers/joker-context';
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { useLeaveGuard } from '@/features/match/leave-guard';
-import { MatchRewardContext } from '@/features/match/match-reward';
+import { MatchRewardContext, ProtectedMatchContext } from '@/features/match/match-reward';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
 import { BOT_SIDE, useMatch } from '@/features/match/use-match';
@@ -201,10 +201,12 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
 
   return (
     <MatchRewardContext value={entry.kind === 'queue' ? online.reward : 'unranked'}>
-      <JokerContext value={jokers}>
-        {content()}
-        {leaveDialog}
-      </JokerContext>
+      <ProtectedMatchContext value={entry.kind === 'queue' ? online.rewardMatchId : null}>
+        <JokerContext value={jokers}>
+          {content()}
+          {leaveDialog}
+        </JokerContext>
+      </ProtectedMatchContext>
     </MatchRewardContext>
   );
 }

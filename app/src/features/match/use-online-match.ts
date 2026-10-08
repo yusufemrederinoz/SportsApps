@@ -99,6 +99,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const [live, setLive] = useState<OnlineGame | null>(null);
   const [opponentConnected, setOpponentConnected] = useState(true);
   const [reward, setReward] = useState<PointsChange | null>(null);
+  const [rewardMatchId, setRewardMatchId] = useState<string | null>(null);
   const [reconnecting, setReconnecting] = useState(false);
   const [sentTurn, setSentTurn] = useState<number | null>(null);
   const [acting, setActing] = useState(false);
@@ -308,6 +309,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             playing = false;
             finished = true;
             setReward(message.points ?? null);
+            setRewardMatchId(message.matchId);
             setSession((current) => current && finishSession(current, message.result));
             setLive((current) => current && ({ ...current, ...finishGameView(current, message.result) } as OnlineGame));
           }
@@ -456,6 +458,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     setReconnecting(false);
     setOpponentConnected(true);
     setReward(null);
+    setRewardMatchId(null);
     setPhase('connecting');
     setRound((current) => current + 1);
   };
@@ -470,6 +473,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     opponentConnected,
     reconnecting,
     reward,
+    rewardMatchId,
     jokers: { uses: jokerUses, goals, pending: jokerPending, error: jokerError, use: useJoker },
     secondsLeft: session ? secondsLeft(session, now) : 0,
     liveSecondsLeft: live ? Math.max(0, Math.ceil((live.deadlineAt - now) / 1000)) : 0,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { adRowState, awaitAdReward } from './ad-reward';
+import { adRowState, awaitAdReward, awaitProtection } from './ad-reward';
 
 const before = { goals: 15, remaining: 5, reward: 2 };
 const rewarded = { goals: 17, remaining: 4, reward: 2 };
@@ -32,6 +32,25 @@ describe('awaitAdReward', () => {
       return Promise.resolve();
     }, 2);
     expect(waits).toEqual([1500, 1500]);
+  });
+});
+
+describe('awaitProtection', () => {
+  it('returns the points once the server has given them back', async () => {
+    const answers = [{ points: 0 }, { points: 12 }];
+    let calls = 0;
+    expect(await awaitProtection(() => Promise.resolve(answers[calls++] ?? { points: 12 }), noWait)).toBe(12);
+    expect(calls).toBe(2);
+  });
+
+  it('gives up with nothing when the points never come back', async () => {
+    let calls = 0;
+    const never = () => {
+      calls += 1;
+      return calls === 1 ? Promise.reject(new Error('offline')) : Promise.resolve({ points: 0 });
+    };
+    expect(await awaitProtection(never, noWait, 3)).toBe(0);
+    expect(calls).toBe(3);
   });
 });
 
