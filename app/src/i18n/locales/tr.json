@@ -18,6 +18,11 @@
     "guestHint": "Misafir hesabın bu telefonda kalır.",
     "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla."
   },
+  "identity": {
+    "or": "ya da",
+    "google": "Google ile devam et",
+    "failed": "Giriş tamamlanamadı. Tekrar dene."
+  },
   "login": {
     "title": "Giriş yap",
     "submit": "Giriş yap",

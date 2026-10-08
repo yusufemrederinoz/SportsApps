@@ -49,7 +49,14 @@
       "expo-sqlite",
       "expo-audio",
       "expo-secure-store",
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.239861789418-k4c7kpaak524h5k8duo2gguqfjbq15kc"
+        }
+      ],
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,

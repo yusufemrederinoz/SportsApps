@@ -18,6 +18,11 @@
     "guestHint": "Your guest account stays on this phone.",
     "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up."
   },
+  "identity": {
+    "or": "or",
+    "google": "Continue with Google",
+    "failed": "Sign-in could not be completed. Try again."
+  },
   "login": {
     "title": "Sign in",
     "submit": "Sign in",

@@ -6,6 +6,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ERROR_KEYS } from '@/auth/error-messages';
+import { IdentityButtons } from '@/auth/identity-buttons';
 import { useSubmit } from '@/auth/use-submit';
 import { ActionButton } from '@/components/action-button';
 import { FormScreen } from '@/components/form-screen';
@@ -62,6 +63,7 @@ function LoginScreen() {
           {uppercase(t('login.switch'))}
         </ThemedText>
       </Pressable>
+      <IdentityButtons />
     </FormScreen>
   );
 }

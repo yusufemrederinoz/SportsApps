@@ -8,6 +8,7 @@ import type { RequestErrorCode } from '@/api/client';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ERROR_KEYS } from '@/auth/error-messages';
+import { IdentityButtons } from '@/auth/identity-buttons';
 import { useSubmit } from '@/auth/use-submit';
 import { ActionButton } from '@/components/action-button';
 import { FormScreen } from '@/components/form-screen';
@@ -86,6 +87,7 @@ function RegisterScreen() {
           {uppercase(t('register.switch'))}
         </ThemedText>
       </Pressable>
+      <IdentityButtons />
     </FormScreen>
   );
 }
