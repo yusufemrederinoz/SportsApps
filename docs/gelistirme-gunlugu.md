@@ -782,6 +782,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Çizim** 00.35'te başladı; hız dakikada 12 görsel (görsel başına 5 saniye; ilk ölçümdeki 3,7 saniyeye kesim ve kayıt dahil değildi). 8.053 görselin bitişi yaklaşık 11.45.
 - **Sonrası.** Çizim bitince büyütme aşaması yeniden çalıştırılacak, daha iyi kırpması çıkan oyuncuların görseli silinip yeniden çizilecek, yeni kurtarılanlar eklenecek. Çizim çalışırken kırpmalar değiştirilmemeli: çizim, yüz konumlarını başlarken okuyor.
 
+### Yeni uygulama ikonu (9 Ekim 2026)
+
+- Kullanıcı yeni bir amblem verdi: üzerinde ChallengeGoal bandı olan 3B top, volt halka ve hız çizgileri. İki dosyadan şeffaf olanı kaynak alındı (`data/branding/artwork/emblem.png`); koyu zeminli olan aynı çizimin düz zemine basılmış hali.
+- Çizim 1024 pikselin yalnızca yüzde 43'ünü kaplıyor ve ortada değildi; olduğu gibi kullanılsa top ana ekranda çok küçük kalırdı. `data/branding/icons.py` amblemi halkaya göre ölçekleyip yerleştiriyor: iOS ikonunda halka tuvalin yüzde 61'i, Android uyarlanır ikonunda yüzde 47'si (güvenli alanın içinde), tek renkli ikon parlaklık eşiğiyle aynı çizimden türetiliyor.
+- Aynı amblem açılış ekranına, Play simgesine (512), tanıtım görseline, sitenin logosuna, site simgelerine ve paylaşım görseline de kondu; site görselleri sunucuya yüklendi. Gol paketi simgelerindeki altın-mavi top para birimi simgesi olduğu için değişmedi.
+- Kaynak 1,7 kat büyütüldüğü için 1024 piksellik ikonda yazı ve dikiş kenarları hafif yumuşak; telefon boyutlarında fark edilmiyor. Daha yüksek çözünürlüklü bir kaynak gelirse betik yeniden çalıştırılır.
+- Uygulama ikonu sonraki derlemeyle değişir. Önizleme: `data/build/store/icon-preview.png`.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -968,3 +976,5 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `77a2a18` | 8 Ekim | Bulmaca yüzde rozetinin bayrağın altına alınması |
 | `f2272dc` | 8 Ekim | Emülatör denemelerinin kaydı |
 | `85a6f94` | 9 Ekim | Yarım kalan indirmenin portre aşamalarını durdurmaması |
+| `c29d573` | 9 Ekim | Portre üretiminin ara durumu |
+| `37eb67b` | 9 Ekim | Yeni amblemle uygulama ikonu, mağaza görselleri ve site logosu |
