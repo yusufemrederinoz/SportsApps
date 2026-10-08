@@ -673,6 +673,15 @@ E-posta göndermek için Resend seçildi; kullanıcı hesabı açıp `challengeg
 
 Doğrulama: 232 sunucu ve 113 uygulama testi. Canlıda geçici bir hesapla `destek@challengegoal.app` adresine sıfırlama postası istendi; Resend isteği kabul etti, postanın kutuya düştüğünü kullanıcı teyit edecek. Ekran cihazda henüz görülmedi.
 
+### İlk cihaz denemesi ve site
+
+Kullanıcı reklamlı sürümü (sürüm kodu 4) telefonda denedi; mağaza ekranı ilk kez gerçek cihazda görüldü. İki sorun çıktı:
+
+- **Fiyatlar boş, satın alma başarısız.** Play ürünleri fiyatsız geliyordu ve satın alma isteği sunucuya hiç ulaşmadı. İki olası neden: ürünlerin Play'de henüz yayılmamış olması ya da fiyatın Play'in yeni "satın alma seçeneği" alanında gelmesi. Uygulama artık fiyatı ve satın alma anahtarını bu seçenekten de okuyor; fiyat yoksa satır kapalı kalıyor ve Play'in bildirdiği durum ekrana yazılıyor. Hangi nedenin doğru olduğu sonraki denemede anlaşılacak.
+- **Reklam gelmiyor.** Uygulama sunucuya ulaşıyor; takılan yer Google'ın rıza ya da reklam tarafı. Olası nedenler AdMob'da uygulamaların rıza mesajına eklenmemiş olması ve yeni birime reklam gelmemesi (test cihazı tanımlı değilse). Reklam ya da satın alma başarısız olunca artık hata kodu ekranda görünüyor; ilk denemede kod görünmediği için neden kesinleştirilemedi.
+
+Kullanıcı sitenin çok kötü göründüğünü söyledi. `challengegoal.app` oyunun renkleri ve yazı tipleriyle baştan yazıldı: örnek XOX ızgaralı giriş, sekiz oyunun kartları, özellikler, sık sorulanlar, iletişim; İngilizce sayfa (`/en`); yasal sayfalar aynı görünüme alındı. Yazı tipleri ve görseller sitenin içinden sunuluyor (dış kaynak yok). Masaüstü ve telefon genişliğinde tarayıcıda çizdirilip bakıldı. `deploy` klasöründeki satır sonu kuralı görsel ve yazı tipi dosyalarını depoda bozuyordu; ikili dosya olarak işaretlendi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
