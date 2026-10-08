@@ -761,6 +761,19 @@ Sonuçlar:
 - Doğrulama: veri hattının birleştirme adımı önbellekteki kaynaklarla bellekte yeniden çalıştırıldı (12 saniye, hiçbir dosya yazılmadan); 72.435 oyuncunun kimliği ve kaynakları mevcut veritabanıyla birebir aynı çıktı, kayıt değişmedi.
 - Veri testleri 61 oldu; biri (`test_every_listed_portrait_has_an_image_file`) portre üretimi sürdüğü için şimdilik başarısız, üretim ve `export` bitince geçecek.
 
+### Emülatörde doğrulama
+
+Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile açılıp denendi. Satın alma, reklam ve Google ile giriş modülleri Expo Go'da yok; kod bunları zaten koşullu yüklediği için uygulama onlarsız açılıyor.
+
+- **Armalar.** XOX ve günün bulmacası ızgarasında Skia ile doğru çiziliyor (Barcelona, PSG, Juventus, Inter, Fenerbahçe, Galatasaray, Beşiktaş ve diğerleri görüldü).
+- **Kart yerleşimi.** Yeni baş portresi kartın sağ üstünde, çenesi ad şeridinin üstünde duruyor. Sınama için geçici bir klasörden başka bir oyuncunun görseli sunuldu; üretim klasörüne dokunulmadı.
+- **Bulunan sorun.** Günün bulmacasında cevabın yüzdesini gösteren rozet sağ üst köşedeydi ve yeni yerleşimde başın üstüne biniyordu. Rozet sol sütuna, bayrağın altına alındı ve boyutu hücreyle ölçeklenir oldu.
+- **Bağlantı uyarısı.** Uçak kipi açılınca üstte kırmızı şerit çıkıyor, kapatılınca kayboluyor.
+- **Klavye.** Futbolcu arama açılınca yazılım klavyesi kendiliğinden açılıyor.
+- **Uyarı metni.** İlk açılış ekranlarında ve rakip arama ekranında görünüyor.
+- Denenemeyenler: puan koruma (reklam modülü gerekir), şifremi unuttum ekranı, zincir ve kadro ekranlarındaki portreler.
+- Not: Expo sunucusu `CI=1` ile başlatılırsa dosya değişikliklerini izlemez; emülatörde kod değişikliğini görmek için onsuz başlatılmalı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -943,3 +956,5 @@ Sonuçlar:
 | `48094dc` | 8 Ekim | Hesap silinince Apple ile giriş jetonunun iptali |
 | `0b02850` | 8 Ekim | Apple jetonu iptalinin belgelenmesi |
 | `b729993` | 8 Ekim | Kalıcı oyuncu kimliği kaydı |
+| `0681e03` | 8 Ekim | Kimlik kaydının belgelenmesi |
+| `77a2a18` | 8 Ekim | Bulmaca yüzde rozetinin bayrağın altına alınması |

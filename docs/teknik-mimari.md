@@ -741,10 +741,10 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - E-posta doğrulama yok; kayıtta yazılan adresin oyuncuya ait olduğu denetlenmiyor. Şifre sıfırlama ekranı cihazda henüz denenmedi.
 - Google ile giriş Android telefonda çalıştı (8 Ekim 2026). Apple ile giriş ve Apple jetonunun iptali gerçek cihazda denenmedi (iOS hiç denenmedi, yalnızca derlendi); iptal için Apple'ın uçları anahtarla sınandı, anahtar kabul ediliyor.
 - Bildirimleri uygulama içinden tek tek kapatma ayarı yok; yalnızca sistem izni var.
-- Gol satın alma gerçek bir satın almayla henüz denenmedi. Google Play, ilk uygulama paketi yüklenene kadar paket adını tanımıyor; Play tarafındaki doğrulama ve servis hesabının yetkisi ancak ondan sonra sınanabilir.
-- Ödüllü reklam gerçek cihazda ve gerçek bir reklam bildirimiyle henüz denenmedi (yalnızca AdMob'un adres doğrulama isteği geçti). Avrupa rıza mesajına ChallengeGoal uygulamaları eklenmedi; iOS için IDFA açıklama mesajı yok.
+- Gol satın alma Google Play'de deneme kartıyla uçtan uca çalıştı (8 Ekim 2026: satın alma, sunucu doğrulaması, 30 gol). App Store tarafı iOS derlemesi bir iPhone'a kurulunca denenecek.
+- Ödüllü reklam, AdMob'da deneme cihazı olarak eklenen telefonda uçtan uca çalıştı (8 Ekim 2026: reklam, sunucu bildirimi, 2 gol). Gerçek reklam, uygulama mağazada yayımlanana kadar gelmez (`no-fill`). Avrupa rıza mesajına ChallengeGoal uygulamalarının eklenip yayımlanması ve iOS için IDFA açıklama mesajı kullanıcıda bekliyor.
 - İade edilen satın almanın golü geri alınmıyor; mağazaların iade bildirimleri dinlenmiyor.
-- Mağaza ekranı ve gol sayacının yeni hali cihazda henüz görülmedi.
+- Armalar, yalnızca baş portrelerin kart yerleşimi, bağlantı uyarısı, futbolcu aramada klavyenin açılması ve uyarı metinleri emülatörde (Expo Go) doğrulandı (8 Ekim 2026); gerçek telefonda sonraki derlemeyle görülecek. Puan koruma düğmesi ve şifremi unuttum ekranı hiçbir cihazda denenmedi; zincir düğümleri ve kadro yuvalarındaki yeni portre yerleşimi de görülmedi.
 - Canlı sunucunun yedekleri aynı sunucuda duruyor; sunucu dışına kopya alınmıyor.
 - İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.
 - Maçlar ve eşleştirme sırası da bellekte; sunucu yeniden başlarsa süren maçlar kaybolur ve tek sunucudan fazlası çalıştırılamaz.
