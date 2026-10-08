@@ -14,18 +14,17 @@ LOCAL_BASE = MODEL_DIR / "sdxl-base"
 LOCAL_VAE = MODEL_DIR / "sdxl-vae"
 
 PROMPT = (
-    "comic book portrait illustration of a football player, head and shoulders, bold clean ink outlines, "
-    "cel shading, flat vivid colors, strong jawline, dramatic rim light, plain dark navy studio background, "
-    "plain unbranded sports shirt, sports trading card art, sharp, highly detailed"
+    "realistic digital painting portrait of a football player, head and neck, soft even studio lighting, "
+    "natural skin tones, clean smooth shading, sharp facial features, plain dark studio background, highly detailed"
 )
 NEGATIVE_PROMPT = (
-    "photo, photograph, photorealistic, realistic skin texture, 3d render, blurry, noisy, text, letters, numbers, "
-    "logo, badge, crest, sponsor, watermark, signature, frame, border, crowd, stadium, deformed face, extra eyes, "
-    "asymmetric eyes, bad anatomy, hands"
+    "cartoon, comic, cel shading, ink outlines, anime, caricature, 3d render, blurry, noisy, text, letters, numbers, "
+    "logo, badge, crest, sponsor, watermark, signature, frame, border, deformed face, extra eyes, asymmetric eyes, "
+    "bad anatomy, hands"
 )
 
-STRENGTH = 0.66
-CONTROL_SCALE = 0.8
+STRENGTH = 0.32
+CONTROL_SCALE = 0.9
 GUIDANCE = 6.5
 STEPS = 24
 SEED = 1905
@@ -38,6 +37,14 @@ MINIMUM_CLOTHING_PIXELS = 2000
 FEATHER = 12
 CHIN_OFFSET = 1.08
 WEBP_QUALITY = 84
+MOUTH_LEVEL = 0.74
+CHIN_LEVEL = 1.03
+JAW_WIDTH_AT_MOUTH = 0.95
+JAW_WIDTH_AT_CHIN = 0.46
+NECK_DEPTH = 0.12
+EDGE_SOFTNESS = 0.05
+HEAD_FILL = 0.9
+VISIBLE_ALPHA = 24
 
 
 def output_path(player_id):
@@ -105,6 +112,37 @@ def cut_out(portrait, subject, face):
     return centered
 
 
+def head_only(cutout, face):
+    import numpy
+    from PIL import Image
+
+    size = cutout.width
+    _, top, width, height = face
+    center = size / 2
+    mouth = top + height * MOUTH_LEVEL
+    chin = top + height * CHIN_LEVEL
+    rows, columns = numpy.mgrid[0:size, 0:size].astype(numpy.float32)
+    offset = numpy.abs(columns - center)
+    jaw_half = numpy.interp(rows, [mouth, chin], [width * JAW_WIDTH_AT_MOUTH, width * JAW_WIDTH_AT_CHIN])
+    jaw = numpy.clip((jaw_half - offset) / (width * EDGE_SOFTNESS) + 0.5, 0, 1)
+    neck = numpy.clip(
+        (1 - (offset / (width * JAW_WIDTH_AT_CHIN)) ** 2 - ((rows - chin) / (height * NECK_DEPTH)) ** 2) * 5, 0, 1
+    )
+    keep = numpy.where(rows <= mouth, 1.0, numpy.where(rows <= chin, jaw, neck))
+    pixels = numpy.array(cutout)
+    pixels[..., 3] = (pixels[..., 3].astype(numpy.float32) * keep).astype(numpy.uint8)
+    head = Image.fromarray(pixels, "RGBA")
+    box = head.getchannel("A").point(lambda value: 255 if value > VISIBLE_ALPHA else 0).getbbox()
+    canvas = Image.new("RGBA", (PORTRAIT_SIZE, PORTRAIT_SIZE), (0, 0, 0, 0))
+    if not box:
+        return canvas
+    trimmed = head.crop(box)
+    scale = PORTRAIT_SIZE * HEAD_FILL / max(trimmed.size)
+    resized = trimmed.resize((max(1, round(trimmed.width * scale)), max(1, round(trimmed.height * scale))), Image.LANCZOS)
+    canvas.paste(resized, ((PORTRAIT_SIZE - resized.width) // 2, (PORTRAIT_SIZE - resized.height) // 2))
+    return canvas
+
+
 def load_pipeline():
     import torch
     from diffusers import (
@@ -150,7 +188,7 @@ def portrait(pipeline, matting, crop, face, strength=STRENGTH, control_scale=CON
 
     source = clean_source(crop, subject_mask(matting, crop), face)
     drawn = stylize(pipeline, source, control_image(crop, face), strength, control_scale)
-    return cut_out(drawn, subject_mask(matting, drawn), face)
+    return head_only(cut_out(drawn, subject_mask(matting, drawn), face), face)
 
 
 def usable(entry):
@@ -184,9 +222,7 @@ def run(limit=None):
         try:
             crop = Image.open(crop_path(player["id"])).convert("RGB").resize((WORKING_SIZE, WORKING_SIZE))
             result = portrait(pipeline, matting, crop, report[str(player["id"])]["face"])
-            result.resize((PORTRAIT_SIZE, PORTRAIT_SIZE), Image.LANCZOS).save(
-                output_path(player["id"]), "WEBP", quality=WEBP_QUALITY, method=6
-            )
+            result.save(output_path(player["id"]), "WEBP", quality=WEBP_QUALITY, method=6)
             counts["made"] += 1
         except (OSError, RuntimeError, ValueError) as error:
             counts["failed"] += 1

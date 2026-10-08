@@ -13,7 +13,7 @@ from .matting import load_matting, subject_mask
 from .sources import target_players
 from .stylize import clean_source, load_pipeline, portrait, usable
 
-VARIANTS = ((0.66, 0.8),)
+VARIANTS = ((0.32, 0.9),)
 TILE = 224
 CARD_COLORS = ((255, 241, 194), (243, 198, 83), (168, 116, 26))
 

@@ -13,7 +13,9 @@ SCORE_THRESHOLD = 0.8
 MINIMUM_FACE_WIDTH = 64
 CROP_SCALE = 2.5
 VERTICAL_SHIFT = 0.12
-MINIMUM_CROP_SCALE = 1.9
+MINIMUM_CROP_SCALE = 1.5
+MINIMUM_SHARPNESS = 20
+SHARPNESS_SIDE = 160
 TOP_MARGIN = 0.08
 FACE_MARGIN = 0.05
 SIDE_PADDING = 0.15
@@ -173,7 +175,16 @@ def detect(detector, image):
 def needs_larger_source(entry):
     if not entry:
         return False
-    return entry["status"] == "no_face" or (entry["status"] == "cropped" and entry["side"] < MINIMUM_SOURCE_SIDE)
+    return entry["status"] in ("no_face", "blurry") or (entry["status"] == "cropped" and entry["side"] < MINIMUM_SOURCE_SIDE)
+
+
+def sharpness(cv2, crop, face):
+    left, top, width, height = face
+    region = crop[max(0, top) : top + height, max(0, left) : left + width]
+    if region.size == 0:
+        return 0.0
+    gray = cv2.cvtColor(cv2.resize(region, (SHARPNESS_SIDE, SHARPNESS_SIDE), interpolation=cv2.INTER_AREA), cv2.COLOR_BGR2GRAY)
+    return float(cv2.Laplacian(gray, cv2.CV_64F).var())
 
 
 def examine(cv2, numpy, detector, source, target):
@@ -192,19 +203,23 @@ def examine(cv2, numpy, detector, source, target):
         (WORKING_SIZE, WORKING_SIZE),
         interpolation=cv2.INTER_AREA if side >= WORKING_SIZE else cv2.INTER_CUBIC,
     )
-    cv2.imwrite(str(target), crop)
     scale = WORKING_SIZE / side
+    placed = [
+        round((face["x"] - left) * scale),
+        round((face["y"] - top) * scale),
+        round(face["width"] * scale),
+        round(face["height"] * scale),
+    ]
+    if sharpness(cv2, crop, placed) < MINIMUM_SHARPNESS:
+        target.unlink(missing_ok=True)
+        return {"status": "blurry", "faces": len(faces), "side": side}
+    cv2.imwrite(str(target), crop)
     return {
         "status": "cropped",
         "faces": len(faces),
         "side": side,
         "score": round(face["score"], 3),
-        "face": [
-            round((face["x"] - left) * scale),
-            round((face["y"] - top) * scale),
-            round(face["width"] * scale),
-            round(face["height"] * scale),
-        ],
+        "face": placed,
     }
 
 

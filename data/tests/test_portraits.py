@@ -99,7 +99,7 @@ class FaceTest(unittest.TestCase):
         self.assertTrue(is_cut_off(face(y=10), 1280))
         self.assertTrue(is_cut_off(face(x=5), 1280))
         self.assertTrue(is_cut_off(face(x=1075), 1280))
-        self.assertTrue(is_cut_off(face(x=30, width=200, height=240), 260))
+        self.assertTrue(is_cut_off(face(x=20, width=200, height=240), 240))
 
     def test_keeps_one_box_for_a_face_found_at_two_scales(self):
         first = face(score=0.95)
