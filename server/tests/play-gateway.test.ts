@@ -34,6 +34,7 @@ const config: ServerConfig = {
   googleClientIds: [],
   appleClientIds: [],
   timeZone: 'Europe/Istanbul',
+  trustProxy: false,
 };
 
 interface Client {

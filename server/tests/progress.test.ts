@@ -517,6 +517,7 @@ describe('progress routes', () => {
     googleClientIds: [],
     appleClientIds: [],
     timeZone: 'Europe/Istanbul',
+    trustProxy: false,
   };
 
   it('claims the daily reward, reports progress and pages through history', async () => {

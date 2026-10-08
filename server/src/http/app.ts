@@ -153,7 +153,7 @@ function errorBody(error: ApiError): ApiErrorResponse {
 export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const { database, config } = dependencies;
   const now = dependencies.now ?? Date.now;
-  const app = fastify({ logger: dependencies.logger ?? false });
+  const app = fastify({ logger: dependencies.logger ?? false, trustProxy: config.trustProxy });
   const accounts = createAccountService(database, {
     sessionDays: config.sessionDays,
     verifiers: dependencies.verifiers,

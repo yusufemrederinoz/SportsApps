@@ -1,0 +1,15 @@
+api.challengegoal.com {
+	encode zstd gzip
+	reverse_proxy api:4000
+}
+
+challengegoal.com {
+	encode zstd gzip
+	root * /srv/site
+	try_files {path} {path}.html {path}/index.html
+	file_server
+}
+
+www.challengegoal.com {
+	redir https://challengegoal.com{uri} permanent
+}

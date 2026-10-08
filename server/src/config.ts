@@ -12,6 +12,7 @@ export interface ServerConfig {
   googleClientIds: string[];
   appleClientIds: string[];
   timeZone: string;
+  trustProxy: boolean;
 }
 
 const DEFAULT_DATABASE_PATH = fileURLToPath(new URL('../data/sportapps.sqlite', import.meta.url));
@@ -41,5 +42,6 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): Server
     googleClientIds: list(environment.GOOGLE_CLIENT_IDS),
     appleClientIds: list(environment.APPLE_CLIENT_IDS),
     timeZone: environment.TIME_ZONE ?? DEFAULT_TIME_ZONE,
+    trustProxy: environment.TRUST_PROXY === '1',
   };
 }

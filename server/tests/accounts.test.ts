@@ -23,6 +23,7 @@ const config: ServerConfig = {
   googleClientIds: [GOOGLE_CLIENT_ID],
   appleClientIds: [],
   timeZone: 'Europe/Istanbul',
+  trustProxy: false,
 };
 const credentials = { email: 'Arda@Example.com', password: 'Correct-horse-9', username: 'Arda_10' };
 

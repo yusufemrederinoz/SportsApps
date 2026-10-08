@@ -28,6 +28,7 @@ beforeAll(async () => {
     googleClientIds: [],
     appleClientIds: [],
     timeZone: 'Europe/Istanbul',
+    trustProxy: false,
   };
   app = buildApp({ database: openDatabase(':memory:'), config });
   await app.ready();

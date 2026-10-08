@@ -190,6 +190,7 @@ describe('ranking routes', () => {
     googleClientIds: [],
     appleClientIds: [],
     timeZone: 'Europe/Istanbul',
+    trustProxy: false,
   };
 
   it('serves the leaderboard, reports puzzles as unavailable without football data and checks guesses', async () => {
