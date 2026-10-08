@@ -6,6 +6,7 @@ services:
     env_file: .env
     volumes:
       - ./data:/data
+      - ./secrets:/secrets:ro
     expose:
       - "4000"
     healthcheck:
