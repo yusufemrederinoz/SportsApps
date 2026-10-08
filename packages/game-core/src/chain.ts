@@ -3,7 +3,7 @@ import type { Side } from './types';
 
 export const CHAIN_ROUNDS_TO_WIN = 3;
 export const CHAIN_LONGEST_TURN_SECONDS = 20;
-export const CHAIN_SHORTEST_TURN_SECONDS = 8;
+export const CHAIN_SHORTEST_TURN_SECONDS = 12;
 
 export type ChainMissReason = 'wrong' | 'used' | 'timeout';
 

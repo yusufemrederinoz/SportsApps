@@ -56,7 +56,7 @@ describe('chain', () => {
     for (let id = 2; id < 30; id += 1) {
       state = addLink(state, state.turn, id, 1);
     }
-    expect(chainTurnSeconds(state)).toBe(8);
+    expect(chainTurnSeconds(state)).toBe(12);
   });
 
   it('finishes when a player has won enough rounds', () => {

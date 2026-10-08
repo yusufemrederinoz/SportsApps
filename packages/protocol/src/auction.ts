@@ -2,8 +2,8 @@ import type { PlayResult, PlaySide } from './play';
 import type { RareCriteriaView } from './rare';
 
 export const AUCTION_BID_SECONDS = 15;
-export const AUCTION_PROOF_BASE_SECONDS = 8;
-export const AUCTION_PROOF_SECONDS_PER_ANSWER = 5;
+export const AUCTION_PROOF_BASE_SECONDS = 10;
+export const AUCTION_PROOF_SECONDS_PER_ANSWER = 7;
 
 export interface AuctionOutcomeView {
   prover: PlaySide;

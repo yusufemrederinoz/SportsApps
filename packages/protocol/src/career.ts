@@ -1,6 +1,6 @@
 import type { PlayResult, PlaySide } from './play';
 
-export const CAREER_TURN_SECONDS = 15;
+export const CAREER_TURN_SECONDS = 20;
 
 export interface CareerClueView {
   clubId: number;

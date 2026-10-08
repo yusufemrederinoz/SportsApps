@@ -176,7 +176,7 @@ describe('auction matches', () => {
     const bidder = active();
     act(bidder, { kind: 'bid', amount: 2 });
     act(active(), { kind: 'challenge' });
-    expect(first.view()).toMatchObject({ phase: 'proving', bidder: bidder.session().side, phaseSeconds: 18 });
+    expect(first.view()).toMatchObject({ phase: 'proving', bidder: bidder.session().side, phaseSeconds: 24 });
     act(bidder, { kind: 'name', footballerId: 99999 });
     act(bidder, { kind: 'name', footballerId: rightName(bidder, 1) });
     expect(first.view()).toMatchObject({ named: [rightName(bidder, 1)], missed: [99999] });
@@ -212,7 +212,7 @@ describe('auction matches', () => {
     act(active(), { kind: 'challenge' });
     expect(room.useJoker(side === 'x' ? 'o' : 'x', 'extra-time', {})).toEqual({ error: 'invalid-action' });
     expect(room.useJoker(side, 'extra-time', {})).toEqual({ reveal: { kind: 'time', seconds: 15 } });
-    expect(first.view().phaseSeconds).toBe(33);
+    expect(first.view().phaseSeconds).toBe(39);
     vi.advanceTimersByTime(TIMING.proofBaseMilliseconds + 2 * TIMING.proofPerAnswerMilliseconds + TURN_GRACE_MILLISECONDS);
     expect(first.view().phase).toBe('proving');
     vi.advanceTimersByTime(15000);
