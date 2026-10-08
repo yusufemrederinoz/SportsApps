@@ -15,10 +15,16 @@ import { useAuth } from './auth-provider';
 import { ERROR_KEYS } from './error-messages';
 import { requestAppleToken, requestGoogleToken } from './identity';
 
+const PROBLEM_MAX_LENGTH = 60;
 const REQUESTS: Record<IdentityProvider, () => Promise<string | null>> = {
   google: requestGoogleToken,
   apple: requestAppleToken,
 };
+
+function problemOf(error: unknown): string {
+  const { code, message } = error as { code?: unknown; message?: unknown };
+  return String(code ?? message ?? error).slice(0, PROBLEM_MAX_LENGTH);
+}
 
 function useAppleAvailable(): boolean {
   const [available, setAvailable] = useState(false);
@@ -63,7 +69,7 @@ export function IdentityButtons() {
       }
     } catch (error) {
       haptics.error();
-      setMessage(t(error instanceof ApiRequestError ? ERROR_KEYS[error.code] : 'identity.failed'));
+      setMessage(error instanceof ApiRequestError ? t(ERROR_KEYS[error.code]) : `${t('identity.failed')} (${problemOf(error)})`);
     } finally {
       setBusy(false);
     }
