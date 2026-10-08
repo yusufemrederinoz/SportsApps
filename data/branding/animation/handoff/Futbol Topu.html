@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<title>Futbol Topu</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.184.0/build/three.module.js",
+    "three/addons/controls/OrbitControls.js": "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js",
+    "three/addons/exporters/OBJExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js",
+    "three/addons/exporters/GLTFExporter.js": "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js"
+  },
+  "integrity": {
+    "https://unpkg.com/three@0.184.0/build/three.module.js": "sha384-8FCZ1eVO6it4+pbec2aDtnTrwjWXZLJRC+MAGCIPDgsYnUrl/E0A2YlF8ioMKI/J",
+    "https://unpkg.com/three@0.184.0/build/three.core.js": "sha384-dw2ooPewaEIrAgl6oFDBmmBWCE9oW9LxRGcfwZ0hLvEprzo202wXl7vCYHRlSnOT",
+    "https://unpkg.com/three@0.184.0/examples/jsm/controls/OrbitControls.js": "sha384-4rziNxOBZKQ69i+w+f89KJ55TCYquwchVbByQwmaOeIOXdOU2PLDn3kOfXHwIJC9",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/OBJExporter.js": "sha384-nbwtoZENJD3Vq+ACK0CuGQdPMuDWHkamC2KJD70EV5nfg6jQjfppKOea07YJN+N3",
+    "https://unpkg.com/three@0.184.0/examples/jsm/exporters/GLTFExporter.js": "sha384-VofkvpG6HERhFCYbsUOHeNXBCqID2nfqkQqnVzE1jc/oPcz+qJ13ADdXH08hE+cQ"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800;1,900&display=swap">
+<style>
+html,body{margin:0;height:100%;background:#0a0d12;overflow:hidden}
+three-d-stage:not(:defined){visibility:hidden}
+#lockup{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;gap:0}
+#lockup three-d-stage{width:min(36vh,30vw);height:min(36vh,30vw);flex:none}
+#wordmark{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-weight:900;letter-spacing:-0.01em;line-height:.9;color:#f6f7f9;font-size:min(10vw,15vh);white-space:nowrap;margin-left:-1vh;user-select:none;position:relative;z-index:1}
+#wordmark b{color:#c6ff1f;font-weight:900}
+#lockup.dikey{flex-direction:column}
+#lockup.dikey three-d-stage{width:min(44vh,60vw);height:min(44vh,60vw)}
+#lockup.dikey #wordmark{margin:-1vh 0 0;font-size:min(13vw,10vh)}
+#lockup.top{padding-top:120px;box-sizing:border-box}
+#lockup.top three-d-stage{width:min(calc(100vh - 160px),90vw);height:min(calc(100vh - 160px),90vw)}
+#lockup.top #wordmark{display:none}
+</style>
+</head>
+<body>
+<div id="lockup">
+  <three-d-stage name="challengegoal-top" background="#0a0d12"></three-d-stage>
+  <div id="wordmark">CHALLENGE<b>GOAL</b></div>
+</div>
+<div id="variants" style="position:fixed;top:16px;left:16px;z-index:10;display:flex;gap:8px;font:600 13px/1 system-ui,sans-serif"></div>
+<script src="three-d-stage.js"></script>
+<script type="module">
+const stage = document.querySelector('three-d-stage');
+const { THREE } = await stage.ready;
+
+const R = 0.11; // size 5 ball, 22 cm diameter
+const PHI = (1 + Math.sqrt(5)) / 2;
+const PENT_D = 1.02661; // pentagon plane distance relative to hexagon (truncated icosahedron)
+
+// 12 pentagon normals (icosahedron vertices) + 20 hexagon normals (dodecahedron vertices)
+const dirs = [];
+const cyc = (a, b, c) => [[a, b, c], [c, a, b], [b, c, a]];
+for (const s1 of [-1, 1]) for (const s2 of [-1, 1])
+  cyc(0, s1, s2 * PHI).forEach(v => dirs.push({ n: new THREE.Vector3(...v).normalize(), d: PENT_D, pent: true }));
+for (const a of [-1, 1]) for (const b of [-1, 1]) for (const c of [-1, 1])
+  dirs.push({ n: new THREE.Vector3(a, b, c).normalize(), d: 1, pent: false });
+for (const s1 of [-1, 1]) for (const s2 of [-1, 1])
+  cyc(0, s1 * PHI, s2 / PHI).forEach(v => dirs.push({ n: new THREE.Vector3(...v).normalize(), d: 1, pent: false }));
+
+const classify = p => {
+  let b = -1e9, s = -1e9, bi = 0;
+  for (let i = 0; i < dirs.length; i++) {
+    const sc = p.dot(dirs[i].n) / dirs[i].d;
+    if (sc > b) { s = b; b = sc; bi = i; } else if (sc > s) s = sc;
+  }
+  return { gap: b - s, idx: bi };
+};
+
+const SEAM = 0.0045, PILLOW = 0.055, DEPTH = 0.022;
+const smooth = t => { t = Math.min(Math.max(t, 0), 1); return t * t * (3 - 2 * t); };
+const src = new THREE.IcosahedronGeometry(1, 56).getAttribute('position');
+const p = new THREE.Vector3();
+const displaced = new Float32Array(src.count * 3);
+for (let i = 0; i < src.count; i++) {
+  p.fromBufferAttribute(src, i).normalize();
+  const { gap } = classify(p);
+  const r = R * (1 - DEPTH * (1 - smooth(gap / PILLOW)) - (gap < SEAM ? 0.004 : 0));
+  displaced.set([p.x * r, p.y * r, p.z * r], i * 3);
+}
+
+// Smooth normals shared across all parts
+const key = i => `${Math.round(displaced[i*3]*1e6)},${Math.round(displaced[i*3+1]*1e6)},${Math.round(displaced[i*3+2]*1e6)}`;
+const acc = new Map(), A = new THREE.Vector3(), B = new THREE.Vector3(), C = new THREE.Vector3();
+for (let t = 0; t < src.count; t += 3) {
+  A.fromArray(displaced, t * 3); B.fromArray(displaced, t * 3 + 3); C.fromArray(displaced, t * 3 + 6);
+  const fn = B.clone().sub(A).cross(C.clone().sub(A));
+  for (let k = 0; k < 3; k++) {
+    const kk = key(t + k); const v = acc.get(kk) || new THREE.Vector3(); v.add(fn); acc.set(kk, v);
+  }
+}
+
+const buckets = { white: { pos: [], nor: [] }, gold: { pos: [], nor: [] }, seam: { pos: [], nor: [] } };
+const cen = new THREE.Vector3();
+for (let t = 0; t < src.count; t += 3) {
+  cen.set(0, 0, 0);
+  for (let k = 0; k < 3; k++) cen.add(p.fromBufferAttribute(src, t + k));
+  const { gap, idx } = classify(cen.normalize());
+  const b = gap < SEAM ? buckets.seam : dirs[idx].pent ? buckets.gold : buckets.white;
+  for (let k = 0; k < 3; k++) {
+    const i = t + k, n = acc.get(key(i)).clone().normalize();
+    b.pos.push(displaced[i*3], displaced[i*3+1], displaced[i*3+2]);
+    b.nor.push(n.x, n.y, n.z);
+  }
+}
+
+const mats = {
+  white: Object.assign(new THREE.MeshStandardMaterial({ color: 0xf3f5f7, roughness: 0.4, metalness: 0 }), { name: 'leather_white' }),
+  gold: Object.assign(new THREE.MeshStandardMaterial({ color: 0xf2b93b, roughness: 0.3, metalness: 0.25 }), { name: 'cg_gold' }),
+  seam: Object.assign(new THREE.MeshStandardMaterial({ color: 0x0a0d12, roughness: 0.9, metalness: 0 }), { name: 'stitching' }),
+};
+const names = { white: 'hexagon_panels', gold: 'pentagon_panels', seam: 'seams' };
+
+const ball = new THREE.Group(); ball.name = 'football';
+for (const k of Object.keys(buckets)) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(buckets[k].pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(buckets[k].nor, 3));
+  const m = new THREE.Mesh(g, mats[k]); m.name = names[k];
+  m.castShadow = m.receiveShadow = true;
+  ball.add(m);
+}
+ball.rotation.set(-0.35, 0.55, 0.45);
+const V3 = (x, y, z) => new THREE.Vector3(x, y, z);
+const lime = Object.assign(new THREE.MeshStandardMaterial({ color: 0xc6ff1f, emissive: 0xc6ff1f, emissiveIntensity: 0.55, roughness: 0.4 }), { name: 'cg_lime' });
+const M = (name, geo, mat = lime) => { const m = new THREE.Mesh(geo, mat); m.name = name; m.castShadow = true; return m; };
+const tube = (name, pts, r) => {
+  const g = new THREE.Group(); g.name = name;
+  g.add(M(name + '_tube', new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 60, r, 12)));
+  [pts[0], pts[pts.length - 1]].forEach(p => { const c = M(name + '_cap', new THREE.SphereGeometry(r, 16, 8)); c.position.copy(p); g.add(c); });
+  return g;
+};
+const taper = (name, from, to, r) => {
+  const d = to.clone().sub(from), m = M(name, new THREE.CylinderGeometry(0.0008, r, d.length(), 20));
+  m.position.copy(from).addScaledVector(d, 0.5);
+  m.quaternion.setFromUnitVectors(V3(0, -1, 0), d.normalize()); return m;
+};
+
+// Kavisli, uca doğru incelen tüp (kuyruk çizgileri)
+const taperTube = (name, pts, r, mat = lime, tail = 0.05) => {
+  const curve = new THREE.CatmullRomCurve3(pts), T = 64, S = 12;
+  const g = new THREE.TubeGeometry(curve, T, r, S), pos = g.attributes.position, c = new THREE.Vector3(), v = new THREE.Vector3();
+  for (let i = 0; i <= T; i++) {
+    curve.getPointAt(i / T, c); const f = tail + (1 - tail) * Math.pow(1 - i / T, 0.8);
+    for (let j = 0; j <= S; j++) { const k = i * (S + 1) + j; v.fromBufferAttribute(pos, k).sub(c).multiplyScalar(f).add(c); pos.setXYZ(k, v.x, v.y, v.z); }
+  }
+  g.computeVertexNormals();
+  const m = M(name, g, mat); const cap = M(name + '_cap', new THREE.SphereGeometry(r, 16, 8), mat); cap.position.copy(pts[0]);
+  const grp = new THREE.Group(); grp.name = name; grp.add(m, cap); return grp;
+};
+const white = Object.assign(new THREE.MeshStandardMaterial({ color: 0xf3f5f7, emissive: 0xffffff, emissiveIntensity: 0.15, roughness: 0.4 }), { name: 'cg_white' });
+// Topun arka yüzeyinden başlayan nokta: açı a (rad) yönünde, kuyruk yönü dir
+const rimPt = (cx, cy, dir, side, o) => V3(cx, cy, -0.03).addScaledVector(side, o).addScaledVector(dir, Math.sqrt(Math.max(R * R - o * o, 0)) * 0.55);
+
+const trophyMat = Object.assign(new THREE.MeshStandardMaterial({ color: 0xf2b93b, roughness: 0.3, metalness: 0.4, side: THREE.DoubleSide }), { name: 'trophy_metal' });
+// Her konsept: { id, build(root) → animate(t) | undefined }
+const CONCEPTS = [
+  { id: 'Hız Çizgisi', build(root) {
+    const c = new THREE.CatmullRomCurve3([V3(-0.30, R - 0.085, -0.03), V3(-0.10, R - 0.022, -0.03), V3(0.12, R + 0.04, -0.03), V3(0.32, R + 0.09, -0.03)]);
+    [[0, 0.09], [0.14, 0.26], [0.73, 1]].forEach(([s, e], i) => {
+      const pts = []; for (let k = 0; k <= 30; k++) pts.push(c.getPoint(s + (e - s) * k / 30));
+      root.add(tube('streak_' + i, pts, 0.0065));
+    });
+  } },
+  { id: 'Yörünge', build(root) {
+    const orbit = new THREE.Group(); orbit.name = 'orbit'; orbit.position.y = R; orbit.rotation.set(1.2, 0, -0.35);
+    orbit.add(M('orbit_ring', new THREE.TorusGeometry(0.17, 0.0045, 12, 160)));
+    const sat = new THREE.Group(); sat.name = 'orbit_satellite'; orbit.add(sat);
+    const dot = M('satellite', new THREE.SphereGeometry(0.014, 24, 12)); dot.position.x = 0.17; sat.add(dot);
+    root.add(orbit);
+    return t => { sat.rotation.z = t * 0.0015; };
+  } },
+  { id: 'Kuyruklu Yıldız', build(root) {
+    ball.position.x = 0.12;
+    const dir = V3(-1, -0.42, 0).normalize(), side = V3(0.42, -1, 0).normalize();
+    [[-0.07, 0.16], [-0.035, 0.27], [0, 0.36], [0.035, 0.24], [0.07, 0.13]].forEach(([o, len], i) => {
+      const start = V3(0.12, R, -0.03).addScaledVector(side, o).addScaledVector(dir, Math.sqrt(Math.max(R * R - o * o, 0)) * 0.6);
+      root.add(taper('trail_' + i, start, start.clone().addScaledVector(dir, len), 0.0075 - Math.abs(o) * 0.04));
+    });
+  } },
+  { id: 'Falso', build(root) {
+    // Kavis yapan kuyruklar: falsolu şut
+    ball.position.x = 0.14;
+    const dir = V3(-1, -0.35, 0).normalize(), side = V3(0.35, -1, 0).normalize(), up = V3(0, 1, 0);
+    [[-0.065, 0.2], [-0.03, 0.32], [0.005, 0.42], [0.04, 0.3], [0.072, 0.17]].forEach(([o, len], i) => {
+      const s = rimPt(0.14, R, dir, side, o), pts = [];
+      for (let k = 0; k <= 8; k++) { const u = k / 8; pts.push(s.clone().addScaledVector(dir, len * u).addScaledVector(up, -0.16 * len * u * u)); }
+      root.add(taperTube('curl_trail_' + i, pts, 0.0085 - Math.abs(o) * 0.045));
+    });
+  } },
+  { id: 'Alev', build(root) {
+    // Dalgalı, alev gibi titreşen kuyruklar
+    ball.position.x = 0.13;
+    const dir = V3(-1, -0.3, 0).normalize(), side = V3(0.3, -1, 0).normalize();
+    const specs = [[-0.07, 0.17, 0], [-0.04, 0.29, 1.3], [-0.005, 0.4, 2.1], [0.03, 0.31, 0.6], [0.065, 0.2, 1.8]];
+    const grp = new THREE.Group(); grp.name = 'flame_tail'; root.add(grp);
+    const make = t => {
+      grp.children.slice().forEach(ch => { grp.remove(ch); ch.traverse(o => o.geometry && o.geometry.dispose()); });
+      specs.forEach(([o, len, ph], i) => {
+        const s = rimPt(0.13, R, dir, side, o), pts = [];
+        for (let k = 0; k <= 10; k++) { const u = k / 10; pts.push(s.clone().addScaledVector(dir, len * u).addScaledVector(side, Math.sin(u * 7 + ph + t * 0.006) * 0.014 * u)); }
+        grp.add(taperTube('flame_' + i, pts, 0.009 - Math.abs(o) * 0.05, i % 2 ? white : lime));
+      });
+    };
+    make(0); let last = 0;
+    return t => { if (t - last > 40) { make(t); last = t; } };
+  } },
+  { id: 'Parçacık', build(root) {
+    // Arkasında küçülerek akan parçacıklar
+    ball.position.x = 0.13;
+    const dir = V3(-1, -0.4, 0).normalize(), side = V3(0.4, -1, 0).normalize();
+    const lanes = [[-0.06, 0.24], [-0.02, 0.36], [0.02, 0.33], [0.06, 0.22]], parts = [];
+    const grp = new THREE.Group(); grp.name = 'particles'; root.add(grp);
+    lanes.forEach(([o, len], li) => { for (let i = 0; i < 9; i++) {
+      const d = M('particle', new THREE.SphereGeometry(1, 14, 8), (i + li) % 3 ? lime : white); grp.add(d); parts.push({ d, o, len, i, li });
+    } });
+    const place = t => parts.forEach(({ d, o, len, i, li }) => {
+      const u = ((i / 9) + t * 0.0006 + li * 0.13) % 1;
+      d.position.copy(rimPt(0.13, R, dir, side, o)).addScaledVector(dir, len * u);
+      d.scale.setScalar(0.0085 * (1 - u) + 0.0015);
+    });
+    place(0); return place;
+  } },
+  { id: 'Meteor', build(root) {
+    // Yukarıdan düşen meteor: dik kuyruk + parlak hale
+    ball.position.set(0.1, R + 0.08, 0);
+    const dir = V3(-1, 0.75, 0).normalize(), side = V3(0.75, 1, 0).normalize();
+    [[-0.075, 0.14], [-0.04, 0.22], [0, 0.3], [0.04, 0.22], [0.075, 0.14]].forEach(([o, len], i) => {
+      const s = rimPt(0.1, R + 0.08, dir, side, o);
+      root.add(taperTube('meteor_trail_' + i, [s, s.clone().addScaledVector(dir, len * 0.5), s.clone().addScaledVector(dir, len)], 0.01 - Math.abs(o) * 0.05, i === 2 ? white : lime));
+    });
+    const halo = M('halo_ring', new THREE.TorusGeometry(R * 1.18, 0.0035, 10, 140)); halo.position.set(0.1, R + 0.08, 0); root.add(halo);
+    const cam = stage._camera, q = new THREE.Vector3();
+    return t => { if (cam) halo.lookAt(cam.getWorldPosition(q)); halo.scale.setScalar(1 + 0.04 * Math.sin(t * 0.005)); };
+  } },
+  { id: 'Gol', build(root) {
+    // Kuyruklu top kaleye gidiyor, ağlar esniyor, direkler lime yanıyor
+    const GX = 0.24, GW = 0.3, GH = 0.36, GD = 0.24;
+    const postMat = Object.assign(new THREE.MeshStandardMaterial({ color: 0xf3f5f7, emissive: 0xc6ff1f, emissiveIntensity: 0, roughness: 0.35 }), { name: 'goal_posts' });
+    const goal = new THREE.Group(); goal.name = 'goal'; root.add(goal);
+    const bar = (name, a, b) => { const d = b.clone().sub(a), m = M(name, new THREE.CylinderGeometry(0.007, 0.007, d.length(), 16), postMat);
+      m.position.copy(a).addScaledVector(d, 0.5); m.quaternion.setFromUnitVectors(V3(0, 1, 0), d.normalize()); goal.add(m); };
+    bar('post_left', V3(GX, 0, -GW), V3(GX, GH, -GW)); bar('post_right', V3(GX, 0, GW), V3(GX, GH, GW)); bar('crossbar', V3(GX, GH, -GW), V3(GX, GH, GW));
+    const net = new THREE.Group(); net.name = 'net'; net.position.x = GX; goal.add(net);
+    const seg = [], N = 8;
+    for (let i = 0; i <= N; i++) { const z = -GW + 2 * GW * i / N;
+      seg.push(0, GH, z, GD * 0.5, GH, z, GD * 0.5, GH, z, GD, 0, z); }
+    for (let j = 0; j <= 5; j++) { const s = j / 5, x = GD * 0.5 + GD * 0.5 * s, y = GH * (1 - s);
+      seg.push(x, y, -GW, x, y, GW); [-GW, GW].forEach(z => seg.push(0, GH * (1 - s) + 0, z, x, y, z)); }
+    seg.push(0, GH, -GW, 0, GH, GW);
+    const ng = new THREE.BufferGeometry(); ng.setAttribute('position', new THREE.Float32BufferAttribute(seg, 3));
+    const nl = new THREE.LineSegments(ng, Object.assign(new THREE.LineBasicMaterial({ color: 0x7d8696 }), { name: 'goal_net' })); nl.name = 'net_lines'; net.add(nl);
+    const shot = new THREE.Group(); shot.name = 'shot_tail'; root.add(shot);
+    const dir = V3(-1, -0.2, 0).normalize(), side = V3(0.2, -1, 0).normalize();
+    [[-0.06, 0.13], [-0.025, 0.21], [0.01, 0.27], [0.045, 0.19], [0.075, 0.11]].forEach(([o, len], i) => {
+      const s = rimPt(0, 0, dir, side, o);
+      shot.add(taperTube('goal_trail_' + i, [s, s.clone().addScaledVector(dir, len)], 0.0075 - Math.abs(o) * 0.04));
+    });
+    const A = V3(-0.26, R, 0.03), C = V3(-0.02, 0.3, 0.02), B = V3(GX + GD * 0.5, R + 0.02, 0);
+    const path = new THREE.QuadraticBezierCurve3(A, C, B), p = new THREE.Vector3();
+    const setPose = u => { path.getPoint(u, p); ball.position.copy(p); shot.position.copy(p);
+      const tg = path.getTangent(u); shot.rotation.z = Math.atan2(tg.y, tg.x) - Math.atan2(-dir.y, -dir.x); };
+    setPose(1);
+    return t => {
+      const k = (t % 2600) / 2600, travel = Math.min(k / 0.55, 1), e = 1 - Math.pow(1 - travel, 2);
+      setPose(e * 0.98);
+      const after = Math.max(0, (k - 0.5) / 0.5), bulge = Math.sin(Math.min(after * 2, 1) * Math.PI);
+      net.scale.x = 1 + 0.25 * bulge;
+      postMat.emissiveIntensity = after > 0 && after < 0.7 ? 0.9 * (1 - after / 0.7) : 0;
+      shot.visible = k < 0.6; shot.scale.setScalar(k < 0.5 ? 1 : Math.max(0.01, 1 - (k - 0.5) * 10));
+      const fade = k > 0.88 ? (k - 0.88) / 0.12 : 0; ball.scale.setScalar(1 - fade * 0.999);
+    };
+  } },
+  { id: 'Kupa', build(root) {
+    // Kuyruklu top kupaya çarpar, kupa devrilir
+    const TX = 0.2, BR = 0.068;
+    const dark = Object.assign(new THREE.MeshStandardMaterial({ color: 0x141922, roughness: 0.5 }), { name: 'trophy_base' });
+    const pivot = new THREE.Group(); pivot.name = 'trophy_pivot'; pivot.position.x = TX + BR; root.add(pivot);
+    const tr = new THREE.Group(); tr.name = 'trophy'; tr.position.x = -BR; pivot.add(tr);
+    const base = M('trophy_plinth', new THREE.CylinderGeometry(BR - 0.004, BR, 0.05, 48), dark); base.position.y = 0.025; tr.add(base);
+    const band = M('trophy_band', new THREE.CylinderGeometry(BR - 0.003, BR - 0.003, 0.008, 48)); band.position.y = 0.036; tr.add(band);
+    const V2 = (x, y) => new THREE.Vector2(x, y);
+    tr.add(M('trophy_stem', new THREE.LatheGeometry([V2(0, 0.05), V2(0.03, 0.05), V2(0.026, 0.06), V2(0.012, 0.09), V2(0.01, 0.13), V2(0.02, 0.15), V2(0.032, 0.16), V2(0, 0.16)], 48), trophyMat));
+    const cupPts = []; for (let i = 0; i <= 16; i++) { const s = i / 16; cupPts.push(V2(0.03 + 0.048 * Math.sin(s * Math.PI * 0.55), 0.16 + 0.16 * s)); }
+    cupPts.push(V2(0.074, 0.322), V2(0.07, 0.322));
+    const cup = M('trophy_cup', new THREE.LatheGeometry(cupPts, 64), trophyMat); tr.add(cup);
+    [[1, -Math.PI / 2], [-1, Math.PI / 2]].forEach(([s, rz], i) => {
+      const hd = M('trophy_handle_' + i, new THREE.TorusGeometry(0.038, 0.007, 12, 40, Math.PI), trophyMat);
+      hd.rotation.set(0, Math.PI / 2, rz); hd.position.set(0, 0.255, s * 0.07); tr.add(hd);
+    });
+    const shot = new THREE.Group(); shot.name = 'shot_tail'; root.add(shot);
+    const dir = V3(-1, -0.25, 0).normalize(), side = V3(0.25, -1, 0).normalize();
+    [[-0.06, 0.12], [-0.025, 0.2], [0.01, 0.26], [0.045, 0.18], [0.075, 0.1]].forEach(([o, len], i) => {
+      const s = rimPt(0, 0, dir, side, o);
+      shot.add(taperTube('cup_trail_' + i, [s, s.clone().addScaledVector(dir, len)], 0.0075 - Math.abs(o) * 0.04));
+    });
+    const hit = V3(TX - 0.074 - R - 0.002, 0.25, 0);
+    const inP = new THREE.QuadraticBezierCurve3(V3(-0.38, R, 0.02), V3(-0.15, 0.36, 0.01), hit);
+    const outP = new THREE.QuadraticBezierCurve3(hit, V3(hit.x - 0.08, 0.3, 0), V3(hit.x - 0.16, R, 0));
+    const p = new THREE.Vector3();
+    const pose = (k) => {
+      const HIT = 0.32;
+      if (k < HIT) { inP.getPoint(1 - Math.pow(1 - k / HIT, 1.6), p); const tg = inP.getTangent(k / HIT);
+        shot.visible = true; shot.rotation.z = Math.atan2(tg.y, tg.x) - Math.atan2(-dir.y, -dir.x); shot.position.copy(p); }
+      else { const u = Math.min((k - HIT) / 0.3, 1); outP.getPoint(1 - Math.pow(1 - u, 2), p); shot.visible = false; }
+      ball.position.copy(p);
+      // devrilme: yerçekimi gibi hızlanır, yere çarpınca küçük sekme
+      let ang = 0;
+      if (k >= HIT && k < 0.88) { const u = Math.min((k - HIT) / 0.26, 1);
+        ang = u < 1 ? u * u : 1 - 0.06 * Math.sin(Math.min((k - HIT - 0.26) / 0.12, 1) * Math.PI); }
+      else if (k >= 0.88) ang = 1 - (k - 0.88) / 0.12;
+      pivot.rotation.z = -ang * Math.PI / 2 * 0.96;
+      const fade = k > 0.86 ? Math.min((k - 0.86) / 0.06, 1) : 0, back = k > 0.94 ? (k - 0.94) / 0.06 : 0;
+      ball.scale.setScalar(Math.max(0.001, 1 - fade + back * fade));
+    };
+    pose(0.7);
+    return t => pose((t % 3200) / 3200);
+  } },
+  { id: 'Şut Yayı', build(root) {
+    ball.position.set(0.16, R + 0.16, 0);
+    const c = new THREE.QuadraticBezierCurve3(V3(-0.32, 0.006, 0.02), V3(-0.12, 0.42, 0), V3(0.16 - R * 0.9, R + 0.2, 0));
+    const dots = new THREE.Group(); dots.name = 'trajectory'; root.add(dots);
+    const N = 14, list = [];
+    for (let i = 0; i < N; i++) { const d = M('trajectory_dot', new THREE.SphereGeometry(1, 16, 8)); dots.add(d); list.push(d); }
+    const place = off => list.forEach((d, i) => {
+      const u = ((i + off) % N) / N; d.position.copy(c.getPoint(u * 0.96)); d.scale.setScalar(0.003 + 0.007 * u);
+    });
+    place(0);
+    return t => place((t * 0.004) % 1);
+  } },
+  { id: 'Hedef', build(root) {
+    const tgt = new THREE.Group(); tgt.name = 'target'; tgt.position.set(0, R, -0.07); root.add(tgt);
+    const rings = [0.16, 0.215, 0.27].map((r, i) => {
+      const ring = M('target_ring_' + i, new THREE.TorusGeometry(r, 0.0045 - i * 0.0009, 12, 160)); tgt.add(ring); return ring;
+    });
+    [0, Math.PI / 2, Math.PI, Math.PI * 1.5].forEach((ang, i) => {
+      const tick = M('target_tick_' + i, new THREE.BoxGeometry(0.035, 0.006, 0.006));
+      tick.position.set(Math.cos(ang) * 0.3, Math.sin(ang) * 0.3, 0); tick.rotation.z = ang; tgt.add(tick);
+    });
+    return t => rings.forEach((r, i) => r.scale.setScalar(1 + 0.03 * Math.sin(t * 0.003 - i * 0.9)));
+  } },
+];
+
+let animate = null, curConcept = null;
+// Kamerayı nesnenin kutusuna sıkıca oturt (mevcut bakış yönünü korur)
+const fitCamera = (obj, lim) => {
+  const cam = stage._camera, ctl = stage._controls;
+  obj.updateMatrixWorld(true);
+  const box = new THREE.Box3().setFromObject(obj), center = box.getCenter(new THREE.Vector3());
+  const corners = []; for (let i = 0; i < 8; i++) corners.push(new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z));
+  const dir = cam.position.clone().sub(ctl.target).normalize(), q = new THREE.Vector3();
+  const fits = d => { cam.position.copy(center).addScaledVector(dir, d); cam.lookAt(center); cam.updateMatrixWorld(true);
+    return corners.every(c => { q.copy(c).project(cam); return Math.abs(q.x) <= lim && Math.abs(q.y) <= lim && q.z < 1; }); };
+  let lo = 0.05, hi = 20; for (let i = 0; i < 28; i++) { const m = (lo + hi) / 2; fits(m) ? hi = m : lo = m; }
+  fits(hi); ctl.target.copy(center); ctl.update();
+};
+const setConcept = c => {
+  ball.position.set(0, R, 0); ball.scale.setScalar(1);
+  const root = new THREE.Group(); root.name = 'challengegoal_logo'; root.add(ball);
+  animate = c.build(root) || null;
+  stage.setObject(root);
+  const cam = stage._camera, tgt = stage._controls.target;
+  fitCamera(root, lockup.className === 'top' ? 0.8 : 0.94);
+  stage._ground.visible = c.id !== 'Şut Yayı';
+  curConcept = c;
+  paint(conceptRow, c.id); localStorage.setItem('cg-ball-concept', c.id);
+};
+
+const VARIANTS = [
+  { id: 'Sarı', pent: 0xf2b93b, metal: 0.25 },
+  { id: 'Mavi', pent: 0x2f6ff0, metal: 0.15 },
+  { id: 'Lime', pent: 0xc6ff1f, metal: 0.05 },
+  { id: 'Klasik', pent: 0x14181f, metal: 0.0 },
+];
+const bar = document.getElementById('variants');
+bar.style.flexDirection = 'column';
+const row = label => {
+  const r = document.createElement('div'); r.style.cssText = 'display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+  const l = document.createElement('span'); l.textContent = label; l.style.cssText = 'color:#7d8696;width:56px;font-size:11px;letter-spacing:.08em;text-transform:uppercase';
+  r.appendChild(l); bar.appendChild(r); return r;
+};
+const paint = (r, id) => [...r.querySelectorAll('button')].forEach(b => {
+  const on = b.textContent === id; b.style.background = on ? '#c6ff1f' : '#141922'; b.style.color = on ? '#0a0d12' : '#e8ecf1';
+});
+const btn = (r, text, fn) => {
+  const b = document.createElement('button'); b.textContent = text;
+  b.style.cssText = 'padding:9px 14px;border-radius:8px;border:1px solid #262d38;cursor:pointer;font:inherit';
+  b.onclick = fn; r.appendChild(b);
+};
+const conceptRow = row('Konsept'), colorRow = row('Renk');
+const setVariant = v => {
+  mats.gold.color.setHex(v.pent); mats.gold.metalness = v.metal;
+  trophyMat.color.setHex(v.id === 'Klasik' ? 0xd9dde3 : v.pent); trophyMat.metalness = v.id === 'Klasik' ? 0.5 : 0.4;
+  paint(colorRow, v.id); localStorage.setItem('cg-ball-variant', v.id);
+};
+const layoutRow = row('Düzen'), lockup = document.getElementById('lockup');
+const LAYOUTS = [['Yatay', 'yatay'], ['Dikey', 'dikey'], ['Sadece top', 'top']];
+const setLayout = ([id, cls]) => { lockup.className = cls; if (curConcept) requestAnimationFrame(() => setConcept(curConcept)); paint(layoutRow, id); localStorage.setItem('cg-ball-layout', id); };
+LAYOUTS.forEach(l => btn(layoutRow, l[0], () => setLayout(l)));
+const Q = new URLSearchParams(location.search), pick = (k, ls) => Q.get(k) ?? localStorage.getItem(ls);
+const EMBED = Q.has('embed');
+if (EMBED) bar.style.display = 'none';
+setLayout(LAYOUTS.find(l => l[0] === pick('layout', 'cg-ball-layout')) || LAYOUTS[0]);
+// Mobil app ikonu: Klasik · Meteor · Sadece top · isim açık → kare PNG
+const exportIcon = (size, transparent) => {
+  setVariant(VARIANTS.find(v => v.id === 'Klasik'));
+  setLayout(LAYOUTS.find(l => l[0] === 'Sadece top'));
+  setName(true);
+  const meteor = CONCEPTS.find(c => c.id === 'Meteor');
+  setConcept(meteor);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const ren = stage._renderer, cam = stage._camera, scene = stage._scene;
+    const prevSize = ren.getSize(new THREE.Vector2()), prevPR = ren.getPixelRatio(), prevAspect = cam.aspect, prevBg = scene.background;
+    const RS = size * 2; ren.setPixelRatio(1); ren.setSize(RS, RS, false);
+    cam.aspect = 1; cam.updateProjectionMatrix();
+    stage._ground.visible = false;
+    scene.background = null;
+    window.__cgPause = true;
+    const root = scene.getObjectByName('challengegoal_logo');
+    fitCamera(root, 0.95);
+    // İsim bandını kameraya çevir (hafif çapraz, meteor yönüyle uyumlu)
+    cam.updateMatrixWorld(true);
+    const tilt = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), 0.12);
+    ball.quaternion.copy(cam.quaternion).multiply(tilt).multiply(label.quaternion.clone().invert());
+    const halo = root.getObjectByName('halo_ring');
+    if (halo) { halo.lookAt(cam.getWorldPosition(new THREE.Vector3())); halo.scale.setScalar(1); }
+    ren.render(scene, cam);
+    // Görünen piksellere göre kırp: logo kareyi ~%88 doldursun
+    const src = document.createElement('canvas'); src.width = src.height = RS;
+    const sx = src.getContext('2d'); sx.drawImage(ren.domElement, 0, 0);
+    const px = sx.getImageData(0, 0, RS, RS).data;
+    let x0 = RS, y0 = RS, x1 = 0, y1 = 0;
+    for (let y = 0; y < RS; y++) for (let x = 0; x < RS; x++) if (px[(y * RS + x) * 4 + 3] > 12) {
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const side = Math.max(x1 - x0, y1 - y0) / 0.88, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const out = document.createElement('canvas'); out.width = out.height = size;
+    const ox = out.getContext('2d');
+    if (!transparent) { ox.fillStyle = '#0a0d12'; ox.fillRect(0, 0, size, size); }
+    ox.imageSmoothingQuality = 'high';
+    ox.drawImage(src, cx - side / 2, cy - side / 2, side, side, 0, 0, size, size);
+    const a = document.createElement('a');
+    a.download = `challengegoal-app-icon-${size}${transparent ? '-seffaf' : ''}.png`;
+    a.href = out.toDataURL('image/png'); a.click();
+    scene.background = prevBg; stage._ground.visible = true;
+    ren.setPixelRatio(prevPR); ren.setSize(prevSize.x, prevSize.y, false);
+    cam.aspect = prevAspect; cam.updateProjectionMatrix();
+    window.__cgPause = false;
+    setConcept(meteor);
+  }));
+};
+const iconRow = row('App ikonu');
+btn(iconRow, '1024 PNG indir', () => exportIcon(1024, false));
+btn(iconRow, 'Şeffaf PNG indir', () => exportIcon(1024, true));
+paint(iconRow, '');
+CONCEPTS.forEach(c => btn(conceptRow, c.id, () => setConcept(c)));
+VARIANTS.forEach(v => btn(colorRow, v.id, () => setVariant(v)));
+setVariant(VARIANTS.find(v => v.id === pick('color', 'cg-ball-variant')) || VARIANTS[0]);
+setConcept(CONCEPTS.find(c => c.id === pick('concept', 'cg-ball-concept')) || CONCEPTS[0]);
+
+// ChallengeGoal sahnesi: koyu zemin, lime kontur ışığı, hızlı dönüş
+const ACCENT = 0xc6ff1f;
+stage._ground.material.opacity = 0.55;
+const rim = new THREE.DirectionalLight(ACCENT, 3.2); rim.position.set(-4, 2, -5); stage._scene.add(rim);
+const rim2 = new THREE.PointLight(ACCENT, 0.6, 0, 2); rim2.position.set(0, 0.02, 0); stage._scene.add(rim2);
+const css = document.createElement('style');
+css.textContent = '.note{display:none}.toolbar{position:fixed!important;right:16px!important;bottom:16px!important;left:auto!important;top:auto!important}.toolbar button{background:#141922;color:#e8ecf1;border-color:#262d38}.toolbar button:hover{background:#1c2330}';
+stage.shadowRoot.appendChild(css);
+const spinAxis = new THREE.Vector3(0.25, 1, -0.15).normalize();
+const labelCanvas = document.createElement('canvas'); labelCanvas.width = 1280; labelCanvas.height = 220;
+const labelTex = new THREE.CanvasTexture(labelCanvas); labelTex.colorSpace = THREE.SRGBColorSpace; labelTex.anisotropy = 8;
+const drawLabel = () => {
+  const c = labelCanvas.getContext('2d'), W = 1280, H = 220; c.clearRect(0, 0, W, H);
+  c.fillStyle = '#0a0d12'; c.beginPath(); c.roundRect(40, 20, W - 80, H - 40, (H - 40) / 2); c.fill();
+  c.font = 'italic 900 150px "Barlow Condensed"'; c.textBaseline = 'middle';
+  const a = 'CHALLENGE', b = 'GOAL', wa = c.measureText(a).width, wb = c.measureText(b).width, x = (W - wa - wb) / 2;
+  c.fillStyle = '#f6f7f9'; c.fillText(a, x, H / 2 + 6); c.fillStyle = '#c6ff1f'; c.fillText(b, x + wa, H / 2 + 6);
+  labelTex.needsUpdate = true;
+};
+drawLabel(); document.fonts.load('italic 900 150px "Barlow Condensed"').then(drawLabel);
+const labelMat = Object.assign(new THREE.MeshStandardMaterial({ map: labelTex, transparent: true, roughness: 0.45, polygonOffset: true, polygonOffsetFactor: -2 }), { name: 'cg_name_band' });
+const PL = 2.3, TL = 0.42;
+const label = new THREE.Mesh(new THREE.SphereGeometry(R * 1.004, 96, 12, -PL / 2 + Math.PI / 2, PL, Math.PI / 2 - TL / 2, TL), labelMat);
+label.name = 'name_band';
+label.quaternion.copy(ball.quaternion).invert().multiply(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), spinAxis));
+ball.add(label);
+const nameRow = row('Topta isim');
+const setName = on => { label.visible = on; paint(nameRow, on ? 'Açık' : 'Kapalı'); localStorage.setItem('cg-ball-name', on ? '1' : '0'); };
+btn(nameRow, 'Açık', () => setName(true)); btn(nameRow, 'Kapalı', () => setName(false));
+setName(pick('name', 'cg-ball-name') !== '0');
+if (EMBED) { const s = document.createElement('style'); s.textContent = '.toolbar{display:none!important}'; stage.shadowRoot.appendChild(s); }
+let last = performance.now();
+(function spin(t) { if (window.__cgPause) { last = t; requestAnimationFrame(spin); return; } ball.rotateOnWorldAxis(spinAxis, (t - last) * 0.0012); last = t; animate && animate(t); requestAnimationFrame(spin); })(last);
+</script>
+</body>
+</html>

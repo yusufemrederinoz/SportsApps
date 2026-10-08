@@ -3,15 +3,13 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from icons import INK, VOLT, app_icon, background, emblem, fitted_emblem, mark, radial
+from icons import INK, VOLT, app_icon, background, ball, emblem, fitted_emblem, radial
 
 FONTS = Path(__file__).resolve().parents[2] / 'node_modules' / '@expo-google-fonts' / 'barlow-condensed'
 DISPLAY_FONT = FONTS / '800ExtraBold_Italic' / 'BarlowCondensed_800ExtraBold_Italic.ttf'
 LABEL_FONT = FONTS / '600SemiBold' / 'BarlowCondensed_600SemiBold.ttf'
 
 PRODUCT_SIZE = 1024
-BALL_RATIO = 0.45
-BALL_SPAN = BALL_RATIO * 2 * 1.09
 PACKS = {
     'goals_cg_30': [(0.5, 0.5, 0.6)],
     'goals_cg_100': [(0.35, 0.44, 0.42), (0.62, 0.57, 0.5)],
@@ -27,11 +25,6 @@ FEATURE_CENTER = (0.55, 0.57)
 MAIL_MARK_SIZE = 144
 WHITE = (246, 248, 251)
 MUTED = (155, 168, 186)
-
-
-def ball(diameter):
-    edge = round(diameter / BALL_SPAN)
-    return mark(edge, BALL_RATIO)
 
 
 def drop(canvas, sprite, center):
