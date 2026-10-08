@@ -262,9 +262,9 @@ Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; he
 
 Durum: sürüyor (8 Ekim 2026). Uygulamanın adı ChallengeGoal; ilk sürümde ödüllü reklam ve gol satın alma olacak.
 
-Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canlı sunucu ve `challengegoal.app`; gizlilik, koşullar ve hesap silme sayfaları (taslak); hesap silme; Google ve Apple ile giriş ve bir kerelik kullanıcı adı seçimi; bildirimler; gol satın alma (dört paket, sunucu doğrulaması, mağaza ekranı; gerçek satın almayla denenmesi mağaza ürünlerinin açılmasını bekliyor); ödüllü reklam (AdMob birimleri, sunucu doğrulaması, mağaza ekranındaki satır); kullanılmayan Android izinlerinin temizlenmesi.
+Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canlı sunucu ve `challengegoal.app`; gizlilik, koşullar ve hesap silme sayfaları (taslak); hesap silme; Google ve Apple ile giriş ve bir kerelik kullanıcı adı seçimi; bildirimler; gol satın alma (dört paket, sunucu doğrulaması, mağaza ekranı; gerçek satın almayla denenmesi mağaza ürünlerinin açılmasını bekliyor); ödüllü reklam (AdMob birimleri, sunucu doğrulaması, mağaza ekranındaki satır); kullanılmayan Android izinlerinin temizlenmesi; şifre sıfırlama (Resend ile kod postası).
 
-Kalanlar: şifre sıfırlama (e-posta servisi), Google Play'de ürünlerin açılması ve iki mağazada deneme satın alması, ödüllü reklamın cihazda denenmesi ve AdMob rıza mesajları, Apple jetonunun hesap silmede iptali, mağaza sayfaları, ekran görüntüleri ve formlar, yasal metinlerin onayı, kalıcı oyuncu kimlikleri.
+Kalanlar: `challengegoal.app` sitesinin yeniden tasarımı (kullanıcı şu anki halini çok kötü buluyor; mağaza sayfası ve incelemeciler bu siteye bakıyor), Google Play'de ürünlerin açılması ve iki mağazada deneme satın alması, ödüllü reklamın cihazda denenmesi ve AdMob rıza mesajları, Apple jetonunun hesap silmede iptali, mağaza sayfaları, ekran görüntüleri ve formlar, yasal metinlerin onayı, kalıcı oyuncu kimlikleri.
 
 - Ödüllü reklam (AdMob; reklam başı 2 gol, günde en çok 5) ve uygulama içi gol satın alma eklenir. Misafir hesap satın alamaz, önce hesap açar. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.

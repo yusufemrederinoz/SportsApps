@@ -663,6 +663,16 @@ Play'de dört gol ürünü açıldı; Play'in API'sinden kimlikleri, etkin olduk
 
 Play imzası için yeni giriş istemcisi açılırken Google Cloud'da aynı adda iki proje olduğu ortaya çıktı: giriş istemcileri ilkinde, Firebase ve Play servis hesabı ikincisindeydi. Kullanıcı her şeyi Firebase projesinde (`challengegoal`) toplamayı seçti; eski istemciler silindi, giriş ekranı ayarı ve dört istemci (web, iOS, EAS imzalı Android, Play imzalı Android) yeniden açıldı, uygulamadaki ve sunucudaki kimlikler değiştirildi. Bu değişiklikten önceki derlemelerde Google ile giriş çalışmaz.
 
+### Şifre sıfırlama
+
+E-posta göndermek için Resend seçildi; kullanıcı hesabı açıp `challengegoal.app` alan adını doğruladı, anahtar sunucuda gizli dosya olarak duruyor. Gönderen adres `destek@challengegoal.app`.
+
+- **Akış.** Giriş ekranındaki "Şifremi unuttum" bağlantısı e-postayı sorar; sunucu 6 haneli bir kod yollar. Oyuncu kodu ve yeni şifresini yazar, şifre değişir, oyuncu doğrudan giriş yapmış olur ve diğer cihazlardaki oturumları kapanır.
+- **Korumalar.** Adres kayıtlı olsun olmasın cevap aynıdır (hesap var mı diye yoklanamaz); posta arka planda gönderilir ki cevap süresi de ele vermesin. Kod 15 dakika geçerli, en çok 5 yanlış deneme, dakikada bir ve günde en çok 5 kod.
+- **Dil.** Posta, cihazın diline göre Türkçe ya da İngilizce yazılır.
+
+Doğrulama: 232 sunucu ve 113 uygulama testi. Canlıda geçici bir hesapla `destek@challengegoal.app` adresine sıfırlama postası istendi; Resend isteği kabul etti, postanın kutuya düştüğünü kullanıcı teyit edecek. Ekran cihazda henüz görülmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -828,3 +838,8 @@ Play imzası için yeni giriş istemcisi açılırken Google Cloud'da aynı adda
 | `3548d9d` | 8 Ekim | Kullanılmayan mikrofon, arka plan sesi, ekran üstü pencere ve depolama izinlerinin kaldırılması |
 | `f084aa3` | 8 Ekim | Mağazada ödüllü reklam satırı, rıza akışı, reklam tercihleri bağlantısı |
 | `0a9c423` | 8 Ekim | Gizlilik politikasında bildirim verisi |
+| `2f7aa3f` | 8 Ekim | Mağaza görsellerinin üretimi (paket simgeleri, Play simgesi, tanıtım görseli) |
+| `8fccd58` | 8 Ekim | Reklam kütüphanesinin Android derleme hatasına çözüm |
+| `dcabab7` | 8 Ekim | Google giriş istemcilerinin tek projeye taşınması |
+| `8cdaf9b` | 8 Ekim | E-postayla gönderilen kodla şifre sıfırlama (sunucu) |
+| `63bb1d2` | 8 Ekim | Şifremi unuttum ekranı |
