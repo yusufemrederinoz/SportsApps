@@ -78,6 +78,10 @@ export type ApiErrorCode =
   | 'puzzle-finished'
   | 'cell-taken'
   | 'puzzle-unavailable'
+  | 'purchase-invalid'
+  | 'purchase-used'
+  | 'guest-purchase'
+  | 'store-unavailable'
   | 'internal';
 
 export interface ApiErrorResponse {

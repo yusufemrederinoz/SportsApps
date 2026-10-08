@@ -5,11 +5,14 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   'invalid-username': 400,
   'invalid-email': 400,
   'invalid-password': 400,
+  'purchase-invalid': 400,
   unauthorized: 401,
   'invalid-credentials': 401,
   'invalid-identity-token': 401,
+  'guest-purchase': 403,
   'not-found': 404,
   'already-signed-in': 409,
+  'purchase-used': 409,
   'email-taken': 409,
   'username-taken': 409,
   'username-locked': 409,
@@ -19,6 +22,7 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   internal: 500,
   'provider-unavailable': 503,
   'puzzle-unavailable': 503,
+  'store-unavailable': 503,
 };
 
 export class ApiError extends Error {

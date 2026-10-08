@@ -154,6 +154,18 @@ const MIGRATIONS: readonly string[] = [
     PRIMARY KEY (user_id, kind, day)
   ) STRICT;
   `,
+  `
+  CREATE TABLE purchases (
+    platform TEXT NOT NULL,
+    transaction_id TEXT NOT NULL,
+    user_id TEXT REFERENCES users (id) ON DELETE SET NULL,
+    product_id TEXT NOT NULL,
+    goals INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (platform, transaction_id)
+  ) STRICT;
+  CREATE INDEX purchases_user ON purchases (user_id);
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

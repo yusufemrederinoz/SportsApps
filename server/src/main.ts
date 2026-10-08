@@ -5,6 +5,7 @@ import { loadConfig } from './config';
 import { openDatabase } from './database';
 import { openFootballLibrary, readDataVersion } from './football/library';
 import { buildApp } from './http/app';
+import { loadPurchaseVerifiers } from './store/setup';
 
 const config = loadConfig();
 const database = openDatabase(config.databasePath);
@@ -20,6 +21,7 @@ const app = buildApp({
     google: createIdentityVerifier('google', config.googleClientIds),
     apple: createIdentityVerifier('apple', config.appleClientIds),
   },
+  purchaseVerifiers: loadPurchaseVerifiers(),
 });
 
 if (!football) {

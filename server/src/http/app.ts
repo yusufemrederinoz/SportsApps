@@ -23,6 +23,8 @@ import {
   type LoginRequest,
   type MatchHistoryResponse,
   type ProgressResponse,
+  type PurchaseRequest,
+  type PurchaseResponse,
   type PushTokenRequest,
   type PuzzleGuessRequest,
   type PuzzleGuessResponse,
@@ -56,6 +58,8 @@ import { DEFAULT_TOP_TEN_TIMING, createTopTenRoomFactory, type TopTenTiming } fr
 import { createLeaderboard } from '../progress/leaderboard';
 import { PuzzleError, createPuzzles, type Puzzles } from '../progress/puzzle';
 import { createProgress } from '../progress/store';
+import { createStore } from '../store/service';
+import type { PurchaseVerifiers } from '../store/verifiers';
 import { ApiError } from './errors';
 import { createRateLimiter } from './rate-limit';
 
@@ -74,6 +78,7 @@ export interface AppDependencies {
   verifiers?: IdentityVerifiers;
   football?: FootballLibrary;
   sendPush?: PushSender;
+  purchaseVerifiers?: PurchaseVerifiers;
   play?: Partial<Omit<LobbyOptions, 'games' | 'hasMarket' | 'history'>> & {
     botTiming?: BotTiming;
     duelTiming?: Partial<DuelTiming>;
@@ -120,6 +125,20 @@ const PUSH_TOKEN = {
   },
 } as const;
 const PUSH_TOKEN_REMOVAL = body({ token: text(PUSH_TOKEN_MAX_LENGTH) });
+const PRODUCT_ID_MAX_LENGTH = 64;
+const PURCHASE_PROOF_MAX_LENGTH = 4096;
+const PURCHASE = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['platform', 'productId', 'proof'],
+    properties: {
+      platform: { type: 'string', enum: [...PUSH_PLATFORMS] },
+      productId: text(PRODUCT_ID_MAX_LENGTH),
+      proof: text(PURCHASE_PROOF_MAX_LENGTH),
+    },
+  },
+} as const;
 const MARKET_MAX_LENGTH = 8;
 const LEADERBOARD_QUERY = {
   querystring: {
@@ -185,6 +204,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
+  const store = createStore(database, progress, dependencies.purchaseVerifiers ?? {}, now);
   const notifications = createNotifications(database, {
     now,
     timeZone: config.timeZone,
@@ -315,6 +335,12 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     `${API_PREFIX}/account/username`,
     { schema: USERNAME },
     (request): AccountResponse => ({ account: accounts.chooseUsername(requireSession(request).user, request.body.username) }),
+  );
+
+  app.post<{ Body: PurchaseRequest }>(
+    `${API_PREFIX}/purchases`,
+    { schema: PURCHASE },
+    (request): Promise<PurchaseResponse> => store.purchase(requireSession(request).user, request.body),
   );
 
   app.post<{ Body: PushTokenRequest }>(`${API_PREFIX}/push-token`, { schema: PUSH_TOKEN }, (request, reply) => {
