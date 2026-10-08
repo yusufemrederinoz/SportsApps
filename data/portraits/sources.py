@@ -1,4 +1,5 @@
 import html
+import http.client
 import json
 import re
 import sqlite3
@@ -139,7 +140,7 @@ def download(player, metadata, target=None):
     try:
         target.write_bytes(call(metadata["url"]))
         return True
-    except (urllib.error.URLError, TimeoutError):
+    except (urllib.error.URLError, http.client.HTTPException, TimeoutError):
         return False
 
 
