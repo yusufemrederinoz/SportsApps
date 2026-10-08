@@ -16,7 +16,8 @@
     "login": "Sign in",
     "register": "Create account",
     "guestHint": "Your guest account stays on this phone.",
-    "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up."
+    "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up.",
+    "notice": "ChallengeGoal is not affiliated with any club, league, federation or footballer. Footballer images are AI-generated illustrations, not real photographs."
   },
   "identity": {
     "or": "or",
@@ -226,7 +227,7 @@
   },
   "credits": {
     "title": "Image sources",
-    "intro": "Player portraits are illustrations made from freely licensed photographs on Wikimedia Commons. Each illustration is shared under the same licence as its source photograph.",
+    "intro": "Player images are AI-generated illustrations made from freely licensed photos on Wikimedia Commons; they are not real photographs. Each illustration is shared under the same licence as its source photo.",
     "count": "{{count}} portraits",
     "empty": "There are no portraits in this version yet.",
     "openHint": "Opens the source photograph"

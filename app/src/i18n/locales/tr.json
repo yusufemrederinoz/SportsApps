@@ -16,7 +16,8 @@
     "login": "Giriş yap",
     "register": "Hesap oluştur",
     "guestHint": "Misafir hesabın bu telefonda kalır.",
-    "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla."
+    "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla.",
+    "notice": "ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir."
   },
   "identity": {
     "or": "ya da",
@@ -226,7 +227,7 @@
   },
   "credits": {
     "title": "Görsel kaynakları",
-    "intro": "Oyuncu görselleri, Wikimedia Commons'taki serbest lisanslı fotoğraflardan üretilmiş çizimlerdir. Her çizim, kaynak fotoğrafıyla aynı lisansla paylaşılır.",
+    "intro": "Oyuncu görselleri, Wikimedia Commons'taki serbest lisanslı fotoğraflardan yapay zekâ ile üretilmiş çizimlerdir; gerçek fotoğraf değildir. Her çizim, kaynak fotoğrafıyla aynı lisansla paylaşılır.",
     "count": "{{count}} görsel",
     "empty": "Bu sürümde henüz görsel yok.",
     "openHint": "Kaynak fotoğrafı açar"
