@@ -37,10 +37,12 @@ MINIMUM_CLOTHING_PIXELS = 2000
 FEATHER = 12
 CHIN_OFFSET = 1.08
 WEBP_QUALITY = 84
+EYE_LEVEL = 0.42
 MOUTH_LEVEL = 0.74
 CHIN_LEVEL = 1.03
-JAW_WIDTH_AT_MOUTH = 0.95
-JAW_WIDTH_AT_CHIN = 0.46
+HEAD_WIDTH_AT_EYES = 1.2
+HEAD_WIDTH_AT_MOUTH = 0.66
+HEAD_WIDTH_AT_CHIN = 0.46
 NECK_DEPTH = 0.12
 EDGE_SOFTNESS = 0.05
 HEAD_FILL = 0.9
@@ -113,24 +115,31 @@ def cut_out(portrait, subject, face):
 
 
 def head_only(cutout, face):
+    import cv2
     import numpy
     from PIL import Image
 
     size = cutout.width
     _, top, width, height = face
     center = size / 2
-    mouth = top + height * MOUTH_LEVEL
-    chin = top + height * CHIN_LEVEL
+    levels = [top + height * EYE_LEVEL, top + height * MOUTH_LEVEL, top + height * CHIN_LEVEL]
+    chin = levels[-1]
     rows, columns = numpy.mgrid[0:size, 0:size].astype(numpy.float32)
     offset = numpy.abs(columns - center)
-    jaw_half = numpy.interp(rows, [mouth, chin], [width * JAW_WIDTH_AT_MOUTH, width * JAW_WIDTH_AT_CHIN])
-    jaw = numpy.clip((jaw_half - offset) / (width * EDGE_SOFTNESS) + 0.5, 0, 1)
-    neck = numpy.clip(
-        (1 - (offset / (width * JAW_WIDTH_AT_CHIN)) ** 2 - ((rows - chin) / (height * NECK_DEPTH)) ** 2) * 5, 0, 1
+    half = numpy.interp(
+        rows, levels, [width * HEAD_WIDTH_AT_EYES, width * HEAD_WIDTH_AT_MOUTH, width * HEAD_WIDTH_AT_CHIN]
     )
-    keep = numpy.where(rows <= mouth, 1.0, numpy.where(rows <= chin, jaw, neck))
+    head = numpy.clip((half - offset) / (width * EDGE_SOFTNESS) + 0.5, 0, 1)
+    neck = numpy.clip(
+        (1 - (offset / (width * HEAD_WIDTH_AT_CHIN)) ** 2 - ((rows - chin) / (height * NECK_DEPTH)) ** 2) * 5, 0, 1
+    )
+    keep = numpy.where(rows <= chin, head, neck)
     pixels = numpy.array(cutout)
     pixels[..., 3] = (pixels[..., 3].astype(numpy.float32) * keep).astype(numpy.uint8)
+    _, pieces = cv2.connectedComponents((pixels[..., 3] > VISIBLE_ALPHA).astype(numpy.uint8))
+    core = pieces[min(size - 1, int(top + height / 2)), int(center)]
+    if core:
+        pixels[..., 3] = numpy.where(pieces == core, pixels[..., 3], 0)
     head = Image.fromarray(pixels, "RGBA")
     box = head.getchannel("A").point(lambda value: 255 if value > VISIBLE_ALPHA else 0).getbbox()
     canvas = Image.new("RGBA", (PORTRAIT_SIZE, PORTRAIT_SIZE), (0, 0, 0, 0))
