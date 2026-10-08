@@ -1,4 +1,4 @@
-import { GAME_IDS, type GameId, type GameView, type PlayResult } from '@sportapps/protocol';
+import { ACTIVE_GAME_IDS, type GameId, type GameView, type PlayResult } from '@sportapps/protocol';
 
 import { auctionCardIds, finishAuctionView } from '@/features/auction/online';
 import { careerCardIds, finishCareerView } from '@/features/career/online';
@@ -9,7 +9,7 @@ import { finishHigherView, higherCardIds } from '@/features/higher/online';
 import { finishRareView, rareCardIds } from '@/features/rare/online';
 import { finishTopTenView, topTenCardIds } from '@/features/top-ten/online';
 
-export const GAMES: readonly GameId[] = GAME_IDS;
+export const GAMES: readonly GameId[] = ACTIVE_GAME_IDS;
 
 export const GAME_LABELS = {
   grid: 'games.grid',

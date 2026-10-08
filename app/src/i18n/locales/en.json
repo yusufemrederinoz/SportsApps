@@ -3,8 +3,8 @@
     "skip": "Skip",
     "next": "Next",
     "start": "Start",
-    "gamesTitle": "Nine games",
-    "gamesBody": "Nine football quiz games, from XOX to Career Path. Play a real opponent, a friend or the bot.",
+    "gamesTitle": "{{games}} games",
+    "gamesBody": "{{games}} football quiz games, from XOX to Career Path. Play a real opponent, a friend or the bot.",
     "pointsTitle": "Climb the ranks",
     "pointsBody": "Win online matches to earn points in each game; your total sets your level, and a level you reach never drops. Take your place on the weekly leaderboard.",
     "goalsTitle": "Goals buy jokers",
@@ -16,7 +16,7 @@
     "login": "Sign in",
     "register": "Create account",
     "guestHint": "Your guest account stays on this phone.",
-    "tagline": "Nine football quiz games. Find an opponent, earn points, level up."
+    "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up."
   },
   "login": {
     "title": "Sign in",

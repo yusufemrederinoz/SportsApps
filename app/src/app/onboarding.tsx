@@ -28,8 +28,8 @@ function OnboardingScreen() {
 
   const slides: { title: string; body: string; art: ReactNode }[] = [
     {
-      title: t('onboarding.gamesTitle'),
-      body: t('onboarding.gamesBody'),
+      title: t('onboarding.gamesTitle', { games: GAMES.length }),
+      body: t('onboarding.gamesBody', { games: GAMES.length }),
       art: (
         <View style={styles.games}>
           {GAMES.map((game, position) => (

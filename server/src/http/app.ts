@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import {
   API_PREFIX,
   EMAIL_MAX_LENGTH,
+  ACTIVE_GAME_IDS,
   GAME_IDS,
   PASSWORD_MAX_LENGTH,
   type AccountResponse,
@@ -43,6 +44,7 @@ import { registerPlayGateway } from '../play/gateway';
 import { createGridRoomFactory } from '../play/grid-room';
 import { DEFAULT_HIGHER_TIMING, createHigherRoomFactory, type HigherTiming } from '../play/higher-room';
 import { createMatchHistory } from '../play/history';
+import type { RoomFactory } from '../play/live-room';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
 import { DEFAULT_TOP_TEN_TIMING, createTopTenRoomFactory, type TopTenTiming } from '../play/top-ten-room';
@@ -103,7 +105,7 @@ const LEADERBOARD_QUERY = {
     additionalProperties: false,
     properties: {
       period: { type: 'string', enum: ['week', 'all'] },
-      game: { type: 'string', enum: [...GAME_IDS] },
+      game: { type: 'string', enum: [...ACTIVE_GAME_IDS] },
     },
   },
 } as const;
@@ -178,22 +180,23 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       careerTiming,
       ...lobbyOptions
     } = dependencies.play ?? {};
+    const factories: Record<GameId, RoomFactory> = {
+      grid: createGridRoomFactory(football, botTiming ?? DEFAULT_BOT_TIMING),
+      duel: createDuelRoomFactory(football, { ...DEFAULT_DUEL_TIMING, ...duelTiming }),
+      draft: createDraftRoomFactory(football, { ...DEFAULT_DRAFT_TIMING, ...draftTiming }),
+      higher: createHigherRoomFactory(football, { ...DEFAULT_HIGHER_TIMING, ...higherTiming }),
+      chain: createChainRoomFactory(football, { ...DEFAULT_CHAIN_TIMING, ...chainTiming }),
+      rare: createRareRoomFactory(football, { ...DEFAULT_RARE_TIMING, ...rareTiming }),
+      auction: createAuctionRoomFactory(football, { ...DEFAULT_AUCTION_TIMING, ...auctionTiming }),
+      'top-ten': createTopTenRoomFactory(football, { ...DEFAULT_TOP_TEN_TIMING, ...topTenTiming }),
+      career: createCareerRoomFactory(football, { ...DEFAULT_CAREER_TIMING, ...careerTiming }),
+    };
     const lobby = createLobby({
       now,
       isUsernameTaken: accounts.isUsernameTaken,
       onError: (error) => app.log.error(error),
       ...lobbyOptions,
-      games: {
-        grid: createGridRoomFactory(football, botTiming ?? DEFAULT_BOT_TIMING),
-        duel: createDuelRoomFactory(football, { ...DEFAULT_DUEL_TIMING, ...duelTiming }),
-        draft: createDraftRoomFactory(football, { ...DEFAULT_DRAFT_TIMING, ...draftTiming }),
-        higher: createHigherRoomFactory(football, { ...DEFAULT_HIGHER_TIMING, ...higherTiming }),
-        chain: createChainRoomFactory(football, { ...DEFAULT_CHAIN_TIMING, ...chainTiming }),
-        rare: createRareRoomFactory(football, { ...DEFAULT_RARE_TIMING, ...rareTiming }),
-        auction: createAuctionRoomFactory(football, { ...DEFAULT_AUCTION_TIMING, ...auctionTiming }),
-        'top-ten': createTopTenRoomFactory(football, { ...DEFAULT_TOP_TEN_TIMING, ...topTenTiming }),
-        career: createCareerRoomFactory(football, { ...DEFAULT_CAREER_TIMING, ...careerTiming }),
-      },
+      games: Object.fromEntries(ACTIVE_GAME_IDS.map((game) => [game, factories[game]])),
       hasMarket: football.hasMarket,
       history,
       progress,

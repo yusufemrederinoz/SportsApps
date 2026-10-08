@@ -10,6 +10,7 @@ import { ActionButton } from '@/components/action-button';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Motion, Spacing } from '@/constants/theme';
+import { GAMES } from '@/features/games';
 import { useUppercase } from '@/i18n/uppercase';
 
 function WelcomeScreen() {
@@ -44,7 +45,7 @@ function WelcomeScreen() {
           <View style={styles.slash} />
         </Animated.View>
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
-          <ThemedText themeColor="textSecondary">{t('welcome.tagline')}</ThemedText>
+          <ThemedText themeColor="textSecondary">{t('welcome.tagline', { games: GAMES.length })}</ThemedText>
         </Animated.View>
       </View>
 

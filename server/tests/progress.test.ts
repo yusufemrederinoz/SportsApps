@@ -1,5 +1,6 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import {
+  ACTIVE_GAME_IDS,
   WELCOME_GOALS,
   dailyGoals,
   levelFor,
@@ -473,7 +474,7 @@ describe('progress', () => {
     }
     const current = progress.progress(first.player.id);
     const grid = current.games.find((standing) => standing.game === 'grid');
-    expect(current.games).toHaveLength(9);
+    expect(current.games.map((standing) => standing.game)).toEqual(ACTIVE_GAME_IDS);
     expect(grid).toMatchObject({ played: 3, wins: 2, losses: 1, draws: 0 });
     expect(current.total).toBe(grid?.points);
     expect(current.goals).toBe(WELCOME_GOALS + 1 + 2);

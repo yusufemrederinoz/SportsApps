@@ -1,6 +1,6 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import {
-  GAME_IDS,
+  ACTIVE_GAME_IDS,
   WELCOME_GOALS,
   WIN_GOALS,
   dailyGoals,
@@ -151,7 +151,7 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     const totals = new Map(
       (selectTotals.all(userId, userId, userId, userId) as unknown as TotalsRow[]).map((row) => [row.game, row]),
     );
-    const games: GameStanding[] = GAME_IDS.map((game) => {
+    const games: GameStanding[] = ACTIVE_GAME_IDS.map((game) => {
       const rating = ratings.get(game);
       const counts = totals.get(game);
       const played = counts?.played ?? 0;

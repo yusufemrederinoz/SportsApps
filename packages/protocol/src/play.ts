@@ -19,6 +19,8 @@ export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'forfeit' | 'score';
 export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain', 'rare', 'auction', 'top-ten', 'career'] as const;
 export type GameId = (typeof GAME_IDS)[number];
+export const PAUSED_GAME_IDS: readonly GameId[] = ['rare'];
+export const ACTIVE_GAME_IDS: readonly GameId[] = GAME_IDS.filter((game) => !PAUSED_GAME_IDS.includes(game));
 export type PlayAnswerOutcome = 'claimed' | 'wrong' | 'already-used';
 
 export interface PlayCell {
