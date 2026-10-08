@@ -150,6 +150,55 @@ describe('rewarded ads', () => {
     expect(keyRequests).toBe(3);
   });
 
+  it('gives back the points of a lost ranked match once and leaves the goal limit alone', async () => {
+    const player = await guest();
+    const rival = await guest();
+    const finishedAt = time - 60 * 1000;
+    database
+      .prepare(
+        `INSERT INTO matches (id, kind, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username, winner, reason,
+           x_cells, o_cells, move_count, started_at, finished_at, game, x_points_change, o_points_change)
+         VALUES ('match-1', 'queue', 'tr', 2, 1, ?, ?, 'a', 'b', 'o', 'line', 1, 3, 4, ?, ?, 'grid', -12, 25)`,
+      )
+      .run(player.id, rival.id, finishedAt, finishedAt);
+    database
+      .prepare('INSERT INTO ratings (user_id, game, points, best_points, rating, matches, updated_at) VALUES (?, ?, 88, 100, 990, 4, ?)')
+      .run(player.id, 'grid', finishedAt);
+    const protect = (userId: string, transaction: string, match = 'match-1') =>
+      call('GET', `/ads/reward?${callback({ ad_unit: AD_UNIT, user_id: userId, transaction_id: transaction, custom_data: `protect:${match}` })}`);
+    const pointsOf = () =>
+      (database.prepare("SELECT points FROM ratings WHERE user_id = ? AND game = 'grid'").get(player.id) as { points: number }).points;
+    const protection = async (token: string) => (await call<{ points: number }>('GET', '/matches/match-1/protection', token)).body.points;
+
+    expect(await protection(player.token)).toBe(0);
+    await protect(rival.id, 'ad-rival');
+    await protect(player.id, 'ad-unknown', 'no-such-match');
+    expect(pointsOf()).toBe(88);
+
+    await protect(player.id, 'ad-1');
+    await protect(player.id, 'ad-1');
+    await protect(player.id, 'ad-2');
+    expect(pointsOf()).toBe(100);
+    expect(await protection(player.token)).toBe(12);
+    expect(await protection(rival.token)).toBe(0);
+    expect(database.prepare("SELECT x_points_change AS change FROM matches WHERE id = 'match-1'").get()).toEqual({ change: 0 });
+    expect(await status(player.token)).toMatchObject({ goals: WELCOME_GOALS, remaining: DAILY_AD_LIMIT });
+  });
+
+  it('does not protect points long after the match', async () => {
+    const player = await guest();
+    const finishedAt = time - 16 * 60 * 1000;
+    database
+      .prepare(
+        `INSERT INTO matches (id, kind, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username, winner, reason,
+           x_cells, o_cells, move_count, started_at, finished_at, game, x_points_change, o_points_change)
+         VALUES ('match-old', 'queue', 'tr', 2, 1, ?, NULL, 'a', 'b', 'o', 'line', 1, 3, 4, ?, ?, 'grid', -12, NULL)`,
+      )
+      .run(player.id, finishedAt, finishedAt);
+    await call('GET', `/ads/reward?${callback({ ad_unit: AD_UNIT, user_id: player.id, transaction_id: 'ad-late', custom_data: 'protect:match-old' })}`);
+    expect((await call<{ points: number }>('GET', '/matches/match-old/protection', player.token)).body.points).toBe(0);
+  });
+
   it('offers no ads when no ad unit is configured', async () => {
     await app.close();
     app = buildApp({ database, config });

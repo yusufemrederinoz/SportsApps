@@ -64,6 +64,17 @@ interface ResultRow {
   x_user_id: string | null;
 }
 
+const POINT_PROTECTION_WINDOW = 15 * 60 * 1000;
+
+interface MatchSidesRow {
+  game: GameId;
+  x_user_id: string | null;
+  o_user_id: string | null;
+  x_points_change: number | null;
+  o_points_change: number | null;
+  finished_at: number;
+}
+
 export function outcomeFor(side: Side, winner: string | null): MatchOutcome {
   if (winner === null) {
     return 'draw';
@@ -105,6 +116,22 @@ export function createProgress(database: Database, options: ProgressOptions = {}
   const selectResults = database.prepare(
     'SELECT winner, x_user_id FROM matches WHERE x_user_id = ? OR o_user_id = ? ORDER BY finished_at, rowid',
   );
+
+  const selectMatchSides = database.prepare(
+    'SELECT game, x_user_id, o_user_id, x_points_change, o_points_change, finished_at FROM matches WHERE id = ?',
+  );
+  const clearPointsChange = {
+    x: database.prepare('UPDATE matches SET x_points_change = 0 WHERE id = ?'),
+    o: database.prepare('UPDATE matches SET o_points_change = 0 WHERE id = ?'),
+  };
+  const restorePoints = database.prepare(
+    `UPDATE ratings SET points = points + ?, best_points = MAX(best_points, points + ?), updated_at = ?
+     WHERE user_id = ? AND game = ?`,
+  );
+  const insertProtection = database.prepare(
+    'INSERT INTO point_protections (match_id, user_id, game, points, created_at) VALUES (?, ?, ?, ?, ?)',
+  );
+  const selectProtection = database.prepare('SELECT points FROM point_protections WHERE match_id = ? AND user_id = ?');
 
   const standingOf = (userId: string, game: GameId) =>
     selectStanding.get(userId, game) as { points: number; rating: number } | undefined;
@@ -194,6 +221,28 @@ export function createProgress(database: Database, options: ProgressOptions = {}
 
     creditGoals: (userId: string, amount: number, reason: GoalReason, reference: string): number =>
       wallet.credit(userId, amount, reason, reference),
+
+    protectionOf: (userId: string, matchId: string): number =>
+      (selectProtection.get(matchId, userId) as { points: number } | undefined)?.points ?? 0,
+
+    protectPoints(userId: string, matchId: string): number {
+      return transaction(database, () => {
+        const match = selectMatchSides.get(matchId) as MatchSidesRow | undefined;
+        const side = match?.x_user_id === userId ? 'x' : match?.o_user_id === userId ? 'o' : null;
+        if (!match || !side || now() - match.finished_at > POINT_PROTECTION_WINDOW) {
+          return 0;
+        }
+        const lost = -((side === 'x' ? match.x_points_change : match.o_points_change) ?? 0);
+        if (lost <= 0) {
+          return 0;
+        }
+        const time = now();
+        insertProtection.run(matchId, userId, match.game, lost, time);
+        restorePoints.run(lost, lost, time, userId, match.game);
+        clearPointsChange[side].run(matchId);
+        return lost;
+      });
+    },
 
     settle(match: RankedMatch, result: PlayResult): Record<Side, PointsChange | null> {
       return transaction(database, () => {

@@ -186,6 +186,17 @@ const MIGRATIONS: readonly string[] = [
     expires_at INTEGER NOT NULL
   ) STRICT;
   `,
+  `
+  ALTER TABLE ad_rewards ADD COLUMN kind TEXT NOT NULL DEFAULT 'goals';
+  CREATE TABLE point_protections (
+    match_id TEXT NOT NULL REFERENCES matches (id) ON DELETE CASCADE,
+    user_id TEXT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    game TEXT NOT NULL,
+    points INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (match_id, user_id)
+  ) STRICT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

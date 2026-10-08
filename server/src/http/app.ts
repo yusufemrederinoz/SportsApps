@@ -25,6 +25,7 @@ import {
   type LeaderboardResponse,
   type LoginRequest,
   type MatchHistoryResponse,
+  type PointProtectionResponse,
   type ProgressResponse,
   type PurchaseRequest,
   type PurchaseResponse,
@@ -483,6 +484,13 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.get(`${API_PREFIX}/wallet`, (request): WalletResponse => progress.wallet(requireSession(request).user.id));
 
   app.get(`${API_PREFIX}/ads`, (request): AdStatusResponse => ads.status(requireSession(request).user.id));
+
+  app.get<{ Params: { matchId: string } }>(
+    `${API_PREFIX}/matches/:matchId/protection`,
+    (request): PointProtectionResponse => ({
+      points: progress.protectionOf(requireSession(request).user.id, request.params.matchId),
+    }),
+  );
 
   app.get(`${API_PREFIX}/ads/reward`, async (request, reply) => {
     const outcome = await ads.reward(request.raw.url?.split('?')[1] ?? '');
