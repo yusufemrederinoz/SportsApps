@@ -810,6 +810,12 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Diğer oyunlar.** Kullanıcı öbür oyunlarda beraberliğin zaten imkânsız olduğunu düşünüyordu. Kod okundu: Zincir (üç tura ilk ulaşan) ve Açık Artırma'da (üç turun ikisi) gerçekten çıkamıyor. Kart Düellosu (yedi tur, tur berabere bitebilir), Kadro Kur (toplam değer), Hangisi Yüksek (üçer devrede doğru sayısı), İlk 10 (iki listede sıra puanı) ve Kariyer Yolu'nda (dört tur, tur kazanansız bitebilir) puanlar eşit bitebiliyor. Bunlar için eşitlik kuralı kullanıcıya sorulacak.
 - Uyarının görünümü emülatörde henüz görülmedi; kural motor testleriyle doğrulandı.
 
+### Diğer oyunlarda eşitlik ve site düzeltmeleri (9 Ekim 2026)
+
+- **Hız kuralı.** Kullanıcı beş oyunda eşitliği "daha hızlı olan kazanır" ile çözmeyi seçti (öbür seçenekler: oyuna özel ölçüt, uzatma turu). Beş odaya düşünme saati eklendi, sunucu dağıtıldı. Uygulamanın yeni sürümü sonucu "Puanlar eşit, daha hızlı olan kazandı" diye açıklayacak.
+- **Site: kullanıcının bulduğu üç hata.** (1) Örnek XOX ızgarasının satırlarında lig adları vardı; oyun lig değil kulüp ve ülke kullanıyor. Satırlar Galatasaray, Real Madrid ve Bayern Münih oldu, uygulamadaki arma üreticisinden alınan armalarıyla. (2) "İnternet gerekiyor mu?" cevabı yalnızca XOX'ta bot varmış gibi okunuyordu; bot sekiz oyunun hepsinde var, cevap buna göre yazıldı ve internetsiz oynama vaadi kaldırıldı. (3) Öne çıkan sayılardan "1.200+ çizim portre" ve "3 zorluk" kaldırıldı; kullanıcıya göre bunlar uygulamayı öne çıkaran şeyler değil. Yerlerine 70.000+ futbolcu ve gerçek rakiple canlı maç kondu. İngilizce sayfa da aynı şekilde düzeltildi.
+- Ders: tanıtım metni yazarken her iddia koddan doğrulanmalı; "özellik" diye dolgu maddesi konmamalı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1006,3 +1012,6 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `89de5bd` | 9 Ekim | Site WebP dosyalarının ikili saklanması |
 | `9e2b251` | 9 Ekim | Logo animasyonları, gol simgesi ve postanın belgelenmesi |
 | `7c1ee09` | 9 Ekim | XOX'ta her maçın bir kazananla bitmesi ve hücre uyarısı |
+| `c61da82` | 9 Ekim | Beraberliksiz XOX kuralının belgelenmesi |
+| `e7da4cf` | 9 Ekim | Beş oyunda eşit maçın hızlı olana verilmesi |
+| `bd6b1c1` | 9 Ekim | Sitede örnek ızgara ve yanlış bilgilerin düzeltilmesi |
