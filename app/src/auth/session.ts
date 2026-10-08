@@ -74,6 +74,15 @@ export async function leaveSession(api: ApiClient, store: KeyValueStore): Promis
   return { status: 'signed-out' };
 }
 
+export async function deleteAccount(api: ApiClient, store: KeyValueStore, state: AuthState): Promise<AuthState> {
+  if (state.status !== 'signed-in') {
+    return state;
+  }
+  await api.deleteAccount(state.token);
+  await store.remove(state.account.isGuest ? GUEST_TOKEN_KEY : MEMBER_TOKEN_KEY);
+  return { status: 'signed-out' };
+}
+
 export async function hasCompletedOnboarding(store: KeyValueStore): Promise<boolean> {
   return (await store.get(ONBOARDING_KEY)) === SET;
 }

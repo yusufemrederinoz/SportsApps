@@ -7,6 +7,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -18,8 +19,10 @@ function AccountScreen() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const router = useRouter();
-  const { state, leave, retry } = useAuth();
+  const { state, leave, remove, retry } = useAuth();
   const [busy, setBusy] = useState(false);
+  const [confirming, setConfirming] = useState(false);
+  const [failed, setFailed] = useState(false);
   const account = state.status === 'signed-in' ? state.account : null;
 
   const run = async (work: () => Promise<void>) => {
@@ -99,7 +102,33 @@ function AccountScreen() {
           </ThemedText>
         </Pressable>
         <ActionButton label={t('account.logout')} onPress={() => void run(leave)} variant="secondary" />
+        {account ? (
+          <Pressable accessibilityRole="button" onPress={() => setConfirming(true)} style={styles.credits}>
+            <ThemedText type="label" themeColor="negative" style={styles.creditsLabel}>
+              {uppercase(t('account.delete'))}
+            </ThemedText>
+          </Pressable>
+        ) : null}
+        {failed ? (
+          <ThemedText type="small" themeColor="negative" style={styles.creditsLabel} accessibilityLiveRegion="assertive">
+            {t('account.deleteFailed')}
+          </ThemedText>
+        ) : null}
       </View>
+      {confirming ? (
+        <ConfirmDialog
+          title={t('account.deleteTitle')}
+          message={t(account?.isGuest ? 'account.deleteGuestMessage' : 'account.deleteMessage')}
+          confirmLabel={t('account.deleteConfirm')}
+          cancelLabel={t('account.deleteCancel')}
+          onCancel={() => setConfirming(false)}
+          onConfirm={() => {
+            setConfirming(false);
+            setFailed(false);
+            void run(remove).catch(() => setFailed(true));
+          }}
+        />
+      ) : null}
     </Screen>
   );
 }

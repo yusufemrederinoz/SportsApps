@@ -133,7 +133,15 @@
     "historyWin": "Win",
     "historyLoss": "Loss",
     "historyDraw": "Draw",
-    "credits": "Image sources"
+    "credits": "Image sources",
+    "delete": "Delete account",
+    "deleteTitle": "Delete the account?",
+    "deleteMessage": "Your account, points, level, goals and match history are deleted for good. This cannot be undone.",
+    "deleteGuestMessage": "Your guest account, points, level, goals and match history are deleted for good. This cannot be undone.",
+    "deleteConfirm": "Delete for good",
+    "deleteCancel": "Keep it",
+    "deleteFailed": "The account could not be deleted. Check your connection and try again.",
+    "deletedPlayer": "Deleted player"
   },
   "errors": {
     "network": "The server could not be reached. Check your connection.",

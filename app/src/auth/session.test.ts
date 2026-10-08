@@ -7,6 +7,7 @@ import { resolveApiUrl } from '@/api/url';
 import {
   adoptMember,
   completeOnboarding,
+  deleteAccount,
   enterAsGuest,
   entryOf,
   hasCompletedOnboarding,
@@ -64,6 +65,7 @@ const accountsByToken: Record<string, Account> = { 'guest-token': guest, 'member
 const server: Record<string, Route> = {
   'POST /v1/auth/guest': () => ({ status: 200, body: { token: 'new-guest-token', account: { ...guest, id: 'guest-2' } } }),
   'POST /v1/auth/logout': () => ({ status: 204 }),
+  'DELETE /v1/account': () => ({ status: 204 }),
   'GET /v1/me': ({ headers }) => {
     const account = accountsByToken[(headers.Authorization ?? '').replace('Bearer ', '')];
     return account ? { status: 200, body: { account } } : { status: 401, body: { error: { code: 'unauthorized' } } };
@@ -197,6 +199,31 @@ describe('adoptMember and leaveSession', () => {
     const store = memoryStore({ 'member-token': 'member-token' });
     expect(await leaveSession(unreachable, store)).toEqual({ status: 'signed-out' });
     expect(store.values).toEqual({});
+  });
+});
+
+describe('deleteAccount', () => {
+  it('deletes a member on the server and forgets only the member token', async () => {
+    const calls: string[] = [];
+    const store = memoryStore({ 'member-token': 'member-token', 'guest-token': 'guest-token' });
+    const state = { status: 'signed-in', token: 'member-token', account: member } as const;
+    expect(await deleteAccount(reachable(calls), store, state)).toEqual({ status: 'signed-out' });
+    expect(calls).toEqual(['DELETE /v1/account']);
+    expect(store.values).toEqual({ 'guest-token': 'guest-token' });
+  });
+
+  it('forgets the device guest so the next guest entry starts a new account', async () => {
+    const store = memoryStore({ 'guest-token': 'guest-token' });
+    const state = { status: 'signed-in', token: 'guest-token', account: guest } as const;
+    expect(await deleteAccount(reachable(), store, state)).toEqual({ status: 'signed-out' });
+    expect(await enterAsGuest(reachable(), store)).toMatchObject({ token: 'new-guest-token' });
+  });
+
+  it('keeps the account when the server cannot be reached', async () => {
+    const store = memoryStore({ 'member-token': 'member-token' });
+    const state = { status: 'signed-in', token: 'member-token', account: member } as const;
+    await expect(deleteAccount(unreachable, store, state)).rejects.toThrow();
+    expect(store.values).toEqual({ 'member-token': 'member-token' });
   });
 });
 

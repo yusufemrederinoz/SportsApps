@@ -133,7 +133,15 @@
     "historyWin": "Galibiyet",
     "historyLoss": "Mağlubiyet",
     "historyDraw": "Beraberlik",
-    "credits": "Görsel kaynakları"
+    "credits": "Görsel kaynakları",
+    "delete": "Hesabı sil",
+    "deleteTitle": "Hesap silinsin mi?",
+    "deleteMessage": "Hesabın, puanların, seviyen, gollerin ve maç geçmişin kalıcı olarak silinir. Bu işlem geri alınamaz.",
+    "deleteGuestMessage": "Misafir hesabın, puanların, seviyen, gollerin ve maç geçmişin kalıcı olarak silinir. Bu işlem geri alınamaz.",
+    "deleteConfirm": "Kalıcı olarak sil",
+    "deleteCancel": "Vazgeç",
+    "deleteFailed": "Hesap silinemedi. Bağlantını kontrol edip tekrar dene.",
+    "deletedPlayer": "Silinmiş oyuncu"
   },
   "errors": {
     "network": "Sunucuya ulaşılamadı. Bağlantını kontrol et.",

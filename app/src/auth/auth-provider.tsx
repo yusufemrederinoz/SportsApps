@@ -6,6 +6,7 @@ import { api } from '@/api';
 import {
   adoptMember,
   completeOnboarding,
+  deleteAccount,
   enterAsGuest,
   entryOf,
   hasCompletedOnboarding,
@@ -24,6 +25,7 @@ interface AuthContextValue {
   register: (input: RegisterRequest) => Promise<void>;
   login: (input: LoginRequest) => Promise<void>;
   leave: () => Promise<void>;
+  remove: () => Promise<void>;
   retry: () => Promise<void>;
 }
 
@@ -66,6 +68,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     register: async (input) => setState(await adoptMember(secureStore, await api.register(input))),
     login: async (input) => setState(await adoptMember(secureStore, await api.login(input))),
     leave: async () => setState(await leaveSession(api, secureStore)),
+    remove: async () => setState(await deleteAccount(api, secureStore, state)),
     retry: async () => {
       const restored = await restoreSession(api, secureStore);
       setState(restored.status === 'signed-out' ? await enterAsGuest(api, secureStore) : restored);

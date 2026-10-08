@@ -39,6 +39,7 @@ export function MatchRow({ match }: { match: MatchSummary }) {
     minute: '2-digit',
   });
   const points = match.pointsChange;
+  const opponent = match.opponent || t('account.deletedPlayer');
   const details = [
     t(KIND_KEYS[match.kind]),
     t(DIFFICULTY_LABELS[match.difficulty]),
@@ -51,11 +52,11 @@ export function MatchRow({ match }: { match: MatchSummary }) {
     <View
       style={styles.row}
       accessible
-      accessibilityLabel={`${t(GAME_LABELS[parseGame(match.game)])}, ${t(OUTCOME_KEYS[match.outcome])}, ${match.opponent}, ${match.ownCells} – ${match.opponentCells}, ${pointsLabel}`}>
+      accessibilityLabel={`${t(GAME_LABELS[parseGame(match.game)])}, ${t(OUTCOME_KEYS[match.outcome])}, ${opponent}, ${match.ownCells} – ${match.opponentCells}, ${pointsLabel}`}>
       <View style={[styles.mark, { backgroundColor: color }]} />
       <View style={styles.texts}>
         <ThemedText type="smallBold" numberOfLines={1}>
-          {`${t(GAME_LABELS[parseGame(match.game)])} · ${match.opponent}`}
+          {`${t(GAME_LABELS[parseGame(match.game)])} · ${opponent}`}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" numberOfLines={1}>
           {details}
