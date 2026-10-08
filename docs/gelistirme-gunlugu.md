@@ -659,6 +659,10 @@ Reklamlı ilk iki derleme Gradle aşamasında düştü: `react-native-google-mob
 
 Play Console tarafı sürüyor: kullanıcı uygulama içeriği formlarını (gizlilik, erişim, reklam, derecelendirme, hedef kitle, veri güvenliği, reklam kimliği) dolduruyor ve ilk mağazalı AAB'yi (sürüm kodu 2) dahili teste yüklüyor. Mağaza incelemecileri için `StoreReview` hesabı canlı sunucuda açıldı. `destek@challengegoal.app` için Cloudflare e-posta yönlendirmesi kuruldu; alan adının posta kayıtları yayında, deneme postasıyla teslimat henüz doğrulanmadı.
 
+Play'de dört gol ürünü açıldı; Play'in API'sinden kimlikleri, etkin oldukları ve Türkiye fiyatları (₺39,99 · ₺99,99 · ₺199,99 · ₺399,99) doğrulandı. Play taban fiyatı vergi hariç aldığı için tutarlar KDV'siz girildi. Paket simgeleri, Play simgesi ve tanıtım görseli `data/branding/store_assets.py` ile üretiliyor.
+
+Play imzası için yeni giriş istemcisi açılırken Google Cloud'da aynı adda iki proje olduğu ortaya çıktı: giriş istemcileri ilkinde, Firebase ve Play servis hesabı ikincisindeydi. Kullanıcı her şeyi Firebase projesinde (`challengegoal`) toplamayı seçti; eski istemciler silindi, giriş ekranı ayarı ve dört istemci (web, iOS, EAS imzalı Android, Play imzalı Android) yeniden açıldı, uygulamadaki ve sunucudaki kimlikler değiştirildi. Bu değişiklikten önceki derlemelerde Google ile giriş çalışmaz.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
