@@ -21,6 +21,7 @@ import { useUppercase } from '@/i18n/uppercase';
 
 import { MatchRewardContext, ProtectedMatchContext, signed } from './match-reward';
 import { PointProtection } from './point-protection';
+import { ResultScene } from './result-scene';
 import { WinBurst } from './win-burst';
 
 const RAY_COUNT = 12;
@@ -90,6 +91,7 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
     <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.overlay} accessibilityViewIsModal>
       {tone === 'win' ? <LightRays color={color} /> : null}
       <View style={styles.content}>
+        {tone === 'draw' ? null : <ResultScene tone={tone} />}
         <Animated.View entering={TITLE_SLAM} style={styles.titleBlock}>
           <ThemedText
             accessibilityRole="header"
