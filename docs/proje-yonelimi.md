@@ -46,9 +46,9 @@ Türkiye pazarı için, futbol bilgisine dayalı ve online düello odaklı bir m
 | Tanıtım | İlk açılışta oyunu anlatan üç sayfalık tanıtım gösterilir |
 | Botun görünümü | Online'da rakip bulunamayınca gelen bot gerçek oyuncu gibi görünür, rastgele bir oyuncu adı taşır |
 | Online maçın sahibi | Sunucu. Cevabı sunucu doğrular, süreyi sunucu sayar; uygulamaya güvenilmez |
-| Eşleştirme | Sıra oyun, pazar ve zorluk başına. O oyundaki puana en yakın rakip seçilir; bekledikçe kabul edilen puan farkı büyür. 6–11 saniyede rakip çıkmazsa bot gelir |
+| Eşleştirme | Sıra oyun, pazar ve zorluk başına. O oyundaki gizli güç puanına en yakın rakip seçilir; bekledikçe kabul edilen fark büyür. 6–11 saniyede rakip çıkmazsa bot gelir |
 | Bot seviyesi | Seçilen zorlukla başlar; oyuncunun son online sonuçlarına göre bir seviye güçlenir ya da zayıflar |
-| Puan ve seviye | Her oyunun kendi puanı ve bunların toplamı olan toplam puan var. Seviye toplam puandan gelir. Puan yalnızca online sıra maçlarında (rakip çıkmayınca gelen gizli bot dahil) değişir; "Bota karşı" ve arkadaş odası puansızdır (7 Ekim 2026) |
+| Puan ve seviye | Her oyunun kendi puanı ve bunların toplamı olan toplam puan var. Seviye toplam puandan gelir. Puan yalnızca online sıra maçlarında (rakip çıkmayınca gelen gizli bot dahil) değişir; "Bota karşı" ve arkadaş odası puansızdır (7 Ekim 2026). Eşleştirme için ayrıca gizli bir güç puanı var: her oyunda 1000'den başlar, iki yönde eşit değişir. Görünen puan 0'dan başlar, mağlubiyette az düşer, ulaşılan seviye hiç düşmez (8 Ekim 2026) |
 | Gol | Puandan ayrı, oyun içi para birimi ve gelir kanalı. Her yeni hesaba 15 gol hediye; günlük giriş ödülü art arda günlerde 1, 2, 2, 3, 3, 4, 5 gol (7. günden sonra her gün 5); puanlı galibiyet 1 gol. İleride uygulama içi satın alma ve ödüllü reklamla da kazanılacak (7 Ekim 2026) |
 | Golün kullanımı | Gol yalnızca maç içi jokerde harcanır. Her modun kendine özgü iki jokeri var; joker 3 gol, bir maçta en çok 2 joker. Puanlı maçlarda da kullanılabilir; kullanınca rakibe "Rakip joker kullandı" görünür. Liste [oyun-modlari.md](oyun-modlari.md) belgesinde |
 | Gol satın alma | Misafir hesap gol satın alamaz; önce hesap açar (misafirin golü cihaza bağlı). Paketler ve fiyatlar mağaza hazırlığında (Adım 8) belirlenecek |

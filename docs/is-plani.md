@@ -202,7 +202,7 @@ Durum: tamamlandı (7 Ekim 2026).
 
 Yapılanlar:
 
-- Her oyunun ayrı puanı, toplam puan ve toplam puandan seviye. Puan online sıra maçlarında değişir; eşleştirme puana yakın rakip arar.
+- Her oyunun ayrı puanı, toplam puan ve toplam puandan seviye. Puan online sıra maçlarında değişir. Eşleştirme, her oyunda 1000'den başlayan gizli güç puanına yakın rakip arar; görünen puanda seviye hiç düşmez (8 Ekim).
 - Gol: hoş geldin hediyesi, artan günlük giriş ödülü, puanlı galibiyet golü; her hareket kayıt defterinde.
 - Maç sonunda kazanılan ya da kaybedilen puan, kazanılan gol ve seviye atlama.
 - Ayrıntılı geçmiş ve istatistik ekranı: genel sayılar, oyun oyun puan ve sonuçlar, oyuna göre süzülen ve sayfalanan maç listesi, gol hareketleri.

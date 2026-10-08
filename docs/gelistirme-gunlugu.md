@@ -578,6 +578,14 @@ Karar bekleyen üç konu seçenekli soruldu. Tanıtım yenilendi: üç sayfa art
 
 Doğrulama: 189 sunucu ve 97 uygulama testi; düzeltmeler emülatörde tek tek denendi (İlk 10'da "LIONEL MESSI LİSTEDE YOK" satırı, Açık Artırma'da açık kalan pencere ve üstü çizili isimler, arkadaş maçından ana ekrana dönüş, ikinci günün +2 gol penceresi, joker uyarısı).
 
+### Gizli güç puanı
+
+Kullanıcı başlangıç puanını 1000 yapmayı önerdi. Sıfırdan başlayıp eksiye inememek puanı bozuyordu: sıfırdaki oyuncu kaybedince bir şey kaybetmiyor ama rakibi kazanıyordu (sisteme sürekli puan giriyordu), kayıp oyuncunun puanıyla sınırlıydı ve yeni oyuncuların hepsi sıfırda toplandığı için eşleştirme dipte işlemiyordu. Tek sayıyı 1000'den başlatmak ise herkesi 13. seviyeden başlatır ve ilk mağlubiyetlerde seviye düşürürdü. Seçenekli soruyla iki ayrı sayıya karar verildi: gizli güç puanı (her oyunda 1000'den, klasik Elo, eşleştirme ve gizli bot buna göre) ve görünen puan (0'dan; galibiyet rakibin gücüne göre, eşit güçte +25; mağlubiyet −10; ulaşılan seviye hiç düşmez).
+
+Sunucu: `ratings` tablosuna `rating` sütunu (geçiş 6, mevcut kayıtlar 1000); `ratingChange`, `pointsChange` ve seviye eşiğini koruyan `keepLevel`; lobi ve koltuklar puan yerine güç puanı taşıyor. Tanıtımın puan sayfasına seviyenin düşmediği eklendi.
+
+Doğrulama: 192 sunucu testi (eşit güçte ±20 güç ve +25/−10 puan, güçsüzün beraberlikte kazanması, seviye eşiğinde kaybın kesilmesi, herkesin 1000 ile başlaması, güce göre eşleştirme); yerel veritabanında geçiş uygulandı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -715,3 +723,6 @@ Doğrulama: 189 sunucu ve 97 uygulama testi; düzeltmeler emülatörde tek tek d
 | `9bf3142` | 8 Ekim | Belgeler: uçtan uca kullanıcı testi |
 | `81f77f5` | 8 Ekim | İlk günlük ödülde hoş geldin hediyesinin işaretlenmesi |
 | `24054ad` | 8 Ekim | Dokuz oyunu, puanı ve golü anlatan tanıtım; ilk ödülde hoş geldin hediyesi |
+| `b8e990d` | 8 Ekim | Belgeler: tanıtımın yenilenmesi ve kalan kararlar |
+| `c542441` | 8 Ekim | Gizli güç puanıyla eşleştirme, düşmeyen seviye |
+| `76f5de8` | 8 Ekim | Tanıtımda seviyenin düşmediği |
