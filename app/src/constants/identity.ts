@@ -1,4 +1,4 @@
 export const GoogleClients = {
-  web: '239861789418-cudtt7v72mele2jri722nsg6eb8sromv.apps.googleusercontent.com',
-  ios: '239861789418-k4c7kpaak524h5k8duo2gguqfjbq15kc.apps.googleusercontent.com',
+  web: '1053225162177-6i8a8r1vacai052ojvcc9gd5kfnqe1vj.apps.googleusercontent.com',
+  ios: '1053225162177-rvemm3sf000035c56s3ib229s17mu5mq.apps.googleusercontent.com',
 } as const;
