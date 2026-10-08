@@ -282,6 +282,31 @@ describe('higher or lower matches', () => {
     expect(history.list(second.player.id)[0]).toMatchObject({ game: 'higher', outcome: 'loss' });
   });
 
+  it('gives a level match to the player who answered faster', () => {
+    const { first, second, active } = pair();
+    while (first.view().phase !== 'finished') {
+      const player = active();
+      vi.advanceTimersByTime(player === first ? 1000 : 3000);
+      choose(player, worse(player.view()));
+      vi.advanceTimersByTime(TIMING.revealMilliseconds);
+    }
+    expect(first.view().scores).toEqual({ x: 0, o: 0 });
+    expect(first.of('finished')[0]?.result).toEqual({ winner: first.session().side, reason: 'speed' });
+    expect(history.list(second.player.id)[0]).toMatchObject({ game: 'higher', outcome: 'loss' });
+  });
+
+  it('gives a match that is level on points and time to the player who started second', () => {
+    const { first, second, active } = pair();
+    const starter = active();
+    while (first.view().phase !== 'finished') {
+      const player = active();
+      choose(player, worse(player.view()));
+      vi.advanceTimersByTime(TIMING.revealMilliseconds);
+    }
+    const other = starter === first ? second : first;
+    expect(first.of('finished')[0]?.result).toEqual({ winner: other.session().side, reason: 'speed' });
+  });
+
   it('lets the bot answer on its turns', () => {
     const client = join();
     queue(client);

@@ -29,6 +29,7 @@ import {
 import type { FootballLibrary } from '../football/library';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
+import { createThinkingClock, settleByScore } from './thinking';
 
 const SECOND = 1000;
 const CLUB_POOL: Record<PlayDifficulty, number> = { 1: 16, 2: 32, 3: Number.POSITIVE_INFINITY };
@@ -100,6 +101,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
     const botTimers = new Map<Side, Timer>();
     const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
+    const clock = createThinkingClock(now);
     let state = createDraft(shuffle(pool, random).slice(0, DRAFT_FORMATION.length));
     let stage: DraftViewPhase = 'playing';
     let deadline = startedAt + timing.pickMilliseconds;
@@ -160,7 +162,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
     const advance = () => {
       state = nextRound(state);
       if (state.phase === 'finished') {
-        finish({ winner: draftWinner(state), reason: 'score' });
+        finish(settleByScore(draftWinner(state), clock, 'o'));
       } else {
         startRound();
       }
@@ -199,6 +201,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
         }
         throw error;
       }
+      clock.stop(side);
       settle();
       return null;
     };
@@ -218,6 +221,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
       const choice = chooseBotPick(candidates, botLevel, random);
       if (!choice || choose(side, choice.id) !== null) {
         state = passRound(state, side);
+        clock.stop(side);
         settle();
       }
     };
@@ -228,11 +232,13 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
       }
       SIDES.forEach((side) => {
         state = passRound(state, side);
+        clock.stop(side);
       });
       pause();
     };
 
     function startRound(): void {
+      clock.start(SIDES);
       stage = 'playing';
       deadline = now() + timing.pickMilliseconds;
       schedule(expire, timing.pickMilliseconds + TURN_GRACE_MILLISECONDS);

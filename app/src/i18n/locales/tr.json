@@ -138,7 +138,8 @@
     "turnRival": "Sıra rakipte",
     "byFewerMisses": "Kareler eşit, daha az hata",
     "bySecondMove": "Her şey eşit, ikinci başlayan kazandı",
-    "cellsDecide": "Üçlü artık mümkün değil. En çok kareyi alan kazanır."
+    "cellsDecide": "Üçlü artık mümkün değil. En çok kareyi alan kazanır.",
+    "bySpeed": "Puanlar eşit, daha hızlı olan kazandı"
   },
   "search": {
     "placeholder": "Futbolcu adı yaz",

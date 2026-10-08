@@ -32,6 +32,7 @@ import {
 import type { FootballLibrary } from '../football/library';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
+import { createThinkingClock, settleByScore } from './thinking';
 
 const SECOND = 1000;
 const POOL_FAME = 45;
@@ -125,6 +126,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
     const botTimers = new Map<Side, Timer>();
     const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
+    const clock = createThinkingClock(now);
     let state = createDuel<DuelMetric>();
     let stage: DuelViewPhase = 'picking';
     let deadline = startedAt + timing.pickMilliseconds;
@@ -231,7 +233,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
 
     const afterReveal = () => {
       if (state.phase === 'finished') {
-        finish({ winner: duelWinner(state), reason: 'score' });
+        finish(settleByScore(duelWinner(state), clock, 'o'));
       } else {
         startRound();
       }
@@ -258,6 +260,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
         }
         throw error;
       }
+      clock.stop(side);
       if (state.rounds.length > played) {
         reveal();
       } else {
@@ -284,6 +287,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
     };
 
     function startRound(): void {
+      clock.start(SIDES);
       stage = 'playing';
       deadline = now() + timing.playMilliseconds;
       schedule(expireRound, timing.playMilliseconds + TURN_GRACE_MILLISECONDS);
@@ -319,6 +323,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
         return 'invalid-action';
       }
       state = submitHand(state, side, complete(chosen));
+      clock.stop(side);
       if (handsReady(state)) {
         beginPlay();
         return null;
@@ -346,6 +351,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
       sideOf: (userId) => seatSide(seats, userId),
 
       start() {
+        clock.start(SIDES);
         schedule(expirePicking, timing.pickMilliseconds + TURN_GRACE_MILLISECONDS);
         botSides.forEach((side) =>
           scheduleBot(side, () => lockHand(side, botHand()), within(timing.botPickMilliseconds, random)),

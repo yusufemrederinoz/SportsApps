@@ -16,7 +16,7 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
-export type PlayFinishReason = 'line' | 'cells' | 'misses' | 'second' | 'forfeit' | 'score';
+export type PlayFinishReason = 'line' | 'cells' | 'misses' | 'second' | 'forfeit' | 'score' | 'speed';
 export const GAME_IDS = ['grid', 'duel', 'draft', 'higher', 'chain', 'rare', 'auction', 'top-ten', 'career'] as const;
 export type GameId = (typeof GAME_IDS)[number];
 export const PAUSED_GAME_IDS: readonly GameId[] = ['rare'];

@@ -167,7 +167,11 @@ export function HigherMatchView({
         result ? (
           <ResultOverlay
             title={!result.winner ? t('match.draw') : t(won ? 'match.youWin' : 'match.youLose')}
-            detail={result.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('higher.byScore')}
+            detail={
+              result.reason === 'forfeit'
+                ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
+                : t(result.reason === 'speed' ? 'match.bySpeed' : 'higher.byScore')
+            }
             score={ownScoreFirst(view.scores, side)}
             tone={!result.winner ? 'draw' : won ? 'win' : 'loss'}
             playAgainLabel={playAgainLabel}

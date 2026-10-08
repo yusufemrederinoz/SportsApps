@@ -24,6 +24,7 @@ import {
 import type { FootballLibrary } from '../football/library';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
+import { createThinkingClock, settleByScore } from './thinking';
 
 const SECOND = 1000;
 const ROUNDS = 4;
@@ -105,9 +106,11 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
 
     const startedAt = now();
     const { botLevel } = context;
+    const first: Side = random() < 0.5 ? 'x' : 'o';
+    const clock = createThinkingClock(now);
     let state: CareerState = createCareer(
       mysteries.map((mystery) => ({ footballerId: mystery.footballerId, clues: mystery.path.length })),
-      random() < 0.5 ? 'x' : 'o',
+      first,
     );
     let stage: CareerViewPhase = 'playing';
     let deadline = startedAt + timing.turnMilliseconds;
@@ -164,7 +167,7 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
       deadline = now() + timing.revealMilliseconds;
       phaseTimer = setTimeout(() => {
         if (state.phase === 'finished') {
-          finish({ winner: careerWinner(state), reason: 'score' });
+          finish(settleByScore(careerWinner(state), clock, first === 'x' ? 'o' : 'x'));
         } else {
           state = nextCareerRound(state);
           startTurn();
@@ -185,6 +188,7 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
         }
         throw error;
       }
+      clock.stop(side);
       if (state.phase === 'playing') {
         startTurn();
       } else {
@@ -213,6 +217,7 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
       stage = 'playing';
       deadline = now() + timing.turnMilliseconds;
       const side = state.turn;
+      clock.start([side]);
       phaseTimer = setTimeout(() => {
         if (stage === 'playing' && state.turn === side) {
           guess(side, null);

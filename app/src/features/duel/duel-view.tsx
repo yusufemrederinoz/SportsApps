@@ -115,7 +115,9 @@ export function DuelMatchView({
       : null;
   const won = result?.winner === side;
   const resultDetail =
-    result?.reason === 'forfeit' ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss') : t('duel.byScore');
+    result?.reason === 'forfeit'
+      ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
+      : t(result?.reason === 'speed' ? 'match.bySpeed' : 'duel.byScore');
 
   return (
     <Screen

@@ -279,6 +279,16 @@ describe('picking footballers', () => {
     });
   });
 
+  it('still names a winner when nobody picks at all', () => {
+    const { first } = pair();
+    for (let round = 0; round < DRAFT_FORMATION.length; round += 1) {
+      vi.advanceTimersByTime(PICK_TIMEOUT);
+      vi.advanceTimersByTime(TIMING.pauseMilliseconds);
+    }
+    expect(first.view().scores).toEqual({ x: 0, o: 0 });
+    expect(first.of('finished')[0]?.result).toEqual({ winner: 'o', reason: 'speed' });
+  });
+
   it('gives the match to the opponent when a player leaves', () => {
     const { first, second } = pair();
     lobby.handle(first.player.id, { type: 'leave', matchId: first.session().matchId });

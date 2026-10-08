@@ -138,7 +138,8 @@
     "turnRival": "Your opponent's turn",
     "byFewerMisses": "Cells level, fewer misses",
     "bySecondMove": "All level, second to move wins",
-    "cellsDecide": "No line is possible any more. Most cells wins."
+    "cellsDecide": "No line is possible any more. Most cells wins.",
+    "bySpeed": "Scores level, the faster player wins"
   },
   "search": {
     "placeholder": "Type a footballer's name",

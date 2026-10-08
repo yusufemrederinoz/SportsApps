@@ -23,6 +23,7 @@ import {
 import type { FootballLibrary } from '../football/library';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
+import { createThinkingClock, settleByScore } from './thinking';
 
 const SECOND = 1000;
 const ROUNDS = 2;
@@ -93,9 +94,11 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
 
     const startedAt = now();
     const { botLevel } = context;
+    const first: Side = random() < 0.5 ? 'x' : 'o';
+    const clock = createThinkingClock(now);
     let state: TopTenState<TopTenListView> = createTopTen(
       prepared.map((entry) => entry.round),
-      random() < 0.5 ? 'x' : 'o',
+      first,
     );
     let stage: TopTenViewPhase = 'playing';
     let deadline = startedAt + timing.turnMilliseconds;
@@ -169,7 +172,7 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
       deadline = now() + timing.revealMilliseconds;
       phaseTimer = setTimeout(() => {
         if (state.phase === 'finished') {
-          finish({ winner: topTenWinner(state), reason: 'score' });
+          finish(settleByScore(topTenWinner(state), clock, first === 'x' ? 'o' : 'x'));
         } else {
           state = nextTopTenRound(state);
           startTurn();
@@ -190,6 +193,7 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
         }
         throw error;
       }
+      clock.stop(side);
       if (state.phase === 'playing') {
         startTurn();
       } else {
@@ -217,6 +221,7 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
       stage = 'playing';
       deadline = now() + timing.turnMilliseconds;
       const side = state.turn;
+      clock.start([side]);
       phaseTimer = setTimeout(() => {
         if (stage === 'playing' && state.turn === side) {
           guess(side, null);

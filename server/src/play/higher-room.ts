@@ -24,6 +24,7 @@ import {
 import type { FootballLibrary } from '../football/library';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
+import { createThinkingClock, settleByScore } from './thinking';
 
 const SECOND = 1000;
 const POOL_SIZE = 400;
@@ -139,7 +140,9 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
 
     const startedAt = now();
     const { botLevel } = context;
-    let state = createHigher<HigherMetric>(random() < 0.5 ? 'x' : 'o');
+    const first: Side = random() < 0.5 ? 'x' : 'o';
+    const clock = createThinkingClock(now);
+    let state = createHigher<HigherMetric>(first);
     let question: HigherQuestion<HigherMetric> = firstQuestion;
     let stage: HigherViewPhase = 'answering';
     let deadline = startedAt + timing.answerMilliseconds;
@@ -218,6 +221,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
         }
         throw error;
       }
+      clock.stop(side);
       stopTimers();
       stage = 'reveal';
       deadline = now() + timing.revealMilliseconds;
@@ -227,6 +231,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
     };
 
     function ask(): void {
+      clock.start([state.turn]);
       stage = 'answering';
       deadline = now() + timing.answerMilliseconds;
       phaseTimer = setTimeout(() => answer(state.turn, null), timing.answerMilliseconds + TURN_GRACE_MILLISECONDS);
@@ -247,12 +252,12 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
 
     function advance(): void {
       if (state.phase === 'finished') {
-        finish({ winner: higherWinner(state), reason: 'score' });
+        finish(settleByScore(higherWinner(state), clock, first === 'x' ? 'o' : 'x'));
         return;
       }
       const next = createQuestion(rows, used, asked, difficulty, random);
       if (!next) {
-        finish({ winner: higherWinner(state), reason: 'score' });
+        finish(settleByScore(higherWinner(state), clock, first === 'x' ? 'o' : 'x'));
         return;
       }
       question = next;

@@ -36,7 +36,7 @@ export function applyMove(
 }
 
 export function finishSession(session: MatchSession, result: PlayResult | null): MatchSession {
-  if (!result || result.reason === 'score' || session.match.result) {
+  if (!result || result.reason === 'score' || result.reason === 'speed' || session.match.result) {
     return session;
   }
   return { ...session, match: { ...session.match, result: { winner: result.winner, reason: result.reason } } };
