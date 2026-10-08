@@ -3,19 +3,20 @@
     "skip": "Skip",
     "next": "Next",
     "start": "Start",
-    "readTitle": "Read the grid",
-    "readBody": "Every row and column has a header: a club or a country.",
-    "answerTitle": "Name a footballer",
-    "answerBody": "Pick a cell and type a footballer who fits both of its headers. You have {{seconds}} seconds.",
-    "winTitle": "Complete a line",
-    "winBody": "Three cells in a line win the game. If nobody manages it, the side with more cells wins."
+    "gamesTitle": "Nine games",
+    "gamesBody": "Nine football quiz games, from XOX to Career Path. Play a real opponent, a friend or the bot.",
+    "pointsTitle": "Climb the ranks",
+    "pointsBody": "Win online matches to earn points in each game; your total sets your level. Take your place on the weekly leaderboard.",
+    "goalsTitle": "Goals buy jokers",
+    "goalsBody": "You start with {{goals}} goals. Spend them on jokers in matches; the daily reward, the daily puzzle and online wins earn you more."
   },
   "welcome": {
     "guest": "Continue as guest",
     "connecting": "Connecting…",
     "login": "Sign in",
     "register": "Create account",
-    "guestHint": "Your guest account stays on this phone."
+    "guestHint": "Your guest account stays on this phone.",
+    "tagline": "Nine football quiz games. Find an opponent, earn points, level up."
   },
   "login": {
     "title": "Sign in",
@@ -418,7 +419,9 @@
     "streak": "Day {{streak}}",
     "hint": "Come back every day to grow your streak. From day 7 on, 5 goals a day.",
     "collect": "Collect",
-    "day": "Day {{day}}: {{goals}} goals"
+    "day": "Day {{day}}: {{goals}} goals",
+    "welcome": "Welcome gift: +{{goals}} goals",
+    "welcomeHint": "Spend goals on jokers during matches."
   },
   "history": {
     "title": "History",

@@ -3,19 +3,20 @@
     "skip": "Atla",
     "next": "Devam",
     "start": "Başla",
-    "readTitle": "Izgarayı oku",
-    "readBody": "Her satırın ve sütunun bir başlığı var: bir kulüp ya da bir ülke.",
-    "answerTitle": "Futbolcuyu yaz",
-    "answerBody": "Bir hücre seç ve iki başlığına da uyan bir futbolcu yaz. {{seconds}} saniyen var.",
-    "winTitle": "Üçlüyü tamamla",
-    "winBody": "Aynı hizada üç hücre oyunu kazandırır. Kimse yapamazsa daha çok hücre alan kazanır."
+    "gamesTitle": "Dokuz oyun",
+    "gamesBody": "XOX'tan Kariyer Yolu'na dokuz futbol bilgi oyunu. Gerçek bir rakiple, arkadaşınla ya da bota karşı oyna.",
+    "pointsTitle": "Puan topla",
+    "pointsBody": "Online maçta kazandıkça her oyunda puan toplarsın; toplam puanın seviyeni belirler. Haftalık lider tablosunda yerini al.",
+    "goalsTitle": "Golle joker al",
+    "goalsBody": "Hoş geldin hediyen {{goals}} gol. Golü maçta joker almak için harcarsın; günlük ödül, günün bulmacası ve online galibiyetler gol kazandırır."
   },
   "welcome": {
     "guest": "Misafir olarak devam et",
     "connecting": "Bağlanıyor…",
     "login": "Giriş yap",
     "register": "Hesap oluştur",
-    "guestHint": "Misafir hesabın bu telefonda kalır."
+    "guestHint": "Misafir hesabın bu telefonda kalır.",
+    "tagline": "Dokuz futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla."
   },
   "login": {
     "title": "Giriş yap",
@@ -418,7 +419,9 @@
     "streak": "{{streak}}. gün",
     "hint": "Her gün gir, seriyi büyüt. 7. günden sonra her gün 5 gol.",
     "collect": "Topla",
-    "day": "{{day}}. gün: {{goals}} gol"
+    "day": "{{day}}. gün: {{goals}} gol",
+    "welcome": "Hoş geldin hediyesi: +{{goals}} gol",
+    "welcomeHint": "Golü maç içinde joker almak için harcarsın."
   },
   "history": {
     "title": "Geçmiş",

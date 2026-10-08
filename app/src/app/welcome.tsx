@@ -44,7 +44,7 @@ function WelcomeScreen() {
           <View style={styles.slash} />
         </Animated.View>
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(220)}>
-          <ThemedText themeColor="textSecondary">{t('home.subtitle')}</ThemedText>
+          <ThemedText themeColor="textSecondary">{t('welcome.tagline')}</ThemedText>
         </Animated.View>
       </View>
 

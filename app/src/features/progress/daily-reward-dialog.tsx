@@ -47,6 +47,17 @@ export function DailyRewardDialog({ reward, onClose }: { reward: DailyReward; on
                 {uppercase(t('daily.streak', { streak: reward.streak }))}
               </ThemedText>
             </View>
+            {reward.welcomeGoals ? (
+              <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)} style={styles.welcome} accessible>
+                <View style={styles.welcomeRow}>
+                  <GoalIcon size={20} />
+                  <ThemedText style={styles.welcomeText}>{t('daily.welcome', { goals: reward.welcomeGoals })}</ThemedText>
+                </View>
+                <ThemedText type="small" themeColor="textSecondary" style={styles.centered}>
+                  {t('daily.welcomeHint')}
+                </ThemedText>
+              </Animated.View>
+            ) : null}
             <View style={styles.days}>
               {DAILY_GOALS.map((goals, index) => {
                 const day = index + 1;
@@ -108,6 +119,27 @@ const styles = StyleSheet.create({
     textShadowColor: Colors.gold,
     textShadowRadius: 18,
     textShadowOffset: { width: 0, height: 0 },
+  },
+  welcome: {
+    alignItems: 'center',
+    gap: Spacing.one,
+    paddingVertical: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.gold,
+    backgroundColor: Colors.ink,
+  },
+  welcomeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.two,
+  },
+  welcomeText: {
+    fontFamily: Fonts.heading,
+    fontSize: 18,
+    lineHeight: 22,
+    color: Colors.gold,
   },
   days: {
     flexDirection: 'row',

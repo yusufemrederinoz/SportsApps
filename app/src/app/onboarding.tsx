@@ -1,4 +1,4 @@
-import { DEFAULT_RULES } from '@sportapps/game-core';
+import { WELCOME_GOALS } from '@sportapps/protocol';
 import { useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -7,19 +7,16 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
-import { MetalPlate } from '@/components/metal-plate';
+import { GoalIcon } from '@/components/goal-icon';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
-import { FootballerCard } from '@/features/match/footballer-card';
+import { GAMES, GAME_LABELS } from '@/features/games';
 import { useUppercase } from '@/i18n/uppercase';
 
-const SAMPLE_ROW = 'Real Madrid';
-const SAMPLE_COLUMN = 'Barcelona';
-const SAMPLE_FOOTBALLER = { id: 0, name: 'Gheorghe Hagi', countryCode: 'RO', role: 'MF', hasPortrait: false };
-const CARD_SIZE = 132;
-const LINE_CARD_SIZE = 84;
-const LINE_CARDS = [0, 1, 2];
+const SAMPLE_LEVEL = 3;
+const SAMPLE_POINTS = 25;
+const BALL_SIZE = 104;
 
 function OnboardingScreen() {
   const { t } = useTranslation();
@@ -29,37 +26,39 @@ function OnboardingScreen() {
   const [pageWidth, setPageWidth] = useState(0);
   const [index, setIndex] = useState(0);
 
-  const header = (name: string) => (
-    <MetalPlate finish={null} radius={Radius.medium} style={styles.headerPlate}>
-      <ThemedText style={styles.headerText}>{name.toUpperCase()}</ThemedText>
-    </MetalPlate>
-  );
-
   const slides: { title: string; body: string; art: ReactNode }[] = [
     {
-      title: t('onboarding.readTitle'),
-      body: t('onboarding.readBody'),
+      title: t('onboarding.gamesTitle'),
+      body: t('onboarding.gamesBody'),
       art: (
-        <View style={styles.pairing}>
-          {header(SAMPLE_ROW)}
-          <ThemedText style={styles.cross}>×</ThemedText>
-          {header(SAMPLE_COLUMN)}
+        <View style={styles.games}>
+          {GAMES.map((game, position) => (
+            <View key={game} style={[styles.game, position === 0 && styles.gameFirst]}>
+              <ThemedText style={[styles.gameText, position === 0 && styles.gameTextFirst]}>{uppercase(t(GAME_LABELS[game]))}</ThemedText>
+            </View>
+          ))}
         </View>
       ),
     },
     {
-      title: t('onboarding.answerTitle'),
-      body: t('onboarding.answerBody', { seconds: DEFAULT_RULES.turnSeconds }),
-      art: <FootballerCard footballer={SAMPLE_FOOTBALLER} side="x" size={CARD_SIZE} emphasis="none" />,
+      title: t('onboarding.pointsTitle'),
+      body: t('onboarding.pointsBody'),
+      art: (
+        <View style={styles.points}>
+          <View style={styles.level}>
+            <ThemedText style={styles.levelText}>{uppercase(t('progress.levelShort', { level: SAMPLE_LEVEL }))}</ThemedText>
+          </View>
+          <ThemedText style={styles.pointsText}>{uppercase(t('reward.points', { value: `+${SAMPLE_POINTS}` }))}</ThemedText>
+        </View>
+      ),
     },
     {
-      title: t('onboarding.winTitle'),
-      body: t('onboarding.winBody'),
+      title: t('onboarding.goalsTitle'),
+      body: t('onboarding.goalsBody', { goals: WELCOME_GOALS }),
       art: (
-        <View style={styles.line}>
-          {LINE_CARDS.map((card) => (
-            <FootballerCard key={card} footballer={null} side="x" size={LINE_CARD_SIZE} emphasis="winner" />
-          ))}
+        <View style={styles.goals}>
+          <GoalIcon size={BALL_SIZE} />
+          <ThemedText style={styles.goalsText}>{`+${WELCOME_GOALS}`}</ThemedText>
         </View>
       ),
     },
@@ -156,34 +155,71 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  pairing: {
+  games: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.two,
+  },
+  game: {
+    minHeight: 40,
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.medium,
+    borderWidth: 1.5,
+    borderColor: Colors.stroke,
+    backgroundColor: Colors.panel,
+  },
+  gameFirst: {
+    borderColor: Colors.volt,
+    backgroundColor: Colors.volt,
+  },
+  gameText: {
+    fontFamily: Fonts.heading,
+    fontSize: 16,
+    lineHeight: 18,
+    letterSpacing: 1,
+    color: Colors.textSecondary,
+  },
+  gameTextFirst: {
+    color: Colors.onAccent,
+  },
+  points: {
     alignItems: 'center',
     gap: Spacing.three,
   },
-  headerPlate: {
-    minWidth: 116,
-    minHeight: 72,
+  level: {
+    minWidth: 132,
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.two,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.large,
+    backgroundColor: Colors.volt,
   },
-  headerText: {
-    fontFamily: Fonts.heading,
-    fontSize: 18,
-    lineHeight: 20,
-    letterSpacing: 0.6,
-    textAlign: 'center',
-  },
-  cross: {
+  levelText: {
     fontFamily: Fonts.display,
-    fontSize: 40,
-    lineHeight: 42,
-    color: Colors.volt,
+    fontSize: 56,
+    lineHeight: 60,
+    color: Colors.onAccent,
   },
-  line: {
-    flexDirection: 'row',
+  pointsText: {
+    fontFamily: Fonts.display,
+    fontSize: 34,
+    lineHeight: 36,
+    color: Colors.positive,
+  },
+  goals: {
+    alignItems: 'center',
     gap: Spacing.two,
+  },
+  goalsText: {
+    fontFamily: Fonts.display,
+    fontSize: 56,
+    lineHeight: 60,
+    color: Colors.gold,
+    textShadowColor: Colors.gold,
+    textShadowRadius: 18,
+    textShadowOffset: { width: 0, height: 0 },
   },
   number: {
     fontFamily: Fonts.display,
