@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageChops, ImageDraw, ImageFilter
+from PIL import Image, ImageChops, ImageDraw
 
 SCALE = 4
 INK = (5, 7, 10)
@@ -11,6 +11,16 @@ VOLT = (200, 255, 46)
 GOLD = [(255, 241, 194), (243, 198, 83), (168, 116, 26)]
 BLUE = [(227, 238, 255), (91, 155, 255), (29, 63, 175)]
 LEAN = math.radians(12)
+ARTWORK_PATH = Path(__file__).resolve().parent / 'artwork' / 'emblem.png'
+RING_CENTER = (577.5, 556.9)
+RING_RADIUS = 184
+ICON_RING = 0.61
+ICON_CENTER = (0.542, 0.586)
+ADAPTIVE_RING = 0.47
+ADAPTIVE_CENTER = (0.525, 0.53)
+FITTED_RING = 0.66
+FITTED_CENTER = (0.568, 0.637)
+SILHOUETTE_LUMINANCE = 120
 ANGLES = [-math.pi / 2 + LEAN + index * 2 * math.pi / 5 for index in range(5)]
 
 
@@ -70,28 +80,11 @@ def ball_layers(size, cx, cy, radius, tilt):
     return circle, fill, pattern
 
 
-def slash_mask(size, cx, cy, length, width, rise):
-    mask = Image.new('L', (size, size), 0)
-    draw = ImageDraw.Draw(mask)
-    dx = length / 2 * math.cos(rise)
-    dy = -length / 2 * math.sin(rise)
-    draw.line([(cx - dx, cy - dy), (cx + dx, cy + dy)], fill=255, width=int(width))
-    for px, py in [(cx - dx, cy - dy), (cx + dx, cy + dy)]:
-        draw.ellipse([px - width / 2, py - width / 2, px + width / 2, py + width / 2], fill=255)
-    return mask
-
-
-def mark(size, ball_ratio, with_slash=True):
+def mark(size, ball_ratio):
     big = size * SCALE
     cx = cy = big / 2
     radius = big * ball_ratio
     canvas = Image.new('RGBA', (big, big), (0, 0, 0, 0))
-
-    if with_slash:
-        slash = slash_mask(big, cx, cy + radius * 0.06, radius * 3.3, radius * 0.2, math.radians(14))
-        glow = slash.filter(ImageFilter.GaussianBlur(radius * 0.12))
-        canvas.paste(Image.new('RGBA', (big, big), VOLT + (255,)), (0, 0), glow.point(lambda value: int(value * 0.55)))
-        canvas.paste(Image.new('RGBA', (big, big), VOLT + (255,)), (0, 0), slash)
 
     circle, fill, pattern = ball_layers(big, cx, cy, radius, LEAN)
     ring = Image.new('L', (big, big), 0)
@@ -109,38 +102,77 @@ def background(size):
     return image.resize((size, size), Image.LANCZOS).convert('RGBA')
 
 
-def monochrome(size, ball_ratio):
-    big = size * SCALE
-    cx = cy = big / 2
-    radius = big * ball_ratio
-    circle, _, pattern = ball_layers(big, cx, cy, radius, LEAN)
-    slash = slash_mask(big, cx, cy + radius * 0.06, radius * 3.3, radius * 0.2, math.radians(14))
-    gap = Image.new('L', (big, big), 0)
-    ImageDraw.Draw(gap).ellipse([cx - radius * 1.09, cy - radius * 1.09, cx + radius * 1.09, cy + radius * 1.09], fill=255)
-    shape = ImageChops.subtract(slash, gap)
-    shape = ImageChops.lighter(shape, ImageChops.subtract(circle, pattern))
-    image = Image.new('RGBA', (big, big), (255, 255, 255, 0))
-    image.putalpha(shape)
-    return image.resize((size, size), Image.LANCZOS)
+def emblem(size, ring_ratio, center=(0.5, 0.5)):
+    artwork = Image.open(ARTWORK_PATH).convert('RGBA')
+    scale = size * ring_ratio / 2 / RING_RADIUS
+    scaled = artwork.resize((round(artwork.width * scale), round(artwork.height * scale)), Image.LANCZOS)
+    layer = Image.new('RGBA', (size, size), (0, 0, 0, 0))
+    layer.paste(scaled, (round(size * center[0] - RING_CENTER[0] * scale), round(size * center[1] - RING_CENTER[1] * scale)))
+    return layer
+
+
+def app_icon(size):
+    icon = background(size)
+    icon.alpha_composite(emblem(size, ICON_RING, ICON_CENTER))
+    return icon
+
+
+def fitted_emblem(size):
+    return emblem(size, FITTED_RING, FITTED_CENTER)
+
+
+def silhouette(layer):
+    bright = layer.convert('L').point(lambda value: 255 if value > SILHOUETTE_LUMINANCE else 0)
+    image = Image.new('RGBA', layer.size, (255, 255, 255, 0))
+    image.putalpha(ImageChops.multiply(bright, layer.getchannel('A')))
+    return image
+
+
+def masked(image, shape):
+    edge = image.width
+    mask = Image.new('L', (edge * SCALE, edge * SCALE), 0)
+    draw = ImageDraw.Draw(mask)
+    if shape == 'circle':
+        draw.ellipse([0, 0, edge * SCALE, edge * SCALE], fill=255)
+    else:
+        draw.rounded_rectangle([0, 0, edge * SCALE, edge * SCALE], radius=edge * SCALE * 0.225, fill=255)
+    result = image.convert('RGBA')
+    result.putalpha(mask.resize((edge, edge), Image.LANCZOS))
+    return result
+
+
+def preview(icon, foreground, themed):
+    sheet = Image.new('RGBA', (1720, 820), (58, 62, 70, 255))
+    sheet.alpha_composite(masked(icon.resize((512, 512), Image.LANCZOS), 'rounded'), (40, 40))
+    visible = round(1024 * 72 / 108)
+    inset = (1024 - visible) // 2
+    adaptive = background(1024)
+    adaptive.alpha_composite(foreground)
+    adaptive = adaptive.crop((inset, inset, inset + visible, inset + visible)).resize((512, 512), Image.LANCZOS)
+    sheet.alpha_composite(masked(adaptive, 'circle'), (600, 40))
+    tinted = Image.new('RGBA', (1024, 1024), (26, 54, 46, 255))
+    tinted.paste(Image.new('RGBA', (1024, 1024), (160, 232, 200, 255)), (0, 0), themed.getchannel('A'))
+    tinted = tinted.crop((inset, inset, inset + visible, inset + visible)).resize((512, 512), Image.LANCZOS)
+    sheet.alpha_composite(masked(tinted, 'circle'), (1160, 40))
+    offset = 40
+    for edge in (180, 120, 96, 60, 48):
+        sheet.alpha_composite(masked(icon.resize((edge, edge), Image.LANCZOS), 'rounded'), (offset, 700 - edge // 2))
+        offset += edge + 30
+    return sheet.convert('RGB')
 
 
 def main(out):
     out.mkdir(parents=True, exist_ok=True)
-    icon = background(1024)
-    icon.alpha_composite(mark(1024, 0.285))
+    icon = app_icon(1024)
+    foreground = emblem(1024, ADAPTIVE_RING, ADAPTIVE_CENTER)
+    themed = silhouette(foreground)
     icon.convert('RGB').save(out / 'icon.png')
     background(1024).convert('RGB').save(out / 'android-icon-background.png')
-    mark(1024, 0.19).save(out / 'android-icon-foreground.png')
-    monochrome(1024, 0.19).save(out / 'android-icon-monochrome.png')
-    mark(512, 0.3).save(out / 'splash-icon.png')
+    foreground.save(out / 'android-icon-foreground.png')
+    themed.save(out / 'android-icon-monochrome.png')
+    fitted_emblem(512).save(out / 'splash-icon.png')
     icon.resize((48, 48), Image.LANCZOS).convert('RGB').save(out / 'favicon.png')
-    preview = Image.new('RGB', (1024 + 512 + 256 + 96 + 60, 1024), (40, 40, 40))
-    preview.paste(icon.convert('RGB'), (0, 0))
-    offset = 1024 + 20
-    for edge in (512, 256, 96, 48):
-        preview.paste(icon.resize((edge, edge), Image.LANCZOS).convert('RGB'), (offset, 0 if edge == 512 else 532 if edge == 256 else 808 if edge == 96 else 924))
-        offset += 0
-    preview.save(out / 'preview.png')
+    preview(icon, foreground, themed).save(out / 'preview.png')
 
 
 if __name__ == '__main__':

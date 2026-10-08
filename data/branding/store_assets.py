@@ -3,7 +3,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-from icons import INK, VOLT, background, mark, radial
+from icons import INK, VOLT, app_icon, background, emblem, fitted_emblem, mark, radial
 
 FONTS = Path(__file__).resolve().parents[2] / 'node_modules' / '@expo-google-fonts' / 'barlow-condensed'
 DISPLAY_FONT = FONTS / '800ExtraBold_Italic' / 'BarlowCondensed_800ExtraBold_Italic.ttf'
@@ -22,13 +22,15 @@ FEATURE_SIZE = (1024, 500)
 SHARE_SIZE = (1200, 630)
 FEATURE_MARGIN = 48
 FEATURE_GAP = 18
+FEATURE_RING = 0.5
+FEATURE_CENTER = (0.55, 0.57)
 WHITE = (246, 248, 251)
 MUTED = (155, 168, 186)
 
 
 def ball(diameter):
     edge = round(diameter / BALL_SPAN)
-    return mark(edge, BALL_RATIO, with_slash=False)
+    return mark(edge, BALL_RATIO)
 
 
 def drop(canvas, sprite, center):
@@ -60,7 +62,7 @@ def feature(tagline, size=FEATURE_SIZE):
     width, height = size
     wide = radial(width, (width * 0.24, width * 0.2), width * 0.8, [(34, 48, 68), (12, 17, 26), INK])
     canvas = wide.crop((0, 0, width, height)).convert('RGBA')
-    canvas.alpha_composite(mark(height, 0.23), (round(width * 0.21 - height / 2), 0))
+    canvas.alpha_composite(emblem(height, FEATURE_RING, FEATURE_CENTER), (round(width * 0.21 - height / 2), 0))
 
     draw = ImageDraw.Draw(canvas)
     left = round(width * 0.43)
@@ -79,17 +81,14 @@ def main(out):
     out.mkdir(parents=True, exist_ok=True)
     for product_id, balls in PACKS.items():
         product(balls).save(out / f'{product_id}.png')
-    icon = background(512)
-    icon.alpha_composite(mark(512, 0.285))
-    icon.save(out / 'play-icon-512.png')
+    app_icon(1024).resize((512, 512), Image.LANCZOS).save(out / 'play-icon-512.png')
     feature('FUTBOL BİLGİ OYUNLARI').convert('RGB').save(out / 'play-feature-1024x500.png')
 
 
 def site(out):
     out.mkdir(parents=True, exist_ok=True)
-    icon = background(512)
-    icon.alpha_composite(mark(512, 0.285))
-    mark(512, 0.3).save(out / 'mark.png')
+    icon = app_icon(1024)
+    fitted_emblem(512).save(out / 'mark.png')
     icon.resize((180, 180), Image.LANCZOS).convert('RGB').save(out / 'apple-touch-icon.png')
     icon.resize((64, 64), Image.LANCZOS).convert('RGB').save(out / 'favicon.png')
     feature('FUTBOL BİLGİ OYUNLARI', SHARE_SIZE).convert('RGB').save(out / 'share.png')
