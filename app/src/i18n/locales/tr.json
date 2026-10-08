@@ -525,7 +525,7 @@
     "finished": "Bulmaca bitti",
     "reward": "+{{goals}} gol kazandın",
     "share": "Sonucu paylaş",
-    "shareText": "Futbol XOX · Günün bulmacası #{{number}}\n{{filled}}/9 · {{score}} puan",
+    "shareText": "ChallengeGoal · Günün bulmacası #{{number}}\n{{filled}}/9 · {{score}} puan",
     "ranking": "Günün sıralaması",
     "players": "Bugün {{players}} kişi oynadı",
     "cellShare": "Aynı cevabı verenler: {{share}}",

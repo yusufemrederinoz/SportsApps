@@ -525,7 +525,7 @@
     "finished": "Puzzle finished",
     "reward": "You earned {{goals}} goals",
     "share": "Share your result",
-    "shareText": "Football XOX · Daily puzzle #{{number}}\n{{filled}}/9 · {{score}} points",
+    "shareText": "ChallengeGoal · Daily puzzle #{{number}}\n{{filled}}/9 · {{score}} points",
     "ranking": "Today's ranking",
     "players": "{{players}} people played today",
     "cellShare": "Same answer: {{share}}",

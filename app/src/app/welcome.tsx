@@ -9,13 +9,12 @@ import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
+import { Brand } from '@/constants/brand';
 import { Colors, Motion, Spacing } from '@/constants/theme';
 import { GAMES } from '@/features/games';
-import { useUppercase } from '@/i18n/uppercase';
 
 function WelcomeScreen() {
   const { t } = useTranslation();
-  const uppercase = useUppercase();
   const router = useRouter();
   const { continueAsGuest } = useAuth();
   const [entering, setEntering] = useState(false);
@@ -34,13 +33,13 @@ function WelcomeScreen() {
 
   return (
     <Screen contentStyle={styles.content}>
-      <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={`${t('home.titleLead')} ${t('home.titleAccent')}`}>
+      <View style={styles.hero} accessible accessibilityRole="header" accessibilityLabel={Brand.name}>
         <Animated.View entering={FadeInLeft.duration(Motion.slow)}>
-          <ThemedText type="display">{uppercase(t('home.titleLead'))}</ThemedText>
+          <ThemedText type="display">{Brand.lead.toUpperCase()}</ThemedText>
         </Animated.View>
         <Animated.View entering={FadeInLeft.duration(Motion.slow).delay(110)} style={styles.accentRow}>
           <ThemedText type="display" style={styles.accent}>
-            {uppercase(t('home.titleAccent'))}
+            {Brand.accent.toUpperCase()}
           </ThemedText>
           <View style={styles.slash} />
         </Animated.View>
