@@ -5,7 +5,8 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 from . import fame, transfermarkt, wikidata, wikipedia
-from .config import DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_ONLY_ID_OFFSET, TRANSFERMARKT_POSITIONS
+from .config import DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_POSITIONS
+from .registry import PlayerRegistry
 from .text import normalize
 from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_id, entity_number
 
@@ -333,7 +334,8 @@ def resolve_countries(identifiers, countries, aliases):
     return list(dict.fromkeys(identifier for identifier in resolved if identifier in countries))
 
 
-def build(refresh=False):
+def build(refresh=False, registry=None):
+    registry = registry or PlayerRegistry()
     leagues ={row["code"]: row for row in read_override("leagues.csv")}
     clubs, club_by_wikidata_id, membership_rows = resolve_clubs(leagues, refresh)
     countries, country_by_name, country_aliases = load_countries(refresh)
@@ -373,9 +375,9 @@ def build(refresh=False):
     player_countries = []
     player_clubs = []
     unmapped_countries = Counter()
-    nameless = 0
     rumors = 0
 
+    named = []
     for transfermarkt_id, wikidata_id in entities:
         source = transfermarkt_players.get(transfermarkt_id) if transfermarkt_id else None
         entry = wikidata_players.get(wikidata_id) if wikidata_id else None
@@ -384,11 +386,12 @@ def build(refresh=False):
         variants += [labels.get(language) for language in NAME_LANGUAGES]
         variants += entry["aliases"] if entry else []
         variants = [variant.strip() for variant in variants if variant and variant.strip()]
-        if not variants:
-            nameless += 1
-            continue
-        player_id = entity_number(wikidata_id) if wikidata_id else TRANSFERMARKT_ONLY_ID_OFFSET + transfermarkt_id
+        if variants:
+            named.append((transfermarkt_id, wikidata_id, source, entry, variants))
+    nameless = len(entities) - len(named)
+    player_ids = registry.assign([entity[:2] for entity in named])
 
+    for player_id, (transfermarkt_id, wikidata_id, source, entry, variants) in zip(player_ids, named):
         seen = set()
         for variant in variants:
             normalized = normalize(variant)

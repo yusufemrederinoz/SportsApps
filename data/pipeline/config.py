@@ -5,6 +5,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CACHE_DIR = ROOT / ".cache"
 BUILD_DIR = ROOT / "build"
 OVERRIDES_DIR = ROOT / "overrides"
+PLAYER_REGISTRY_PATH = ROOT / "registry" / "player_ids.csv"
 DATABASE_PATH = BUILD_DIR / "football.sqlite"
 REPORT_PATH = BUILD_DIR / "report.md"
 APP_DATA_DIR = ROOT.parent / "app" / "assets" / "data"
@@ -21,3 +22,4 @@ DEFAULT_LANGUAGE = "en"
 
 TRANSFERMARKT_POSITIONS = {"Goalkeeper": "GK", "Defender": "DF", "Midfield": "MF", "Attack": "FW"}
 TRANSFERMARKT_ONLY_ID_OFFSET = 1_000_000_000
+REASSIGNED_ID_OFFSET = 2_000_000_000

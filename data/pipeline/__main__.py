@@ -3,6 +3,7 @@ import argparse
 from portraits import publish
 
 from . import bundle, export, grids, merge, report, stats
+from .registry import PlayerRegistry
 
 
 def main():
@@ -27,8 +28,10 @@ def main():
         print(f"app database: {bundle.write()}")
         return
 
-    dataset = merge.build(refresh=arguments.refresh)
+    registry = PlayerRegistry.load()
+    dataset = merge.build(refresh=arguments.refresh, registry=registry)
     database_path = export.write(dataset)
+    registry.save()
     dataset["grid_summaries"] = grids.write(database_path)
     print(f"portraits: {publish.register(database_path)}")
     print(f"stats: {stats.write(database_path)}")
