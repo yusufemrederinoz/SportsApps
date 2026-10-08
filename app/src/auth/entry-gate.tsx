@@ -13,6 +13,7 @@ type Destination = Exclude<Entry, 'loading'>;
 const ROUTE_NAMES: Record<Destination, string> = {
   onboarding: 'onboarding',
   welcome: 'welcome',
+  username: 'username',
   app: 'index',
 };
 

@@ -14,7 +14,7 @@ export type AuthState =
   | { status: 'offline' }
   | { status: 'signed-in'; token: string; account: Account };
 
-export type Entry = 'loading' | 'onboarding' | 'welcome' | 'app';
+export type Entry = 'loading' | 'onboarding' | 'welcome' | 'username' | 'app';
 
 const MEMBER_TOKEN_KEY = 'member-token';
 const GUEST_TOKEN_KEY = 'guest-token';
@@ -83,6 +83,14 @@ export async function deleteAccount(api: ApiClient, store: KeyValueStore, state:
   return { status: 'signed-out' };
 }
 
+export async function chooseUsername(api: ApiClient, state: AuthState, username: string): Promise<AuthState> {
+  if (state.status !== 'signed-in') {
+    return state;
+  }
+  const { account } = await api.chooseUsername(state.token, username);
+  return { ...state, account };
+}
+
 export async function hasCompletedOnboarding(store: KeyValueStore): Promise<boolean> {
   return (await store.get(ONBOARDING_KEY)) === SET;
 }
@@ -94,6 +102,9 @@ export async function completeOnboarding(store: KeyValueStore): Promise<void> {
 export function entryOf(state: AuthState, onboarded: boolean | null): Entry {
   if (state.status === 'loading' || onboarded === null) {
     return 'loading';
+  }
+  if (state.status === 'signed-in' && state.account.usernamePending) {
+    return 'username';
   }
   if (state.status === 'signed-in' || state.status === 'offline') {
     return 'app';

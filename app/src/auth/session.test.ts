@@ -6,6 +6,7 @@ import { resolveApiUrl } from '@/api/url';
 
 import {
   adoptMember,
+  chooseUsername,
   completeOnboarding,
   deleteAccount,
   enterAsGuest,
@@ -19,6 +20,7 @@ import {
 const guest: Account = {
   id: 'guest-1',
   username: 'guest123456',
+  usernamePending: false,
   isGuest: true,
   email: null,
   hasPassword: false,
@@ -66,6 +68,10 @@ const server: Record<string, Route> = {
   'POST /v1/auth/guest': () => ({ status: 200, body: { token: 'new-guest-token', account: { ...guest, id: 'guest-2' } } }),
   'POST /v1/auth/logout': () => ({ status: 204 }),
   'DELETE /v1/account': () => ({ status: 204 }),
+  'POST /v1/account/username': ({ body }) => ({
+    status: 200,
+    body: { account: { ...member, username: (body as { username: string }).username } },
+  }),
   'GET /v1/me': ({ headers }) => {
     const account = accountsByToken[(headers.Authorization ?? '').replace('Bearer ', '')];
     return account ? { status: 200, body: { account } } : { status: 401, body: { error: { code: 'unauthorized' } } };
@@ -224,6 +230,16 @@ describe('deleteAccount', () => {
     const state = { status: 'signed-in', token: 'member-token', account: member } as const;
     await expect(deleteAccount(unreachable, store, state)).rejects.toThrow();
     expect(store.values).toEqual({ 'member-token': 'member-token' });
+  });
+});
+
+describe('chooseUsername', () => {
+  it('asks a new identity account for a username before the app opens', async () => {
+    const pending = { status: 'signed-in', token: 'member-token', account: { ...member, usernamePending: true } } as const;
+    expect(entryOf(pending, true)).toBe('username');
+    const chosen = await chooseUsername(reachable(), pending, 'Kerem_7');
+    expect(chosen).toMatchObject({ status: 'signed-in', token: 'member-token', account: { username: 'Kerem_7', usernamePending: false } });
+    expect(entryOf(chosen, true)).toBe('app');
   });
 });
 

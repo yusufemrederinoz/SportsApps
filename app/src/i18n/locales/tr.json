@@ -23,6 +23,11 @@
     "google": "Google ile devam et",
     "failed": "Giriş tamamlanamadı. Tekrar dene."
   },
+  "username": {
+    "title": "Kullanıcı adını seç",
+    "intro": "Rakiplerin ve lider tablosu seni bu adla görecek.",
+    "submit": "Devam et"
+  },
   "login": {
     "title": "Giriş yap",
     "submit": "Giriş yap",
@@ -157,6 +162,7 @@
     "invalidCredentials": "E-posta ya da şifre yanlış.",
     "emailTaken": "Bu e-postayla bir hesap zaten var. Giriş yapmayı dene.",
     "usernameTaken": "Bu kullanıcı adı alınmış.",
+    "usernameLocked": "Kullanıcı adın zaten seçilmiş.",
     "invalidUsername": "Kullanıcı adı 3-16 karakter olmalı; harf, rakam ya da alt çizgi içerebilir.",
     "invalidEmail": "Geçerli bir e-posta adresi yaz.",
     "invalidPassword": "Şifre kurallara uymuyor.",

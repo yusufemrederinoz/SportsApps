@@ -23,6 +23,11 @@
     "google": "Continue with Google",
     "failed": "Sign-in could not be completed. Try again."
   },
+  "username": {
+    "title": "Choose your username",
+    "intro": "Your rivals and the leaderboard will show you under this name.",
+    "submit": "Continue"
+  },
   "login": {
     "title": "Sign in",
     "submit": "Sign in",
@@ -157,6 +162,7 @@
     "invalidCredentials": "The email or password is wrong.",
     "emailTaken": "This email already has an account. Sign in instead.",
     "usernameTaken": "This username is taken.",
+    "usernameLocked": "Your username has already been chosen.",
     "invalidUsername": "Usernames are 3 to 16 letters, digits or underscores.",
     "invalidEmail": "Enter a valid email address.",
     "invalidPassword": "The password does not meet the rules.",

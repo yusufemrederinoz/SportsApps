@@ -5,6 +5,7 @@ import { api } from '@/api';
 
 import {
   adoptMember,
+  chooseUsername,
   completeOnboarding,
   deleteAccount,
   enterAsGuest,
@@ -25,6 +26,7 @@ interface AuthContextValue {
   register: (input: RegisterRequest) => Promise<void>;
   login: (input: LoginRequest) => Promise<void>;
   signInWith: (provider: IdentityProvider, identityToken: string) => Promise<void>;
+  chooseUsername: (username: string) => Promise<void>;
   leave: () => Promise<void>;
   remove: () => Promise<void>;
   retry: () => Promise<void>;
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     login: async (input) => setState(await adoptMember(secureStore, await api.login(input))),
     signInWith: async (provider, identityToken) =>
       setState(await adoptMember(secureStore, await api.signInWithIdentity(provider, identityToken))),
+    chooseUsername: async (username) => setState(await chooseUsername(api, state, username)),
     leave: async () => setState(await leaveSession(api, secureStore)),
     remove: async () => setState(await deleteAccount(api, secureStore, state)),
     retry: async () => {

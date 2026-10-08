@@ -99,6 +99,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
       request<AuthResponse>('POST', '/auth/' + provider, { body: { token: identityToken } }),
     logout: (token: string) => request<void>('POST', '/auth/logout', { token }),
     deleteAccount: (token: string) => request<void>('DELETE', '/account', { token }),
+    chooseUsername: (token: string, username: string) =>
+      request<AccountResponse>('POST', '/account/username', { token, body: { username } }),
     matches: (token: string, filter: HistoryFilter = {}) =>
       request<MatchHistoryResponse>('GET', `/matches${query(filter)}`, { token }),
     progress: (token: string) => request<ProgressResponse>('GET', '/progress', { token }),

@@ -9,6 +9,7 @@ export const ERROR_KEYS = {
   'invalid-credentials': 'errors.invalidCredentials',
   'email-taken': 'errors.emailTaken',
   'username-taken': 'errors.usernameTaken',
+  'username-locked': 'errors.usernameLocked',
   'invalid-username': 'errors.invalidUsername',
   'invalid-email': 'errors.invalidEmail',
   'invalid-password': 'errors.invalidPassword',
