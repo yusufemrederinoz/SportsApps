@@ -166,9 +166,25 @@ describe('App Store verification', () => {
     await expect(createAppleVerifier(settings(), answer(base))('goals_cg_30', '../users')).rejects.toThrow();
   });
 
-  it('reports the store as unreachable when it does not answer', async () => {
-    const failing = (async () => new Response('', { status: 503 })) as unknown as typeof fetch;
-    await expect(createAppleVerifier(settings(), failing)('goals_cg_30', '1')).rejects.toBeInstanceOf(StoreUnreachableError);
+  it('uses the sandbox while production refuses an app that is not released yet', async () => {
+    const transaction = { bundleId: 'com.challengegoal.app', productId: 'goals_cg_30', transactionId: '2000000456' };
+    const fetcher = (async (url: string) =>
+      url.includes('sandbox')
+        ? new Response(JSON.stringify({ signedTransactionInfo: unsigned(transaction) }), { status: 200 })
+        : new Response('', { status: 401 })) as unknown as typeof fetch;
+    const unknown = (async (url: string) => new Response('', { status: url.includes('sandbox') ? 404 : 401 })) as unknown as typeof fetch;
+
+    expect(await createAppleVerifier(settings(), fetcher)('goals_cg_30', '2000000456')).toEqual({
+      transactionId: '2000000456',
+      productId: 'goals_cg_30',
+    });
+    await expect(createAppleVerifier(settings(), unknown)('goals_cg_30', '1')).rejects.not.toBeInstanceOf(StoreUnreachableError);
+  });
+
+  it('reports the store as unreachable when it does not answer or refuses the key', async () => {
+    const answering = (status: number) => (async () => new Response('', { status })) as unknown as typeof fetch;
+    await expect(createAppleVerifier(settings(), answering(503))('goals_cg_30', '1')).rejects.toBeInstanceOf(StoreUnreachableError);
+    await expect(createAppleVerifier(settings(), answering(401))('goals_cg_30', '1')).rejects.toBeInstanceOf(StoreUnreachableError);
   });
 });
 
@@ -203,5 +219,16 @@ describe('Google Play verification', () => {
 
     await expect(createGoogleVerifier(settings(), answer(200, { purchaseState: 2 }))('goals_cg_30', 'token')).rejects.toThrow();
     await expect(createGoogleVerifier(settings(), answer(404, {}))('goals_cg_30', 'token')).rejects.toThrow();
+  });
+
+  it('reports the store as unreachable when the service account is refused', async () => {
+    const refusedGrant = (async () => new Response('{}', { status: 400 })) as unknown as typeof fetch;
+    const refusedLookup = (async (url: string) =>
+      url.includes('oauth2')
+        ? new Response(JSON.stringify({ access_token: 'access-1', expires_in: 3600 }), { status: 200 })
+        : new Response('{}', { status: 401 })) as unknown as typeof fetch;
+
+    await expect(createGoogleVerifier(settings(), refusedGrant)('goals_cg_30', 'token')).rejects.toBeInstanceOf(StoreUnreachableError);
+    await expect(createGoogleVerifier(settings(), refusedLookup)('goals_cg_30', 'token')).rejects.toBeInstanceOf(StoreUnreachableError);
   });
 });

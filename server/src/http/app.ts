@@ -204,7 +204,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const history = createMatchHistory(database);
   const progress = createProgress(database, { now, timeZone: config.timeZone });
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
-  const store = createStore(database, progress, dependencies.purchaseVerifiers ?? {}, now);
+  const store = createStore(database, progress, dependencies.purchaseVerifiers ?? {}, now, (error) => app.log.warn(error));
   const notifications = createNotifications(database, {
     now,
     timeZone: config.timeZone,

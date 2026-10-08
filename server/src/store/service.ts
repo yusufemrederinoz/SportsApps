@@ -11,6 +11,7 @@ export function createStore(
   progress: Progress,
   verifiers: PurchaseVerifiers,
   now: () => number = Date.now,
+  onRejected: (error: unknown) => void = () => undefined,
 ) {
   const selectPurchase = database.prepare('SELECT user_id FROM purchases WHERE platform = ? AND transaction_id = ?');
   const insertPurchase = database.prepare(
@@ -34,6 +35,7 @@ export function createStore(
       try {
         verified = await verify(pack.productId, request.proof);
       } catch (error) {
+        onRejected(error);
         throw new ApiError(error instanceof StoreUnreachableError ? 'store-unavailable' : 'purchase-invalid');
       }
 

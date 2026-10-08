@@ -1,6 +1,6 @@
 import { SignJWT, decodeJwt, importPKCS8 } from 'jose';
 
-import { reach, type PurchaseVerifier } from './verifiers';
+import { StoreUnreachableError, reach, type PurchaseVerifier } from './verifiers';
 
 export interface AppleStoreSettings {
   privateKey: string;
@@ -13,6 +13,8 @@ const HOSTS = ['https://api.storekit.itunes.apple.com', 'https://api.storekit-sa
 const AUDIENCE = 'appstoreconnect-v1';
 const TOKEN_LIFETIME = '5m';
 const TRANSACTION_ID = /^\d{1,32}$/;
+const KEY_REFUSED = 401;
+const NOT_FOUND = 404;
 
 export function createAppleVerifier(settings: AppleStoreSettings, fetcher: typeof fetch = fetch): PurchaseVerifier {
   const key = importPKCS8(settings.privateKey, 'ES256');
@@ -31,11 +33,16 @@ export function createAppleVerifier(settings: AppleStoreSettings, fetcher: typeo
       throw new Error('malformed transaction id');
     }
     const token = await authorization();
+    let refusals = 0;
     for (const host of HOSTS) {
       const response = await reach(fetcher, `${host}/inApps/v1/transactions/${proof}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (response.status === 404) {
+      if (response.status === KEY_REFUSED) {
+        refusals += 1;
+        continue;
+      }
+      if (response.status === NOT_FOUND) {
         continue;
       }
       if (!response.ok) {
@@ -47,6 +54,9 @@ export function createAppleVerifier(settings: AppleStoreSettings, fetcher: typeo
         throw new Error('transaction does not match the purchase');
       }
       return { transactionId: String(transaction.transactionId), productId };
+    }
+    if (refusals === HOSTS.length) {
+      throw new StoreUnreachableError('the App Store refused the key');
     }
     throw new Error('transaction not found');
   };

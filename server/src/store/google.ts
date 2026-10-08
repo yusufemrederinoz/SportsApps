@@ -1,6 +1,6 @@
 import { SignJWT, importPKCS8 } from 'jose';
 
-import { reach, type PurchaseVerifier } from './verifiers';
+import { StoreUnreachableError, reach, type PurchaseVerifier } from './verifiers';
 
 export interface GoogleStoreSettings {
   clientEmail: string;
@@ -15,6 +15,7 @@ const GRANT = 'urn:ietf:params:oauth:grant-type:jwt-bearer';
 const TOKEN_LIFETIME = '10m';
 const EARLY_REFRESH = 60 * 1000;
 const PURCHASED = 0;
+const REFUSED_STATUSES = [401, 403];
 
 export function createGoogleVerifier(
   settings: GoogleStoreSettings,
@@ -41,7 +42,7 @@ export function createGoogleVerifier(
       body: new URLSearchParams({ grant_type: GRANT, assertion }).toString(),
     });
     if (!response.ok) {
-      throw new Error(`token request answered ${response.status}`);
+      throw new StoreUnreachableError(`token request answered ${response.status}`);
     }
     const granted = (await response.json()) as { access_token: string; expires_in: number };
     access = { token: granted.access_token, expiresAt: now() + granted.expires_in * 1000 };
@@ -52,6 +53,9 @@ export function createGoogleVerifier(
     const product = encodeURIComponent(productId);
     const url = `${API}/${settings.packageName}/purchases/products/${product}/tokens/${encodeURIComponent(proof)}`;
     const response = await reach(fetcher, url, { headers: { Authorization: `Bearer ${await accessToken()}` } });
+    if (REFUSED_STATUSES.includes(response.status)) {
+      throw new StoreUnreachableError(`purchase lookup refused with ${response.status}`);
+    }
     if (!response.ok) {
       throw new Error(`purchase lookup answered ${response.status}`);
     }
