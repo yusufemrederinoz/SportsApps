@@ -14,10 +14,7 @@ services:
       timeout: 5s
       retries: 3
     logging:
-      driver: json-file
-      options:
-        max-size: "20m"
-        max-file: "5"
+      driver: journald
 
   caddy:
     image: caddy:2
@@ -32,10 +29,7 @@ services:
       - caddy-data:/data
       - caddy-config:/config
     logging:
-      driver: json-file
-      options:
-        max-size: "20m"
-        max-file: "5"
+      driver: journald
 
 volumes:
   caddy-data:
