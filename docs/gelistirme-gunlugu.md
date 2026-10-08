@@ -802,6 +802,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Depo ayarı.** `deploy/.gitattributes` `.webp` dosyasını metin sayıp satır sonlarını değiştiriyordu; `binary` satırı eklendi, depodaki kopyanın sitedekiyle aynı olduğu özetle doğrulandı.
 - **Portre üretimi.** Yüksek çözünürlüklü 2.287 kaynak fotoğrafın hepsi indi (52 dakika). Çizim sürüyor.
 
+### XOX'ta beraberliğin kalkması (9 Ekim 2026)
+
+- **İstek.** Kullanıcı beraberlik olmamasını, üçlü imkânsızlaşınca "en çok kareyi alan kazanır" uyarısı çıkmasını istedi. Üç noktayı seçenekli sorularla kararlaştırdı: üçlü imkânsızlaşınca maç sürer; paslarla biten eşit maçta az hata yapan, o da eşitse ikinci başlayan kazanır; beraberlik bütün oyunlarda kalkacak.
+- **Tespit.** XOX'ta beraberlik yalnızca art arda dört pasla biten ve hücreleri eşit olan maçta çıkıyordu; dolu tahtada zaten çıkamıyordu.
+- **Yapılan.** Motor her tarafın hatasını sayıyor ve maçı kimin başlattığını tutuyor; bitişte kazanan her zaman belli. Uygulama uyarıyı ve yeni sonuç açıklamalarını gösteriyor. Sunucu dağıtıldı; uygulama tarafı sonraki derlemede.
+- **Diğer oyunlar.** Kullanıcı öbür oyunlarda beraberliğin zaten imkânsız olduğunu düşünüyordu. Kod okundu: Zincir (üç tura ilk ulaşan) ve Açık Artırma'da (üç turun ikisi) gerçekten çıkamıyor. Kart Düellosu (yedi tur, tur berabere bitebilir), Kadro Kur (toplam değer), Hangisi Yüksek (üçer devrede doğru sayısı), İlk 10 (iki listede sıra puanı) ve Kariyer Yolu'nda (dört tur, tur kazanansız bitebilir) puanlar eşit bitebiliyor. Bunlar için eşitlik kuralı kullanıcıya sorulacak.
+- Uyarının görünümü emülatörde henüz görülmedi; kural motor testleriyle doğrulandı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -996,3 +1004,5 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `3a774e8` | 9 Ekim | Site başlığında alev animasyonu |
 | `c1a35de` | 9 Ekim | Logo animasyonunun kaynağı ve yakalama düzeneği |
 | `89de5bd` | 9 Ekim | Site WebP dosyalarının ikili saklanması |
+| `9e2b251` | 9 Ekim | Logo animasyonları, gol simgesi ve postanın belgelenmesi |
+| `7c1ee09` | 9 Ekim | XOX'ta her maçın bir kazananla bitmesi ve hücre uyarısı |
