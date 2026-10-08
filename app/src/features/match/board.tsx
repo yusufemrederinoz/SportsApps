@@ -21,11 +21,14 @@ import { useNameUppercase } from '@/i18n/uppercase';
 
 import { ClaimBurst } from './claim-burst';
 import { flagEmoji } from './flags';
-import { FootballerCard, type CardEmphasis } from './footballer-card';
+import { BANNER_TOP, FootballerCard, type CardEmphasis } from './footballer-card';
 import type { MatchSession } from './session';
 
 const GAP = 6;
 const CREST_SIZE = 34;
+const CAPTION_GAP = 0;
+const CAPTION_FONT_SCALE = 0.125;
+const CAPTION_LINE_SCALE = 0.15;
 const TRACKS = BOARD_SIZE + 1;
 const INDEXES = Array.from({ length: BOARD_SIZE }, (_, index) => index);
 const SHAKE_STEPS = [-11, 10, -7, 6, -3, 0];
@@ -221,8 +224,14 @@ export function Board({ gridView, session, disabled, selected, cellCaption, onSe
                           accessibilityLabel={`${cellLabel}: ${footballer?.name ?? ''}${caption ? `, ${caption}` : ''}`}>
                           <FootballerCard footballer={footballer} side={mark.side} size={cell} emphasis={emphasisOf(index)} />
                           {caption ? (
-                            <View style={styles.caption} pointerEvents="none">
-                              <ThemedText style={styles.captionText}>{caption}</ThemedText>
+                            <View style={[styles.caption, { bottom: cell * (1 - BANNER_TOP) + CAPTION_GAP }]} pointerEvents="none">
+                              <ThemedText
+                                style={[
+                                  styles.captionText,
+                                  { fontSize: cell * CAPTION_FONT_SCALE, lineHeight: cell * CAPTION_LINE_SCALE },
+                                ]}>
+                                {caption}
+                              </ThemedText>
                             </View>
                           ) : null}
                         </View>
@@ -325,17 +334,13 @@ const styles = StyleSheet.create({
   },
   caption: {
     position: 'absolute',
-    top: 4,
-    right: 4,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    borderRadius: 6,
+    left: 5,
+    paddingHorizontal: 4,
+    borderRadius: 5,
     backgroundColor: 'rgba(5, 7, 10, 0.82)',
   },
   captionText: {
     fontFamily: Fonts.heading,
-    fontSize: 13,
-    lineHeight: 16,
     color: Colors.volt,
   },
 });

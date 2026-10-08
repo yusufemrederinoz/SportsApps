@@ -26,6 +26,8 @@ import type { PlayedFootballer } from './session';
 
 export type CardEmphasis = 'none' | 'winner' | 'dimmed';
 
+export const BANNER_TOP = 0.62;
+
 const STREAK = 'rgba(255, 255, 255, 0.20)';
 const SHINE = 'rgba(255, 255, 255, 0.85)';
 const SHINE_FADE = 'rgba(255, 255, 255, 0)';
@@ -75,7 +77,7 @@ export function FootballerCard({ footballer, side, size, emphasis, watermark = t
   const path = platePath(size, size, size * 0.12, 'right', size * 0.2);
   const roleKey = footballer?.role && footballer.role in ROLE_KEYS ? ROLE_KEYS[footballer.role as keyof typeof ROLE_KEYS] : null;
   const flag = flagEmoji(footballer?.countryCode ?? null);
-  const bannerTop = size * 0.62;
+  const bannerTop = size * BANNER_TOP;
   const portrait = footballer?.hasPortrait ? portraitUrl(footballer.id) : null;
   const portraitSize = size * PORTRAIT_SCALE;
 
