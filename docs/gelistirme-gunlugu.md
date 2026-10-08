@@ -748,6 +748,13 @@ Sonuçlar:
 - **Mağaza metinleri.** Türkçe ve İngilizce ad, kısa açıklama, tam açıklama, App Store alt başlığı ve anahtar kelimeleri `docs/magaza-metinleri.md` dosyasına yazıldı; hepsi karakter sınırlarının içinde (betikle sayıldı). Ekran görüntüleri yeni portre ve armaları içeren derlemeden alınacak.
 - **Portre üretimi.** 22.28'de hâlâ indirme aşamasında: 10.783 kaynak fotoğrafın 3.873'ü inmişti (dakikada yaklaşık 65).
 
+### Apple jetonunun iptali
+
+- Hesap silinince "Apple ile giriş" jetonu artık iptal ediliyor (App Store incelemesinin şartı). Uygulama girişte yetki kodunu da gönderiyor; sunucu yenileme jetonunu saklıyor ve silmede iptal ediyor.
+- Anahtar (`AuthKey_AAGV57MPNC.p8`) sunucunun gizli klasörüne kondu, `.env` dosyasına üç ayar eklendi, sunucu dağıtıldı; 14. veritabanı geçişi canlıda uygulandı.
+- Anahtar Apple'a karşı sınandı: uydurma bir kodla `auth/token` "kod geçersiz" (`invalid_grant`) yanıtı verdi, yani istemci gizlisi kabul ediliyor (reddedilseydi `invalid_client` dönerdi). `auth/revoke` uydurma jetona da 200 döndürüyor; Apple'ın belgelenmiş davranışı.
+- Gerçek bir Apple hesabıyla uçtan uca deneme iOS derlemesi telefona kurulunca yapılabilir. Uygulama tarafı sonraki derlemeyle gelir; eski derleme kod göndermediği için sunucu onunla da çalışmayı sürdürüyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -926,3 +933,5 @@ Sonuçlar:
 | `910c175` | 8 Ekim | Üretilmiş kulüp armaları |
 | `8b17a16` | 8 Ekim | Armalar, puan koruma ve yeni portre tarzının belgelenmesi |
 | `8ca39d9` | 8 Ekim | Yalnızca baş portrelerin kartlara, zincir düğümlerine ve kadro yuvalarına oturtulması |
+| `b8c96bd` | 8 Ekim | Mağaza metinleri ve üçüncü cihaz denemesinin kaydı |
+| `48094dc` | 8 Ekim | Hesap silinince Apple ile giriş jetonunun iptali |
