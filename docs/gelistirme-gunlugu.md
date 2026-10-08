@@ -755,6 +755,12 @@ Sonuçlar:
 - Anahtar Apple'a karşı sınandı: uydurma bir kodla `auth/token` "kod geçersiz" (`invalid_grant`) yanıtı verdi, yani istemci gizlisi kabul ediliyor (reddedilseydi `invalid_client` dönerdi). `auth/revoke` uydurma jetona da 200 döndürüyor; Apple'ın belgelenmiş davranışı.
 - Gerçek bir Apple hesabıyla uçtan uca deneme iOS derlemesi telefona kurulunca yapılabilir. Uygulama tarafı sonraki derlemeyle gelir; eski derleme kod göndermediği için sunucu onunla da çalışmayı sürdürüyor.
 
+### Kalıcı oyuncu kimlikleri
+
+- Oyuncu kimlikleri artık depodaki `data/registry/player_ids.csv` kaydından geliyor (72.435 satır, 1,4 MB). Kayıt mevcut veritabanından tohumlandı; hiçbir kimlik değişmedi.
+- Doğrulama: veri hattının birleştirme adımı önbellekteki kaynaklarla bellekte yeniden çalıştırıldı (12 saniye, hiçbir dosya yazılmadan); 72.435 oyuncunun kimliği ve kaynakları mevcut veritabanıyla birebir aynı çıktı, kayıt değişmedi.
+- Veri testleri 61 oldu; biri (`test_every_listed_portrait_has_an_image_file`) portre üretimi sürdüğü için şimdilik başarısız, üretim ve `export` bitince geçecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -935,3 +941,5 @@ Sonuçlar:
 | `8ca39d9` | 8 Ekim | Yalnızca baş portrelerin kartlara, zincir düğümlerine ve kadro yuvalarına oturtulması |
 | `b8c96bd` | 8 Ekim | Mağaza metinleri ve üçüncü cihaz denemesinin kaydı |
 | `48094dc` | 8 Ekim | Hesap silinince Apple ile giriş jetonunun iptali |
+| `0b02850` | 8 Ekim | Apple jetonu iptalinin belgelenmesi |
+| `b729993` | 8 Ekim | Kalıcı oyuncu kimliği kaydı |
