@@ -731,6 +731,14 @@ Sonuçlar:
 - Arma renkleri için otomatik kaynaklar yetersiz; 219 kulüp elle derlenip denetlenecek kadar az.
 - Telifli fotoğraf kaynaklarından (ör. Transfermarkt, ajans fotoğrafları) üretim yapılmayacak.
 
+### Armalar, puan koruma ve yeni portre tarzı
+
+- **Armalar.** 219 kulübün renk, desen ve kısaltma tablosu elle derlendi; armalar kalkan kalıbından üretilip XOX başlıklarına, Kariyer Yolu, Zincir ve Kadro Kur ekranlarına kondu. Bütün armalar tarayıcıda tek sayfada çizdirilip gözden geçirildi. Uygulamadaki Skia çizimi cihazda henüz görülmedi.
+- **Puan koruma.** Kullanıcı sınırsız olmasını seçti. Sunucu tarafı canlıda; uygulama tarafı sonraki derlemede. Reklam `no-fill` döndüğü için düğme ancak deneme reklamı gelirse görünür; uçtan uca denenmedi.
+- **Portreler.** 15 tanınmış oyuncuyla deneme yapıldı: yalnızca baş, fotoğrafa yakın boyama. Eski tarzda tanınmayan Ronaldo, Messi ve Arda Güler'in yanında yeni tarzda benzerlik belirgin biçimde arttı; kullanıcı beğendi ve "aslına yakın" tarzı, bilinirlik 20+ kapsamını seçti. Hız görsel başına 3,7 saniye. Provada çıkan sorunlar (omuzların ve yakaların kadraja girmesi, kopuk el) baş sınırı daraltılarak ve kopuk parçalar atılarak giderildi; başı öne eğik pozlarda yaka kalıntısı ve arkada başka biri olan fotoğraflarda ikinci baş hâlâ çıkabiliyor. Bulanık kaynaklar eleniyor (ilk 24 oyuncuda 1). Toplu üretim 8 Ekim 21.52'de başlatıldı; eski tarzdaki 1.232 görsel `data/build/portraits-comic` altına alındı. Üretim bitince `export` ayrıca çalıştırılacak: veri sürümünü değiştirdiği için uygulama derlemesiyle birlikte yapılmalı.
+- **Google ile giriş.** Yeni kimliklerle derlenen sürümde "giriş tamamlanamadı" çıktı. Sunucuya istek gelmediği için hata cihazda, Google'ın penceresinde; en olası neden Play imzasıyla eşleşen Android istemcisinin eksik ya da yanlış olması. Kullanıcı Google Cloud'da denetleyecek; sonraki derleme hata kodunu gösterecek.
+- **Derleme kuralı.** Kullanıcı, onayı olmadan Expo'ya derleme gönderilmemesini istedi; kuyruktaki derleme iptal edildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -902,3 +910,8 @@ Sonuçlar:
 | `8cdaf9b` | 8 Ekim | E-postayla gönderilen kodla şifre sıfırlama (sunucu) |
 | `63bb1d2` | 8 Ekim | Şifremi unuttum ekranı |
 | `122b66d` | 8 Ekim | Yönetim paneli: anlık ve günlük istatistikler |
+| `ae290f1` | 8 Ekim | Bağlantı uyarısı, futbolcu aramada klavye, rakip arama ekranında uyarı metni |
+| `21de325` | 8 Ekim | Reklamla puan koruma (sunucu) |
+| `dfee472` | 8 Ekim | Sonuç ekranında puan koruma |
+| `86c2c8d` | 8 Ekim | Portrelerin yalnızca baş kesimiyle çizilmesi, bulanık kaynak eleği, bilinirlik 20+ |
+| `910c175` | 8 Ekim | Üretilmiş kulüp armaları |
