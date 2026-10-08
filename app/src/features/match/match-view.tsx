@@ -1,4 +1,4 @@
-import { countCells, opponentOf, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
+import { countCells, lineStillPossible, opponentOf, usedFootballerIds, type CellPosition, type Side } from '@sportapps/game-core';
 import { useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -6,7 +6,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
-import { Colors, Finishes, MinimumTouchSize, Motion, Spacing } from '@/constants/theme';
+import { Colors, Finishes, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import type { FootballerSummary, GridView, HeaderView } from '@/data/types';
 import { useNameUppercase, useUppercase } from '@/i18n/uppercase';
 
@@ -70,6 +70,7 @@ export function MatchView({
   const { result } = match;
   const selected = selection && selection.turnNumber === match.turnNumber && canPlay ? selection.position : null;
   const urgent = !result && secondsLeft <= URGENT_SECONDS;
+  const cellsDecide = !result && !lineStillPossible(match);
   const scores = { x: countCells(match, 'x'), o: countCells(match, 'o') };
   const ownSide = opponentOf(opponentSide);
   const resultTone = !result?.winner ? 'draw' : result.winner === opponentSide ? 'loss' : 'win';
@@ -138,6 +139,14 @@ export function MatchView({
         />
       </Animated.View>
 
+      {cellsDecide ? (
+        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.rule} accessible accessibilityLiveRegion="polite">
+          <ThemedText type="label" themeColor="volt" style={styles.ruleText}>
+            {uppercase(t('match.cellsDecide'))}
+          </ThemedText>
+        </Animated.View>
+      ) : null}
+
       <View style={styles.status}>
         {feedback && !result ? (
           <FeedbackStamp key={match.turnNumber} feedback={feedback} opponentSide={opponentSide} homeCountryCode={marketCode.toUpperCase()} />
@@ -195,6 +204,18 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: Spacing.two,
     paddingVertical: Spacing.half,
+  },
+  rule: {
+    alignSelf: 'stretch',
+    borderWidth: 1,
+    borderColor: Colors.volt,
+    borderRadius: Radius.medium,
+    paddingHorizontal: Spacing.three,
+    paddingVertical: Spacing.two,
+    backgroundColor: Colors.panel,
+  },
+  ruleText: {
+    textAlign: 'center',
   },
   status: {
     flex: 1,

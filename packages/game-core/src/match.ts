@@ -46,9 +46,11 @@ export function createMatch(grid: Grid, startingSide: Side, rules: MatchRules = 
     grid,
     rules,
     cells: Array.from({ length: CELL_COUNT }, () => null),
+    starter: startingSide,
     turn: startingSide,
     turnNumber: 1,
     consecutiveMisses: 0,
+    misses: { x: 0, o: 0 },
     result: null,
   };
 }
@@ -88,6 +90,10 @@ function hasLine(cells: readonly (Mark | null)[], side: Side): boolean {
   return LINES.some((line) => line.every((index) => cells[index]?.side === side));
 }
 
+export function lineStillPossible(state: MatchState): boolean {
+  return LINES.some((line) => new Set(line.flatMap((index) => state.cells[index]?.side ?? [])).size < 2);
+}
+
 export function findWinningLine(state: MatchState): readonly number[] | null {
   const winner = state.result?.reason === 'line' ? state.result.winner : null;
   if (!winner) {
@@ -106,7 +112,13 @@ export function completesLine(state: MatchState, position: CellPosition, side: S
 function settleByCells(state: MatchState): MatchResult {
   const x = countCells(state, 'x');
   const o = countCells(state, 'o');
-  return { winner: x === o ? null : x > o ? 'x' : 'o', reason: 'cells' };
+  if (x !== o) {
+    return { winner: x > o ? 'x' : 'o', reason: 'cells' };
+  }
+  if (state.misses.x !== state.misses.o) {
+    return { winner: state.misses.x < state.misses.o ? 'x' : 'o', reason: 'misses' };
+  }
+  return { winner: opponentOf(state.starter), reason: 'second' };
 }
 
 function assertTurn(state: MatchState, side: Side): void {
@@ -123,7 +135,11 @@ function passTurn(state: MatchState): MatchState {
 }
 
 function recordMiss(state: MatchState): MatchState {
-  const missed = { ...state, consecutiveMisses: state.consecutiveMisses + 1 };
+  const missed = {
+    ...state,
+    consecutiveMisses: state.consecutiveMisses + 1,
+    misses: { ...state.misses, [state.turn]: state.misses[state.turn] + 1 },
+  };
   if (missed.consecutiveMisses >= missed.rules.maxConsecutiveMisses) {
     return { ...missed, result: settleByCells(missed) };
   }

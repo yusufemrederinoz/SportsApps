@@ -26,6 +26,7 @@ import { useLeaveGuard } from '@/features/match/leave-guard';
 import { MatchRewardContext, ProtectedMatchContext } from '@/features/match/match-reward';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
+import { resultDetailKey } from '@/features/match/result-detail';
 import { BOT_SIDE, useMatch } from '@/features/match/use-match';
 import { useOnlineMatch, type OnlineEntry } from '@/features/match/use-online-match';
 import { useProgress } from '@/features/progress/use-progress';
@@ -67,7 +68,7 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
         tag={t(DIFFICULTY_LABELS[difficulty])}
         turnLabel={t(match.turn === BOT_SIDE ? 'match.turnRival' : 'match.turnYours')}
         resultTitle={resultTitle}
-        resultDetail={t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells')}
+        resultDetail={t(resultDetailKey(result?.reason))}
         playAgainLabel={t('match.playAgain')}
         onAnswer={(position, footballer) => void answer(position, footballer)}
         onPlayAgain={restart}
@@ -168,7 +169,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     const resultDetail =
       result?.reason === 'forfeit'
         ? t(won ? 'match.byForfeitWin' : 'match.byForfeitLoss')
-        : t(result?.reason === 'line' ? 'match.byLine' : 'match.byCells');
+        : t(resultDetailKey(result?.reason));
 
     return (
       <MatchView

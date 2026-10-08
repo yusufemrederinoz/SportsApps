@@ -299,7 +299,7 @@ describe.skipIf(!available)('play gateway', () => {
     await second.next('match');
     const grid = gridOf(mine);
     const starter = mine.side === mine.startingSide ? first : second;
-    const [cell] = emptyCells({ grid, rules: { turnSeconds: 20, maxConsecutiveMisses: 4 }, cells: Array(9).fill(null), turn: 'x', turnNumber: 1, consecutiveMisses: 0, result: null });
+    const [cell] = emptyCells({ grid, rules: { turnSeconds: 20, maxConsecutiveMisses: 4 }, cells: Array(9).fill(null), starter: 'x', turn: 'x', turnNumber: 1, consecutiveMisses: 0, misses: { x: 0, o: 0 }, result: null });
     if (!cell) {
       throw new Error('no cell');
     }

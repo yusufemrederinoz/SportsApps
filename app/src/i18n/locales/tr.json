@@ -135,7 +135,10 @@
     "byForfeitWin": "Rakibin maçtan ayrıldı",
     "byForfeitLoss": "Maçtan ayrıldın",
     "newOpponent": "Yeni rakip",
-    "turnRival": "Sıra rakipte"
+    "turnRival": "Sıra rakipte",
+    "byFewerMisses": "Kareler eşit, daha az hata",
+    "bySecondMove": "Her şey eşit, ikinci başlayan kazandı",
+    "cellsDecide": "Üçlü artık mümkün değil. En çok kareyi alan kazanır."
   },
   "search": {
     "placeholder": "Futbolcu adı yaz",

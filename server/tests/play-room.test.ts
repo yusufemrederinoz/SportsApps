@@ -93,11 +93,11 @@ describe('match room', () => {
     expect(room.state().turn).toBe('o');
   });
 
-  it('ends in a draw by cells after four misses in a row', () => {
+  it('ends for the side that moved second after four misses in a row', () => {
     const { room, recorded } = startRoom();
     vi.advanceTimersByTime((TURN + TURN_GRACE_MILLISECONDS) * 4);
     expect(recorded.moves).toHaveLength(4);
-    expect(recorded.results).toEqual([{ winner: null, reason: 'cells' }]);
+    expect(recorded.results).toEqual([{ winner: 'o', reason: 'second' }]);
     expect(room.finishedAt()).not.toBeNull();
     vi.advanceTimersByTime(TURN * 3);
     expect(recorded.moves).toHaveLength(4);

@@ -9,6 +9,7 @@ import {
   findWinningLine,
   forfeit,
   headersAt,
+  lineStillPossible,
   skipTurn,
   submitAnswer,
   usedFootballerIds,
@@ -157,12 +158,27 @@ describe('skipTurn', () => {
     expect(claimed.consecutiveMisses).toBe(0);
   });
 
-  it('ends a stalled match as a draw when both sides hold the same number of cells', () => {
-    let state = createMatch(grid, 'x');
-    for (const side of ['x', 'o', 'x', 'o'] as const) {
+  it('gives a stalled match with level cells to the side that missed less', () => {
+    let state = submitAnswer(createMatch(grid, 'x'), 'x', at(0, 0), 99, never).state;
+    state = submitAnswer(state, 'o', at(0, 0), 7, always).state;
+    state = submitAnswer(state, 'x', at(0, 1), 8, always).state;
+    for (const side of ['o', 'x', 'o', 'x'] as const) {
       state = skipTurn(state, side);
     }
-    expect(state.result).toEqual({ winner: null, reason: 'cells' });
+    expect(state.misses).toEqual({ x: 3, o: 2 });
+    expect(state.result).toEqual({ winner: 'o', reason: 'misses' });
+  });
+
+  it('gives a match that is level in every way to the side that moved second', () => {
+    const play = (starter: Side) => {
+      let state = createMatch(grid, starter);
+      for (let turn = 0; turn < 4; turn += 1) {
+        state = skipTurn(state, state.turn);
+      }
+      return state.result;
+    };
+    expect(play('x')).toEqual({ winner: 'o', reason: 'second' });
+    expect(play('o')).toEqual({ winner: 'x', reason: 'second' });
   });
 
   it('ends a stalled match in favour of the side with more cells', () => {
@@ -171,6 +187,37 @@ describe('skipTurn', () => {
       state = skipTurn(state, side);
     }
     expect(state.result).toEqual({ winner: 'x', reason: 'cells' });
+  });
+});
+
+describe('line outlook', () => {
+  const moves: [Side, number][] = [
+    ['x', 0],
+    ['o', 1],
+    ['x', 2],
+    ['o', 4],
+    ['x', 3],
+    ['o', 5],
+    ['x', 7],
+    ['o', 6],
+  ];
+  const playUntil = (count: number) =>
+    moves.slice(0, count).reduce(
+      (state, [side, index], order) => submitAnswer(state, side, at(Math.floor(index / 3), index % 3), order + 1, always).state,
+      createMatch(grid, 'x'),
+    );
+
+  it('stays open while one side can still fill a line', () => {
+    expect(lineStillPossible(createMatch(grid, 'x'))).toBe(true);
+    expect(lineStillPossible(playUntil(7))).toBe(true);
+  });
+
+  it('closes once every line holds both sides, and the fuller side then wins', () => {
+    const blocked = playUntil(8);
+    expect(blocked.result).toBeNull();
+    expect(lineStillPossible(blocked)).toBe(false);
+    const full = submitAnswer(blocked, 'x', at(2, 2), 9, always).state;
+    expect(full.result).toEqual({ winner: 'x', reason: 'cells' });
   });
 });
 

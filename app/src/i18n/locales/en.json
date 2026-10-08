@@ -135,7 +135,10 @@
     "byForfeitWin": "Your opponent left the match",
     "byForfeitLoss": "You left the match",
     "newOpponent": "New opponent",
-    "turnRival": "Your opponent's turn"
+    "turnRival": "Your opponent's turn",
+    "byFewerMisses": "Cells level, fewer misses",
+    "bySecondMove": "All level, second to move wins",
+    "cellsDecide": "No line is possible any more. Most cells wins."
   },
   "search": {
     "placeholder": "Type a footballer's name",

@@ -30,7 +30,7 @@ export interface MatchRules {
   maxConsecutiveMisses: number;
 }
 
-export type FinishReason = 'line' | 'cells' | 'forfeit';
+export type FinishReason = 'line' | 'cells' | 'misses' | 'second' | 'forfeit';
 
 export interface MatchResult {
   winner: Side | null;
@@ -41,9 +41,11 @@ export interface MatchState {
   grid: Grid;
   rules: MatchRules;
   cells: readonly (Mark | null)[];
+  starter: Side;
   turn: Side;
   turnNumber: number;
   consecutiveMisses: number;
+  misses: Record<Side, number>;
   result: MatchResult | null;
 }
 
