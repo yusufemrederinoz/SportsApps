@@ -574,7 +574,7 @@ Yeni bir hesapla (test_kaan) emülatörde bütün uygulama kullanıcı gözüyle
 - **Arama penceresi.** Giriş alanına açılışta güvenilir biçimde odaklanıyor, seçimden sonra odak kalıyor; pencere süre dolup kapanınca klavye ekranda kalmıyor.
 - **Küçükler.** XOX'ta botun doğru cevabı yeşil "DOĞRU!" yerine altın "RAKİP BİLDİ"; giriş ve kayıt formlarında yazmaya başlayınca eski hata kayboluyor; "Şifre aşağıdaki kurallara uymuyor" yerine "Şifre kurallara uymuyor" (kurallar üstte); hesap ekranında "Henüz maç yok"; gol 3'ün altına inince joker çubuğunun altında "Joker 3 gol, sende 2 gol var".
 
-Düzeltilmeyenler ve karar bekleyenler [teknik-mimari.md](teknik-mimari.md) "Bilinen eksikler" bölümünde: tanıtım ve karşılama yalnızca XOX'u anlatıyor, 15 gol hediyesi açıklanmıyor, Kart Düellosu'nda iki elde aynı futbolcu olabiliyor, bazı çizimlerde yüz başka birine dönüşmüş (Arda Güler).
+Karar bekleyen üç konu seçenekli soruldu. Tanıtım yenilendi: üç sayfa artık dokuz oyunu, puan, seviye ve lider tablosunu, gol ve jokerleri anlatıyor; karşılamadaki XOX kuralı yerine genel bir cümle var; ilk günlük ödül penceresinde "Hoş geldin hediyesi: +15 gol" ve golün joker için harcandığı yazıyor (sunucu, hesabın ilk günlük ödülünde `welcomeGoals` alanını gönderiyor). Yüzü başka birine dönen çizimler (Arda Güler, Arthur) şimdilik kalıyor. Kart Düellosu'nda iki elde aynı futbolcunun olabilmesi bilinçli olarak kalıyor (karşılaşırlarsa tur berabere).
 
 Doğrulama: 189 sunucu ve 97 uygulama testi; düzeltmeler emülatörde tek tek denendi (İlk 10'da "LIONEL MESSI LİSTEDE YOK" satırı, Açık Artırma'da açık kalan pencere ve üstü çizili isimler, arkadaş maçından ana ekrana dönüş, ikinci günün +2 gol penceresi, joker uyarısı).
 
@@ -712,3 +712,6 @@ Doğrulama: 189 sunucu ve 97 uygulama testi; düzeltmeler emülatörde tek tek d
 | `b887c09` | 8 Ekim | Boş maç geçmişi yazısı |
 | `9543b57` | 8 Ekim | Oda kodunu paylaşma ve odanın oyunu |
 | `214360d` | 8 Ekim | Gol yetmeyince joker uyarısı |
+| `9bf3142` | 8 Ekim | Belgeler: uçtan uca kullanıcı testi |
+| `81f77f5` | 8 Ekim | İlk günlük ödülde hoş geldin hediyesinin işaretlenmesi |
+| `24054ad` | 8 Ekim | Dokuz oyunu, puanı ve golü anlatan tanıtım; ilk ödülde hoş geldin hediyesi |

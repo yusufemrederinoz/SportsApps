@@ -79,7 +79,7 @@ Kurallar:
 | Mod kartı | Ana ekrandaki büyük girişler: online maç neon, arkadaş odası çelik, bota karşı altın kaplama |
 | İlerleme rozeti | Ana ekranın sol üstünde: neon zeminde seviye ("SV 3"), toplam puan ve sonraki seviyeye ince çubuk, yanında gol simgesi ve gol sayısı. Dokununca geçmiş ekranı açılır |
 | Gol simgesi | Skia ile çizilmiş futbol topu (emoji değil). Gol miktarları altın renkle yazılır |
-| Günlük ödül penceresi | Dönerek gelen büyük top, altın "+3", "3. GÜN", yedi günlük seri kutuları (bugün altın dolu), "Topla" düğmesi; açılışta başarı titreşimi ve ses |
+| Günlük ödül penceresi | Dönerek gelen büyük top, altın "+3", "3. GÜN", yedi günlük seri kutuları (bugün altın dolu), "Topla" düğmesi; açılışta başarı titreşimi ve ses. Hesabın ilk ödülünde altın çerçeveli "Hoş geldin hediyesi: +15 gol" kutusu |
 | Onay penceresi | Karartılmış zemin üstünde metal levha: kırmızı başlık, açıklama, birincil "Maça devam et", ikincil "Maçı terk et". Güvenli seçenek birincildir |
 | Ana ekran kutucukları | Kahraman yazının altında iki yan yana kutucuk: "Günün bulmacası #7" (üstte altın çizgi, altında durum: "9 hak", "3/9 · 240 puan", "Bitti · 640 puan") ve "Lider tablosu" (neon çizgi) |
 | Lider tablosu satırı | Sıra dairesi (ilk üçte altın, gümüş, bronz), kullanıcı adı, koyu zeminde neon seviye etiketi ("SV 3"), sağda büyük puan. Oyuncunun kendi satırı neon çerçeveli; ilk 50'de değilse listenin altında "Senin sıran" başlığıyla durur |
@@ -99,8 +99,8 @@ Kurallar:
 | Form ekranı (`FormScreen`) | Geri bağlantısı ve büyük başlık üstte, alanlar hemen altında. Klavye açılınca odaklanan alan yukarı kayar |
 | Metin alanı (`TextField`) | Üstünde büyük harf etiket; odaklanınca etiket ve kenarlık volt olur |
 | Şifre kuralları | Her kural bir satır; sağlanan kuralın işareti ve yazısı yeşile döner |
-| Tanıtım | Üç sayfa: üstte örnek görsel, altta volt numara, eğik başlık ve kısa açıklama. Altta sayfa noktaları ve tek ana düğme |
-| Karşılama | Uygulama adı üstte; altta bir ana düğme (misafir) ve iki ikincil düğme (giriş, hesap oluştur) |
+| Tanıtım | Üç sayfa: dokuz oyunun adları (ilki volt dolgu), büyük "SV 3" rozeti ve yeşil "+25 PUAN", dönen top ve altın "+15". Altta volt numara, eğik başlık ve kısa açıklama; sayfa noktaları ve tek ana düğme |
+| Karşılama | Uygulama adı ve dokuz oyunu anlatan tek cümle üstte; altta bir ana düğme (misafir) ve iki ikincil düğme (giriş, hesap oluştur) |
 
 ## Hareket
 

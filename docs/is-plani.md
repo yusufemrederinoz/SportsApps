@@ -245,6 +245,7 @@ Yapılanlar:
 - Kadro Kur: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
 - Hangisi Yüksek, Zincir, En Az Bilinen, Açık Artırma, İlk 10 ve Kariyer Yolu: kural motoru, sunucu odası ve bot, uygulama ekranı. Emülatörde bota karşı denendi.
 - Kulüplere katılış ve ayrılış yılları uygulama veritabanında.
+- Tanıtımın dokuz oyunu, puan ve seviyeyi, golü ve jokerleri anlatacak biçimde yenilenmesi; ilk günlük ödülde hoş geldin hediyesi (8 Ekim).
 - İlk geri bildirim düzeltmeleri: her modda "Bota karşı" girişi (sıra beklemeden), aynı cihazda iki kişilik modun kaldırılması, Kart Düellosu ve Hangisi Yüksek'te soru tekrarının önlenmesi, seçilen oyunun listede ortalanması, kart seçerken seçilen kartların arama penceresinde görünmesi, arama sonuçlarından bayrağın kaldırılması, ikinci tekil metinlerin düzeltilmesi, bağlantı hatasında "Tekrar dene".
 
 Kalanlar:
@@ -253,7 +254,6 @@ Kalanlar:
 - Bot zorluklarının mod mod gözden geçirilmesi (şu an kurallar tahmine dayalı).
 - Kart Düellosu ve diğer modlar için internetsiz (bota karşı) oyun.
 - Turnuva katılımı verisi ("Dünya Kupası'nda oynamış") ve transfer yönü konseptleri.
-- Tanıtım ve karşılamanın dokuz modu, puan ve seviyeyi, golü, jokerleri ve günün bulmacasını anlatacak biçimde yenilenmesi (8 Ekim uçtan uca testinden).
 
 Bitti sayılır: Dokuz mod da online (bot ve arkadaş odası dahil) oynanır; her biri için kural testleri, sunucu testleri ve emülatörde baştan sona bir maç vardır.
 
