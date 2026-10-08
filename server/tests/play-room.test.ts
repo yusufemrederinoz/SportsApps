@@ -2,7 +2,7 @@ import type { Grid, Header } from '@sportapps/game-core';
 import type { PlayMove, PlayResult } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { botLevelFor, createBotName } from '../src/play/bot';
+import { BOT_TARGET_WIN_RATES, RANKED_TARGET_WIN_RATE, botLevelFor, createBotName } from '../src/play/bot';
 import { parseClientMessage } from '../src/play/messages';
 import { TURN_GRACE_MILLISECONDS, createMatchRoom, type MatchRoom } from '../src/play/room';
 
@@ -159,16 +159,29 @@ describe('bot disguise and level', () => {
   });
 
   it('follows the chosen difficulty until there is a record to adapt to', () => {
-    expect(botLevelFor(2, [])).toBe(2);
-    expect(botLevelFor(2, ['win', 'win'])).toBe(2);
+    expect(botLevelFor(2, [], RANKED_TARGET_WIN_RATE)).toBe(2);
+    expect(botLevelFor(2, ['win', 'win'], RANKED_TARGET_WIN_RATE)).toBe(2);
   });
 
   it('plays stronger against a winning player and weaker against a losing one', () => {
-    expect(botLevelFor(2, ['win', 'win', 'win', 'loss'])).toBe(3);
-    expect(botLevelFor(2, ['loss', 'loss', 'draw', 'loss'])).toBe(1);
-    expect(botLevelFor(2, ['win', 'loss', 'win', 'loss'])).toBe(2);
-    expect(botLevelFor(3, ['win', 'win', 'win'])).toBe(3);
-    expect(botLevelFor(1, ['loss', 'loss', 'loss'])).toBe(1);
+    expect(botLevelFor(2, ['win', 'win', 'win', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(3);
+    expect(botLevelFor(2, ['loss', 'loss', 'draw', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(1);
+    expect(botLevelFor(2, ['win', 'loss', 'win', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(2);
+    expect(botLevelFor(3, ['win', 'win', 'win'], RANKED_TARGET_WIN_RATE)).toBe(3);
+    expect(botLevelFor(1, ['loss', 'loss', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(1);
+  });
+
+  it('aims at a higher win rate on easy and a lower one on hard', () => {
+    const fourOfFive = ['win', 'win', 'win', 'win', 'loss'] as const;
+    const twoOfFive = ['win', 'win', 'loss', 'loss', 'loss'] as const;
+    const oneOfFive = ['win', 'loss', 'loss', 'loss', 'loss'] as const;
+    expect(botLevelFor(1, fourOfFive, BOT_TARGET_WIN_RATES[1])).toBe(1);
+    expect(botLevelFor(1, ['win', 'win', 'win', 'win', 'win'], BOT_TARGET_WIN_RATES[1])).toBe(2);
+    expect(botLevelFor(2, twoOfFive, BOT_TARGET_WIN_RATES[1])).toBe(1);
+    expect(botLevelFor(3, twoOfFive, BOT_TARGET_WIN_RATES[3])).toBe(3);
+    expect(botLevelFor(2, ['win', 'win', 'win', 'loss', 'loss'], BOT_TARGET_WIN_RATES[3])).toBe(3);
+    expect(botLevelFor(3, oneOfFive, BOT_TARGET_WIN_RATES[3])).toBe(3);
+    expect(botLevelFor(3, ['loss', 'loss', 'loss', 'loss', 'loss'], BOT_TARGET_WIN_RATES[3])).toBe(2);
   });
 });
 

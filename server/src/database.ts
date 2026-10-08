@@ -131,6 +131,9 @@ const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE ratings ADD COLUMN rating INTEGER NOT NULL DEFAULT 1000;
   `,
+  `
+  ALTER TABLE matches ADD COLUMN bot_level INTEGER;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

@@ -22,7 +22,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -105,7 +104,7 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
     }
 
     const startedAt = now();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     let state: CareerState = createCareer(
       mysteries.map((mystery) => ({ footballerId: mystery.footballerId, clues: mystery.path.length })),
       random() < 0.5 ? 'x' : 'o',

@@ -22,7 +22,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -72,7 +71,7 @@ export function createChainRoomFactory(library: ChainLibrary, timing: ChainTimin
 
     const startedAt = now();
     const usedSeeds = new Set<number>();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     const pickSeed = () => {
       const fresh = seeds.filter((seed) => !usedSeeds.has(seed));
       const seed = pick(fresh.length > 0 ? fresh : seeds, random);

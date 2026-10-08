@@ -2,7 +2,7 @@ import { BOARD_SIZE, cellIndex, countCells, usedFootballerIds } from '@sportapps
 import { EXTRA_TIME_SECONDS } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { DEFAULT_BOT_TIMING, botLevelFor, createBotPlayer, type BotTiming } from './bot';
+import { DEFAULT_BOT_TIMING, createBotPlayer, type BotTiming } from './bot';
 import { NO_JOKER, SIDES, type LiveRoom, type RoomFactory } from './live-room';
 import { createMatchRoom } from './room';
 
@@ -42,7 +42,7 @@ export function createGridRoomFactory(library: FootballLibrary, timing: BotTimin
       createBotPlayer({
         room,
         side,
-        level: botLevelFor(difficulty, context.rivalOutcomes),
+        level: context.botLevel,
         library,
         random,
         timing,

@@ -30,7 +30,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -124,7 +123,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
     const startedAt = now();
     const rows = new Map<number, MetricRow>();
     const botTimers = new Map<Side, Timer>();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
     let state = createDuel<DuelMetric>();
     let stage: DuelViewPhase = 'picking';

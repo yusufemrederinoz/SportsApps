@@ -43,8 +43,14 @@ export function createMatchHistory(database: Database) {
   const insert = database.prepare(
     `INSERT INTO matches (
        id, kind, game, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username,
-       winner, reason, x_cells, o_cells, move_count, started_at, finished_at, x_points_change, o_points_change
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       winner, reason, x_cells, o_cells, move_count, started_at, finished_at, x_points_change, o_points_change,
+       bot_level
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  );
+  const selectBotResults = database.prepare(
+    `SELECT winner, x_user_id FROM matches
+     WHERE (x_user_id = ? OR o_user_id = ?) AND game = ? AND (x_user_id IS NULL OR o_user_id IS NULL)
+     ORDER BY finished_at DESC, rowid DESC LIMIT ?`,
   );
   const selectForUser = database.prepare(
     `SELECT id, kind, game, difficulty, x_user_id, x_username, o_username, winner, reason, x_cells, o_cells,
@@ -69,6 +75,7 @@ export function createMatchHistory(database: Database) {
       result: PlayResult,
       finishedAt: number,
       pointsChanges: Record<Side, number | null> = { x: null, o: null },
+      botLevel: number | null = null,
     ): void {
       const details = room.record();
       insert.run(
@@ -91,6 +98,7 @@ export function createMatchHistory(database: Database) {
         finishedAt,
         pointsChanges.x,
         pointsChanges.o,
+        botLevel,
       );
     },
 
@@ -118,8 +126,9 @@ export function createMatchHistory(database: Database) {
       });
     },
 
-    recentOutcomes(userId: string, limit: number): MatchOutcome[] {
-      return listRows(userId, { limit }).map((row) => outcomeFor(row.x_user_id === userId ? 'x' : 'o', row.winner));
+    recentBotOutcomes(userId: string, game: GameId, limit: number): MatchOutcome[] {
+      const rows = selectBotResults.all(userId, userId, game, limit) as unknown as { winner: string | null; x_user_id: string | null }[];
+      return rows.map((row) => outcomeFor(row.x_user_id === userId ? 'x' : 'o', row.winner));
     },
   };
 }

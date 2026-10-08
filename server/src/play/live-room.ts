@@ -1,4 +1,4 @@
-import type { Side } from '@sportapps/game-core';
+import type { BotLevel, Side } from '@sportapps/game-core';
 import type {
   ClientMessage,
   GameId,
@@ -6,7 +6,6 @@ import type {
   JokerReveal,
   JokerTarget,
   MatchKind,
-  MatchOutcome,
   PlayDifficulty,
   PlayErrorCode,
   PlayResult,
@@ -62,7 +61,7 @@ export interface RoomContext {
   market: string;
   difficulty: PlayDifficulty;
   seats: Record<Side, Seat>;
-  rivalOutcomes: readonly MatchOutcome[];
+  botLevel: BotLevel;
   now: () => number;
   random: () => number;
   send: (side: Side, message: ServerMessage) => void;

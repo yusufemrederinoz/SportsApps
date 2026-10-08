@@ -321,6 +321,26 @@ describe('ranked matches', () => {
   });
 });
 
+describe('bot level', () => {
+  it('adapts to bot matches of the same game and records the level', () => {
+    const client = join();
+    const friend = join();
+    for (let index = 0; index < 3; index += 1) {
+      lobby.handle(client.player.id, { type: 'play-bot', market: 'tr', difficulty: 2 });
+      win(client);
+    }
+    lobby.handle(client.player.id, { type: 'create-room', market: 'tr', difficulty: 2 });
+    lobby.handle(friend.player.id, { type: 'join-room', code: client.of('room')[0]?.code ?? '' });
+    win(friend);
+    lobby.handle(client.player.id, { type: 'play-bot', market: 'tr', difficulty: 2 });
+    expect(rooms.at(-1)?.botLevel).toBe(3);
+    const first = database.prepare("SELECT bot_level FROM matches WHERE kind = 'bot' ORDER BY rowid LIMIT 1").get();
+    const room = database.prepare("SELECT bot_level FROM matches WHERE kind = 'room'").get();
+    expect({ ...first }).toEqual({ bot_level: 2 });
+    expect({ ...room }).toEqual({ bot_level: null });
+  });
+});
+
 describe('matchmaking by rating', () => {
   it('pairs the closest player within reach', () => {
     const low = join();

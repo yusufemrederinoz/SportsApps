@@ -21,7 +21,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -93,7 +92,7 @@ export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTi
     }
 
     const startedAt = now();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     let state: TopTenState<TopTenListView> = createTopTen(
       prepared.map((entry) => entry.round),
       random() < 0.5 ? 'x' : 'o',

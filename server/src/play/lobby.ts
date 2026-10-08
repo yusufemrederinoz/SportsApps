@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
-import { opponentOf, type Side } from '@sportapps/game-core';
+import { opponentOf, type BotLevel, type Side } from '@sportapps/game-core';
 import {
   GAME_JOKERS,
   JOKERS_PER_MATCH,
@@ -21,7 +21,7 @@ import {
 
 import { START_RATING } from '../progress/points';
 import type { Progress } from '../progress/store';
-import { createBotName } from './bot';
+import { BOT_TARGET_WIN_RATES, RANKED_TARGET_WIN_RATE, botLevelFor, createBotName } from './bot';
 import type { MatchHistory } from './history';
 import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type WaitRange } from './live-room';
 
@@ -88,6 +88,7 @@ interface HostedRoom {
 
 interface ActiveMatch {
   room: LiveRoom;
+  botLevel: BotLevel | null;
   forfeits: Map<string, ReturnType<typeof setTimeout>>;
   jokers: JokerUse[];
 }
@@ -191,7 +192,13 @@ export function createLobby(options: LobbyOptions) {
       send(room.seats[side].userId, { type: 'finished', matchId: room.id, result, ...(points ? { points } : {}) });
     });
     try {
-      history.record(room, result, room.finishedAt() ?? now(), { x: changes.x?.change ?? null, o: changes.o?.change ?? null });
+      history.record(
+        room,
+        result,
+        room.finishedAt() ?? now(),
+        { x: changes.x?.change ?? null, o: changes.o?.change ?? null },
+        active?.botLevel ?? null,
+      );
     } catch (error) {
       reportError(error);
     }
@@ -221,6 +228,13 @@ export function createLobby(options: LobbyOptions) {
     const ranked = kind === 'queue' && progress !== undefined;
     const ratingOf = (player: Player) => (ranked ? progress.ratingOf(player.id, game) : START_RATING);
     const firstRating = ratingOf(first);
+    const botLevel = second
+      ? null
+      : botLevelFor(
+          difficulty,
+          history.recentBotOutcomes(first.id, game, ADAPTATION_MATCHES),
+          kind === 'queue' ? RANKED_TARGET_WIN_RATE : BOT_TARGET_WIN_RATES[difficulty],
+        );
     const botRating = () =>
       ranked ? Math.max(0, Math.round(firstRating + (random() * 2 - 1) * BOT_RATING_SPREAD)) : START_RATING;
     const rival: Seat = second
@@ -241,7 +255,7 @@ export function createLobby(options: LobbyOptions) {
         market,
         difficulty,
         seats,
-        rivalOutcomes: second ? [] : history.recentOutcomes(first.id, ADAPTATION_MATCHES),
+        botLevel: botLevel ?? difficulty,
         now,
         random,
         send: (side, message) => send(seats[side].userId, message),
@@ -255,7 +269,7 @@ export function createLobby(options: LobbyOptions) {
       });
       return;
     }
-    matches.set(room.id, { room, forfeits: new Map(), jokers: [] });
+    matches.set(room.id, { room, botLevel, forfeits: new Map(), jokers: [] });
     humans.forEach((player) => {
       const member = members.get(player.id);
       if (member) {

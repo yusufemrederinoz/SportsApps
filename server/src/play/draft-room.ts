@@ -27,7 +27,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -99,7 +98,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
 
     const startedAt = now();
     const botTimers = new Map<Side, Timer>();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
     let state = createDraft(shuffle(pool, random).slice(0, DRAFT_FORMATION.length));
     let stage: DraftViewPhase = 'playing';

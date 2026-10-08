@@ -27,7 +27,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -105,7 +104,7 @@ export function createAuctionRoomFactory(library: AuctionLibrary, timing: Auctio
     }
 
     const startedAt = now();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     let state: AuctionState<Criteria> = createAuction(shuffle(cells, random).slice(0, ROUNDS), random() < 0.5 ? 'x' : 'o');
     let stage: AuctionViewPhase = 'bidding';
     let phaseMilliseconds = timing.bidMilliseconds;

@@ -26,8 +26,7 @@ const NAME_ATTEMPTS = 20;
 const NEAR_MISS_CHANCE = 0.7;
 const NEAR_MISS_POOL = 12;
 const ADAPTATION_SAMPLE = 3;
-const STRONG_RECORD = 0.7;
-const WEAK_RECORD = 0.3;
+const TARGET_MARGIN = 0.2;
 const LEVELS: readonly BotLevel[] = [1, 2, 3];
 
 export interface BotTiming {
@@ -92,12 +91,15 @@ export function createBotName(
   return GUEST_PREFIX + digits(GUEST_DIGITS, random);
 }
 
-export function botLevelFor(difficulty: PlayDifficulty, recent: readonly MatchOutcome[]): BotLevel {
+export const BOT_TARGET_WIN_RATES: Readonly<Record<PlayDifficulty, number>> = { 1: 0.65, 2: 0.5, 3: 0.35 };
+export const RANKED_TARGET_WIN_RATE = 0.5;
+
+export function botLevelFor(difficulty: PlayDifficulty, recent: readonly MatchOutcome[], target: number): BotLevel {
   if (recent.length < ADAPTATION_SAMPLE) {
     return difficulty;
   }
   const winRate = recent.filter((outcome) => outcome === 'win').length / recent.length;
-  const shift = winRate >= STRONG_RECORD ? 1 : winRate <= WEAK_RECORD ? -1 : 0;
+  const shift = winRate >= target + TARGET_MARGIN ? 1 : winRate <= target - TARGET_MARGIN ? -1 : 0;
   const index = Math.max(0, Math.min(LEVELS.length - 1, difficulty - 1 + shift));
   return LEVELS[index] as BotLevel;
 }

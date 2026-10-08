@@ -25,7 +25,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -104,7 +103,7 @@ export function createRareRoomFactory(library: RareLibrary, timing: RareTiming =
     }
 
     const startedAt = now();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
     let state = createRare<Criteria>(criteriaFrom(grid, RARE_ROUNDS, random));
     let stage: RareViewPhase = 'answering';

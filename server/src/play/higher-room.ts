@@ -22,7 +22,6 @@ import {
 } from '@sportapps/protocol';
 
 import type { FootballLibrary } from '../football/library';
-import { botLevelFor } from './bot';
 import { NO_JOKER, SIDES, seatSide, type LiveRoom, type RoomFactory, type WaitRange } from './live-room';
 import { TURN_GRACE_MILLISECONDS } from './room';
 
@@ -139,7 +138,7 @@ export function createHigherRoomFactory(library: HigherLibrary, timing: HigherTi
     }
 
     const startedAt = now();
-    const botLevel = botLevelFor(difficulty, context.rivalOutcomes);
+    const { botLevel } = context;
     let state = createHigher<HigherMetric>(random() < 0.5 ? 'x' : 'o');
     let question: HigherQuestion<HigherMetric> = firstQuestion;
     let stage: HigherViewPhase = 'answering';
