@@ -68,8 +68,8 @@ function Slot({ slot, footballer, side, size }: SlotProps) {
           {portrait ? (
             <Image
               source={{ uri: portrait }}
-              style={{ position: 'absolute', width: size * 1.25, height: size * 1.25, left: -size * 0.08, top: -size * 0.08 }}
-              contentFit="cover"
+              style={{ position: 'absolute', width: size, height: size, left: -1.5, top: 0 }}
+              contentFit="contain"
               cachePolicy="disk"
               accessible={false}
             />

@@ -140,7 +140,7 @@ function Node({ footballer, side }: { footballer: PlayedFootballer | null; side:
     <View style={styles.node}>
       <View style={[styles.nodeBadge, { borderColor: finish?.base ?? Colors.strokeBright }]}>
         {portrait ? (
-          <Image source={{ uri: portrait }} style={styles.nodeImage} contentFit="cover" cachePolicy="disk" accessible={false} />
+          <Image source={{ uri: portrait }} style={styles.nodeImage} contentFit="contain" cachePolicy="disk" accessible={false} />
         ) : (
           <ThemedText style={[styles.nodeInitials, { color: finish?.base ?? Colors.textSecondary }]}>
             {footballer ? initials(footballer.name) : '?'}
@@ -420,10 +420,10 @@ const styles = StyleSheet.create({
   },
   nodeImage: {
     position: 'absolute',
-    width: NODE_SIZE * 1.3,
-    height: NODE_SIZE * 1.3,
-    left: -NODE_SIZE * 0.12,
-    top: -NODE_SIZE * 0.05,
+    width: NODE_SIZE,
+    height: NODE_SIZE,
+    left: -2,
+    top: -1,
   },
   nodeName: {
     alignSelf: 'stretch',

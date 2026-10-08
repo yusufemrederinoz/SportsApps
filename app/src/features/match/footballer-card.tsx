@@ -30,9 +30,9 @@ const STREAK = 'rgba(255, 255, 255, 0.20)';
 const SHINE = 'rgba(255, 255, 255, 0.85)';
 const SHINE_FADE = 'rgba(255, 255, 255, 0)';
 const BANNER = 'rgba(0, 0, 0, 0.42)';
-const PORTRAIT_SCALE = 0.96;
-const PORTRAIT_LEFT = 0.1;
-const PORTRAIT_TOP = -0.13;
+const PORTRAIT_SCALE = 0.66;
+const PORTRAIT_LEFT = 0.3;
+const PORTRAIT_TOP = -0.02;
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 
 const WALKOUT = new Keyframe({
@@ -120,7 +120,7 @@ export function FootballerCard({ footballer, side, size, emphasis, watermark = t
                   left: size * PORTRAIT_LEFT,
                   top: size * PORTRAIT_TOP,
                 }}
-                contentFit="cover"
+                contentFit="contain"
                 cachePolicy="disk"
                 transition={Motion.base}
                 accessible={false}
