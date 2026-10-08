@@ -278,7 +278,8 @@ Bitti sayılır: İki mağazada da test sürümü yüklenebilir durumdadır.
 ## Adım 9 — Kapalı beta ve yayın
 
 - Android'de kapalı test, iOS'ta TestFlight ile sınırlı bir grupla denenir.
-- Google'ın yeni kişisel hesaplar için kapalı test şartı (bildiğimiz kadarıyla 12 test kullanıcısı, 14 gün) başvurudan önce doğrulanır.
+- Google'ın kapalı test şartı (12 test kullanıcısı, 14 gün) yalnızca kişisel geliştirici hesapları için geçerli. Uygulama Play Console'da şirket (kuruluş) hesabında olduğu için bu şart uygulanmıyor (8 Ekim 2026'da kullanıcı doğruladı); mağaza sayfası tamamlanınca doğrudan üretime gönderilebilir.
+- Apple geliştirici hesabı bireysel. Yayıncı Play'de şirket, App Store'da kişi olarak görünecek; yasal metinlerde veri sorumlusu olarak şirket unvanı ve adresi yazılacak (kullanıcıdan bekleniyor).
 - Çökme, eşleşme ve veri hataları düzeltilir.
 
 Bitti sayılır: Uygulama iki mağazada yayındadır.

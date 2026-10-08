@@ -613,7 +613,7 @@ Yapılanlar:
 - **Google ve Apple ile giriş.** Giriş ve kayıt ekranlarında; yeni hesap ilk girişte kullanıcı adını bir kez seçiyor (seçenekli soruyla karar verildi; e-postadan ad üretmek e-postanın bir kısmını gösteriyordu).
 - **Bildirimler.** Kullanıcının isteğiyle plana eklendi; dört bildirimin dördü de seçildi (günün bulmacası, haftalık sonuç, seri hatırlatması, geri dönüş). Sunucuda zamanlayıcı ve Expo bildirim servisi, uygulamada izin, kayıt ve dokununca yönlendirme.
 
-Kalanlar: şifre sıfırlama, ödüllü reklam, Apple jetonunun silmede iptali, mağaza sayfaları ve formlar, Google'ın 12 kişilik 14 günlük kapalı testi.
+Kalanlar: şifre sıfırlama, ödüllü reklam, Apple jetonunun silmede iptali, mağaza sayfaları ve formlar. (Google'ın 12 kişilik 14 günlük kapalı test şartı bu uygulama için geçerli değil: Play hesabı şirket hesabı.)
 
 Doğrulama: 208 sunucu ve 103 uygulama testi; canlı sunucuda sağlık ucu, misafir hesap açma, Google ucunun açık olduğu, görsellerin ve sayfaların sunulduğu denendi. Yeni özellikler telefonda henüz denenmedi (emülatör kapalı, deneme derlemesi sırada).
 
