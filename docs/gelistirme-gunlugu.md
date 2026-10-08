@@ -790,6 +790,18 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - Kaynak 1,7 kat büyütüldüğü için 1024 piksellik ikonda yazı ve dikiş kenarları hafif yumuşak; telefon boyutlarında fark edilmiyor. Daha yüksek çözünürlüklü bir kaynak gelirse betik yeniden çalıştırılır.
 - Uygulama ikonu sonraki derlemeyle değişir. Önizleme: `data/build/store/icon-preview.png`.
 
+### 3B logo animasyonları, gol simgesi ve tasarımlı posta (9 Ekim 2026)
+
+- **İstek.** Kullanıcı three.js ile hazırlanmış bir tasarım paketi getirdi ve nerede kullanılacağını söyledi: Gol kazanınca, Kupa kaybedince, Alev (yatay) sitenin başlığında; gol ve gol paketi simgeleri de yeni top olacak.
+- **Karar.** Animasyonlar gerçek zamanlı 3B yerine tasarımın kendi sahnesinden alınmış şeffaf animasyonlu WebP olarak kondu (gerekçe teknik mimaride). Küçük gol simgelerinde bantsız top kullanıldı: 14-28 piksel boyutunda bant okunmayan koyu bir lekeye dönüşüyordu.
+- **Yakalama.** Başsız Chrome'da zamanı elle ilerleten bir sürücüyle Gol 78, Kupa 96, Alev 79 kare alındı. Gol sahnesi, topun kadraja girişi görünsün diye 1,5 oranında geniş çizildi.
+- **Doğrulama.** Emülatörde kaybedilen bot maçında kupa sahnesi oynadı; kazanma sahnesi, eşleme geçici olarak değiştirilerek aynı ekranda görüldü ve değişiklik geri alındı. Günlük ödül penceresinde bantlı top, sayaçlarda bantsız top görüldü. Gerçek bir galibiyetle sonuç ekranı denenmedi.
+- **Site.** Başlıktaki logo ve yazı, alev animasyonlu topla değişti; beş sayfa da güncellendi ve yayına alındı.
+- **Mağaza.** Gol paketi simgeleri yeni topla yeniden üretildi (`data/build/store/goals_cg_*.png`); Play Console'daki ürünlere kullanıcı yeniden yüklemeli.
+- **Posta.** Kullanıcı şifre sıfırlama postasının geldiğini ama tasarımının kötü olduğunu söyledi. HTML tasarım yazıldı, sunucuya dağıtıldı, `destek@` adresine Türkçe ve İngilizce birer örnek gönderildi (Resend ikisini de kabul etti).
+- **Depo ayarı.** `deploy/.gitattributes` `.webp` dosyasını metin sayıp satır sonlarını değiştiriyordu; `binary` satırı eklendi, depodaki kopyanın sitedekiyle aynı olduğu özetle doğrulandı.
+- **Portre üretimi.** Yüksek çözünürlüklü 2.287 kaynak fotoğrafın hepsi indi (52 dakika). Çizim sürüyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -978,3 +990,9 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `85a6f94` | 9 Ekim | Yarım kalan indirmenin portre aşamalarını durdurmaması |
 | `c29d573` | 9 Ekim | Portre üretiminin ara durumu |
 | `37eb67b` | 9 Ekim | Yeni amblemle uygulama ikonu, mağaza görselleri ve site logosu |
+| `ec2b7d5` | 9 Ekim | Yeni ikonun kaydı |
+| `90d03ef` | 9 Ekim | Tasarımlı şifre sıfırlama postası |
+| `9b11ee1` | 9 Ekim | Sonuç ekranında gol ve kupa sahneleri, yeni gol simgesi |
+| `3a774e8` | 9 Ekim | Site başlığında alev animasyonu |
+| `c1a35de` | 9 Ekim | Logo animasyonunun kaynağı ve yakalama düzeneği |
+| `89de5bd` | 9 Ekim | Site WebP dosyalarının ikili saklanması |

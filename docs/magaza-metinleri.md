@@ -136,5 +136,5 @@ football,soccer,trivia,quiz,grid,tic tac toe,players,career,lineup,duel,online,m
 |---|---|---|
 | Google Play simgesi (512×512) | `data/build/store/play-icon-512.png` | `data/branding/store_assets.py` üretir |
 | Google Play tanıtım görseli (1024×500) | `data/build/store/play-feature-1024x500.png` | Aynı betik |
-| Gol paketi simgeleri | `data/build/store/goals_cg_*.png` | Play ürünlerine yüklendi |
+| Gol paketi simgeleri | `data/build/store/goals_cg_*.png` | 9 Ekim'de yeni topla yeniden üretildi; Play ürünlerine yeniden yüklenmeli |
 | Ekran görüntüleri | henüz yok | Yeni portreler ve armalarla alınan derlemeden çekilecek |
