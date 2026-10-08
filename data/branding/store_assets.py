@@ -19,6 +19,7 @@ PACKS = {
     'goals_cg_600': [(0.36, 0.35, 0.32), (0.64, 0.35, 0.32), (0.2, 0.66, 0.32), (0.8, 0.66, 0.32), (0.5, 0.67, 0.38)],
 }
 FEATURE_SIZE = (1024, 500)
+SHARE_SIZE = (1200, 630)
 FEATURE_MARGIN = 48
 FEATURE_GAP = 18
 WHITE = (246, 248, 251)
@@ -55,8 +56,8 @@ def fitted(path, text, width, size):
     return font
 
 
-def feature(tagline):
-    width, height = FEATURE_SIZE
+def feature(tagline, size=FEATURE_SIZE):
+    width, height = size
     wide = radial(width, (width * 0.24, width * 0.2), width * 0.8, [(34, 48, 68), (12, 17, 26), INK])
     canvas = wide.crop((0, 0, width, height)).convert('RGBA')
     canvas.alpha_composite(mark(height, 0.23), (round(width * 0.21 - height / 2), 0))
@@ -64,8 +65,8 @@ def feature(tagline):
     draw = ImageDraw.Draw(canvas)
     left = round(width * 0.43)
     room = width - left - FEATURE_MARGIN
-    display = fitted(DISPLAY_FONT, 'CHALLENGE', room, 132)
-    label = fitted(LABEL_FONT, tagline, room, 36)
+    display = fitted(DISPLAY_FONT, 'CHALLENGE', room, round(height * 0.264))
+    label = fitted(LABEL_FONT, tagline, room, round(height * 0.072))
     line = round(display.size * 0.9)
     top = round((height - (line * 2 + FEATURE_GAP + label.size)) / 2) - round(display.size * 0.12)
     draw.text((left, top), 'CHALLENGE', font=display, fill=WHITE)
@@ -84,5 +85,17 @@ def main(out):
     feature('FUTBOL BİLGİ OYUNLARI').convert('RGB').save(out / 'play-feature-1024x500.png')
 
 
+def site(out):
+    out.mkdir(parents=True, exist_ok=True)
+    icon = background(512)
+    icon.alpha_composite(mark(512, 0.285))
+    mark(512, 0.3).save(out / 'mark.png')
+    icon.resize((180, 180), Image.LANCZOS).convert('RGB').save(out / 'apple-touch-icon.png')
+    icon.resize((64, 64), Image.LANCZOS).convert('RGB').save(out / 'favicon.png')
+    feature('FUTBOL BİLGİ OYUNLARI', SHARE_SIZE).convert('RGB').save(out / 'share.png')
+
+
 if __name__ == '__main__':
     main(Path(sys.argv[1]))
+    if len(sys.argv) > 2:
+        site(Path(sys.argv[2]))
