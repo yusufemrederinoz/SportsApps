@@ -15,6 +15,7 @@ export type IdentityProvider = 'google' | 'apple';
 export interface Account {
   id: string;
   username: string;
+  usernamePending: boolean;
   isGuest: boolean;
   email: string | null;
   hasPassword: boolean;
@@ -46,6 +47,10 @@ export interface IdentitySignInRequest {
   token: string;
 }
 
+export interface ChooseUsernameRequest {
+  username: string;
+}
+
 export type ApiErrorCode =
   | 'validation'
   | 'unauthorized'
@@ -53,6 +58,7 @@ export type ApiErrorCode =
   | 'invalid-credentials'
   | 'email-taken'
   | 'username-taken'
+  | 'username-locked'
   | 'invalid-username'
   | 'invalid-email'
   | 'invalid-password'

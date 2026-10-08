@@ -1,4 +1,4 @@
-import type { Account, ApiErrorResponse, AuthResponse } from '@sportapps/protocol';
+import type { Account, AccountResponse, ApiErrorResponse, AuthResponse } from '@sportapps/protocol';
 import type { FastifyInstance } from 'fastify';
 import { SignJWT, createLocalJWKSet, exportJWK, generateKeyPair } from 'jose';
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -224,21 +224,37 @@ describe('identity sign-in', () => {
     const first = await call<AuthResponse>('POST', '/auth/google', { token });
     expect(first.status).toBe(200);
     expect(first.body.account).toMatchObject({
-      username: 'kerem',
+      usernamePending: true,
       isGuest: false,
       email: 'kerem@example.com',
       hasPassword: false,
       providers: ['google'],
     });
+    expect(first.body.account.username).toMatch(/^player\d{6}$/);
     const second = await call<AuthResponse>('POST', '/auth/google', { token });
     expect(second.body.account.id).toBe(first.body.account.id);
   });
 
-  it('picks a free username when the preferred one is taken', async () => {
-    await call('POST', '/auth/register', { ...credentials, username: 'kerem' });
+  it('lets a new identity account choose its username once', async () => {
+    await call('POST', '/auth/register', { ...credentials, username: 'Kaptan' });
     const token = await signGoogleToken({ sub: 'google-3', email: 'kerem@other.com', email_verified: true });
     const created = await call<AuthResponse>('POST', '/auth/google', { token });
-    expect(created.body.account.username).toMatch(/^kerem\d{6}$/);
+    const session = created.body.token;
+
+    expect(errorCode(await call('POST', '/account/username', { username: 'x' }, session))).toBe('invalid-username');
+    expect(errorCode(await call('POST', '/account/username', { username: 'kaptan' }, session))).toBe('username-taken');
+    const chosen = await call<AccountResponse>('POST', '/account/username', { username: 'Kerem_7' }, session);
+    expect(chosen.body.account).toMatchObject({ username: 'Kerem_7', usernamePending: false });
+    expect(errorCode(await call('POST', '/account/username', { username: 'Baska_1' }, session))).toBe('username-locked');
+    expect((await call<AccountResponse>('GET', '/me', undefined, session)).body.account.username).toBe('Kerem_7');
+  });
+
+  it('keeps registered and guest usernames locked', async () => {
+    const registered = await call<AuthResponse>('POST', '/auth/register', credentials);
+    expect(registered.body.account.usernamePending).toBe(false);
+    expect(errorCode(await call('POST', '/account/username', { username: 'Yeni_Ad' }, registered.body.token))).toBe('username-locked');
+    const { token } = await guest();
+    expect(errorCode(await call('POST', '/account/username', { username: 'Yeni_Ad' }, token))).toBe('username-locked');
   });
 
   it('rejects tokens for another audience and malformed tokens', async () => {

@@ -9,6 +9,7 @@ import {
   GAME_IDS,
   PASSWORD_MAX_LENGTH,
   type AccountResponse,
+  type ChooseUsernameRequest,
   type ApiErrorResponse,
   type AuthResponse,
   type DailyPuzzleResponse,
@@ -98,6 +99,7 @@ const REGISTER = body({
 });
 const LOGIN = body({ email: text(EMAIL_MAX_LENGTH), password: text(PASSWORD_MAX_LENGTH) });
 const IDENTITY = body({ token: text(TOKEN_MAX_LENGTH) });
+const USERNAME = body({ username: text(USERNAME_INPUT_MAX_LENGTH) });
 const MARKET_MAX_LENGTH = 8;
 const LEADERBOARD_QUERY = {
   querystring: {
@@ -279,6 +281,12 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   });
 
   app.get(`${API_PREFIX}/me`, (request): AccountResponse => ({ account: accounts.account(requireSession(request).user) }));
+
+  app.post<{ Body: ChooseUsernameRequest }>(
+    `${API_PREFIX}/account/username`,
+    { schema: USERNAME },
+    (request): AccountResponse => ({ account: accounts.chooseUsername(requireSession(request).user, request.body.username) }),
+  );
 
   app.delete(`${API_PREFIX}/account`, (request, reply) => {
     const { user } = requireSession(request);

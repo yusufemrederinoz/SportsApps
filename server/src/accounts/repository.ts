@@ -7,6 +7,7 @@ export interface UserRow {
   username: string;
   username_key: string;
   is_guest: number;
+  username_pending: number;
   created_at: number;
   updated_at: number;
 }
@@ -37,11 +38,12 @@ export function createAccountRepository(database: Database) {
   return {
     insertUser(user: UserRow): void {
       run(
-        'INSERT INTO users (id, username, username_key, is_guest, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+        'INSERT INTO users (id, username, username_key, is_guest, username_pending, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
         user.id,
         user.username,
         user.username_key,
         user.is_guest,
+        user.username_pending,
         user.created_at,
         user.updated_at,
       );
@@ -112,6 +114,16 @@ export function createAccountRepository(database: Database) {
       run('DELETE FROM sessions WHERE expires_at <= ?', now);
     },
 
+    setUsername(userId: string, username: string, usernameKey: string, now: number): void {
+      run(
+        'UPDATE users SET username = ?, username_key = ?, username_pending = 0, updated_at = ? WHERE id = ?',
+        username,
+        usernameKey,
+        now,
+        userId,
+      );
+    },
+
     deleteUser(userId: string): void {
       run("UPDATE matches SET x_username = '' WHERE x_user_id = ?", userId);
       run("UPDATE matches SET o_username = '' WHERE o_user_id = ?", userId);
@@ -127,6 +139,7 @@ export function createAccountRepository(database: Database) {
       return {
         id: user.id,
         username: user.username,
+        usernamePending: user.username_pending === 1,
         isGuest: user.is_guest === 1,
         email: credential?.email ?? identities.find((identity) => identity.email)?.email ?? null,
         hasPassword: credential !== undefined,

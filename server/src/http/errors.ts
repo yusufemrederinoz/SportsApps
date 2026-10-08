@@ -12,6 +12,7 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   'already-signed-in': 409,
   'email-taken': 409,
   'username-taken': 409,
+  'username-locked': 409,
   'puzzle-finished': 409,
   'cell-taken': 409,
   'rate-limited': 429,

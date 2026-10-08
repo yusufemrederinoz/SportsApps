@@ -88,13 +88,23 @@ export function createAccountService(database: Database, options: AccountService
     }
   }
 
-  function createUser(username: string, isGuest: boolean): UserRow {
+  function provisionalUsername(): string {
+    for (;;) {
+      const candidate = `${FALLBACK_PREFIX}${randomSuffix()}`;
+      if (isUsernameFree(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  function createUser(username: string, isGuest: boolean, usernamePending = false): UserRow {
     const time = now();
     const user: UserRow = {
       id: randomUUID(),
       username,
       username_key: usernameKey(username),
       is_guest: isGuest ? 1 : 0,
+      username_pending: usernamePending ? 1 : 0,
       created_at: time,
       updated_at: time,
     };
@@ -185,9 +195,26 @@ export function createAccountService(database: Database, options: AccountService
         if (existing) {
           return startSession(existing);
         }
-        const user = createUser(availableUsername(identity.email?.split('@')[0] ?? FALLBACK_PREFIX), false);
+        const user = createUser(provisionalUsername(), false, true);
         repository.insertIdentity(provider, identity.subject, user.id, identity.email, now());
         return startSession(user);
+      });
+    },
+
+    chooseUsername(user: UserRow, input: string): Account {
+      const username = input.trim();
+      if (user.username_pending !== 1) {
+        throw new ApiError('username-locked');
+      }
+      if (!isValidUsername(username)) {
+        throw new ApiError('invalid-username');
+      }
+      return transaction(database, () => {
+        if (!isUsernameFree(username)) {
+          throw new ApiError('username-taken');
+        }
+        repository.setUsername(user.id, username, usernameKey(username), now());
+        return repository.toAccount({ ...user, username, username_pending: 0 });
       });
     },
 

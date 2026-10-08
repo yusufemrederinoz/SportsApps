@@ -134,6 +134,9 @@ const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE matches ADD COLUMN bot_level INTEGER;
   `,
+  `
+  ALTER TABLE users ADD COLUMN username_pending INTEGER NOT NULL DEFAULT 0;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
