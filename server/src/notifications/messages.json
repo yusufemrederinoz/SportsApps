@@ -34,5 +34,77 @@
       "title": "Time for a match",
       "body": "Your rivals are waiting, and your daily reward is ready."
     }
+  },
+  "de": {
+    "puzzle": {
+      "title": "Das Tagesrätsel ist da",
+      "body": "Ein neues Raster wartet auf dich. Du hast 9 Versuche."
+    },
+    "weekly": {
+      "title": "Dein Ergebnis der letzten Woche",
+      "body": "Du hast die Woche auf Platz {{rank}} beendet. Eine neue Woche hat begonnen!"
+    },
+    "streak": {
+      "title": "Halt deine Serie am Leben",
+      "body": "Deine {{streak}}-Tage-Serie endet heute. Schau rein und hol dir deinen Bonus."
+    },
+    "comeback": {
+      "title": "Zeit für ein Match",
+      "body": "Deine Gegner warten, und dein Tagesbonus liegt bereit."
+    }
+  },
+  "es": {
+    "puzzle": {
+      "title": "El reto de hoy ya está listo",
+      "body": "Te espera un tablero nuevo. Tienes 9 intentos."
+    },
+    "weekly": {
+      "title": "Resultado de la semana pasada",
+      "body": "Terminaste la semana en el puesto {{rank}}. ¡Ya ha empezado una nueva!"
+    },
+    "streak": {
+      "title": "No pierdas tu racha",
+      "body": "Tu racha de {{streak}} días se acaba hoy. Entra y recoge tu recompensa."
+    },
+    "comeback": {
+      "title": "Hora de jugar un partido",
+      "body": "Tus rivales te esperan y tu recompensa diaria ya está lista."
+    }
+  },
+  "fr": {
+    "puzzle": {
+      "title": "Le défi du jour est prêt",
+      "body": "Une nouvelle grille t'attend. Tu as 9 essais."
+    },
+    "weekly": {
+      "title": "Ton bilan de la semaine dernière",
+      "body": "Tu as terminé la semaine à la place n° {{rank}}. Une nouvelle semaine commence !"
+    },
+    "streak": {
+      "title": "Garde ta série",
+      "body": "Ta série de {{streak}} jours s'arrête aujourd'hui. Viens récupérer ta récompense."
+    },
+    "comeback": {
+      "title": "C'est l'heure du match",
+      "body": "Tes adversaires t'attendent, et ta récompense quotidienne est prête."
+    }
+  },
+  "it": {
+    "puzzle": {
+      "title": "La sfida di oggi è pronta",
+      "body": "Ti aspetta una nuova griglia. Hai 9 tentativi."
+    },
+    "weekly": {
+      "title": "Il risultato della settimana scorsa",
+      "body": "Hai chiuso la settimana al {{rank}}º posto. È iniziata una nuova settimana!"
+    },
+    "streak": {
+      "title": "Non perdere la serie",
+      "body": "La tua serie di {{streak}} giorni finisce oggi. Entra e ritira il premio."
+    },
+    "comeback": {
+      "title": "È ora di una partita",
+      "body": "Gli avversari ti aspettano e il tuo premio giornaliero è pronto."
+    }
   }
 }

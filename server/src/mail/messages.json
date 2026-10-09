@@ -20,5 +20,49 @@
       "instructions": "The code is valid for {{minutes}} minutes. Enter it with your new password on the \"Forgot password\" screen in the app.",
       "footnote": "If you did not ask for this, you can ignore this e-mail; your password stays the same."
     }
+  },
+  "de": {
+    "passwordReset": {
+      "subject": "Dein ChallengeGoal-Code zum Zurücksetzen des Passworts: {{code}}",
+      "preview": "Dein Code lautet {{code}}. Er ist {{minutes}} Minuten gültig.",
+      "title": "PASSWORT ZURÜCKSETZEN",
+      "greeting": "Hallo!",
+      "intro": "Dein Code zum Zurücksetzen deines ChallengeGoal-Passworts lautet:",
+      "instructions": "Der Code ist {{minutes}} Minuten gültig. Gib ihn zusammen mit deinem neuen Passwort in der App auf dem Bildschirm „Passwort vergessen“ ein.",
+      "footnote": "Falls du das nicht angefordert hast, kannst du diese E-Mail einfach ignorieren; dein Passwort bleibt unverändert."
+    }
+  },
+  "es": {
+    "passwordReset": {
+      "subject": "Tu código para restablecer la contraseña de ChallengeGoal: {{code}}",
+      "preview": "Tu código es {{code}}. Es válido durante {{minutes}} minutos.",
+      "title": "RESTABLECER CONTRASEÑA",
+      "greeting": "¡Hola!",
+      "intro": "Este es tu código para restablecer la contraseña de ChallengeGoal:",
+      "instructions": "El código es válido durante {{minutes}} minutos. Escríbelo junto con tu nueva contraseña en la pantalla «Recuperar contraseña» de la app.",
+      "footnote": "Si no lo has pedido tú, puedes ignorar este correo; tu contraseña seguirá siendo la misma."
+    }
+  },
+  "fr": {
+    "passwordReset": {
+      "subject": "Ton code de réinitialisation ChallengeGoal : {{code}}",
+      "preview": "Ton code est {{code}}. Il est valable {{minutes}} minutes.",
+      "title": "RÉINITIALISATION DU MOT DE PASSE",
+      "greeting": "Bonjour,",
+      "intro": "Voici ton code pour réinitialiser ton mot de passe ChallengeGoal :",
+      "instructions": "Ce code est valable {{minutes}} minutes. Saisis-le avec ton nouveau mot de passe sur l'écran « Mot de passe oublié » de l'appli.",
+      "footnote": "Si tu n'es pas à l'origine de cette demande, tu peux ignorer cet e-mail ; ton mot de passe reste inchangé."
+    }
+  },
+  "it": {
+    "passwordReset": {
+      "subject": "Il tuo codice per reimpostare la password di ChallengeGoal: {{code}}",
+      "preview": "Il tuo codice è {{code}}. Vale {{minutes}} minuti.",
+      "title": "REIMPOSTA LA PASSWORD",
+      "greeting": "Ciao,",
+      "intro": "Ecco il codice per reimpostare la tua password di ChallengeGoal:",
+      "instructions": "Il codice vale {{minutes}} minuti. Inseriscilo insieme alla nuova password nella schermata \"Password dimenticata\" dell'app.",
+      "footnote": "Se non l'hai richiesto tu, puoi ignorare questa e-mail: la tua password resta la stessa."
+    }
   }
 }

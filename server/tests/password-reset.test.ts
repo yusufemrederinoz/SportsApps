@@ -97,14 +97,18 @@ describe('password reset', () => {
     await forgot(member.email, 'en-US');
     expect(outbox[0]?.subject).toContain('password reset code');
     time += 2 * MINUTE;
-    await forgot(member.email, 'de');
+    await forgot(member.email, 'pt');
     expect(outbox[1]?.subject).toContain('password reset code');
     time += 2 * MINUTE;
     await forgot(member.email, 'tr');
     expect(outbox[2]?.subject).toContain('şifre sıfırlama');
+    time += 2 * MINUTE;
+    await forgot(member.email, 'de-DE');
+    expect(outbox[3]?.subject).toContain('Zurücksetzen des Passworts');
     expect(outbox[0]?.html).toContain('<html lang="en">');
     expect(outbox[2]?.html).toContain('<html lang="tr">');
     expect(outbox[2]?.html).toContain('ŞİFRE SIFIRLAMA');
+    expect(outbox[3]?.html).toContain('<html lang="de">');
   });
 
   it('carries the code in both the plain and the designed body', async () => {
