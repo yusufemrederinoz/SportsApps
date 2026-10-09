@@ -21,12 +21,13 @@ function placeholders(value: unknown): string[] {
 
 describe('resolveLanguage', () => {
   it('picks the first supported device language', () => {
-    expect(resolveLanguage(['de', 'tr', 'en'])).toBe('tr');
+    expect(resolveLanguage(['pt', 'tr', 'en'])).toBe('tr');
+    expect(resolveLanguage(['de', 'tr', 'en'])).toBe('de');
     expect(resolveLanguage(['en', 'tr'])).toBe('en');
   });
 
   it('falls back when no device language is supported', () => {
-    expect(resolveLanguage(['de', null])).toBe(FALLBACK_LANGUAGE);
+    expect(resolveLanguage(['pt', null])).toBe(FALLBACK_LANGUAGE);
     expect(resolveLanguage([])).toBe(FALLBACK_LANGUAGE);
   });
 });
