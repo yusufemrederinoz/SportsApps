@@ -7,7 +7,7 @@ from pipeline import wikidata
 from pipeline.config import DATABASE_PATH
 from pipeline.text import normalize
 
-from .config import MINIMUM_SOURCE_SIDE, SOURCE_DIR
+from .config import CACHE, CROP_DIR, MINIMUM_SOURCE_SIDE, SOURCE_DIR
 from .faces import REPORT_PATH, crop_path, examine, load_report, load_tools
 from .sources import (
     API_URL,
@@ -32,10 +32,23 @@ CANDIDATES_PER_PLAYER = 6
 QUERY_BATCH = 400
 PHOTO_SUFFIXES = (".jpg", ".jpeg", ".png")
 MINIMUM_NAME_TOKEN = 3
+TRIED_PATH = CACHE / "alternatives-tried.json"
 
 
 def trial_path(player_id):
     return SOURCE_DIR / f"{player_id}.trial.img"
+
+
+def trial_crop_path(player_id):
+    return CROP_DIR / f"{player_id}.trial.png"
+
+
+def is_usable(entry):
+    return bool(entry) and entry.get("status") == "cropped" and entry.get("side", 0) >= MINIMUM_SOURCE_SIDE
+
+
+def load_tried():
+    return json.loads(TRIED_PATH.read_text(encoding="utf-8")) if TRIED_PATH.exists() else {}
 
 
 def surname(name):
@@ -80,12 +93,12 @@ def categories_of(wikidata_ids):
     return found
 
 
-def candidate_files(player, category, current):
+def candidate_files(player, category, tried):
     names = []
     if category:
         names += [name for name in category_files(category) if names_player(name, player["name"])]
     names += depicted_files(player["wikidata_id"])
-    photos = [name for name in dict.fromkeys(names) if name.lower().endswith(PHOTO_SUFFIXES) and name != current]
+    photos = [name for name in dict.fromkeys(names) if name.lower().endswith(PHOTO_SUFFIXES) and name not in tried]
     described = {}
     for start in range(0, len(photos), BATCH_SIZE):
         described.update(fetch_metadata(photos[start : start + BATCH_SIZE]))
@@ -102,47 +115,72 @@ def save_overrides(overrides):
             writer.writerow((wikidata_id, overrides[wikidata_id]))
 
 
+def restore_crops(report, players, tools):
+    restored = 0
+    for player in players:
+        entry = report.get(str(player["id"]))
+        if is_usable(entry) and not crop_path(player["id"]).exists() and source_path(player["id"]).exists():
+            report[str(player["id"])] = examine(*tools, source_path(player["id"]), crop_path(player["id"]))
+            restored += 1
+    return restored
+
+
 def run(limit=None):
     with sqlite3.connect(DATABASE_PATH) as connection:
         players = target_players(connection, None, with_missing=True)
-    wanted = [
-        player
-        for player in players
-        if player["fame"] >= ALTERNATIVE_FAME and player["wikidata_id"] and not output_path(player["id"]).exists()
-    ]
-    wanted = wanted[:limit] if limit else wanted
-    categories = categories_of([player["wikidata_id"] for player in wanted])
     overrides = load_overrides()
     metadata = load_metadata()
     report = load_report()
-    cv2, numpy, detector = load_tools()
-    counts = {"players": len(wanted), "with_candidates": 0, "replaced": 0}
+    tried = load_tried()
+    tools = load_tools()
+    counts = {"restored": restore_crops(report, players, tools)}
+    wanted = [
+        player
+        for player in players
+        if player["fame"] >= ALTERNATIVE_FAME
+        and player["wikidata_id"]
+        and not output_path(player["id"]).exists()
+        and not is_usable(report.get(str(player["id"])))
+    ]
+    wanted = wanted[:limit] if limit else wanted
+    categories = categories_of([player["wikidata_id"] for player in wanted])
+    counts.update({"players": len(wanted), "with_candidates": 0, "replaced": 0})
+
+    def save():
+        REPORT_PATH.write_text(json.dumps(report), encoding="utf-8")
+        METADATA_PATH.write_text(json.dumps(metadata, ensure_ascii=False), encoding="utf-8")
+        TRIED_PATH.write_text(json.dumps(tried, ensure_ascii=False), encoding="utf-8")
+        save_overrides(overrides)
 
     for index, player in enumerate(wanted):
-        candidates = candidate_files(player, categories.get(player["wikidata_id"]), player["file"])
+        key = str(player["id"])
+        failed = tried.setdefault(key, [])
+        if player["file"] and player["file"] not in failed:
+            failed.append(player["file"])
+        candidates = candidate_files(player, categories.get(player["wikidata_id"]), failed)
         counts["with_candidates"] += bool(candidates)
         for name, info in candidates:
             trial = trial_path(player["id"])
+            trial_crop = trial_crop_path(player["id"])
             trial.unlink(missing_ok=True)
             if not download(player, info, trial):
                 continue
-            result = examine(cv2, numpy, detector, trial, crop_path(player["id"]))
-            if result["status"] == "cropped" and result["side"] >= MINIMUM_SOURCE_SIDE:
+            result = examine(*tools, trial, trial_crop)
+            if is_usable(result):
                 trial.replace(source_path(player["id"]))
+                trial_crop.replace(crop_path(player["id"]))
                 large_source_path(player["id"]).unlink(missing_ok=True)
-                report[str(player["id"])] = result
+                report[key] = result
                 metadata[name] = info
                 overrides[player["wikidata_id"]] = name
                 counts["replaced"] += 1
                 break
+            failed.append(name)
             trial.unlink(missing_ok=True)
+            trial_crop.unlink(missing_ok=True)
         if index % 25 == 24:
-            REPORT_PATH.write_text(json.dumps(report), encoding="utf-8")
-            METADATA_PATH.write_text(json.dumps(metadata, ensure_ascii=False), encoding="utf-8")
-            save_overrides(overrides)
+            save()
             print(f"alternatives: {index + 1}/{len(wanted)} replaced {counts['replaced']}", flush=True)
 
-    REPORT_PATH.write_text(json.dumps(report), encoding="utf-8")
-    METADATA_PATH.write_text(json.dumps(metadata, ensure_ascii=False), encoding="utf-8")
-    save_overrides(overrides)
+    save()
     return counts

@@ -256,6 +256,8 @@ def crop_all(limit=None):
         source = source_path(player["id"])
         if not (metadata.get(player["file"]) or {}).get("free") or not source.exists():
             continue
+        if report.get(key, {}).get("status") == "rejected":
+            continue
         if crop_path(player["id"]).exists() and report.get(key, {}).get("status") == "cropped":
             continue
         report[key] = examine(cv2, numpy, detector, source, crop_path(player["id"]))
