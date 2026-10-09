@@ -296,7 +296,7 @@ Dil ve pazar ayrı boyutlardır: dil arayüz metnini, pazar oyuncuların bilinir
 
 - Uygulama cihaz dilini alır; desteklenmeyen dilde İngilizce açılır. Pazar, dili eşleşen pazardır; yoksa `int` (`resolveMarket`).
 - Eşleştirme, günün bulmacası ve bot kadrosu pazar bazındadır: bir Alman ile bir İspanyol birbirine denk gelir, Türkçe kullanan oyuncu yalnızca Türkiye pazarındaki oyuncularla eşleşir. Lider tablosu ise ortaktır; bütün oyuncular aynı tabloda yer alır.
-- Bot kadrosu pazar başına 48 bottur. İki pazar da kullanılmaya başlayınca ortak tabloda en çok 96 bot olabilir; bu sayının paylaştırılıp paylaştırılmayacağı kullanıcıya soruldu, karar bekliyor.
+- Bot kadrosu pazar başına 48 bottur. İki pazar da kullanılmaya başlayınca ortak tabloda en çok 96 bot olabilir; kullanıcı pazar başına 48'in kalmasına karar verdi (9 Ekim 2026).
 - Oyuncu adları çevrilmez. Kulüp ve ülke adları altı dilde saklanır. Yeni dört dilde kulüp adı, Wikidata etiketi İngilizcesinden dört karakterden fazla uzunsa İngilizcesiyle değiştirilir (`compact_names`); Wikidata bu dillerde çoğu kulübün resmî uzun adını tutuyor ("Fußball-Club Bayern München").
 
 Çevirilerin yeri:
