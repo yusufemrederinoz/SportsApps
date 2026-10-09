@@ -27,7 +27,7 @@ Futbol bilgi oyunları
 **Tam açıklama**
 
 ```
-Futbolu kim daha iyi biliyor? ChallengeGoal'da gerçek bir rakiple ya da arkadaşınla kapış, bilgini puana çevir.
+Futbolu kim daha iyi biliyor? ChallengeGoal'da online rakiplerle ya da arkadaşınla kapış, bilgini puana çevir.
 
 SEKİZ OYUN, TEK UYGULAMA
 • XOX: Satır ve sütundaki iki ölçüte uyan futbolcuyu yaz, üç hücreyi yan yana getir.
@@ -56,6 +56,7 @@ Süper Lig ve Avrupa'nın beş büyük liginden 70 binden fazla futbolcu ve 200'
 BİLMEN GEREKENLER
 • Uygulama ücretsizdir; reklam ve uygulama içi satın alma içerir. Joker almak için kullanılan goller oynayarak, günlük ödülle ya da reklam izleyerek de kazanılır.
 • Maçlar çevrimiçi oynanır; internet bağlantısı gerekir.
+• Online maçta rakip bulunamadığında yapay zekâ bir rakiple eşleşebilirsin; bu maçlar da puanlıdır.
 • ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Kulüp armaları özgün çizimlerdir; futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir.
 
 Destek: destek@challengegoal.app
@@ -90,7 +91,7 @@ Football trivia games
 **Tam açıklama**
 
 ```
-Who knows football better? In ChallengeGoal you take on a real opponent or a friend and turn what you know into points.
+Who knows football better? In ChallengeGoal you take on online opponents or a friend and turn what you know into points.
 
 EIGHT GAMES, ONE APP
 • XOX: Name a footballer who fits both the row and the column, and line up three cells.
@@ -119,6 +120,7 @@ More than 70,000 footballers and 200 clubs from the Turkish Süper Lig and Europ
 GOOD TO KNOW
 • The app is free; it contains ads and in-app purchases. Goals, which you spend on jokers, can also be earned by playing, with the daily reward or by watching an ad.
 • Matches are played online; you need an internet connection.
+• When no opponent is found online, you may be matched with an AI opponent; those matches count for points too.
 • ChallengeGoal is not affiliated with any club, league, federation or footballer. Club crests are original drawings; footballer images are AI-generated illustrations, not real photographs.
 
 Support: destek@challengegoal.app
