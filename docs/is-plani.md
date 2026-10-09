@@ -267,7 +267,9 @@ Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canl�
 
 Dil desteği (9 Ekim 2026): uygulama, posta, bildirimler, site, yasal sayfalar ve mağaza metinleri Türkçe ve İngilizceye ek olarak Almanca, İspanyolca, Fransızca ve İtalyanca. Türkiye dışındaki oyuncular tek bir uluslararası pazarda. Yayın altı ülkede aynı gün yapılacak. On birinci derleme (sürüm kodu 11) alındı ve sunucu aynı veriyle dağıtıldı. Sosyal medya için 59 ve 25 saniyelik iki tanıtım videosu ve akış görseli hazır (`data/build/promo/`). Açılışta zorunlu güncelleme ekranı on ikinci derlemede. Mağaza görselleri (Türkçe ve İngilizce, iki mağaza ölçüsünde) `data/build/store/submission/` içinde hazır.
 
-Kalanlar: çoğul biçimi hatası ("1 guesses"), çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
+Google Play başvurusu incelemede (açık test kanalı; üretime yükseltme bekliyor). iOS yapı numarası 6 App Store Connect'e yüklendi.
+
+Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, iOS bildirim anahtarı (APNs), çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
 
 - Ödüllü reklam (AdMob; reklam başı 2 gol, günde en çok 5) ve uygulama içi gol satın alma eklenir. Misafir hesap satın alamaz, önce hesap açar. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.

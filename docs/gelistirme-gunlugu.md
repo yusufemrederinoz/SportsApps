@@ -899,6 +899,15 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Bulunan küçük hata.** İngilizcede "1 guesses" yazıyor (çoğul biçimi yok); Almanca, İspanyolca, Fransızca ve İtalyancada da aynı kalıp var. Mağaza görselinde küçük puntoyla görünüyor. Sonraki derlemede düzeltilmeli.
 - **Videonun sesi.** 59 saniyelik videoya (kısa videoya da) görüntüyle eşzamanlı ses efektleri eklendi. Efektler uygulamanın kendi ses dosyaları; sahneler işaretleri kendisi ürettiği için ses görüntüden kaymaz. Sesi dinleyemedim; yalnızca düzeyleri ölçtüm (tepe −3 dBFS, yazma tıkırtısı −33, kart sesi −14, kazanma melodisi −8,5 dBFS). Kullanıcı müziği sonradan kendisi ekleyecek.
 
+### Mağaza başvuruları ve iOS derlemesi (9 Ekim 2026)
+
+- **Google Play.** Kullanıcı mağaza girişini doldurup incelemeye gönderdi (ad: "ChallengeGoal: Futbol Düellosu", sürüm 1.0.0 (12)). Sürüm açık test kanalına gönderilmiş, üretimde yalnızca ülkeler var; tam yayın için onaydan sonra aynı paketin üretime yükseltilmesi gerekiyor. İncelemedeki listede "PC üzerinde Google Play Games" form faktörü de etkin görünüyordu; bilerek açılmadıysa kaldırılması önerildi.
+- **Mağaza metinleri.** Altı dildeki kısa ve tam açıklamaların başına "zorunlu reklam yok" eklendi.
+- **App Store görselleri.** İlk ürettiğim 1290×2796 ölçüsünü App Store Connect'in yeni ekranı kabul etmedi; "iPhone with Dynamic Island (medium display)" yuvası 1206×2622 ya da 1179×2556 istiyor. Görseller 1206×2622 olarak yeniden üretildi. Yeni "Header" (3840×1646) ve "Search Results" (3840×2560) alanları için de logo görselleri eklendi; arama görseli zorunlu değil.
+- **iOS derlemesi.** Çoğul düzeltmesi (günün bulmacasında "1 guess") ve altı dilin iOS'a tanıtılması (`app/locales/`, reklam izni metni altı dilde) eklendi. İlk deneme Xcode'da durdu: 8 Ekim'de oluşturulan imza profili "Push Notifications" yetkisini içermiyordu. Etkileşimsiz kipte EAS eski profili geçerli sayıp yeniden kullandı; yetki App Store Connect API'siyle uygulama kimliğine eklenince eski profil geçersiz oldu ve sonraki derlemede EAS yenisini üretti. Yapı numarası 6 başarıyla bitti ve App Store Connect'e yüklendi.
+- **Gol paketlerinin inceleme görseli.** Apple her paket için satın alma ekranının görüntüsünü istiyor. Emülatördeki deneme kurulumu mağazaya ulaşamadığı için ekranı fiyatsız ve soluk gösteriyor, altında da "Google Play" yazıyor; bu görüntü kullanılmadı. Kullanıcının telefonundaki gerçek ekran kırpılıp kullanılacak.
+- **Bekleyen.** iOS'ta bildirimlerin ulaşması için Expo'ya Apple bildirim anahtarı (APNs) eklenmeli. App Store Connect'te kalan formlar: uygulama bilgileri, gizlilik beyanı, fiyat ve ülkeler, gol paketlerinin sürüme eklenmesi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
