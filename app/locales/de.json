@@ -1,3 +1,5 @@
 {
-  "NSUserTrackingUsageDescription": "Deine Gerätekennung wird verwendet, um dir relevantere Werbung zu zeigen."
+  "ios": {
+    "NSUserTrackingUsageDescription": "Deine Gerätekennung wird verwendet, um dir relevantere Werbung zu zeigen."
+  }
 }

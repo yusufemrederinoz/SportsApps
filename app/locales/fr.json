@@ -1,3 +1,5 @@
 {
-  "NSUserTrackingUsageDescription": "L'identifiant de ton appareil sert à t'afficher des publicités plus pertinentes."
+  "ios": {
+    "NSUserTrackingUsageDescription": "L'identifiant de ton appareil sert à t'afficher des publicités plus pertinentes."
+  }
 }

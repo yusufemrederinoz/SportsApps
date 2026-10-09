@@ -1,3 +1,5 @@
 {
-  "NSUserTrackingUsageDescription": "Cihaz tanımlayıcın sana daha ilgili reklamlar göstermek için kullanılır."
+  "ios": {
+    "NSUserTrackingUsageDescription": "Cihaz tanımlayıcın sana daha ilgili reklamlar göstermek için kullanılır."
+  }
 }

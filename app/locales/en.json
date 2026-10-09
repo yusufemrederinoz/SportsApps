@@ -1,3 +1,5 @@
 {
-  "NSUserTrackingUsageDescription": "Your device identifier is used to show you more relevant ads."
+  "ios": {
+    "NSUserTrackingUsageDescription": "Your device identifier is used to show you more relevant ads."
+  }
 }
