@@ -273,6 +273,8 @@ Apple yönergelerine göre tarama yapıldı; gizlilik bağlantıları, bildirim 
 
 Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, iOS bildirim anahtarı (APNs), çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
 
+Ölçek sınırı (10 Ekim 2026): sunucu tek süreç ve sıralama tablosu her istekte bütün oyuncuları sıralıyor; yaklaşık 10.000 puanlı oyuncudan sonra tablo isteği maçları bekletmeye başlar (ölçüm günlükte). Önbellek ve sorguda sınırlama ile giderilir; yük testi yapılmadı.
+
 - Ödüllü reklam (AdMob; reklam başı 2 gol, günde en çok 5) ve uygulama içi gol satın alma eklenir. Misafir hesap satın alamaz, önce hesap açar. Sunucudaki gol kayıt defterinde bunlar için `ad` ve `purchase` nedenleri hazır; satın alma makbuzu aynı kayda iki kez gol yazdırmaz.
 - Gizlilik politikası ve KVKK metni hazırlanır.
 - Mağaza sayfaları, ekran görüntüleri ve Türkçe açıklamalar hazırlanır.

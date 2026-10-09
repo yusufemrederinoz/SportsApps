@@ -933,6 +933,25 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Kontrol edilenler.** Bağlantılar uygulama içi tarayıcıda değil telefonun tarayıcısında açılıyor; sohbet yok; goller sabit jokerlere harcanıyor, rastgele ödül yok; canlı sunucuda Apple satın alma doğrulama ayarları tanımlı. iOS'ta deneme satın alması hâlâ yapılmadı.
 - **Kullanıcıda kalanlar.** AdMob IDFA mesajının yayımlanması artık şart (izleme beyan ediliyor); ülke seçiminde Vietnam ve Çin dışarıda bırakılacak; göndermeden önce TestFlight'ta sandbox satın alması denenecek.
 
+### Sunucunun taşıyabileceği yük (10 Ekim 2026)
+
+Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bakılanlar ve bulunanlar:
+
+- **Donanım.** Contabo VPS: 4 sanal çekirdek (AMD EPYC), 8 GB bellek, 96 GB disk. Boşta: bellek kullanımı 725 MB, yük ortalaması 0,2; sunucu süreci 160 MB.
+- **Mimari.** Tek Node süreci (Docker içinde, önünde Caddy); oyun odaları bellekte, veritabanı eşzamanlı `node:sqlite`. Yani dört çekirdekten biri kullanılır ve uzun süren her sorgu o sırada bütün maçları bekletir.
+- **İlk tavan: sıralama tablosu.** `progress/leaderboard.ts` her istekte puanı olan bütün oyuncuları okuyup JavaScript'te sıralıyor; önbellek yok. Gerçek kodla, sahte veriyle, geliştirme makinesinde ölçüldü (oyuncu başına üç oyun puanı ve üç maç):
+
+| Puanı olan oyuncu | Tüm zamanlar | Bu hafta |
+|---|---|---|
+| 1.000 | 3,5 ms | 4,2 ms |
+| 10.000 | 45 ms | 54 ms |
+| 50.000 | 534 ms | 620 ms |
+| 100.000 | 1.301 ms | 1.432 ms |
+
+  Süre eşzamanlı oyuncu sayısına değil kayıtlı oyuncu sayısına bağlı ve doğrusaldan hızlı büyüyor. VPS çekirdeği geliştirme makinesinden yavaş olabilir.
+- **Ölçülmeyenler.** Aynı anda kaç maçın taşınabileceği ölçülmedi; birkaç bin eşzamanlı oyuncu tahmini mesaj sıklığına ve bellek kullanımına dayanan bir kestirim. Gerçek sayı için yük testi gerekir.
+- **Öneri.** Sıralama tablosunu kısa süreli önbelleğe almak ve ilk 50'yi sorguda sınırlamak (yalnızca sunucu değişikliği, uygulama güncellemesi gerekmez); ardından yük testi. Kullanıcının kararı bekleniyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1168,3 +1187,4 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `9a9b42b` | 9 Ekim | App Store yönerge taramasının belgelenmesi |
 | `e265391` | 9 Ekim | iOS izleme izni metninin Android kaynaklarının dışında tutulması |
 | `ca5a5a2` | 9 Ekim | Düşen Android derlemesinin, düzeltmesinin ve yeni derlemelerin belgelenmesi |
+| `45dd8e3` | 10 Ekim | App Store Connect beyanlarının belgelenmesi |
