@@ -52,17 +52,22 @@ def fitted(path, text, width, size):
     return font
 
 
-def feature(tagline, size=FEATURE_SIZE):
+def feature(tagline, size=FEATURE_SIZE, content=1.0):
     width, height = size
+    inner = round(height * content)
+    spare = 1 - content
     wide = radial(width, (width * 0.24, width * 0.2), width * 0.8, [(34, 48, 68), (12, 17, 26), INK])
     canvas = wide.crop((0, 0, width, height)).convert('RGBA')
-    canvas.alpha_composite(emblem(height, FEATURE_RING, FEATURE_CENTER), (round(width * 0.21 - height / 2), 0))
+    canvas.alpha_composite(
+        emblem(inner, FEATURE_RING, FEATURE_CENTER),
+        (round(width * 0.21 - inner / 2 + spare * width * 0.15), (height - inner) // 2),
+    )
 
     draw = ImageDraw.Draw(canvas)
     left = round(width * 0.43)
-    room = width - left - FEATURE_MARGIN
-    display = fitted(DISPLAY_FONT, 'CHALLENGE', room, round(height * 0.264))
-    label = fitted(LABEL_FONT, tagline, room, round(height * 0.072))
+    room = width - left - max(FEATURE_MARGIN, round(spare * width * 0.2))
+    display = fitted(DISPLAY_FONT, 'CHALLENGE', room, round(inner * 0.264))
+    label = fitted(LABEL_FONT, tagline, room, round(inner * 0.072))
     line = round(display.size * 0.9)
     top = round((height - (line * 2 + FEATURE_GAP + label.size)) / 2) - round(display.size * 0.12)
     draw.text((left, top), 'CHALLENGE', font=display, fill=WHITE)
