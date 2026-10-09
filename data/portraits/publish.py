@@ -5,7 +5,7 @@ from pipeline import bundle
 from pipeline.config import DATABASE_PATH
 
 from .config import OUTPUT_DIR
-from .sources import load_metadata
+from .sources import load_metadata, load_overrides
 
 TABLE = """
 CREATE TABLE IF NOT EXISTS player_portraits (
@@ -22,9 +22,10 @@ UNKNOWN_AUTHOR = "Wikimedia Commons"
 def credits(connection):
     metadata = load_metadata()
     made = {int(path.stem) for path in OUTPUT_DIR.glob("*.webp") if path.stem.isdigit()}
+    overrides = load_overrides()
     rows = []
-    for player_id, commons_file in connection.execute("SELECT id, commons_file FROM players WHERE commons_file IS NOT NULL"):
-        source = metadata.get(commons_file)
+    for player_id, commons_file, wikidata_id in connection.execute("SELECT id, commons_file, wikidata_id FROM players"):
+        source = metadata.get(overrides.get(wikidata_id) or commons_file)
         if player_id in made and source and source.get("free"):
             rows.append(
                 (

@@ -1,3 +1,4 @@
+import csv
 import html
 import http.client
 import json
@@ -9,11 +10,12 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
-from pipeline.config import DATABASE_PATH, USER_AGENT
+from pipeline.config import DATABASE_PATH, OVERRIDES_DIR, USER_AGENT
 
 from .config import LARGE_SOURCE_WIDTH, MARKET, METADATA_PATH, MINIMUM_FAME, SOURCE_DIR, SOURCE_WIDTH
 
 API_URL = "https://commons.wikimedia.org/w/api.php"
+OVERRIDES_PATH = OVERRIDES_DIR / "portrait_files.csv"
 BATCH_SIZE = 40
 DOWNLOAD_WORKERS = 2
 MAX_ATTEMPTS = 6
@@ -99,15 +101,27 @@ def fetch_metadata(files, width=SOURCE_WIDTH):
     return {name: found.get(name) for name in files}
 
 
-def target_players(connection, limit=None):
+def load_overrides():
+    if not OVERRIDES_PATH.exists():
+        return {}
+    with open(OVERRIDES_PATH, encoding="utf-8", newline="") as source:
+        return {row["wikidata_id"]: row["file"] for row in csv.DictReader(source)}
+
+
+def target_players(connection, limit=None, with_missing=False):
+    overrides = load_overrides()
     rows = connection.execute(
-        """SELECT p.id, p.name, p.commons_file, f.fame FROM player_fame f
+        """SELECT p.id, p.name, p.commons_file, f.fame, p.wikidata_id FROM player_fame f
            JOIN players p ON p.id = f.player_id
-           WHERE f.market = ? AND f.fame >= ? AND p.commons_file IS NOT NULL
+           WHERE f.market = ? AND f.fame >= ?
            ORDER BY f.fame DESC, p.id""",
         (MARKET, MINIMUM_FAME),
     ).fetchall()
-    players = [{"id": row[0], "name": row[1], "file": row[2], "fame": row[3]} for row in rows]
+    players = [
+        {"id": row[0], "name": row[1], "file": overrides.get(row[4]) or row[2], "fame": row[3], "wikidata_id": row[4]}
+        for row in rows
+    ]
+    players = [player for player in players if with_missing or player["file"]]
     return players[:limit] if limit else players
 
 
