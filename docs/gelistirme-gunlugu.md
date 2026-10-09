@@ -825,6 +825,18 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Site: örnek ızgara.** Kullanıcının isteğiyle X ve O harfleri yerine uygulamadaki gibi altın ve mavi zeminli gerçek futbolcu kartları kondu (Arda Turan, Taffarel, Roberto Carlos, Zidane, Ribéry; mevki, portre ve ad). Portreler yeni üretimden; kaynak fotoğrafların yazar ve lisansı ızgaranın altındaki "Görsel kaynakları" bölümünde. Hamit Altıntop'un portresi bulanık olduğu için Bayern hücresinde Ribéry kullanıldı.
 - Canlıda gerçek bir bot maçıyla uçtan uca denenmedi; kural sunucu testleriyle doğrulandı.
 
+### Toplu portre üretiminin bitişi (9 Ekim 2026)
+
+- **Ana üretim.** Çizim 00.35'te başladı, kullanıcı oyun oynamak için 03.50 civarında durdurdu, 04.30'da kaldığı yerden sürdü ve 10.51'de bitti: 7.214 portre. Hız, başka iş çalışmazken saatte 825 portre (görsel başına 4,4 saniye).
+- **Büyütme aşamasının yeniden çalışması** beklenenden az işe yaradı: 2.544 adayın yalnızca 65'inin kırpması iyileşti, 57 portre eklendi. Çoğu fotoğrafın aslı zaten küçük.
+- **Gözden geçirme.** Yeni `review` aşaması çizimleri ölçüp kötüleri ayırıyor. İlk eşik (40) fazla sertti: ölçüm yöntemi gözle karar verdiğim sayfalardakinden farklı olduğu için 250 kabul edilebilir portreyi de reddetti. İki ölçüm karşılaştırılıp eşik 33'e çekildi, o portreler geri alındı.
+- **Ünlülerde eksik.** Ayıklamadan sonra en tanınmış 100 oyuncunun 24'ü portresizdi (Arda Güler, Hakan Şükür, Lewandowski, Maradona, Totti...). Yeni `alternatives` aşaması bilinirliği 30 ve üstü 750 oyuncu için Commons'taki diğer fotoğrafları denedi.
+- **Bu aşamadaki hatam.** İlk sürüm, başarısız adayları denerken oyuncunun mevcut kırpmasını siliyordu; denemede fotoğrafı bulunan Arda Güler, Hakan Şükür ve Fatih Tekke tam çalıştırmada kırpmalarını kaybetti. Denemeler ayrı dosyaya alındı, silinen kırpmaları geri kuran adım eklendi, denenen dosyalar kaydedilir oldu.
+- **Gözle tarama.** Yeni kaynak bulunan en tanınmış 120 oyuncunun portresi sayfa halinde incelendi; 14'ü kötüydü (yüzü elle kapalı, eski gazete baskısı, poster çerçevesi, kollar havada) ve ret listesine yazıldı. Kalan portreler yalnızca otomatik ölçütlerle denetlendi.
+- **Sonuç.** 7,034 portre (önce 1.232). En tanınmış 100 oyuncunun 89'i, ilk 500'ün 437'ü, ilk 1.000'in 831'i kapsanıyor. İlk 100'de eksik kalanların hiç serbest fotoğrafı yok ya da tek fotoğrafları kullanılamıyor.
+- **Emülatör.** Şifremi unuttum ekranı (posta gönderilemediğinde hata mesajı dahil) ve XOX'taki "üçlü artık mümkün değil" uyarısı görüldü; ikisi de doğru.
+- **Bekleyen.** `export` çalıştırılmadı: uygulama veritabanını ve veri sürümünü değiştirdiği için derlemeyle birlikte yapılacak, derleme kullanıcının onayını bekliyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1028,3 +1040,7 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `0b93f2d` | 9 Ekim | Sitedeki örnek ızgarada futbolcu kartları |
 | `5111150` | 9 Ekim | Kalıcı bot kadrosu: geçmiş, puan ve lider tablosu |
 | `8287d34` | 9 Ekim | Yapay zekâ rakip açıklaması ve "gerçek rakip" ifadelerinin kaldırılması |
+| `5f4afa3` | 9 Ekim | Bot kadrosu ve sitedeki futbolcu kartlarının belgelenmesi |
+| `614fc97` | 9 Ekim | Biten portrelerin gözden geçirilmesi |
+| `89781af` | 9 Ekim | Tanınmış oyuncular için alternatif Commons fotoğrafı |
+| `3c7138e` | 9 Ekim | Alternatif fotoğraf aramasının yeniden çalıştırılabilir olması |

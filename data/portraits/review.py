@@ -1,5 +1,13 @@
+import csv
+import sqlite3
+
+from pipeline.config import DATABASE_PATH, OVERRIDES_DIR
+
 from .config import OUTPUT_DIR
 from .faces import REPORT_PATH, SHARPNESS_SIDE, detect, load_report, load_tools
+from .sources import target_players
+
+REJECTIONS_PATH = OVERRIDES_DIR / "portrait_rejections.csv"
 
 REJECTED_DIR = OUTPUT_DIR.parent / "portraits-rejected"
 FACE_SCORE = 0.6
@@ -43,15 +51,25 @@ def measure(cv2, numpy, detector, path):
     return {"faces": len(found), "pieces": pieces, "coverage": float(mask.mean()), "sharpness": sharpness}
 
 
+def rejected_files():
+    if not REJECTIONS_PATH.exists():
+        return set()
+    with open(REJECTIONS_PATH, encoding="utf-8", newline="") as source:
+        return {row["file"] for row in csv.DictReader(source)}
+
+
 def run():
     import json
 
     cv2, numpy, detector = load_tools()
     report = load_report()
+    unwanted = rejected_files()
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        files = {str(player["id"]): player["file"] for player in target_players(connection)}
     counts = {"kept": 0}
     REJECTED_DIR.mkdir(parents=True, exist_ok=True)
     for path in sorted(OUTPUT_DIR.glob("*.webp")):
-        reason = verdict(measure(cv2, numpy, detector, path))
+        reason = "manual" if files.get(path.stem) in unwanted else verdict(measure(cv2, numpy, detector, path))
         if reason is None:
             counts["kept"] += 1
             continue
