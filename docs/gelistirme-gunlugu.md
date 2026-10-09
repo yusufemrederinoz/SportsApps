@@ -908,6 +908,15 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Gol paketlerinin inceleme görseli.** Apple her paket için satın alma ekranının görüntüsünü istiyor. Emülatördeki deneme kurulumu mağazaya ulaşamadığı için ekranı fiyatsız ve soluk gösteriyor, altında da "Google Play" yazıyor; bu görüntü kullanılmadı. Kullanıcının telefonundaki gerçek ekran kırpılıp kullanılacak.
 - **Bekleyen.** iOS'ta bildirimlerin ulaşması için Expo'ya Apple bildirim anahtarı (APNs) eklenmeli. App Store Connect'te kalan formlar: uygulama bilgileri, gizlilik beyanı, fiyat ve ülkeler, gol paketlerinin sürüme eklenmesi.
 
+### iOS denemesi ve Apple yönergeleri taraması (9 Ekim 2026)
+
+- **iOS'ta ilk deneme** (TestFlight, yapı 6) iki hata çıkardı. Arama penceresinde klavye iki kez açılıp kapanıyordu: Android için eklenen "klavye gelmediyse yeniden odakla" denemeleri iOS'ta da çalışıyor, pencere kayarken klavyeyi kapatıp açıyordu; denemeler artık yalnızca Android'de. Kart Düellosu'nda "Bu kartı oyna" düğmesi ekranın altında kalıyordu: kart boyutları pencere yüksekliğinden hesaplanıyordu, iPhone'un üst ve alt güvenli alanları düşülmüyordu; artık kullanılabilir yükseklikten hesaplanıyor. Kapalı kartın sağ kenarı da çizilmiyordu; çizim bir nokta içeri alındı (iOS'ta doğrulanmadı).
+- **Kaydırma güvencesi.** Maç ekranları içerik sığmadığında dikey kayıyor; kısa ekranlarda ve iPad'in iPhone kipinde düğmeler ulaşılmaz kalmasın diye. İçerik sığdığında görünüm aynı (emülatörde XOX ve Kart Düellosu görüldü).
+- **Yönerge taraması.** Kullanıcı Apple'ın inceleme yönergelerine uymayanların düzeltilmesini istedi. Eksik bulunanlar ve yapılanlar: uygulama içinde gizlilik politikası bağlantısı yoktu (5.1.1), karşılama ve hesap ekranlarına eklendi; bildirimleri uygulama içinden kapatma yolu yoktu (4.5.4), hesap ekranına anahtar eklendi; kullanıcı adları süzülmüyordu ve bildirme yolu yoktu (1.2), sunucuya ad süzgeci ve hesap ekranına "Sorun ya da oyuncu bildir" eklendi. Ayrıntı teknik mimarideki tabloda.
+- **Ad süzgeci.** Kısa kelimeler yalnızca tek başına durduklarında reddediliyor; "Beşiktaş" içindeki "sik" ya da "Nazım" içindeki "nazi" yüzünden ad reddedilmesin diye.
+- **Giderilemeyenler.** Futbolcu ve kulüp adlarının lisansı yok (5.2.1); uygulama içinden oyuncu engelleme yok; izleme izni penceresi AdMob'daki IDFA mesajına bağlı.
+- **Doğrulama.** Sunucu 276, uygulama 143 test. Emülatörde karşılama (bağlantılar), hesap (bildirim anahtarı, bildirme, bağlantılar), XOX ve Kart Düellosu ekranları görüldü. iOS'ta görülmedi; yeni derleme gerekiyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
