@@ -858,6 +858,22 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Emülatör.** Uygulama Almanca ve İtalyanca açıldı: karşılama, ana ekran, günün bulmacası (uluslararası ızgara, o dildeki kulüp ve ülke adları), arama ve kart (AB, DIF) doğru.
 - **Bekleyen.** Yeni veri sürümü `20261009123459` depoda ama sunucuya dağıtılmadı: dağıtılırsa telefondaki onuncu derleme "uygulamayı güncelle" hatası verir. Sunucu dağıtımı on birinci derlemeyle birlikte yapılacak; derleme kullanıcının onayını bekliyor. Posta ve bildirim çevirileri de o dağıtımla canlıya çıkar.
 
+### On birinci derleme ve altı dilin yayına alınması (9 Ekim 2026)
+
+- Kullanıcı "derle ve dağıt" dedi. Android üretim derlemesi `47883573` 15.42'de başladı, 15.58'de bitti (sürüm kodu 11).
+- Sunucu derleme biter bitmez yeni veriyle dağıtıldı: veri sürümü `20261009123459`, sağlık ucu yanıt veriyor. Posta ve bildirim çevirileri de bu dağıtımla canlıda.
+- Bu andan itibaren sürüm kodu 10, veri sürümü uyuşmadığı için online maçta "uygulamayı güncelle" hatası verir.
+- Bot kadrosu kararı: ortak lider tablosunda iki pazarın botları birlikte görünecek, pazar başına 48 bot kalıyor.
+- Telefonda henüz görülmemiş olanlar: dört yeni dil, uluslararası pazarın ızgaraları, onuncu derlemeden kalan parçalar (puan koruma, Zincir ve Kadro Kur portreleri, gol sahnesi, botun tabloya yansıması).
+
+### Tanıtım videosu ve paylaşım görseli (9 Ekim 2026)
+
+- Kullanıcı Instagram ve benzeri yerlerde paylaşmak için tanıtım istedi; o sırada oyun oynadığı için ekran kartına dokunmayan, düşük öncelikli bir yol seçildi (emülatör açılmadı).
+- 23,5 saniyelik dikey video ve 1080×1350 akış görseli, sitenin görünümüyle yazılmış tek bir sayfadan kare kare yakalanarak üretildi. Araç `data/branding/promo/` içinde; ayrıntı teknik mimaride.
+- Alev topu 640 pikselde videoda küçük kaldığı için 1.400 piksele yeniden alındı (12 saniye).
+- İlk akış görselinde kazanan çizgi kartlardaki mevki harflerini kapatıyordu; görselde çizgi yerine kazanan üç kart parlak çerçeveyle gösterildi. Videoda çizgi kısa süre göründüğü için kaldı.
+- Uygulamanın gerçek ekran kaydı kullanılmadı; örnek maç sayfada yeniden çizildi (sitedeki örnekle aynı ızgara ve aynı beş futbolcu).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1074,3 +1090,5 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `7364a57` | 9 Ekim | Beş dilin Vikipedi okunmalarıyla sıralanan uluslararası pazar |
 | `4ab07b2` | 9 Ekim | Portre hedeflerinin pazarlar arasındaki en yüksek bilinirliğe göre seçilmesi |
 | `a0d89c0` | 9 Ekim | Uluslararası pazarın ve altı dildeki adların uygulama veritabanına yazılması |
+| `fab1f54` | 9 Ekim | Dört yeni dilin ve uluslararası pazarın belgelenmesi |
+| `16e6bc6` | 9 Ekim | Bot kadrosunun pazar başına kalması kararı |

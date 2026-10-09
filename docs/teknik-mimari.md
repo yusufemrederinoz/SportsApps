@@ -721,6 +721,7 @@ Logo, 9 Ekim 2026'da kullanıcının getirdiği 3B top tasarımına geçti: siya
 | Uygulama ikonu, açılış ekranı, Play simgesi, tanıtım görseli | Meteor (halka ve hız çizgileri), durağan | `data/branding/artwork/emblem.png` → `icons.py`, `store_assets.py` |
 | Kazanılan maçın sonuç ekranı | Gol: top ağlara gider, direkler yanar (2,6 sn döngü) | `app/assets/animations/goal-win.webp` |
 | Kaybedilen maçın sonuç ekranı | Kupa: top kupayı devirir (3,2 sn döngü) | `app/assets/animations/trophy-loss.webp` |
+| Tanıtım videosu | Alev (1.400 piksel kareler) ve Gol | `data/build/animation/frames/alev-large`, `frames/gol` |
 | Sitenin başlığı | Alev: alev kuyruklu top + CHALLENGE GOAL yazısı (5,2 sn döngü) | `deploy/site/img/flame.webp`, hareketi azalt ayarı açıksa `flame.png` |
 | Gol simgesi ve gol paketi simgeleri | Yalnızca top | `app/assets/images/goal-ball.png` (40 dp ve üstü, bantlı), `goal-ball-plain.png` (küçük boyutlar, bantsız), `data/branding/artwork/ball.png` |
 
@@ -730,6 +731,23 @@ Logo, 9 Ekim 2026'da kullanıcının getirdiği 3B top tasarımına geçti: siya
 - **Yeniden üretme.** `data/branding` içinde: `node animation/capture.mjs`, `python animation/encode.py ../../app/assets ../../deploy/site/img`, ardından görsel ortamının Python'ıyla `icons.py <klasör>` ve `store_assets.py ../build/store ../../deploy/site/img`.
 - **Sonuç ekranı.** `features/match/result-scene.tsx` sahneyi başlığın üstünde gösterir; genişlik en çok 340 dp, yükseklik ekranın en çok %24'ü. Beraberlikte sahne yoktur. Sekiz oyunun hepsi aynı sonuç ekranını kullanır.
 - **Dikkat.** `deploy/.gitattributes` klasördeki her dosyayı metin sayar; yeni bir ikili dosya türü eklenince (9 Ekim'de `.webp`) oraya `binary` satırı yazılmalıdır, yoksa depodaki kopya bozulur.
+
+### Tanıtım videosu ve paylaşım görseli
+
+Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir sayfadan üretilir; çıktılar `data/build/promo/` altına yazılır (depoya girmez).
+
+| Çıktı | Boyut | Dosya |
+|---|---|---|
+| Dikey video (Reels, hikâye) | 1080×1920, 30 kare/sn, 23,5 sn, H.264, sessiz ses kanalı | `challengegoal-<dil>.mp4` |
+| Akış görseli | 1080×1350 | `challengegoal-<dil>-post.png` |
+| Paylaşım metni | — | `challengegoal-<dil>-caption.txt` (elle yazılır) |
+
+- **Sayfa.** `promo.html` (görünüm ve hareketler), `promo.js` (sahneler, zaman çizelgesi, örnek maç), `texts.json` (dil bazında metinler). Beş sahne: soru cümlesi, örnek XOX maçı ve gol animasyonu, sekiz oyun, özellikler, kapanış. Renkler, yazı tipleri, armalar ve kart görünümü siteyle aynıdır; portreler `data/build/portraits`, top animasyonları `data/build/animation/frames` klasöründen gelir.
+- **Kare kare yakalama.** Bütün hareketler CSS animasyonudur ve duraklatılmış durur. `capture.mjs` sayfayı başsız Chrome'da açar (yazılımla çizim, ekran kartına dokunmaz), Chrome'un uzaktan denetim ucuna bağlanır ve her kare için `seek(saniye)` çağırır: animasyonların zamanı o ana alınır, top karesi ve yazılan ad güncellenir, ekran görüntüsü kaydedilir. Sonuç gerçek zamandan bağımsızdır; bilgisayar yavaşken de aynı video çıkar. Araç kendi önceliğini düşürür, kodlamada iki iş parçacığı kullanır.
+- **Komutlar** (depo kökünde): `node data/branding/promo/capture.mjs video tr` (yaklaşık 15-30 dakika), `node data/branding/promo/capture.mjs poster tr`, tek kare görmek için `node data/branding/promo/capture.mjs video tr 8.8`.
+- **Önce gereken.** Alev topunun büyük kareleri: `node data/branding/animation/capture.mjs alev-large` (1400 piksel, 79 kare).
+- **Başka dil.** `texts.json` içine o dilin metinleri eklenir ve komut o dil koduyla çalıştırılır; uzun satırlar kendiliğinden küçülür.
+- **Kurallar.** Metinler sitedeki ve uygulamadaki ifadelerle aynıdır; uygulama mağazada olmadığı için "Yakında" yazar. Örnek maçtaki beş futbolcu sitedeki örnekle aynıdır ve kapanışta görsellerin yapay zekâ çizimi olduğu, kaynakların sitede bulunduğu yazar; paylaşım metninde kaynak fotoğrafların sahipleri ve lisansları sayılır. Videoda müzik yoktur; paylaşan kişi platformun kendi müzik kitaplığından ekler.
 
 ## Bildirimler
 
