@@ -58,8 +58,7 @@ Süper Lig ve Avrupa'nın beş büyük liginden 70 binden fazla futbolcu ve 200'
 
 BİLMEN GEREKENLER
 • Uygulama ücretsizdir; isteğe bağlı ödüllü reklam ve uygulama içi satın alma içerir. Joker almak için kullanılan goller oynayarak, günlük ödülle ya da reklam izleyerek de kazanılır.
-• Maçlar çevrimiçi oynanır; internet bağlantısı gerekir.
-• Online maçta rakip bulunamadığında yapay zekâ bir rakiple eşleşebilirsin; bu maçlar da puanlıdır.
+• Online maçlar, günün bulmacası ve lider tablosu için internet gerekir. XOX'u bota karşı internetsiz de oynayabilirsin.
 • ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Kulüp armaları özgün çizimlerdir; futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir.
 
 Destek: destek@challengegoal.app
@@ -125,8 +124,7 @@ More than 70,000 footballers and 200 clubs from the Turkish Süper Lig and Europ
 
 GOOD TO KNOW
 • The app is free; it contains ads and in-app purchases. Goals, which you spend on jokers, can also be earned by playing, with the daily reward or by watching an ad.
-• Matches are played online; you need an internet connection.
-• When no opponent is found online, you may be matched with an AI opponent; those matches count for points too.
+• Online matches, the daily puzzle and the leaderboard need an internet connection. You can play XOX against the bot offline.
 • ChallengeGoal is not affiliated with any club, league, federation or footballer. Club crests are original drawings; footballer images are AI-generated illustrations, not real photographs.
 
 Support: destek@challengegoal.app
@@ -192,8 +190,7 @@ Mehr als 70.000 Fußballer und über 200 Vereine aus der türkischen Süper Lig 
 
 GUT ZU WISSEN
 • Die App ist kostenlos; sie enthält Werbung und In-App-Käufe. Tore, die du für Joker ausgibst, bekommst du auch durchs Spielen, über den Tagesbonus oder für eine angesehene Werbung.
-• Matches werden online gespielt; du brauchst eine Internetverbindung.
-• Findet sich online kein Gegner, kannst du einen KI-Gegner bekommen; auch diese Matches zählen für die Punkte.
+• Online-Matches, Tagesrätsel und Rangliste brauchen eine Internetverbindung. XOX gegen den Bot kannst du auch offline spielen.
 • ChallengeGoal steht in keiner Verbindung zu Vereinen, Ligen, Verbänden oder Fußballern. Die Vereinswappen sind eigene Zeichnungen; die Fußballerbilder sind KI-generierte Illustrationen, keine echten Fotos.
 
 Support: destek@challengegoal.app
@@ -259,8 +256,7 @@ Más de 70.000 futbolistas y 200 clubes de la Süper Lig turca y de las cinco gr
 
 A TENER EN CUENTA
 • La app es gratuita; contiene anuncios y compras dentro de la app. Los goles, que gastas en comodines, también se consiguen jugando, con la recompensa diaria o viendo un anuncio.
-• Los partidos se juegan online; necesitas conexión a internet.
-• Si no se encuentra rival online, puede tocarte un rival controlado por IA; esos partidos también cuentan para los puntos.
+• Los partidos online, el reto diario y la clasificación necesitan conexión a internet. Al XOX contra el bot puedes jugar sin conexión.
 • ChallengeGoal no está afiliado a ningún club, liga, federación ni futbolista. Los escudos de los clubes son dibujos originales; las imágenes de los futbolistas son ilustraciones generadas con IA, no fotografías reales.
 
 Soporte: destek@challengegoal.app
@@ -326,8 +322,7 @@ Plus de 70 000 footballeurs et 200 clubs de la Süper Lig turque et des cinq gra
 
 BON À SAVOIR
 • L'appli est gratuite ; elle contient des pubs et des achats intégrés. Les buts, que tu dépenses en jokers, se gagnent aussi en jouant, avec la récompense quotidienne ou en regardant une pub.
-• Les matchs se jouent en ligne ; il te faut une connexion Internet.
-• Si aucun adversaire n'est trouvé en ligne, tu peux tomber sur un adversaire IA ; ces matchs comptent aussi pour les points.
+• Les matchs en ligne, le défi du jour et le classement demandent une connexion Internet. Tu peux jouer au XOX contre le bot hors ligne.
 • ChallengeGoal n'est affilié à aucun club, aucune ligue, aucune fédération ni aucun footballeur. Les écussons des clubs sont des dessins originaux ; les images des footballeurs sont des illustrations générées par IA, et non de vraies photos.
 
 Assistance : destek@challengegoal.app
@@ -393,8 +388,7 @@ Più di 70.000 calciatori e 200 club dalla Süper Lig turca e dai cinque grandi 
 
 BUONO A SAPERSI
 • L'app è gratuita; contiene pubblicità e acquisti in-app. I gol, che spendi per i jolly, si guadagnano anche giocando, con il premio giornaliero o guardando una pubblicità.
-• Le partite si giocano online: serve una connessione a Internet.
-• Se online non si trova un avversario, puoi trovarti contro un avversario gestito dall'IA; anche queste partite valgono punti.
+• Le partite online, la sfida del giorno e la classifica richiedono una connessione a Internet. A XOX contro il bot puoi giocare anche offline.
 • ChallengeGoal non è affiliato ad alcun club, lega, federazione o calciatore. Gli stemmi dei club sono disegni originali; le immagini dei calciatori sono illustrazioni generate con l'IA, non fotografie reali.
 
 Assistenza: destek@challengegoal.app
