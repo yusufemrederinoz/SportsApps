@@ -961,6 +961,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Doğrulama.** Sunucu 285 test (dokuzu yeni). Yerel sunucuda altı sahte cihazla, gerçek tarayıcıda denendi: eksik metin uyarısı, dil başına hedef sayıları, onay adımı, gönderim ve geçmiş satırı. Sahte anahtarlar gerçek bildirim servisine gitti; servis hepsini "kayıtlı değil" diye reddetti ve sunucu onları listeden sildi. Gerçek bir cihaza giden bildirim görülmedi; canlıda deneme gönderimi yapılmadı.
 - **Yayın.** Canlı veritabanı yedeklendi, süren maçın bitmesi beklendi ve sunucu dağıtıldı. Panel yeni bölümle açılıyor; hedef kitle 24 cihaz (Türkçe 6, İngilizce 18). Anahtarsız gönderim isteği reddediliyor.
 
+### iOS bildirim anahtarı (10 Ekim 2026)
+
+- Kullanıcı Apple'da takım kapsamlı bir bildirim anahtarı (APNs, Sandbox & Production; Key ID `KMYRPQJGJT`) oluşturup Expo'da projenin iOS kimlik bilgilerine yükledi. Dosya depo dışındaki gizli klasörde.
+- Sunucuda kayıtlı üç iPhone vardı. Kullanıcının seçtiği hesabın (`yusufb`) cihazına tek bir deneme bildirimi gönderildi; Expo bileti ve Apple'ın teslim makbuzu `ok` döndü. Bildirimin ekranda göründüğünü kullanıcı doğrulayacak.
+- Yeni derleme gerekmedi; anahtar yalnızca Expo'nun bildirim servisinde kullanılıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -271,7 +271,7 @@ Google Play başvurusu incelemede (açık test kanalı; üretime yükseltme bekl
 
 Apple yönergelerine göre tarama yapıldı; gizlilik bağlantıları, bildirim anahtarı, ad süzgeci ve iOS düzeltmeleri iOS yapı 7 ve Android sürüm kodu 14 ile geliyor (sürüm kodu 13 derlenemedi).
 
-Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, iOS bildirim anahtarı (APNs), çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
+Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
 
 Ölçek sınırı (10 Ekim 2026): sunucu tek süreç ve sıralama tablosu her istekte bütün oyuncuları sıralıyor; yaklaşık 10.000 puanlı oyuncudan sonra tablo isteği maçları bekletmeye başlar (ölçüm günlükte). Önbellek ve sorguda sınırlama ile giderilir; yük testi yapılmadı.
 
