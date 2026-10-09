@@ -25,6 +25,14 @@
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6820528682",
+        "appleTeamId": "RU9AGG48GA",
+        "ascApiKeyPath": "C:/Users/yusuf/.challengegoal/AuthKey_427PKGHLTA.p8",
+        "ascApiKeyId": "427PKGHLTA",
+        "ascApiKeyIssuerId": "e2e64505-7683-4af9-8b76-dbf41ab10f3d"
+      }
+    }
   }
 }
