@@ -59,10 +59,17 @@ function isTriple<T>(items: T[]): items is [T, T, T] {
   return items.length === 3;
 }
 
+const INTERNATIONAL_MARKET = 'int';
+
 export async function resolveMarket(database: QueryRunner, language: string): Promise<Market | null> {
   const { sql, parameters } = marketsStatement();
   const markets = await database.getAllAsync<Market>(sql, parameters);
-  return markets.find((market) => market.language === language) ?? markets[0] ?? null;
+  return (
+    markets.find((market) => market.language === language) ??
+    markets.find((market) => market.code === INTERNATIONAL_MARKET) ??
+    markets[0] ??
+    null
+  );
 }
 
 export async function pickGridId(

@@ -55,9 +55,10 @@ async function footballerId(name: string): Promise<number> {
 afterAll(() => database?.close());
 
 describe.skipIf(!available)('queries against the bundled database', () => {
-  it('resolves the market by language and falls back to the first one', async () => {
+  it('resolves the market by language and falls back to the international one', async () => {
     expect(await resolveMarket(runner, 'tr')).toEqual({ code: 'tr', language: 'tr' });
-    expect((await resolveMarket(runner, 'de'))?.code).toBe('tr');
+    expect((await resolveMarket(runner, 'en'))?.code).toBe('int');
+    expect((await resolveMarket(runner, 'de'))?.code).toBe('int');
   });
 
   it('picks a grid for every difficulty and loads its headers with names', async () => {
@@ -81,7 +82,7 @@ describe.skipIf(!available)('queries against the bundled database', () => {
   it('falls back to English names for an unsupported language', async () => {
     const gridId = (await pickGridId(runner, 'tr', 1, () => 0)) as number;
     const english = await loadGrid(runner, gridId, 'en');
-    const unsupported = await loadGrid(runner, gridId, 'de');
+    const unsupported = await loadGrid(runner, gridId, 'pt');
     expect(unsupported?.rows.map((header) => header.name)).toEqual(english?.rows.map((header) => header.name));
   });
 
@@ -164,7 +165,8 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     });
     expect((await loadConceptLabel(runner, { kind: 'club', clubId: REAL_MADRID.referenceId }, 'tr', 'tr')).local).toBe(false);
     expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'tr')).name).toBe('Almanya');
-    expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'de')).name).toBe('Germany');
+    expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'de')).name).toBe('Deutschland');
+    expect((await loadConceptLabel(runner, { kind: 'country', countryId: GERMANY.referenceId }, 'tr', 'pt')).name).toBe('Germany');
     expect(await loadConceptLabel(runner, { kind: 'home-league-foreigners' }, 'tr', 'tr')).toEqual({
       name: null,
       leagueCode: 'TR1',
