@@ -208,6 +208,18 @@ const MIGRATIONS: readonly string[] = [
   ) STRICT;
   CREATE INDEX bots_market ON bots (market, created_at);
   `,
+  `
+  CREATE TABLE broadcasts (
+    id INTEGER PRIMARY KEY,
+    messages TEXT NOT NULL,
+    fallback TEXT,
+    devices INTEGER NOT NULL,
+    skipped INTEGER NOT NULL,
+    rejected INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  ) STRICT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

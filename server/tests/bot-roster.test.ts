@@ -142,6 +142,7 @@ describe('bots in the books', () => {
       now: () => NOW,
       live: () => ({ connected: 0, queued: 0, waitingRooms: 0, matches: 0, matchesByGame: {} }),
       online: () => 0,
+      broadcasts: { audience: () => [], recent: () => [] },
       startedAt: NOW,
     });
     expect(stats.read().users).toMatchObject({ total: 1, guests: 1, newToday: 1 });

@@ -12,14 +12,16 @@ export interface NotificationOptions {
   onError?: (error: unknown) => void;
 }
 
-type Language = keyof typeof messages;
+export type NotificationLanguage = keyof typeof messages;
 
-const DEFAULT_LANGUAGE: Language = 'en';
-const CHANNEL = 'default';
+export const NOTIFICATION_LANGUAGES = Object.keys(messages) as NotificationLanguage[];
+export const NOTIFICATION_CHANNEL = 'default';
+
+const DEFAULT_LANGUAGE: NotificationLanguage = 'en';
 const CHECK_INTERVAL = 10 * 60 * 1000;
 
-function languageOf(value: string): Language {
-  return value in messages ? (value as Language) : DEFAULT_LANGUAGE;
+export function languageOf(value: string): NotificationLanguage {
+  return value in messages ? (value as NotificationLanguage) : DEFAULT_LANGUAGE;
 }
 
 function fill(template: string, values: Record<string, number>): string {
@@ -54,7 +56,7 @@ export function createNotifications(database: Database, options: NotificationOpt
       to: row.token,
       ...notificationText(planned.kind, row.language, planned.values),
       sound: 'default',
-      channelId: CHANNEL,
+      channelId: NOTIFICATION_CHANNEL,
       data: { kind: planned.kind },
     }));
 

@@ -285,6 +285,92 @@
         font-size: 13px;
       }
 
+      textarea {
+        width: 100%;
+        min-height: 84px;
+        padding: 10px 12px;
+        border: 1px solid var(--stroke);
+        border-radius: 8px;
+        background: var(--ink);
+        color: var(--text);
+        font: inherit;
+        resize: vertical;
+      }
+
+      input[type='checkbox'] {
+        width: 18px;
+        min-height: 18px;
+        margin: 0;
+        accent-color: var(--volt);
+      }
+
+      button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .primary {
+        border-color: var(--volt);
+        background: var(--volt);
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .languages {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      .language h3 {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .language h3 small {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 400;
+      }
+
+      .language input {
+        margin-bottom: 8px;
+      }
+
+      .check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 14px 0 0;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .outcome {
+        min-height: 20px;
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .outcome.good {
+        color: var(--volt);
+      }
+
+      .outcome.bad {
+        color: var(--red);
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -341,6 +427,24 @@
 
       <h2>Diğer</h2>
       <div class="cards" id="other"></div>
+
+      <h2>Bildirim gönder</h2>
+      <div class="box" id="announce">
+        <p class="note" style="margin-top: 0">
+          Bildirimi açık olan cihazlara gider. Her cihaz kendi dilindeki metni alır; metni yazılmayan diller atlanır ya da
+          aşağıdaki seçenekle İngilizce metni alır. Gönderilen bildirim geri alınamaz.
+        </p>
+        <div class="languages" id="texts"></div>
+        <label class="check"><input type="checkbox" id="fallback" checked /> Metni boş kalan dillere İngilizce metni gönder</label>
+        <p class="outcome" id="reach"></p>
+        <div class="actions">
+          <button type="button" class="primary" id="send" disabled>Gönder</button>
+          <button type="button" class="primary" id="confirm" hidden></button>
+          <button type="button" id="cancel" hidden>Vazgeç</button>
+        </div>
+        <p class="outcome" id="outcome" role="status"></p>
+      </div>
+      <div class="box" style="margin-top: 10px"><h3>Son gönderilenler</h3><table id="sent"></table></div>
     </main>
 
     <footer id="foot" hidden></footer>
@@ -370,6 +474,11 @@
         ad: 'Reklam ödülü',
       };
       const PLATFORM_NAMES = { ios: 'App Store', android: 'Google Play' };
+      const LANGUAGE_NAMES = { tr: 'Türkçe', en: 'İngilizce', de: 'Almanca', es: 'İspanyolca', fr: 'Fransızca', it: 'İtalyanca' };
+      const STATUS_NAMES = { sending: 'Gönderiliyor', sent: 'Gönderildi', failed: 'Hata' };
+      const FALLBACK_LANGUAGE = 'en';
+      const TITLE_MAX_LENGTH = 80;
+      const BODY_MAX_LENGTH = 240;
 
       const element = (id) => document.getElementById(id);
       const number = (value) => Number(value ?? 0).toLocaleString('tr-TR');
@@ -378,6 +487,114 @@
         String(value).replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
 
       let timer = null;
+      let audience = [];
+      let sending = false;
+      let armed = false;
+
+      const languageName = (language) => LANGUAGE_NAMES[language] ?? language.toUpperCase();
+
+      function say(message, tone) {
+        element('outcome').textContent = message;
+        element('outcome').className = tone ? `outcome ${tone}` : 'outcome';
+      }
+
+      function buildTexts() {
+        element('texts').innerHTML = audience
+          .map(({ language }) => {
+            const name = escapeText(languageName(language));
+            return `<div class="language"><h3>${name}<small id="reach-${language}"></small></h3><input id="title-${language}" maxlength="${TITLE_MAX_LENGTH}" placeholder="Başlık" aria-label="${name} başlık" /><textarea id="body-${language}" maxlength="${BODY_MAX_LENGTH}" placeholder="Metin" aria-label="${name} metin"></textarea></div>`;
+          })
+          .join('');
+      }
+
+      function draft() {
+        const messages = {};
+        const incomplete = [];
+        for (const { language } of audience) {
+          const title = element(`title-${language}`).value.trim();
+          const body = element(`body-${language}`).value.trim();
+          if (title && body) {
+            messages[language] = { title, body };
+          } else if (title || body) {
+            incomplete.push(language);
+          }
+        }
+        const fallback = element('fallback').checked && messages[FALLBACK_LANGUAGE] ? FALLBACK_LANGUAGE : null;
+        return { messages, incomplete, fallback };
+      }
+
+      function review() {
+        const { messages, incomplete, fallback } = draft();
+        const skipped = [];
+        let devices = 0;
+        for (const { language, devices: count } of audience) {
+          const own = Boolean(messages[language]);
+          const route = own ? 'kendi dilinde' : fallback ? 'İngilizce metin gider' : 'gönderilmez';
+          element(`reach-${language}`).textContent = `${number(count)} cihaz · ${route}`;
+          if (own || fallback) {
+            devices += count;
+          } else if (count > 0) {
+            skipped.push(languageName(language));
+          }
+        }
+        const written = Object.keys(messages).length > 0;
+        element('send').disabled = sending || incomplete.length > 0 || devices === 0;
+        element('reach').textContent = incomplete.length
+          ? `${incomplete.map(languageName).join(', ')}: başlık ve metin birlikte doldurulmalı.`
+          : !written
+            ? 'En az bir dilde başlık ve metin yaz.'
+            : devices === 0
+              ? 'Bu metinleri alacak cihaz yok.'
+              : `${number(devices)} cihaza gidecek.${skipped.length ? ` Atlanacak diller: ${skipped.join(', ')}.` : ''}`;
+        return { messages, fallback, devices };
+      }
+
+      function arm(on) {
+        armed = on;
+        element('send').hidden = on;
+        element('confirm').hidden = !on;
+        element('cancel').hidden = !on;
+      }
+
+      async function announce() {
+        const { messages, fallback } = review();
+        sending = true;
+        arm(false);
+        review();
+        say('Gönderiliyor…', '');
+        try {
+          const response = await fetch('/v1/admin/notifications', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${localStorage.getItem(STORAGE_KEY)}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(fallback ? { messages, fallback } : { messages }),
+          });
+          if (response.status === 401 || response.status === 404) {
+            leave('Anahtar kabul edilmedi.');
+          } else if (response.status === 429) {
+            say('Bir dakika içinde ikinci bildirim gönderilemez. Biraz bekleyip tekrar dene.', 'bad');
+          } else if (!response.ok) {
+            say('Bildirim kabul edilmedi. Metinleri kontrol et.', 'bad');
+          } else {
+            const record = await response.json();
+            if (record.status === 'sent') {
+              for (const { language } of audience) {
+                element(`title-${language}`).value = '';
+                element(`body-${language}`).value = '';
+              }
+              const dropped = record.rejected ? ` ${number(record.rejected)} cihaz artık kayıtlı değildi, listeden çıkarıldı.` : '';
+              say(`${number(record.devices)} cihaza gönderildi.${dropped}`, 'good');
+            } else {
+              say('Bildirim servisi hata verdi; bir kısmı gitmiş olabilir. Yeniden göndermeden önce aşağıdaki listeye bak.', 'bad');
+            }
+            void refresh();
+          }
+        } catch {
+          say('Sunucuya ulaşılamadı. Gönderilip gönderilmediğini aşağıdaki listeden kontrol et.', 'bad');
+        } finally {
+          sending = false;
+          review();
+        }
+      }
 
       function card(label, value, hint, live) {
         return `<div class="card${live ? ' live' : ''}"><b>${escapeText(value)}</b><span>${escapeText(label)}</span>${
@@ -492,6 +709,27 @@
           card('sunucu çalışma süresi', duration(stats.generatedAt - server.startedAt), `${number(server.memoryMegabytes)} MB bellek`),
         ].join('');
 
+        audience = devices.languages;
+        if (element('texts').childElementCount === 0) {
+          buildTexts();
+        }
+        review();
+        element('sent').innerHTML = table(
+          ['Zaman', 'Başlık', 'Diller', 'Cihaz', 'Atlanan', 'Durum'],
+          stats.broadcasts.map((record) => {
+            const shown = record.messages.tr ?? record.messages.en ?? Object.values(record.messages)[0];
+            const languages = Object.keys(record.messages).map((language) => language.toUpperCase());
+            return [
+              new Date(record.createdAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }),
+              shown?.title ?? '',
+              languages.join(', ') + (record.fallback ? ' + diğerleri' : ''),
+              number(record.devices),
+              number(record.skipped),
+              STATUS_NAMES[record.status] ?? record.status,
+            ];
+          }),
+        );
+
         element('updated').textContent = `Son güncelleme ${new Date(stats.generatedAt).toLocaleTimeString('tr-TR')}`;
         element('foot').textContent = `Günler ${stats.timeZone} saatine göre sayılır. Sayfa ${REFRESH_INTERVAL / 1000} saniyede bir yenilenir.`;
       }
@@ -553,6 +791,24 @@
         start();
       });
       element('leave').addEventListener('click', () => leave());
+      element('announce').addEventListener('input', () => {
+        if (armed) {
+          arm(false);
+          say('', '');
+        }
+        review();
+      });
+      element('send').addEventListener('click', () => {
+        const { devices } = review();
+        element('confirm').textContent = `Evet, ${number(devices)} cihaza gönder`;
+        say('Bu bildirim geri alınamaz.', '');
+        arm(true);
+      });
+      element('cancel').addEventListener('click', () => {
+        arm(false);
+        say('', '');
+      });
+      element('confirm').addEventListener('click', () => void announce());
 
       if (localStorage.getItem(STORAGE_KEY)) {
         start();

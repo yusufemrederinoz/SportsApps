@@ -1,6 +1,7 @@
 import type { GameId } from '@sportapps/protocol';
 
 import type { Database } from '../database';
+import type { AudienceEntry, BroadcastRecord, Broadcasts } from '../notifications/broadcast';
 import { DEFAULT_TIME_ZONE, localDay, shiftDay, startOfDay } from '../progress/points';
 
 export interface LiveSnapshot {
@@ -18,6 +19,7 @@ export interface AdminStatsOptions {
   timeZone?: string;
   live: () => LiveSnapshot;
   online: () => number;
+  broadcasts: Pick<Broadcasts, 'audience' | 'recent'>;
   startedAt: number;
 }
 
@@ -53,7 +55,8 @@ export interface AdminStats {
   };
   ads: { total: number; today: number };
   puzzle: { startedToday: number; finishedToday: number };
-  devices: { tokens: number; users: number };
+  devices: { tokens: number; users: number; languages: AudienceEntry[] };
+  broadcasts: BroadcastRecord[];
   days: { day: string; newUsers: number; dailyRewards: number; matches: number; purchases: number; ads: number }[];
   server: { startedAt: number; memoryMegabytes: number };
 }
@@ -165,7 +168,9 @@ export function createAdminStats(database: Database, options: AdminStatsOptions)
       devices: {
         tokens: count('SELECT COUNT(*) AS value FROM push_tokens'),
         users: count('SELECT COUNT(DISTINCT user_id) AS value FROM push_tokens'),
+        languages: options.broadcasts.audience(),
       },
+      broadcasts: options.broadcasts.recent(),
       days,
       server: { startedAt: options.startedAt, memoryMegabytes: Math.round(process.memoryUsage().rss / MEGABYTE) },
     };

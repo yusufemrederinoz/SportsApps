@@ -61,8 +61,17 @@ import { createGridRoomFactory } from '../play/grid-room';
 import { DEFAULT_HIGHER_TIMING, createHigherRoomFactory, type HigherTiming } from '../play/higher-room';
 import { createMatchHistory } from '../play/history';
 import type { Mailer } from '../mail/mailer';
+import {
+  BROADCAST_BODY_MAX_LENGTH,
+  BROADCAST_TITLE_MAX_LENGTH,
+  BroadcastError,
+  cleanBroadcast,
+  createBroadcasts,
+  type BroadcastRecord,
+  type BroadcastRequest,
+} from '../notifications/broadcast';
 import { createExpoSender, type PushSender } from '../notifications/sender';
-import { createNotifications } from '../notifications/service';
+import { NOTIFICATION_LANGUAGES, createNotifications } from '../notifications/service';
 import type { RoomFactory } from '../play/live-room';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
@@ -209,6 +218,27 @@ const PUZZLE_GUESS = {
     },
   },
 } as const;
+const BROADCAST_TEXT = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['title', 'body'],
+  properties: { title: text(BROADCAST_TITLE_MAX_LENGTH), body: text(BROADCAST_BODY_MAX_LENGTH) },
+} as const;
+const BROADCAST = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['messages'],
+    properties: {
+      messages: {
+        type: 'object',
+        additionalProperties: false,
+        properties: Object.fromEntries(NOTIFICATION_LANGUAGES.map((language) => [language, BROADCAST_TEXT])),
+      },
+      fallback: { type: 'string', enum: [...NOTIFICATION_LANGUAGES] },
+    },
+  },
+} as const;
 const HISTORY_QUERY = {
   querystring: {
     type: 'object',
@@ -249,12 +279,14 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   const leaderboard = createLeaderboard(database, { now, timeZone: config.timeZone });
   const ads = createAds(database, progress, dependencies.ads ?? NO_ADS, { now, timeZone: config.timeZone });
   const store = createStore(database, progress, dependencies.purchaseVerifiers ?? {}, now, (error) => app.log.warn(error));
+  const sendPush = dependencies.sendPush ?? createExpoSender();
   const notifications = createNotifications(database, {
     now,
     timeZone: config.timeZone,
-    send: dependencies.sendPush ?? createExpoSender(),
+    send: sendPush,
     onError: (error) => app.log.error(error),
   });
+  const broadcasts = createBroadcasts(database, { now, send: sendPush, onError: (error) => app.log.error(error) });
   if (config.notifications) {
     app.addHook('onClose', notifications.start());
   }
@@ -312,6 +344,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     timeZone: config.timeZone,
     live: () => livePlay(),
     online: presence.count,
+    broadcasts,
     startedAt: now(),
   });
 
@@ -373,7 +406,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       .send(ADMIN_PANEL);
   });
 
-  app.get(`${API_PREFIX}/admin/stats`, (request, reply): AdminStats => {
+  const requireAdmin = (request: FastifyRequest): void => {
     const { adminKey } = dependencies;
     if (!adminKey) {
       throw new ApiError('not-found');
@@ -382,9 +415,33 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     if (!header?.startsWith(BEARER) || !isAdminKey(header.slice(BEARER.length), adminKey)) {
       throw new ApiError(adminFailures.allow(request.ip) ? 'unauthorized' : 'rate-limited');
     }
+  };
+
+  app.get(`${API_PREFIX}/admin/stats`, (request, reply): AdminStats => {
+    requireAdmin(request);
     void reply.header('Cache-Control', 'no-store');
     return adminStats.read();
   });
+
+  app.post<{ Body: BroadcastRequest }>(
+    `${API_PREFIX}/admin/notifications`,
+    { schema: BROADCAST, preValidation: async (request) => requireAdmin(request) },
+    async (request, reply): Promise<BroadcastRecord> => {
+      const broadcast = cleanBroadcast(request.body);
+      if (!broadcast) {
+        throw new ApiError('validation');
+      }
+      void reply.header('Cache-Control', 'no-store');
+      try {
+        return await broadcasts.send(broadcast);
+      } catch (error) {
+        if (error instanceof BroadcastError) {
+          throw new ApiError(error.code === 'too-soon' ? 'rate-limited' : 'validation');
+        }
+        throw error;
+      }
+    },
+  );
 
   app.post(`${API_PREFIX}/auth/guest`, (request): AuthResponse => {
     startSignIn(request);
