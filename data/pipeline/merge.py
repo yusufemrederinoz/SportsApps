@@ -4,13 +4,14 @@ import urllib.parse
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from . import fame, transfermarkt, wikidata, wikipedia
-from .config import DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_POSITIONS
+from . import dumps, fame, transfermarkt, wikidata, wikipedia
+from .config import BASE_LANGUAGES, DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_POSITIONS
 from .registry import PlayerRegistry
 from .text import normalize
 from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_id, entity_number
 
-NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
+CLUB_NAME_SLACK = 4
+NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *BASE_LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
 
 CURRENT_YEAR = datetime.date.today().year
 
@@ -44,6 +45,10 @@ class Spell:
     @property
     def is_rumor(self):
         return self.sources == {"wd"} and self.first_year is not None and self.first_year >= CURRENT_YEAR
+
+
+def fame_languages(market):
+    return (market.get("fame_languages") or market["language"]).split()
 
 
 def read_override(name):
@@ -85,6 +90,14 @@ def position_from_labels(labels):
 def localized_names(labels, fallback):
     default = labels.get(DEFAULT_LANGUAGE) or labels.get(NEUTRAL_LANGUAGE) or fallback
     return {language: labels.get(language) or default for language in LANGUAGES}
+
+
+def compact_names(names):
+    default = names[DEFAULT_LANGUAGE]
+    return {
+        language: name if language in BASE_LANGUAGES or len(name) <= len(default) + CLUB_NAME_SLACK else default
+        for language, name in names.items()
+    }
 
 
 def display_name(variants):
@@ -153,7 +166,7 @@ def resolve_clubs(leagues, refresh):
     for row in wikidata.labels(canonical_ids, refresh) if canonical_ids else []:
         names[entity_id(row["item"])][row["language"]] = row["label"]
     for club in clubs.values():
-        club["names"] = localized_names(names.get(club["wikidata_id"], {}), club["transfermarkt_name"])
+        club["names"] = compact_names(localized_names(names.get(club["wikidata_id"], {}), club["transfermarkt_name"]))
 
     return clubs, club_by_wikidata_id, membership_rows
 
@@ -334,7 +347,7 @@ def resolve_countries(identifiers, countries, aliases):
     return list(dict.fromkeys(identifier for identifier in resolved if identifier in countries))
 
 
-def build(refresh=False, registry=None):
+def build(refresh=False, registry=None, views_month=None):
     registry = registry or PlayerRegistry()
     leagues ={row["code"]: row for row in read_override("leagues.csv")}
     clubs, club_by_wikidata_id, membership_rows = resolve_clubs(leagues, refresh)
@@ -350,10 +363,14 @@ def build(refresh=False, registry=None):
     scopes = [wikidata.club_scope(set(club_by_wikidata_id))] + wikidata.player_scopes(extra_ids)
     wikidata_players = load_wikidata_players(scopes, refresh)
     markets = read_override("markets.csv")
-    for language in sorted({market["language"] for market in markets}):
+    titles = defaultdict(set)
+    for language in sorted({language for market in markets for language in fame_languages(market)}):
         for row in wikidata.player_articles(scopes, language, refresh):
             if entity_id(row["player"]) in wikidata_players:
                 wikidata_players[entity_id(row["player"])]["articles"][language] = row["title"]
+                titles[language].add(row["title"])
+    if views_month:
+        dumps.write_caches(views_month, titles)
     women = {identifier for identifier in scope_ids if wikidata_players.get(identifier, {}).get("female")}
     scope_ids -= women
 
@@ -457,16 +474,38 @@ def build(refresh=False, registry=None):
                 )
             )
 
-    player_fame = []
-    for market in markets:
-        language = market["language"]
+    def views_in(language):
         views = wikipedia.recent_views(
-            language, [player["articles"][language] for player in players if language in player["articles"]], refresh
+            language,
+            [player["articles"][language] for player in players if language in player["articles"]],
+            refresh and not views_month,
         )
-        for player in players:
-            local_views = views.get(player["articles"].get(language), 0)
-            score = fame.score(local_views, player["sitelinks"], player["highest_market_value_eur"], player["international_caps"])
-            player_fame.append((player["id"], market["code"], score, local_views))
+        return {player["id"]: views.get(player["articles"].get(language), 0) for player in players}
+
+    player_fame = []
+    reference = None
+    for market in markets:
+        languages = fame_languages(market)
+        by_language = [views_in(language) for language in languages]
+        total = {player["id"]: sum(views[player["id"]] for views in by_language) for player in players}
+        if len(languages) == 1 or reference is None:
+            scores = {
+                player["id"]: fame.score(
+                    total[player["id"]], player["sitelinks"], player["highest_market_value_eur"], player["international_caps"]
+                )
+                for player in players
+            }
+            reference = reference or (total, scores)
+        else:
+            shares = fame.shared_share(by_language, reference[0].values())
+            raw = {
+                player["id"]: fame.exact(
+                    shares.get(player["id"], 0.0), player["sitelinks"], player["highest_market_value_eur"], player["international_caps"]
+                )
+                for player in players
+            }
+            scores = fame.matched(raw, reference[1].values())
+        player_fame += [(player["id"], market["code"], scores[player["id"]], total[player["id"]]) for player in players]
 
     stats = {
         "transfermarkt_players_in_scope": len(transfermarkt_spells),

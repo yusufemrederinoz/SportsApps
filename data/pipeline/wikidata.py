@@ -5,7 +5,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from .config import CACHE_DIR, LANGUAGES, USER_AGENT, WIKIDATA_SPARQL_URL
+from .config import BASE_LANGUAGES, CACHE_DIR, LANGUAGES, USER_AGENT, WIKIDATA_SPARQL_URL
 
 PREFIXES = """
 PREFIX wd: <http://www.wikidata.org/entity/>
@@ -29,8 +29,9 @@ def quoted(languages):
     return ", ".join(f'"{language}"' for language in dict.fromkeys(languages))
 
 
-LABEL_LANGUAGES = quoted((*LANGUAGES, NEUTRAL_LANGUAGE))
-PLAYER_LABEL_LANGUAGES = quoted((*LANGUAGES, NEUTRAL_LANGUAGE, *NAME_FALLBACK_LANGUAGES))
+LABEL_LANGUAGES = quoted((*BASE_LANGUAGES, NEUTRAL_LANGUAGE))
+PLAYER_LABEL_LANGUAGES = quoted((*BASE_LANGUAGES, NEUTRAL_LANGUAGE, *NAME_FALLBACK_LANGUAGES))
+PLACE_LABEL_LANGUAGES = quoted((*LANGUAGES, NEUTRAL_LANGUAGE))
 
 PLAYER_QUERIES = {
     "core": "SELECT ?player ?sitelinks ?birth ?image ?transfermarkt ?gender WHERE { %s "
@@ -123,7 +124,7 @@ def memberships(club_ids, refresh=False):
 def labels(identifiers, refresh=False):
     query = (
         "SELECT ?item ?label (LANG(?label) AS ?language) WHERE { VALUES ?item { %s } "
-        "?item rdfs:label ?label FILTER(LANG(?label) IN (%s)) }" % (values(identifiers), LABEL_LANGUAGES)
+        "?item rdfs:label ?label FILTER(LANG(?label) IN (%s)) }" % (values(identifiers), PLACE_LABEL_LANGUAGES)
     )
     return select("labels", query, refresh)
 
@@ -133,7 +134,7 @@ def countries(extra_ids, refresh=False):
         "SELECT ?country ?code ?label (LANG(?label) AS ?language) WHERE { "
         "{ ?country wdt:P297 ?code FILTER NOT EXISTS { ?country wdt:P576 ?dissolved } } "
         "UNION { VALUES ?country { %s } } "
-        "?country rdfs:label ?label FILTER(LANG(?label) IN (%s)) }" % (values(extra_ids), LABEL_LANGUAGES)
+        "?country rdfs:label ?label FILTER(LANG(?label) IN (%s)) }" % (values(extra_ids), PLACE_LABEL_LANGUAGES)
     )
     return select("countries", query, refresh)
 

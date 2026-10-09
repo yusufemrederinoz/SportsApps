@@ -96,7 +96,7 @@ def select_pool(answers, home, level):
     ranked = sorted(answers, key=lambda header: (-len(answers[header]), header))
     clubs = [header for header in ranked if header[0] == "club"]
     pool = [header for header in clubs if header in home][: level.home_clubs]
-    pool += [header for header in clubs if header not in home][: level.foreign_clubs]
+    pool += [header for header in clubs if header not in home][: level.foreign_clubs + level.home_clubs - len(pool)]
     pool += [header for header in ranked if header[0] == "country"][: level.countries]
     return pool
 

@@ -17,7 +17,8 @@ WIKIDATA_SPARQL_URL = "https://qlever.dev/api/wikidata"
 CONTACT = os.environ.get("PIPELINE_CONTACT", "https://github.com/yusufemrederinoz/SportsApps").strip()
 USER_AGENT = f"SportAppsDataPipeline/0.1 ({CONTACT or 'football trivia dataset build'})"
 
-LANGUAGES = ("en", "tr")
+LANGUAGES = ("en", "tr", "de", "es", "fr", "it")
+BASE_LANGUAGES = ("en", "tr")
 DEFAULT_LANGUAGE = "en"
 
 TRANSFERMARKT_POSITIONS = {"Goalkeeper": "GK", "Defender": "DF", "Midfield": "MF", "Attack": "FW"}

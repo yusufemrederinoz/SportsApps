@@ -11,6 +11,7 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     build = commands.add_parser("build")
     build.add_argument("--refresh", action="store_true")
+    build.add_argument("--views-month")
     commands.add_parser("grids")
     commands.add_parser("bundle")
     commands.add_parser("stats")
@@ -29,7 +30,7 @@ def main():
         return
 
     registry = PlayerRegistry.load()
-    dataset = merge.build(refresh=arguments.refresh, registry=registry)
+    dataset = merge.build(refresh=arguments.refresh, registry=registry, views_month=arguments.views_month)
     database_path = export.write(dataset)
     registry.save()
     dataset["grid_summaries"] = grids.write(database_path)
