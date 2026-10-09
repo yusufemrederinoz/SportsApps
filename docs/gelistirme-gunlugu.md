@@ -816,6 +816,15 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Site: kullanıcının bulduğu üç hata.** (1) Örnek XOX ızgarasının satırlarında lig adları vardı; oyun lig değil kulüp ve ülke kullanıyor. Satırlar Galatasaray, Real Madrid ve Bayern Münih oldu, uygulamadaki arma üreticisinden alınan armalarıyla. (2) "İnternet gerekiyor mu?" cevabı yalnızca XOX'ta bot varmış gibi okunuyordu; bot sekiz oyunun hepsinde var, cevap buna göre yazıldı ve internetsiz oynama vaadi kaldırıldı. (3) Öne çıkan sayılardan "1.200+ çizim portre" ve "3 zorluk" kaldırıldı; kullanıcıya göre bunlar uygulamayı öne çıkaran şeyler değil. Yerlerine 70.000+ futbolcu ve gerçek rakiple canlı maç kondu. İngilizce sayfa da aynı şekilde düzeltildi.
 - Ders: tanıtım metni yazarken her iddia koddan doğrulanmalı; "özellik" diye dolgu maddesi konmamalı.
 
+### Kalıcı bot kadrosu ve sitedeki futbolcu kartları (9 Ekim 2026)
+
+- **Sorun (kullanıcı buldu).** İlk oyunculara gerçek oyuncu gibi görünen botlar çıkıyor; oyuncu lider tablosuna bakınca kendisini yenen adı bulamıyor. Kullanıcı bunu konuşmadan karar verilmemesini istedi.
+- **Seçenekler ve karar.** Üç yol sunuldu: kalıcı bot kadrosu, botu açıkça göstermek, tabloyu ilk 10 ile sınırlamak. Kullanıcı kalıcı kadroyu seçti; şartlar: botlar ilk sıralara çıkmaz, gerçek oyuncu arttıkça azalır, koşullarda ve SSS'de genel bir yapay zekâ rakip açıklaması bulunur. Bota karşı online maçların puanlı kalmasını da seçti.
+- **Yapılan.** Botlar işaretli hesaplar oldu; kadro, seçim, puan ve tablo kuralı yazıldı (ayrıntı teknik mimaride "Bot kadrosu"). Sunucu dağıtıldı, 15. veritabanı geçişi canlıda; kadro ilk bot maçında oluşacak. Canlıda o an 15 gerçek hesap vardı.
+- **Metinler.** Koşullardaki bot cümlesi puan ve tabloyu da kapsayacak şekilde genişletildi, siteye yeni bir SSS maddesi eklendi. Sitede, mağaza metninde ve uygulamada "gerçek bir rakiple" ifadeleri "online" ifadesiyle değiştirildi; "1'e 1: gerçek rakiple canlı maç" sayısı (aynı gün benim eklediğim) "canlı online maç" oldu.
+- **Site: örnek ızgara.** Kullanıcının isteğiyle X ve O harfleri yerine uygulamadaki gibi altın ve mavi zeminli gerçek futbolcu kartları kondu (Arda Turan, Taffarel, Roberto Carlos, Zidane, Ribéry; mevki, portre ve ad). Portreler yeni üretimden; kaynak fotoğrafların yazar ve lisansı ızgaranın altındaki "Görsel kaynakları" bölümünde. Hamit Altıntop'un portresi bulanık olduğu için Bayern hücresinde Ribéry kullanıldı.
+- Canlıda gerçek bir bot maçıyla uçtan uca denenmedi; kural sunucu testleriyle doğrulandı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1015,3 +1024,7 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `c61da82` | 9 Ekim | Beraberliksiz XOX kuralının belgelenmesi |
 | `e7da4cf` | 9 Ekim | Beş oyunda eşit maçın hızlı olana verilmesi |
 | `bd6b1c1` | 9 Ekim | Sitede örnek ızgara ve yanlış bilgilerin düzeltilmesi |
+| `0761085` | 9 Ekim | Hız kuralı ve site düzeltmelerinin belgelenmesi |
+| `0b93f2d` | 9 Ekim | Sitedeki örnek ızgarada futbolcu kartları |
+| `5111150` | 9 Ekim | Kalıcı bot kadrosu: geçmiş, puan ve lider tablosu |
+| `8287d34` | 9 Ekim | Yapay zekâ rakip açıklaması ve "gerçek rakip" ifadelerinin kaldırılması |
