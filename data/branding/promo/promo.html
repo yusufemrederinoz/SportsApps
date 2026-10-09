@@ -41,6 +41,7 @@
         --gold-deep: #a8741a;
         --blue: #5b9bff;
         --blue-deep: #1d3faf;
+        --positive: #3fe08f;
         --display: "Barlow Condensed", sans-serif;
         --sans: "Barlow", sans-serif;
         --cell: 216px;
@@ -85,7 +86,6 @@
         font-family: var(--display);
         font-weight: 800;
         font-style: italic;
-        text-transform: none;
         line-height: 0.94;
         white-space: nowrap;
       }
@@ -129,7 +129,18 @@
         inset: 0;
         animation:
           scene-in 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--start) * 1s) both,
-          scene-out 0.28s ease-in calc(var(--end) * 1s) forwards;
+          scene-out 0.26s ease-in calc(var(--end) * 1s - 0.26s) forwards;
+      }
+
+      .state {
+        animation:
+          state-in 0.3s ease-out calc(var(--start) * 1s) both,
+          state-out 0.22s ease-in calc(var(--end) * 1s) forwards;
+      }
+
+      .layer {
+        position: absolute;
+        inset: 0;
       }
 
       .eyebrow {
@@ -168,9 +179,16 @@
         animation-name: from-right;
       }
 
+      .centered {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+      }
+
       .hook .ball {
         position: absolute;
-        top: -230px;
+        top: -310px;
         left: -286px;
         width: 1400px;
         height: 1400px;
@@ -179,14 +197,14 @@
 
       .hook .copy {
         position: absolute;
-        top: 850px;
+        top: 740px;
         left: 70px;
         width: 940px;
       }
 
       .hook h1 {
-        margin-top: 22px;
-        font-size: 184px;
+        margin-top: 18px;
+        font-size: 164px;
       }
 
       .hook h1 span,
@@ -195,9 +213,323 @@
         transform-origin: left center;
       }
 
-      .hook h1 em {
+      .hook h1 em,
+      .poster h1 em {
         color: var(--volt);
         text-shadow: 0 0 60px rgba(200, 255, 46, 0.55);
+      }
+
+      .hook .promise {
+        position: absolute;
+        top: 1296px;
+        left: 70px;
+        width: 940px;
+      }
+
+      .no-ads {
+        display: inline-block;
+        padding: 16px 36px 10px;
+        border-radius: 18px;
+        background: var(--volt);
+        color: var(--ink);
+        font-size: 100px;
+        transform: rotate(-3deg);
+        box-shadow: 0 0 80px rgba(200, 255, 46, 0.5);
+      }
+
+      .hook .promise p {
+        margin-top: 34px;
+        font-size: 38px;
+        color: var(--text);
+      }
+
+      .game-title {
+        position: absolute;
+        top: 246px;
+        left: 70px;
+        width: 940px;
+        font-size: 120px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.45);
+      }
+
+      .game-title.short {
+        width: 690px;
+      }
+
+      .game-rule {
+        position: absolute;
+        top: 374px;
+        left: 70px;
+        width: 940px;
+        font-size: 36px;
+        line-height: 1.25;
+        color: var(--body);
+      }
+
+      .chip {
+        position: absolute;
+        top: 274px;
+        right: 70px;
+        padding: 8px 22px 6px;
+        border-radius: 10px;
+        background: var(--volt);
+        color: var(--ink);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 36px;
+        letter-spacing: 0.06em;
+      }
+
+      .scoreboard {
+        position: absolute;
+        top: 484px;
+        left: 70px;
+        width: 940px;
+        height: 150px;
+        display: grid;
+        grid-template-columns: 1fr 150px 1fr;
+        gap: 22px;
+        align-items: center;
+      }
+
+      .plate {
+        height: 112px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 30px;
+        border: 2px solid var(--stroke);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #1a212c, #0b0f15);
+        color: var(--muted);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 36px;
+        letter-spacing: 0.06em;
+      }
+
+      .plate strong {
+        font-weight: 800;
+        font-style: italic;
+        font-size: 80px;
+        letter-spacing: 0;
+        line-height: 1;
+      }
+
+      .plate.you strong {
+        color: var(--gold);
+      }
+
+      .plate.rival strong {
+        color: var(--blue);
+      }
+
+      .plate.you[data-state="active"] {
+        border-color: var(--gold);
+        background: linear-gradient(150deg, #fff1c2, var(--gold) 45%, var(--gold-deep));
+      }
+
+      .plate.rival[data-state="active"] {
+        border-color: var(--blue);
+        background: linear-gradient(150deg, #e3eeff, var(--blue) 45%, var(--blue-deep));
+      }
+
+      .plate[data-state="active"],
+      .plate[data-state="active"] strong {
+        color: var(--ink);
+      }
+
+      .clock {
+        width: 150px;
+        height: 150px;
+        display: grid;
+        place-items: center;
+        border: 11px solid var(--stroke);
+        border-radius: 50%;
+        background: var(--ink);
+        color: var(--muted);
+        font-size: 76px;
+      }
+
+      .clock[data-state="you"] {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+
+      .clock[data-state="rival"] {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      .panel {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        padding: 22px 30px 24px;
+        border: 2px solid var(--stroke);
+        border-radius: 22px;
+        background: linear-gradient(180deg, var(--panel-raised), #0c1017);
+      }
+
+      .panel small {
+        display: block;
+        margin-bottom: 4px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.1em;
+        color: var(--volt);
+      }
+
+      .panel strong {
+        display: block;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 58px;
+        line-height: 1.02;
+        white-space: nowrap;
+      }
+
+      .button {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        height: 110px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 44px;
+        border-radius: 24px;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 54px;
+        white-space: nowrap;
+      }
+
+      .button::after {
+        content: "\203A";
+        font-size: 64px;
+        line-height: 1;
+      }
+
+      .button.primary {
+        background: var(--volt);
+        color: var(--ink);
+        box-shadow: 0 0 44px rgba(200, 255, 46, 0.35);
+      }
+
+      .button.secondary {
+        border: 2px solid var(--stroke-bright);
+        background: var(--panel);
+        color: var(--text);
+      }
+
+      .button.secondary::after {
+        color: var(--volt);
+      }
+
+      .press {
+        animation: press 0.32s ease-out calc(var(--t) * 1s) both;
+      }
+
+      .press-twice {
+        animation:
+          press 0.32s ease-out calc(var(--t) * 1s) both,
+          press 0.32s ease-out calc(var(--again) * 1s) both;
+      }
+
+      .card {
+        position: relative;
+        flex: none;
+        width: calc(216px * var(--u, 1));
+        height: calc(216px * var(--u, 1));
+        overflow: hidden;
+        border: 3px solid var(--tone);
+        border-radius: calc(22px * var(--u, 1));
+        background: var(--face);
+        color: var(--ink);
+      }
+
+      .card img {
+        position: absolute;
+        top: 2%;
+        right: 1%;
+        width: 70%;
+      }
+
+      .card b {
+        position: absolute;
+        top: calc(12px * var(--u, 1));
+        left: calc(16px * var(--u, 1));
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: calc(44px * var(--u, 1));
+        line-height: 1;
+      }
+
+      .card span {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 30%;
+        display: grid;
+        place-items: center;
+        padding: 0 calc(6px * var(--u, 1));
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: calc(28px * var(--u, 1));
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .card.shiny::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 45%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+        transform: translateX(-160%) skewX(-20deg);
+        animation: shine 0.6s ease-out calc(var(--t) * 1s + 0.28s) both;
+      }
+
+      .flip {
+        animation: flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--t) * 1s) both;
+      }
+
+      .back {
+        flex: none;
+        width: calc(216px * var(--u, 1));
+        height: calc(216px * var(--u, 1));
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--blue);
+        border-radius: calc(22px * var(--u, 1));
+        background: repeating-linear-gradient(135deg, #131c2b 0 30px, #1a2740 30px 60px);
+        color: var(--blue);
+        font-size: calc(130px * var(--u, 1));
+        animation:
+          pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--t) * 1s) both,
+          flip-out 0.22s ease-in calc(var(--turned) * 1s) forwards;
+      }
+
+      .x {
+        --tone: var(--gold);
+        --face: linear-gradient(150deg, #fff1c2, var(--gold) 45%, var(--gold-deep));
+      }
+
+      .o {
+        --tone: var(--blue);
+        --face: linear-gradient(150deg, #e3eeff, var(--blue) 45%, var(--blue-deep));
       }
 
       .play .title {
@@ -272,6 +604,13 @@
         background: var(--ink);
       }
 
+      .cell .card {
+        position: absolute;
+        inset: -2px;
+        width: auto;
+        height: auto;
+      }
+
       .cell.win {
         animation: pulse 0.5s ease-in-out calc(var(--won) * 1s + 0.1s) both;
       }
@@ -299,73 +638,6 @@
         border-radius: 24px;
         opacity: 0;
         animation: ring 0.6s ease-out calc(var(--t) * 1s + 0.12s) both;
-      }
-
-      .card {
-        position: absolute;
-        inset: -2px;
-        overflow: hidden;
-        border: 3px solid var(--tone);
-        border-radius: 22px;
-        background: var(--face);
-        color: var(--ink);
-        animation: flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--t) * 1s) both;
-      }
-
-      .card img {
-        position: absolute;
-        top: 2%;
-        right: 1%;
-        width: 70%;
-      }
-
-      .card b {
-        position: absolute;
-        top: 12px;
-        left: 16px;
-        font-family: var(--display);
-        font-weight: 800;
-        font-style: italic;
-        font-size: 44px;
-        line-height: 1;
-      }
-
-      .card span {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 30%;
-        display: grid;
-        place-items: center;
-        background: rgba(0, 0, 0, 0.5);
-        color: #fff;
-        font-family: var(--display);
-        font-weight: 700;
-        font-size: 28px;
-        white-space: nowrap;
-      }
-
-      .card::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 45%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
-        transform: translateX(-160%) skewX(-20deg);
-        animation: shine 0.6s ease-out calc(var(--t) * 1s + 0.28s) both;
-      }
-
-      .x {
-        --tone: var(--gold);
-        --face: linear-gradient(150deg, #fff1c2, var(--gold) 45%, var(--gold-deep));
-      }
-
-      .o {
-        --tone: var(--blue);
-        --face: linear-gradient(150deg, #e3eeff, var(--blue) 45%, var(--blue-deep));
       }
 
       .line {
@@ -465,6 +737,410 @@
         left: -276px;
         width: 1620px;
         height: 1080px;
+      }
+
+      .duel .concept {
+        top: 484px;
+      }
+
+      .duel .hint {
+        position: absolute;
+        top: 642px;
+        left: 70px;
+        width: 940px;
+        font-size: 31px;
+        line-height: 1.3;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      .slots {
+        position: absolute;
+        top: 756px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 18px;
+        --u: 1.023;
+      }
+
+      .slot {
+        position: relative;
+        width: 221px;
+        height: 221px;
+        display: grid;
+        place-items: center;
+        border: 3px dashed var(--gold);
+        border-radius: 22px;
+        color: var(--gold);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 64px;
+      }
+
+      .slot .card {
+        position: absolute;
+        inset: -3px;
+        width: auto;
+        height: auto;
+      }
+
+      .count {
+        top: 1246px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 36px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+
+      .duel .ready {
+        top: 1330px;
+      }
+
+      .question {
+        top: 664px;
+        text-align: center;
+      }
+
+      .question strong {
+        font-size: 48px;
+      }
+
+      .versus {
+        position: absolute;
+        top: 810px;
+        left: 70px;
+        width: 940px;
+        height: 300px;
+        --u: 1.39;
+      }
+
+      .versus .mine,
+      .versus .theirs {
+        position: absolute;
+        top: 0;
+        width: 300px;
+        height: 300px;
+      }
+
+      .versus .mine {
+        left: 80px;
+      }
+
+      .versus .theirs {
+        right: 80px;
+      }
+
+      .versus .theirs > * {
+        position: absolute;
+        inset: 0;
+      }
+
+      .versus .vs {
+        position: absolute;
+        top: 112px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 66px;
+        color: var(--muted);
+      }
+
+      .lost {
+        animation: dim 0.35s ease-out calc(var(--t) * 1s) forwards;
+      }
+
+      .value {
+        position: absolute;
+        top: 1122px;
+        width: 300px;
+        text-align: center;
+        font-size: 82px;
+      }
+
+      .value.mine {
+        left: 150px;
+        color: var(--gold);
+      }
+
+      .value.theirs {
+        left: 630px;
+        color: var(--blue);
+      }
+
+      .value em {
+        margin-left: 10px;
+        font-size: 46px;
+        color: var(--positive);
+      }
+
+      .value small {
+        display: block;
+        margin-top: 8px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-style: normal;
+        font-size: 26px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+
+      .verdict {
+        top: 1262px;
+        font-size: 80px;
+        color: var(--positive);
+        text-shadow: 0 0 50px rgba(63, 224, 143, 0.45);
+      }
+
+      .hand {
+        position: absolute;
+        top: 1366px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        gap: 14px;
+        --u: 0.565;
+      }
+
+      .hand .card span {
+        font-size: 15px;
+      }
+
+      .spent {
+        animation: spend 0.3s ease-out calc(var(--t) * 1s) forwards;
+      }
+
+      .criteria {
+        top: 664px;
+      }
+
+      .bid-label {
+        top: 846px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 32px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+
+      .bid {
+        top: 880px;
+        font-size: 224px;
+        line-height: 1;
+        color: var(--muted);
+      }
+
+      .bid[data-state="you"] {
+        color: var(--gold);
+      }
+
+      .bid[data-state="rival"] {
+        color: var(--blue);
+      }
+
+      .bid-note {
+        top: 1102px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 46px;
+        letter-spacing: 0.04em;
+        color: var(--muted);
+      }
+
+      .bid-note[data-state="prompt"] {
+        color: var(--volt);
+      }
+
+      .bid-note[data-state="progress"] {
+        color: var(--gold);
+      }
+
+      .stepper {
+        position: absolute;
+        top: 1180px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 70px;
+        font-size: 84px;
+      }
+
+      .stepper i {
+        width: 92px;
+        height: 92px;
+        display: grid;
+        place-items: center;
+        border: 3px solid var(--volt);
+        border-radius: 50%;
+        color: var(--volt);
+        font-family: var(--sans);
+        font-style: normal;
+        font-size: 56px;
+        line-height: 1;
+      }
+
+      .auction .raise {
+        top: 1296px;
+      }
+
+      .auction .challenge {
+        top: 1424px;
+      }
+
+      .shout {
+        top: 1196px;
+        z-index: 2;
+      }
+
+      .shout strong {
+        display: inline-block;
+        padding: 18px 40px 10px;
+        border-radius: 18px;
+        background: var(--blue);
+        color: var(--ink);
+        font-size: 124px;
+        transform: rotate(-4deg);
+        box-shadow: 0 0 90px rgba(91, 155, 255, 0.6);
+      }
+
+      .shout small {
+        display: block;
+        margin-bottom: 18px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 38px;
+        letter-spacing: 0.14em;
+        color: var(--blue);
+      }
+
+      .names {
+        position: absolute;
+        top: 1180px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .names span {
+        padding: 8px 20px 6px;
+        border: 3px solid var(--positive);
+        border-radius: 12px;
+        background: rgba(63, 224, 143, 0.1);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 38px;
+      }
+
+      .auction .search {
+        top: 1296px;
+      }
+
+      .auction .verdict {
+        top: 1424px;
+      }
+
+      .trail {
+        position: absolute;
+        top: 656px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .node {
+        width: 130px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 28px;
+      }
+
+      .node i {
+        display: block;
+        width: 106px;
+        height: 106px;
+        margin: 0 auto 6px;
+        overflow: hidden;
+        border: 3px solid var(--stroke-bright);
+        border-radius: 50%;
+        background: var(--panel-raised);
+      }
+
+      .node img {
+        width: 132%;
+        margin: 2% 0 0 -22%;
+      }
+
+      .link {
+        width: 176px;
+        padding-top: 20px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 21px;
+        letter-spacing: 0.01em;
+        color: var(--gold);
+        white-space: nowrap;
+      }
+
+      .link::after {
+        content: "";
+        display: block;
+        height: 3px;
+        margin-top: 8px;
+        background: var(--gold);
+      }
+
+      .last-label {
+        top: 824px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+
+      .last {
+        position: absolute;
+        top: 868px;
+        left: 380px;
+        width: 320px;
+        height: 320px;
+        --u: 1.4815;
+      }
+
+      .via {
+        top: 1204px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 38px;
+        letter-spacing: 0.02em;
+        color: var(--gold);
+      }
+
+      .turn {
+        top: 1264px;
+        font-size: 66px;
+        color: var(--muted);
+      }
+
+      .turn[data-state="you"],
+      .turn[data-state="closing"] {
+        color: var(--volt);
+      }
+
+      .turn[data-state="closing"] {
+        font-size: 56px;
       }
 
       .heading {
@@ -607,7 +1283,7 @@
 
       .finale .ball {
         position: absolute;
-        top: -190px;
+        top: -230px;
         left: -316px;
         width: 1400px;
         height: 1400px;
@@ -615,22 +1291,22 @@
       }
 
       .finale .wordmark {
-        position: absolute;
-        top: 890px;
-        left: 70px;
-        width: 940px;
-        text-align: center;
+        top: 836px;
         font-size: 158px;
       }
 
-      .finale .wordmark span {
+      .finale .wordmark span,
+      .poster .brand span {
         color: var(--volt);
+      }
+
+      .finale .wordmark span {
         text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
       }
 
       .finale .underline {
         position: absolute;
-        top: 1052px;
+        top: 998px;
         left: 250px;
         width: 580px;
         height: 12px;
@@ -641,26 +1317,32 @@
         animation: grow 0.5s cubic-bezier(0.3, 0.9, 0.3, 1) calc(var(--t) * 1s) both;
       }
 
-      .finale .soon {
-        position: absolute;
-        top: 1118px;
-        left: 70px;
-        width: 940px;
-        text-align: center;
+      .finale .promise {
+        top: 1052px;
+      }
+
+      .finale .promise .no-ads {
+        padding: 14px 30px 8px;
+        font-size: 76px;
+      }
+
+      .finale .call {
+        top: 1208px;
       }
 
       .stores {
         position: absolute;
-        top: 1186px;
+        top: 1268px;
         left: 70px;
         width: 940px;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-auto-flow: column;
+        grid-auto-columns: 1fr;
         gap: 24px;
       }
 
       .stores div {
-        height: 116px;
+        height: 112px;
         display: grid;
         place-items: center;
         border: 2px solid var(--stroke-bright);
@@ -672,20 +1354,16 @@
       }
 
       .finale .site {
-        position: absolute;
-        top: 1340px;
-        left: 70px;
-        width: 940px;
-        text-align: center;
+        top: 1404px;
         font-family: var(--display);
         font-weight: 700;
-        font-size: 60px;
+        font-size: 58px;
         letter-spacing: 0.04em;
       }
 
       .finale .notice {
         position: absolute;
-        top: 1436px;
+        top: 1488px;
         left: 110px;
         width: 860px;
         text-align: center;
@@ -709,10 +1387,6 @@
         margin-right: 22px;
       }
 
-      .poster .brand span {
-        color: var(--volt);
-      }
-
       .poster h1 {
         position: absolute;
         top: 236px;
@@ -724,11 +1398,6 @@
       .poster h1 span,
       .poster h1 em {
         display: block;
-      }
-
-      .poster h1 em {
-        color: var(--volt);
-        text-shadow: 0 0 60px rgba(200, 255, 46, 0.55);
       }
 
       .poster .board {
@@ -748,7 +1417,7 @@
           0 0 44px rgba(200, 255, 46, 0.75);
       }
 
-      .poster .soon {
+      .poster .call {
         position: absolute;
         top: 1210px;
         left: 70px;
@@ -777,17 +1446,20 @@
 
       .poster .pitch {
         position: absolute;
-        top: 650px;
+        top: 636px;
         left: 70px;
-        width: 320px;
-        font-size: 36px;
-        line-height: 1.25;
-        color: var(--body);
+        width: 330px;
+      }
+
+      .poster .pitch .no-ads {
+        padding: 14px 22px 8px;
+        font-size: 66px;
+        line-height: 0.98;
       }
 
       .poster .pitch strong {
         display: block;
-        margin-top: 26px;
+        margin-top: 34px;
         font-family: var(--display);
         font-weight: 800;
         font-style: italic;
@@ -820,6 +1492,20 @@
         to {
           opacity: 0;
           transform: translateY(-60px) scale(0.97);
+        }
+      }
+
+      @keyframes state-in {
+        from {
+          opacity: 0;
+          transform: translateY(18px);
+        }
+      }
+
+      @keyframes state-out {
+        to {
+          opacity: 0;
+          transform: translateY(-14px);
         }
       }
 
@@ -894,6 +1580,13 @@
         }
       }
 
+      @keyframes flip-out {
+        to {
+          opacity: 0;
+          transform: perspective(900px) rotateY(90deg) scale(0.9);
+        }
+      }
+
       @keyframes shine {
         to {
           transform: translateX(320%) skewX(-20deg);
@@ -939,9 +1632,22 @@
         }
       }
 
+      @keyframes press {
+        40% {
+          transform: scale(0.94);
+          filter: brightness(1.35);
+        }
+      }
+
       @keyframes dim {
         to {
           opacity: 0.38;
+        }
+      }
+
+      @keyframes spend {
+        to {
+          opacity: 0.16;
         }
       }
 

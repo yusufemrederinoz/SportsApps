@@ -2,6 +2,11 @@
   "tr": {
     "eyebrow": "FUTBOL BİLGİ OYUNLARI",
     "hook": ["FUTBOLU", "KİM DAHA İYİ", "BİLİYOR?"],
+    "noAds": {
+      "title": "ZORUNLU REKLAM YOK",
+      "line": "Reklamı yalnızca sen istersen izlersin."
+    },
+    "sides": { "you": "SEN", "rival": "RAKİP" },
     "grid": {
       "title": "XOX",
       "rule": "İki ölçüte de uyan futbolcuyu yaz, hücreyi al",
@@ -11,6 +16,48 @@
       "search": "Futbolcu adı yaz",
       "line": "ÜÇ HÜCREYİ YAN YANA GETİR",
       "win": "KAZANDIN!"
+    },
+    "duel": {
+      "title": "KART DÜELLOSU",
+      "rule": "7 kartını seç. Sorular gizli; her turda bir kartını rakibinkiyle kapıştır.",
+      "conceptLabel": "KONSEPT",
+      "concept": "SÜPER LİG TARİHİNDEKİ YABANCILAR",
+      "pickHint": "Soruları bilmeden seçiyorsun: gol, asist, maç sayısı, yaş… her şey sorulabilir.",
+      "count": "{{picked}}/7 KART",
+      "ready": "HAZIRIM",
+      "round": "TUR {{round}}/7",
+      "questions": ["KARİYERİNDE DAHA ÇOK GOL ATAN KAZANIR", "YAŞI KÜÇÜK OLAN KAZANIR"],
+      "metrics": ["GOL", "DOĞUM YILI"],
+      "roundWon": "TUR SENİN!"
+    },
+    "auction": {
+      "title": "AÇIK ARTIRMA",
+      "rule": "Kaç futbolcu sayabilirsin? Artır ya da \"Say bakalım\" de.",
+      "criteriaLabel": "ÖLÇÜT",
+      "country": "BREZİLYA",
+      "noBid": "HENÜZ TEKLİF YOK",
+      "openBid": "İLK TEKLİFİ VER",
+      "yourBid": "SENİN TEKLİFİN",
+      "theirBid": "RAKİBİN TEKLİFİ",
+      "thinking": "RAKİP DÜŞÜNÜYOR…",
+      "raiseOrChallenge": "ARTIR YA DA \"SAY BAKALIM\" DE",
+      "raise": "{{amount}} İSİM SAYARIM",
+      "challenge": "SAY BAKALIM",
+      "challenged": "SAY BAKALIM!",
+      "prove": "{{bid}} İSİM SAY!",
+      "progress": "{{named}}/{{bid}} doğru isim",
+      "search": "Futbolcu yaz",
+      "proved": "SAYDIN!"
+    },
+    "chain": {
+      "title": "ZİNCİR",
+      "rule": "Son futbolcuyla aynı kulüpte oynamış birini söyle.",
+      "last": "SON HALKA",
+      "via": "Bağlantı: {{club}}",
+      "yourTurn": "SIRA SENDE",
+      "theirTurn": "SIRA RAKİPTE",
+      "search": "Futbolcu söyle",
+      "closing": "ZİNCİRİ KOPARAN TURU KAYBEDER"
     },
     "games": {
       "count": "8 OYUN",
@@ -39,13 +86,14 @@
       "leagues": "SÜPER LİG VE AVRUPA'NIN BEŞ BÜYÜK LİGİ"
     },
     "end": {
-      "soon": "YAKINDA",
-      "stores": ["Google Play", "App Store"],
+      "call": "ÜCRETSİZ İNDİR",
+      "stores": { "play": "Google Play", "apple": "App Store" },
       "site": "challengegoal.app",
       "notice": "Futbolcu görselleri yapay zekâ ile çizilmiştir; kaynaklar challengegoal.app adresinde. ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir."
     },
     "poster": {
-      "soon": "YAKINDA GOOGLE PLAY VE APP STORE'DA"
+      "noAds": ["ZORUNLU", "REKLAM YOK"],
+      "call": { "both": "GOOGLE PLAY VE APP STORE'DA ÜCRETSİZ", "play": "GOOGLE PLAY'DE ÜCRETSİZ", "apple": "APP STORE'DA ÜCRETSİZ" }
     }
   }
 }

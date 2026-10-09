@@ -31,7 +31,11 @@ const TYPES = {
   '.ttf': 'font/ttf',
 };
 
-const [mode = 'video', language = 'tr', only] = process.argv.slice(2);
+const [mode = 'video', language = 'tr', ...extras] = process.argv.slice(2);
+const options = Object.fromEntries(extras.map((extra) => extra.split('=')));
+const cut = options.cut ?? 'short';
+const stores = options.stores ?? 'both';
+const name = ['challengegoal', language, cut === 'short' ? null : cut, stores === 'both' ? null : stores].filter(Boolean).join('-');
 const [width, height] = SIZES[mode];
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
@@ -173,7 +177,9 @@ const chrome = spawn(
 try {
   const send = await connect(await pageSocket());
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
-  await send('Page.navigate', { url: `http://127.0.0.1:${PORT}/promo/promo.html?lang=${language}&mode=${mode}` });
+  await send('Page.navigate', {
+    url: `http://127.0.0.1:${PORT}/promo/promo.html?lang=${language}&mode=${mode}&cut=${cut}&stores=${stores}`,
+  });
   let duration;
   for (let attempt = 0; attempt < 300 && duration === undefined; attempt += 1) {
     await sleep(200);
@@ -182,16 +188,18 @@ try {
   if (duration === undefined) throw new Error('page never became ready');
 
   if (mode === 'poster') {
-    const output = join(BUILD, `challengegoal-${language}-post.png`);
+    const output = join(BUILD, `${name}-post.png`);
     await screenshot(send, output);
     console.log(output);
-  } else if (only !== undefined) {
-    const output = join(BUILD, `preview-${language}-${only}.png`);
-    await evaluate(send, `window.seek(${Number(only)})`);
-    await screenshot(send, output);
-    console.log(output);
+  } else if (options.at !== undefined) {
+    for (const moment of options.at.split(',')) {
+      const output = join(BUILD, `preview-${name}-${moment}.png`);
+      await evaluate(send, `window.seek(${Number(moment)})`);
+      await screenshot(send, output);
+      console.log(output);
+    }
   } else {
-    const frames = join(BUILD, `frames-${language}`);
+    const frames = join(BUILD, `frames-${name}`);
     rmSync(frames, { recursive: true, force: true });
     mkdirSync(frames, { recursive: true });
     const total = Math.round(duration * FPS);
@@ -201,8 +209,9 @@ try {
       await screenshot(send, join(frames, `${String(index).padStart(4, '0')}.png`));
       if (index % 60 === 59) console.log(`${index + 1}/${total} frames, ${Math.round((Date.now() - started) / 1000)} s`);
     }
-    const output = join(BUILD, `challengegoal-${language}.mp4`);
+    const output = join(BUILD, `${name}.mp4`);
     await encode(frames, output);
+    if (!options.keep) rmSync(frames, { recursive: true, force: true });
     console.log(output);
   }
 } finally {
