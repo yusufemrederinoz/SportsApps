@@ -15,7 +15,7 @@ ChallengeGoal: Futbol Bilgi
 **Kısa açıklama** (App Store'da tanıtım metni olarak da kullanılabilir)
 
 ```
-8 futbol bilgi oyunu. Rakibini bul, XOX'ta kapış, puan topla, seviye atla.
+8 futbol bilgi oyunu. Zorunlu reklam yok. Rakibini bul, puan topla, seviye atla.
 ```
 
 **App Store alt başlığı**
@@ -28,6 +28,9 @@ Futbol bilgi oyunları
 
 ```
 Futbolu kim daha iyi biliyor? ChallengeGoal'da online rakiplerle ya da arkadaşınla kapış, bilgini puana çevir.
+
+ZORUNLU REKLAM YOK
+Maçın ortasında reklam çıkmaz. Reklamı yalnızca sen istersen, gol kazanmak için izlersin.
 
 SEKİZ OYUN, TEK UYGULAMA
 • XOX: Satır ve sütundaki iki ölçüte uyan futbolcuyu yaz, üç hücreyi yan yana getir.
@@ -54,7 +57,7 @@ GENİŞ FUTBOL VERİSİ
 Süper Lig ve Avrupa'nın beş büyük liginden 70 binden fazla futbolcu ve 200'den fazla kulüp. Türkçe, İngilizce, Almanca, İspanyolca, Fransızca ve İtalyanca oynanır.
 
 BİLMEN GEREKENLER
-• Uygulama ücretsizdir; reklam ve uygulama içi satın alma içerir. Joker almak için kullanılan goller oynayarak, günlük ödülle ya da reklam izleyerek de kazanılır.
+• Uygulama ücretsizdir; isteğe bağlı ödüllü reklam ve uygulama içi satın alma içerir. Joker almak için kullanılan goller oynayarak, günlük ödülle ya da reklam izleyerek de kazanılır.
 • Maçlar çevrimiçi oynanır; internet bağlantısı gerekir.
 • Online maçta rakip bulunamadığında yapay zekâ bir rakiple eşleşebilirsin; bu maçlar da puanlıdır.
 • ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Kulüp armaları özgün çizimlerdir; futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir.
@@ -79,7 +82,7 @@ ChallengeGoal: Football Trivia
 **Kısa açıklama**
 
 ```
-8 football trivia games. Find a rival, win the grid, collect points, level up.
+8 football trivia games. No forced ads. Find a rival, collect points, level up.
 ```
 
 **App Store alt başlığı**
@@ -92,6 +95,9 @@ Football trivia games
 
 ```
 Who knows football better? In ChallengeGoal you take on online opponents or a friend and turn what you know into points.
+
+NO FORCED ADS
+No ad pops up in the middle of a match. You only watch an ad when you choose to, to earn goals.
 
 EIGHT GAMES, ONE APP
 • XOX: Name a footballer who fits both the row and the column, and line up three cells.
@@ -143,7 +149,7 @@ ChallengeGoal: Fußball-Quiz
 **Kısa açıklama**
 
 ```
-8 Fußball-Quizspiele. Finde Gegner, gewinn im XOX, hol Punkte und steig auf.
+8 Fußball-Quizspiele ohne Zwangswerbung. Finde Gegner, hol Punkte, steig auf.
 ```
 
 **App Store alt başlığı**
@@ -156,6 +162,9 @@ Fußball-Quizspiele
 
 ```
 Wer kennt Fußball besser? In ChallengeGoal trittst du gegen Online-Gegner oder gegen Freunde an und machst aus deinem Wissen Punkte.
+
+KEINE ZWANGSWERBUNG
+Mitten im Match erscheint keine Werbung. Werbung siehst du nur, wenn du es willst, um Tore zu verdienen.
 
 ACHT SPIELE, EINE APP
 • XOX: Nenn einen Fußballer, der zu Zeile und Spalte passt, und bring drei Felder in eine Reihe.
@@ -207,7 +216,7 @@ ChallengeGoal: Quiz de Fútbol
 **Kısa açıklama**
 
 ```
-8 juegos de trivia de fútbol. Busca rival, gana al XOX, puntúa y sube de nivel.
+8 juegos de trivia de fútbol sin anuncios obligatorios. Suma puntos y sube.
 ```
 
 **App Store alt başlığı**
@@ -220,6 +229,9 @@ Juegos de trivia de fútbol
 
 ```
 ¿Quién sabe más de fútbol? En ChallengeGoal te mides con rivales online o con un amigo y conviertes lo que sabes en puntos.
+
+SIN ANUNCIOS OBLIGATORIOS
+No aparecen anuncios en mitad de un partido. Solo ves un anuncio cuando tú quieres, para ganar goles.
 
 OCHO JUEGOS, UNA APP
 • XOX: Escribe un futbolista que encaje con la fila y la columna, y haz tres en raya.
@@ -271,7 +283,7 @@ ChallengeGoal : Quiz Foot
 **Kısa açıklama**
 
 ```
-8 quiz foot. Trouve un rival, gagne au XOX, marque des points, monte de niveau.
+8 jeux de quiz foot sans pub imposée. Trouve un adversaire, marque des points.
 ```
 
 **App Store alt başlığı**
@@ -284,6 +296,9 @@ Jeux de quiz foot
 
 ```
 Qui connaît le mieux le foot ? Dans ChallengeGoal, tu affrontes des adversaires en ligne ou un ami et tu transformes ta culture foot en points.
+
+PAS DE PUB IMPOSÉE
+Aucune pub ne s'affiche en plein match. Tu regardes une pub uniquement si tu le veux, pour gagner des buts.
 
 HUIT JEUX, UNE SEULE APPLI
 • XOX : Trouve un footballeur qui correspond à la ligne et à la colonne, et aligne trois cases.
@@ -335,7 +350,7 @@ ChallengeGoal: Quiz di Calcio
 **Kısa açıklama**
 
 ```
-8 quiz di calcio. Trova un avversario, vinci a XOX, fai punti, sali di livello.
+8 giochi a quiz sul calcio senza pubblicità obbligatoria. Fai punti e sali.
 ```
 
 **App Store alt başlığı**
@@ -348,6 +363,9 @@ Giochi a quiz sul calcio
 
 ```
 Chi ne sa di più di calcio? Su ChallengeGoal sfidi avversari online o un amico e trasformi quello che sai in punti.
+
+NESSUNA PUBBLICITÀ OBBLIGATORIA
+Nessuna pubblicità compare a metà partita. Guardi un annuncio solo se vuoi, per guadagnare gol.
 
 OTTO GIOCHI, UNA SOLA APP
 • XOX: Trova un calciatore che va bene sia per la riga sia per la colonna e metti in fila tre caselle.
