@@ -1,6 +1,6 @@
 from pipeline.config import BUILD_DIR, CACHE_DIR
 
-MARKET = "tr"
+MARKETS = ("tr", "int")
 MINIMUM_FAME = 20
 
 SOURCE_WIDTH = 1280

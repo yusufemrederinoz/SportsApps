@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from pipeline.config import DATABASE_PATH, OVERRIDES_DIR, USER_AGENT
 
-from .config import LARGE_SOURCE_WIDTH, MARKET, METADATA_PATH, MINIMUM_FAME, SOURCE_DIR, SOURCE_WIDTH
+from .config import LARGE_SOURCE_WIDTH, MARKETS, METADATA_PATH, MINIMUM_FAME, SOURCE_DIR, SOURCE_WIDTH
 
 API_URL = "https://commons.wikimedia.org/w/api.php"
 OVERRIDES_PATH = OVERRIDES_DIR / "portrait_files.csv"
@@ -111,11 +111,12 @@ def load_overrides():
 def target_players(connection, limit=None, with_missing=False):
     overrides = load_overrides()
     rows = connection.execute(
-        """SELECT p.id, p.name, p.commons_file, f.fame, p.wikidata_id FROM player_fame f
-           JOIN players p ON p.id = f.player_id
-           WHERE f.market = ? AND f.fame >= ?
-           ORDER BY f.fame DESC, p.id""",
-        (MARKET, MINIMUM_FAME),
+        f"""SELECT p.id, p.name, p.commons_file, MAX(f.fame), p.wikidata_id FROM player_fame f
+            JOIN players p ON p.id = f.player_id
+            WHERE f.market IN ({", ".join("?" for _ in MARKETS)})
+            GROUP BY p.id HAVING MAX(f.fame) >= ?
+            ORDER BY MAX(f.fame) DESC, p.id""",
+        (*MARKETS, MINIMUM_FAME),
     ).fetchall()
     players = [
         {"id": row[0], "name": row[1], "file": overrides.get(row[4]) or row[2], "fame": row[3], "wikidata_id": row[4]}
