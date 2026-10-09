@@ -7,6 +7,7 @@ def main():
     for name in ("fetch", "crop", "enlarge", "stylize", "all"):
         command = commands.add_parser(name)
         command.add_argument("--limit", type=int, default=None)
+    commands.add_parser("review")
     commands.add_parser("export")
     arguments = parser.parse_args()
 
@@ -26,6 +27,10 @@ def main():
         from . import stylize
 
         print("stylize:", stylize.run(arguments.limit))
+    if arguments.command in ("review", "all"):
+        from . import review
+
+        print("review:", review.run())
     if arguments.command in ("export", "all"):
         from . import publish
 

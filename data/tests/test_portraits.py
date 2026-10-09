@@ -2,6 +2,7 @@ import sqlite3
 import unittest
 
 from pipeline.config import APP_DATABASE_PATH, DATABASE_PATH
+from portraits import review
 from portraits.config import OUTPUT_DIR
 from portraits.faces import (
     MINIMUM_FACE_WIDTH,
@@ -131,6 +132,21 @@ class FaceTest(unittest.TestCase):
         status, chosen, box = judge([main], 1280, 1600)
         self.assertEqual((status, chosen), ("cropped", main))
         self.assertEqual(len(box), 3)
+
+
+class ReviewTest(unittest.TestCase):
+    GOOD = {"faces": 1, "pieces": 1, "coverage": 0.43, "sharpness": 180.0}
+
+    def test_keeps_a_sharp_single_head(self):
+        self.assertIsNone(review.verdict(self.GOOD))
+
+    def test_names_what_is_wrong_with_a_drawing(self):
+        self.assertEqual(review.verdict({**self.GOOD, "faces": 0}), "no_face")
+        self.assertEqual(review.verdict({**self.GOOD, "faces": 2}), "crowded")
+        self.assertEqual(review.verdict({**self.GOOD, "pieces": 2}), "crowded")
+        self.assertEqual(review.verdict({**self.GOOD, "coverage": 0.7}), "shape")
+        self.assertEqual(review.verdict({**self.GOOD, "coverage": 0.1}), "shape")
+        self.assertEqual(review.verdict({**self.GOOD, "sharpness": 32.9}), "blurry")
 
 
 class PublishedPortraitsTest(unittest.TestCase):
