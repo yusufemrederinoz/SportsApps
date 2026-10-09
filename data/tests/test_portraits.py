@@ -2,7 +2,7 @@ import sqlite3
 import unittest
 
 from pipeline.config import APP_DATABASE_PATH, DATABASE_PATH
-from portraits import review
+from portraits import alternatives, review
 from portraits.config import OUTPUT_DIR
 from portraits.faces import (
     MINIMUM_FACE_WIDTH,
@@ -147,6 +147,20 @@ class ReviewTest(unittest.TestCase):
         self.assertEqual(review.verdict({**self.GOOD, "coverage": 0.7}), "shape")
         self.assertEqual(review.verdict({**self.GOOD, "coverage": 0.1}), "shape")
         self.assertEqual(review.verdict({**self.GOOD, "sharpness": 32.9}), "blurry")
+
+
+class AlternativePhotoTest(unittest.TestCase):
+    def test_accepts_a_category_photo_only_when_its_name_carries_the_surname(self):
+        self.assertTrue(alternatives.names_player("Hakan şükür.jpg", "Hakan Şükür"))
+        self.assertTrue(alternatives.names_player("Dusan_Vlahovic_2023.png", "Dušan Vlahović"))
+        self.assertFalse(alternatives.names_player("Galatasaray 2000 team.jpg", "Hakan Şükür"))
+        self.assertFalse(alternatives.names_player("Stadium.jpg", "Jô"))
+
+    def test_tries_upright_photos_first_and_larger_ones_before_smaller(self):
+        wide = ("wide.jpg", {"width": 4000, "height": 2000})
+        tall = ("tall.jpg", {"width": 800, "height": 1200})
+        taller = ("taller.jpg", {"width": 1600, "height": 2400})
+        self.assertEqual([name for name, _ in alternatives.ordered([wide, tall, taller])], ["taller.jpg", "tall.jpg", "wide.jpg"])
 
 
 class PublishedPortraitsTest(unittest.TestCase):
