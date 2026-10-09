@@ -845,6 +845,19 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - Bu andan itibaren sürüm kodu 8, veri sürümü uyuşmadığı için online maçta "uygulamayı güncelle" hatası verir.
 - Derlemeye giren ve telefonda henüz görülmemiş parçalar: puan koruma düğmesi, Zincir ve Kadro Kur'daki portreler, gerçek galibiyette gol sahnesi, bot kadrosuyla oynanan maçın tabloya yansıması.
 
+### Dört yeni dil ve uluslararası pazar (9 Ekim 2026)
+
+- **İstek.** Uygulama beş büyük ligi ve Türkiye'yi kapsıyor, yayın da o ülkelere yapılacak; Almanca, İspanyolca, Fransızca ve İtalyanca gerekli. Kullanıcının kararları: Türkiye dışı için tek bir uluslararası pazar, altı ülkede aynı gün yayın, mağaza, posta, bildirim, site ve yasal metinlerin hepsi çevrilecek. Sonradan kapsamı daralttı: yeni portre üretimi yok, büyük işler sonraya.
+- **Çeviri.** Her dil ayrı bir alt görevde çevrildi: uygulamanın 538 metni, posta, bildirimler, ana sayfa, üç yasal sayfa, mağaza metni. Her biri anahtar ve yer tutucu eşleşmesi, HTML etiket sırası ve mağaza karakter sınırlarıyla denetlendi. İngilizce yasal sayfalar da bu sırada yazıldı (önceden yalnızca Türkçeydi).
+- **Uluslararası pazar.** `markets.csv` dosyasına `int` pazarı eklendi; bilinirlik İngilizce, Almanca, İspanyolca, Fransızca ve İtalyanca Vikipedi'den, her dil eşit ağırlıkla hesaplanıyor (ayrıntı teknik mimaride). İngilizce kullananlar da artık bu pazarda; önceden Türkiye pazarına düşüyorlardı.
+- **Okunma sayıları.** Beş dilde 171 bin madde API ile günler sürecekti (dakikada 60 madde; madde başına uç 429 veriyor). Eylül 2026 aylık dökümü (6,3 GB) aria2c ile aynalardan indirildi ve 9 dakikada okundu. Hat artık `build --views-month` ile dökümü kendisi okuyabiliyor.
+- **Bulduğum iki sorun.** Uluslararası pazarda kolay seviyede 96 ızgara çıkıyordu; yerli kulüp yerleri boş kaldığı için havuz 20 kulübe düşmüştü. Yerler diğer kulüplere verildi, her seviyede 1.500 ızgara var. İkincisi, Wikidata'nın İtalyanca, İspanyolca ve Fransızca kulüp etiketleri çoğunlukla resmî uzun ad; belirgin uzun olanlar İngilizcesiyle değiştiriliyor.
+- **Değişmeyenler.** Oyuncu kimlikleri, Türkiye pazarının puanları ve 4.500 Türkiye ızgarası birebir aynı (karşılaştırıldı).
+- **Portreler.** Yeni üretim yapılmadı. Mevcut 7.034 portre uluslararası pazarın en tanınmış 100 oyuncusunun 100'ünü, ilk 500'ün 472'sini, ilk 1.000'in 895'ini kapsıyor; Türkiye pazarından daha iyi.
+- **Site.** Altı dilde yayında: ana sayfa, gizlilik, koşullar, hesap silme. Başlıktaki tek "EN" bağlantısının yerine dil menüsü geldi. Sayfalar yerelde masaüstü ve telefon genişliğinde görüldü, yayından sonra hepsinin açıldığı denetlendi.
+- **Emülatör.** Uygulama Almanca ve İtalyanca açıldı: karşılama, ana ekran, günün bulmacası (uluslararası ızgara, o dildeki kulüp ve ülke adları), arama ve kart (AB, DIF) doğru.
+- **Bekleyen.** Yeni veri sürümü `20261009123459` depoda ama sunucuya dağıtılmadı: dağıtılırsa telefondaki onuncu derleme "uygulamayı güncelle" hatası verir. Sunucu dağıtımı on birinci derlemeyle birlikte yapılacak; derleme kullanıcının onayını bekliyor. Posta ve bildirim çevirileri de o dağıtımla canlıya çıkar.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1054,3 +1067,10 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `3c7138e` | 9 Ekim | Alternatif fotoğraf aramasının yeniden çalıştırılabilir olması |
 | `c8cdb0f` | 9 Ekim | Elle seçilen portre kaynakları, ret listesi ve üretimin belgelenmesi |
 | `5dfbc6e` | 9 Ekim | Yeni portrelerin uygulama veritabanına yazılması |
+| `5096927` | 9 Ekim | Onuncu derlemenin ve portre yayınının belgelenmesi |
+| `f2d5295` | 9 Ekim | Uygulamada Almanca, İspanyolca, Fransızca ve İtalyanca |
+| `16ade6a` | 9 Ekim | Posta ve bildirimlerin dört yeni dile çevrilmesi |
+| `3745396` | 9 Ekim | Site ve yasal sayfaların altı dilde yayımlanması |
+| `7364a57` | 9 Ekim | Beş dilin Vikipedi okunmalarıyla sıralanan uluslararası pazar |
+| `4ab07b2` | 9 Ekim | Portre hedeflerinin pazarlar arasındaki en yüksek bilinirliğe göre seçilmesi |
+| `a0d89c0` | 9 Ekim | Uluslararası pazarın ve altı dildeki adların uygulama veritabanına yazılması |
