@@ -64,6 +64,7 @@ import { createNotifications } from '../notifications/service';
 import type { RoomFactory } from '../play/live-room';
 import { createLobby, type LobbyOptions } from '../play/lobby';
 import { DEFAULT_RARE_TIMING, createRareRoomFactory, type RareTiming } from '../play/rare-room';
+import { createBotRoster } from '../play/roster';
 import { DEFAULT_TOP_TEN_TIMING, createTopTenRoomFactory, type TopTenTiming } from '../play/top-ten-room';
 import { createLeaderboard } from '../progress/leaderboard';
 import { PuzzleError, createPuzzles, type Puzzles } from '../progress/puzzle';
@@ -288,6 +289,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     const lobby = createLobby({
       now,
       isUsernameTaken: accounts.isUsernameTaken,
+      roster: createBotRoster(database, { now }),
       onError: (error) => app.log.error(error),
       ...lobbyOptions,
       games: Object.fromEntries(ACTIVE_GAME_IDS.map((game) => [game, factories[game]])),

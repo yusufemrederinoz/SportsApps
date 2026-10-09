@@ -25,6 +25,7 @@ import type { Progress } from '../progress/store';
 import { BOT_TARGET_WIN_RATES, RANKED_TARGET_WIN_RATE, botLevelFor, createBotName } from './bot';
 import type { MatchHistory } from './history';
 import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type WaitRange } from './live-room';
+import type { BotRoster } from './roster';
 
 const ADAPTATION_MATCHES = 5;
 const DIFFICULTIES: readonly number[] = [1, 2, 3];
@@ -54,6 +55,7 @@ export interface LobbyOptions {
   now?: () => number;
   random?: () => number;
   isUsernameTaken?: (username: string) => boolean;
+  roster?: BotRoster;
   botWaitMilliseconds?: WaitRange;
   neighborWaitMilliseconds?: number;
   disconnectGraceMilliseconds?: number;
@@ -104,6 +106,8 @@ export function createLobby(options: LobbyOptions) {
   const now = options.now ?? Date.now;
   const random = options.random ?? Math.random;
   const isUsernameTaken = options.isUsernameTaken ?? (() => false);
+  const { roster } = options;
+  const busyBots = new Set<string>();
   const botWait = options.botWaitMilliseconds ?? { minimum: 6000, maximum: 11000 };
   const neighborWait = options.neighborWaitMilliseconds ?? NEIGHBOR_WAIT_MILLISECONDS;
   const disconnectGrace = options.disconnectGraceMilliseconds ?? 30000;
@@ -211,9 +215,12 @@ export function createLobby(options: LobbyOptions) {
     matches.delete(room.id);
     room.dispose();
     SIDES.forEach((side) => {
-      const userId = room.seats[side].userId;
+      const { userId, botId } = room.seats[side];
       if (userId) {
         settle(userId);
+      }
+      if (botId) {
+        busyBots.delete(botId);
       }
     });
   };
@@ -242,11 +249,13 @@ export function createLobby(options: LobbyOptions) {
         );
     const botRating = () =>
       ranked ? Math.max(0, Math.round(firstRating + (random() * 2 - 1) * BOT_RATING_SPREAD)) : START_RATING;
+    const listed = !second && kind === 'queue' ? (roster?.pick(market, first.id, busyBots) ?? null) : null;
     const rival: Seat = second
       ? { userId: second.id, username: second.username, rating: ratingOf(second) }
       : {
           userId: null,
-          username: kind === 'bot' ? CHOSEN_BOT_NAME : createBotName(market, taken, random),
+          ...(listed ? { botId: listed.id } : {}),
+          username: kind === 'bot' ? CHOSEN_BOT_NAME : (listed?.username ?? createBotName(market, taken, random)),
           rating: botRating(),
         };
     const seats = {
@@ -275,6 +284,9 @@ export function createLobby(options: LobbyOptions) {
       return;
     }
     matches.set(room.id, { room, botLevel, forfeits: new Map(), jokers: [] });
+    if (listed) {
+      busyBots.add(listed.id);
+    }
     humans.forEach((player) => {
       const member = members.get(player.id);
       if (member) {

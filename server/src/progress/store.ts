@@ -25,6 +25,7 @@ import { createWallet } from './wallet';
 
 export interface RankedSeat {
   userId: string | null;
+  botId?: string;
   rating: number;
 }
 
@@ -247,22 +248,23 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     settle(match: RankedMatch, result: PlayResult): Record<Side, PointsChange | null> {
       return transaction(database, () => {
         const settleSide = (side: Side): PointsChange | null => {
-          const { userId } = match.seats[side];
-          if (userId === null) {
+          const { userId, botId } = match.seats[side];
+          const owner = userId ?? botId ?? null;
+          if (owner === null) {
             return null;
           }
-          const before = totalOf(userId);
-          const current = pointsOf(userId, match.game);
+          const before = totalOf(owner);
+          const current = pointsOf(owner, match.game);
           const outcome = outcomeFor(side, result.winner);
           const own = match.seats[side].rating;
           const rival = match.seats[opponentOf(side)].rating;
           const change = pointsChange(own, rival, outcome, match.difficulty);
           const points = keepLevel(current, change, before, levelFor(before).floor);
           const rating = Math.max(0, own + ratingChange(own, rival, outcome));
-          upsertStanding.run(userId, match.game, points, points, rating, now());
-          const goalsEarned = outcome === 'win' ? WIN_GOALS : 0;
+          upsertStanding.run(owner, match.game, points, points, rating, now());
+          const goalsEarned = userId !== null && outcome === 'win' ? WIN_GOALS : 0;
           const goals =
-            goalsEarned > 0 ? wallet.credit(userId, goalsEarned, 'win', match.id) : wallet.balance(userId);
+            userId === null ? 0 : goalsEarned > 0 ? wallet.credit(userId, goalsEarned, 'win', match.id) : wallet.balance(userId);
           const total = before - current + points;
           return {
             game: match.game,

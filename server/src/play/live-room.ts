@@ -21,6 +21,7 @@ export interface WaitRange {
 
 export interface Seat {
   userId: string | null;
+  botId?: string;
   username: string;
   rating: number;
 }

@@ -9,6 +9,9 @@ import { createGridRoomFactory } from '../src/play/grid-room';
 import { createMatchHistory, type MatchHistory } from '../src/play/history';
 import type { LiveRoom } from '../src/play/live-room';
 import { createLobby, type Connection, type Lobby, type Player } from '../src/play/lobby';
+import { createBotRoster } from '../src/play/roster';
+import { createLeaderboard } from '../src/progress/leaderboard';
+import { createProgress } from '../src/progress/store';
 import { TURN_GRACE_MILLISECONDS } from '../src/play/room';
 import { capturing, lastRoom } from './capture';
 
@@ -408,6 +411,62 @@ describe('bot opponent', () => {
     expect(botMoves.some((message) => message.move.kind === 'answer')).toBe(true);
     const [stored] = history.list(human.player.id);
     expect(stored).toMatchObject({ opponent: human.match().usernames[side === 'x' ? 'o' : 'x'] });
+    expect(lobby.counts().matches).toBe(0);
+  });
+});
+
+describe('listed bots', () => {
+  const withRoster = () => {
+    lobby.shutdown();
+    lobby = createLobby({
+      games: { grid: capturing(createGridRoomFactory(library), rooms) },
+      hasMarket: library.hasMarket,
+      history,
+      progress: createProgress(database, { now: () => Date.now() }),
+      roster: createBotRoster(database, { now: () => Date.now(), random }),
+      random,
+      now: () => Date.now(),
+      botWaitMilliseconds: BOT_WAIT,
+      disconnectGraceMilliseconds: GRACE,
+      roomLifetimeMilliseconds: 60000,
+    });
+  };
+  const playOut = (human: Client) => {
+    queue(human);
+    vi.advanceTimersByTime(BOT_WAIT.maximum);
+    const match = human.match();
+    for (let step = 0; step < 40 && human.of('finished').filter((message) => message.matchId === match.matchId).length === 0; step += 1) {
+      vi.advanceTimersByTime(TURN);
+    }
+    return match.usernames[match.side === 'x' ? 'o' : 'x'];
+  };
+  const botIdOf = (username: string) =>
+    (
+      database.prepare('SELECT b.user_id AS id FROM bots b JOIN users u ON u.id = b.user_id WHERE u.username = ?').get(username) as
+        | { id: string }
+        | undefined
+    )?.id;
+
+  it('seats a bot from the roster that then appears in the history and on the leaderboard', () => {
+    withRoster();
+    const human = join();
+    const rival = playOut(human);
+    const botId = botIdOf(rival);
+
+    expect(botId).toBeDefined();
+    expect(history.list(human.player.id)[0]).toMatchObject({ opponent: rival, kind: 'queue' });
+    expect(history.list(botId ?? '')[0]).toMatchObject({ opponent: human.player.username });
+    const board = createLeaderboard(database, { now: () => Date.now() }).board(human.player.id, 'week', null);
+    expect(board.entries.map((entry) => entry.username)).toContain(rival);
+    expect(board.you).not.toBeNull();
+  });
+
+  it('brings a different bot for the next match and frees each one afterwards', () => {
+    withRoster();
+    const human = join();
+    const rivals = [playOut(human), playOut(human), playOut(human)];
+    expect(new Set(rivals).size).toBe(3);
+    expect(rivals.every((rival) => botIdOf(rival) !== undefined)).toBe(true);
     expect(lobby.counts().matches).toBe(0);
   });
 });

@@ -15,13 +15,20 @@ export interface LeaderboardOptions {
   timeZone?: string;
 }
 
-interface RankedRow {
+interface ScoredRow {
   userId: string;
   username: string;
+  usernameKey: string;
   points: number;
   total: number;
+  bot: number;
+}
+
+interface RankedRow extends ScoredRow {
   rank: number;
 }
+
+const PODIUM_SIZE = 3;
 
 const ALL_TIME_TOTAL = 'SELECT user_id AS userId, SUM(points) AS points FROM ratings GROUP BY user_id';
 const ALL_TIME_GAME = 'SELECT user_id AS userId, points FROM ratings WHERE game = :game';
@@ -40,12 +47,32 @@ function weekly(byGame: boolean): string {
 function ranked(scores: string): string {
   return `WITH scores AS (${scores}),
                totals AS (SELECT user_id, SUM(points) AS total FROM ratings GROUP BY user_id)
-          SELECT s.userId AS userId, u.username AS username, s.points AS points, COALESCE(t.total, 0) AS total,
-                 RANK() OVER (ORDER BY s.points DESC) AS rank
+          SELECT s.userId AS userId, u.username AS username, u.username_key AS usernameKey, s.points AS points,
+                 COALESCE(t.total, 0) AS total, EXISTS (SELECT 1 FROM bots b WHERE b.user_id = s.userId) AS bot
           FROM scores s
           JOIN users u ON u.id = s.userId
-          LEFT JOIN totals t ON t.user_id = s.userId
-          ORDER BY rank, u.username_key`;
+          LEFT JOIN totals t ON t.user_id = s.userId`;
+}
+
+export function arrange(rows: readonly ScoredRow[]): RankedRow[] {
+  const podium = rows
+    .filter((row) => !row.bot && row.points > 0)
+    .map((row) => row.points)
+    .sort((first, second) => second - first)
+    .slice(0, PODIUM_SIZE);
+  const ceiling = podium.length > 0 ? (podium.at(-1) as number) - 1 : Number.POSITIVE_INFINITY;
+  const shown = rows
+    .map((row) => (row.bot ? { ...row, points: Math.min(row.points, ceiling) } : row))
+    .sort((first, second) => second.points - first.points || first.usernameKey.localeCompare(second.usernameKey));
+  let rank = 0;
+  let previous: number | null = null;
+  return shown.map((row, index) => {
+    if (row.points !== previous) {
+      rank = index + 1;
+      previous = row.points;
+    }
+    return { ...row, rank };
+  });
 }
 
 export function createLeaderboard(database: Database, options: LeaderboardOptions = {}) {
@@ -61,9 +88,11 @@ export function createLeaderboard(database: Database, options: LeaderboardOption
   const rows = (period: LeaderboardPeriod, game: GameId | null): RankedRow[] => {
     const since = weekStart(now(), timeZone);
     if (period === 'all') {
-      return (game ? statements.allGame.all({ game }) : statements.all.all()) as unknown as RankedRow[];
+      return arrange((game ? statements.allGame.all({ game }) : statements.all.all()) as unknown as ScoredRow[]);
     }
-    return (game ? statements.weekGame.all({ since, game }) : statements.week.all({ since })) as unknown as RankedRow[];
+    return arrange(
+      (game ? statements.weekGame.all({ since, game }) : statements.week.all({ since })) as unknown as ScoredRow[],
+    );
   };
 
   return {

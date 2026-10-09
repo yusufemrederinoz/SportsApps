@@ -62,6 +62,7 @@ const DAY = 24 * 60 * 60 * 1000;
 const SERIES_DAYS = 14;
 const CACHE_LIFETIME = 3000;
 const MEGABYTE = 1024 * 1024;
+const REAL_USER = 'id NOT IN (SELECT user_id FROM bots)';
 const LIST_PRICES: Readonly<Record<string, number>> = {
   goals_cg_30: 39.99,
   goals_cg_100: 99.99,
@@ -89,7 +90,7 @@ export function createAdminStats(database: Database, options: AdminStatsOptions)
     const time = now();
     const today = localDay(time, timeZone);
     const todayStart = startOfDay(today, timeZone);
-    const total = count('SELECT COUNT(*) AS value FROM users');
+    const total = count(`SELECT COUNT(*) AS value FROM users WHERE ${REAL_USER}`);
     const guests = count('SELECT COUNT(*) AS value FROM users WHERE is_guest = 1');
     const identities = (provider: string) =>
       count('SELECT COUNT(DISTINCT user_id) AS value FROM identities WHERE provider = ?', provider);
@@ -106,7 +107,7 @@ export function createAdminStats(database: Database, options: AdminStatsOptions)
       const end = startOfDay(shiftDay(day, 1), timeZone);
       return {
         day,
-        newUsers: count('SELECT COUNT(*) AS value FROM users WHERE created_at >= ? AND created_at < ?', start, end),
+        newUsers: count(`SELECT COUNT(*) AS value FROM users WHERE ${REAL_USER} AND created_at >= ? AND created_at < ?`, start, end),
         dailyRewards: count("SELECT COUNT(*) AS value FROM goal_ledger WHERE reason = 'daily' AND reference = ?", day),
         matches: count('SELECT COUNT(*) AS value FROM matches WHERE finished_at >= ? AND finished_at < ?', start, end),
         purchases: count('SELECT COUNT(*) AS value FROM purchases WHERE created_at >= ? AND created_at < ?', start, end),
@@ -125,8 +126,8 @@ export function createAdminStats(database: Database, options: AdminStatsOptions)
         email: count('SELECT COUNT(*) AS value FROM credentials'),
         google: identities('google'),
         apple: identities('apple'),
-        newToday: count('SELECT COUNT(*) AS value FROM users WHERE created_at >= ?', todayStart),
-        newWeek: count('SELECT COUNT(*) AS value FROM users WHERE created_at >= ?', time - 7 * DAY),
+        newToday: count(`SELECT COUNT(*) AS value FROM users WHERE ${REAL_USER} AND created_at >= ?`, todayStart),
+        newWeek: count(`SELECT COUNT(*) AS value FROM users WHERE ${REAL_USER} AND created_at >= ?`, time - 7 * DAY),
       },
       active: { today: activeSince(todayStart), week: activeSince(time - 7 * DAY), month: activeSince(time - 30 * DAY) },
       matches: {

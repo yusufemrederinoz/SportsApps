@@ -200,6 +200,14 @@ const MIGRATIONS: readonly string[] = [
   `
   ALTER TABLE identities ADD COLUMN refresh_token TEXT;
   `,
+  `
+  CREATE TABLE bots (
+    user_id TEXT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    market TEXT NOT NULL,
+    created_at INTEGER NOT NULL
+  ) STRICT;
+  CREATE INDEX bots_market ON bots (market, created_at);
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {
