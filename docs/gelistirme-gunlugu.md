@@ -959,6 +959,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Elle bildirim.** Kullanıcı yönetim paneline bütün kullanıcılara bildirim gönderebileceği bir alan istedi. Panele altı dilli bir form, sunucuya `POST /v1/admin/notifications` ucu ve `broadcasts` tablosu eklendi; ayrıntı teknik mimaride ("Yönetim paneli").
 - **Kararlar.** Tek metin herkese gitmez: Almanca cihaza Türkçe bildirim gitmesin diye metinler dil başınadır ve boş diller için İngilizceye düşmek seçenektir. Geri alınamayan bir işlem olduğu için iki adımlı onay, bir dakikalık ara ve gönderim kaydı var.
 - **Doğrulama.** Sunucu 285 test (dokuzu yeni). Yerel sunucuda altı sahte cihazla, gerçek tarayıcıda denendi: eksik metin uyarısı, dil başına hedef sayıları, onay adımı, gönderim ve geçmiş satırı. Sahte anahtarlar gerçek bildirim servisine gitti; servis hepsini "kayıtlı değil" diye reddetti ve sunucu onları listeden sildi. Gerçek bir cihaza giden bildirim görülmedi; canlıda deneme gönderimi yapılmadı.
+- **Yayın.** Canlı veritabanı yedeklendi, süren maçın bitmesi beklendi ve sunucu dağıtıldı. Panel yeni bölümle açılıyor; hedef kitle 24 cihaz (Türkçe 6, İngilizce 18). Anahtarsız gönderim isteği reddediliyor.
 
 ## Commit listesi
 
@@ -1198,3 +1199,4 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 | `45dd8e3` | 10 Ekim | App Store Connect beyanlarının belgelenmesi |
 | `9e11083` | 10 Ekim | Sunucu kapasitesi ölçümünün belgelenmesi |
 | `4dd4660` | 10 Ekim | Site SSS'sinde ve mağaza metinlerinde rakip ve çevrimdışı cevaplarının yeniden yazılması |
+| `4369555` | 10 Ekim | Yönetim panelinden bütün cihazlara bildirim gönderme |
