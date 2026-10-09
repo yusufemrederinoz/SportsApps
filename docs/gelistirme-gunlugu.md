@@ -952,6 +952,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Ölçülmeyenler.** Aynı anda kaç maçın taşınabileceği ölçülmedi; birkaç bin eşzamanlı oyuncu tahmini mesaj sıklığına ve bellek kullanımına dayanan bir kestirim. Gerçek sayı için yük testi gerekir.
 - **Öneri.** Sıralama tablosunu kısa süreli önbelleğe almak ve ilk 50'yi sorguda sınırlamak (yalnızca sunucu değişikliği, uygulama güncellemesi gerekmez); ardından yük testi. Kullanıcının kararı bekleniyor.
 
+### Site SSS'si ve yönetim panelinden bildirim (10 Ekim 2026)
+
+- **Site SSS'sindeki iki madde.** Kullanıcı iki cevabın değişmesini istedi. "İnternet gerekiyor mu?" cevabı yanlıştı: koda bakıldı, XOX'un bota karşı modu cihazda çalışıyor (diğer yedi oyunun bot maçları sunucudan geçiyor). Yeni cevap: online maçlar, günün bulmacası ve lider tablosu için internet gerekir; bağlantı yokken XOX bota karşı oynanır. "Rakiplerim hep gerçek oyuncular mı?" maddesi sıradaki yapay zekâ rakibi açıklıyordu; kullanıcı bunun bilinmesini istemiyor. Madde "Rakip bulmak uzun sürer mi?" ile değiştirildi; cevap rakibin gerçek olduğunu da vaat etmiyor. Altı dildeki sayfada ve mağaza metinlerinde (`docs/magaza-metinleri.md`) aynı iki cümle düzeltildi; site yayına alındı.
+- **Dokunulmayanlar.** Kullanım koşullarındaki "karşına bilgisayar kontrollü bir rakip (bot) çıkabilir" cümlesi hukuki metin olduğu için bırakıldı; kullanıcıya bildirildi. Play Console ve App Store Connect'e girilmiş açıklamalardaki iki cümleyi kullanıcının elle değiştirmesi gerekiyor.
+- **Elle bildirim.** Kullanıcı yönetim paneline bütün kullanıcılara bildirim gönderebileceği bir alan istedi. Panele altı dilli bir form, sunucuya `POST /v1/admin/notifications` ucu ve `broadcasts` tablosu eklendi; ayrıntı teknik mimaride ("Yönetim paneli").
+- **Kararlar.** Tek metin herkese gitmez: Almanca cihaza Türkçe bildirim gitmesin diye metinler dil başınadır ve boş diller için İngilizceye düşmek seçenektir. Geri alınamayan bir işlem olduğu için iki adımlı onay, bir dakikalık ara ve gönderim kaydı var.
+- **Doğrulama.** Sunucu 285 test (dokuzu yeni). Yerel sunucuda altı sahte cihazla, gerçek tarayıcıda denendi: eksik metin uyarısı, dil başına hedef sayıları, onay adımı, gönderim ve geçmiş satırı. Sahte anahtarlar gerçek bildirim servisine gitti; servis hepsini "kayıtlı değil" diye reddetti ve sunucu onları listeden sildi. Gerçek bir cihaza giden bildirim görülmedi; canlıda deneme gönderimi yapılmadı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1188,3 +1196,5 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 | `e265391` | 9 Ekim | iOS izleme izni metninin Android kaynaklarının dışında tutulması |
 | `ca5a5a2` | 9 Ekim | Düşen Android derlemesinin, düzeltmesinin ve yeni derlemelerin belgelenmesi |
 | `45dd8e3` | 10 Ekim | App Store Connect beyanlarının belgelenmesi |
+| `9e11083` | 10 Ekim | Sunucu kapasitesi ölçümünün belgelenmesi |
+| `4dd4660` | 10 Ekim | Site SSS'sinde ve mağaza metinlerinde rakip ve çevrimdışı cevaplarının yeniden yazılması |
