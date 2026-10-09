@@ -1,0 +1,16 @@
+{
+  "tr": {
+    "home": ["ZORUNLU REKLAM YOK", "8 futbol bilgi oyunu, tek uygulama"],
+    "puzzle": ["HER GÜN YENİ BULMACA", "Satıra ve sütuna uyan futbolcuyu yaz"],
+    "duel": ["KART DÜELLOSU", "7 kartını seç; sorular gizli"],
+    "auction": ["AÇIK ARTIRMA", "Artır ya da \"Say bakalım\" de"],
+    "chain": ["ZİNCİR", "Aynı kulüpte oynamış birini söyle"]
+  },
+  "en": {
+    "home": ["NO FORCED ADS", "8 football trivia games in one app"],
+    "puzzle": ["A NEW PUZZLE EVERY DAY", "Name a footballer who fits the row and the column"],
+    "duel": ["CARD DUEL", "Pick 7 cards. The questions are hidden"],
+    "auction": ["ANSWER AUCTION", "Raise, or say \"Prove it\""],
+    "chain": ["CLUB CHAIN", "Name someone who played at the same club"]
+  }
+}

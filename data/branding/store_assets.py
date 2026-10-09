@@ -77,6 +77,7 @@ def main(out):
         product(balls).save(out / f'{product_id}.png')
     app_icon(1024).resize((512, 512), Image.LANCZOS).save(out / 'play-icon-512.png')
     feature('FUTBOL BİLGİ OYUNLARI').convert('RGB').save(out / 'play-feature-1024x500.png')
+    feature('FOOTBALL TRIVIA GAMES').convert('RGB').save(out / 'play-feature-1024x500-en.png')
 
 
 def site(out):
