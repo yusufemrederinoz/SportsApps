@@ -837,6 +837,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Emülatör.** Şifremi unuttum ekranı (posta gönderilemediğinde hata mesajı dahil) ve XOX'taki "üçlü artık mümkün değil" uyarısı görüldü; ikisi de doğru.
 - **Bekleyen.** `export` çalıştırılmadı: uygulama veritabanını ve veri sürümünü değiştirdiği için derlemeyle birlikte yapılacak, derleme kullanıcının onayını bekliyor.
 
+### Onuncu derleme ve yeni portrelerin yayına alınması (9 Ekim 2026)
+
+- Kullanıcı 13.20 civarında "derle" dedi. `export` çalıştırıldı: 7.034 portre kaydedildi, 7.023'ü uygulama veritabanında (kalan 11 oyuncu uygulamanın küçültülmüş listesinde yok). Veri sürümü `20261009103506` oldu.
+- Android üretim derlemesi `f5ce1919` 13.53'te bitti (sürüm kodu 10). Kuyruk bu kez yaklaşık yarım saat sürdü.
+- Portreler derleme beklenirken sunucuda ayrı klasöre yüklendi (7.034 dosya, 173 MB); derleme bitince klasör değiştirildi ve sunucu yeni veriyle dağıtıldı. Eski çizgi roman tarzı görseller sunucuda `data/portraits-comic` altında duruyor.
+- Bu andan itibaren sürüm kodu 8, veri sürümü uyuşmadığı için online maçta "uygulamayı güncelle" hatası verir.
+- Derlemeye giren ve telefonda henüz görülmemiş parçalar: puan koruma düğmesi, Zincir ve Kadro Kur'daki portreler, gerçek galibiyette gol sahnesi, bot kadrosuyla oynanan maçın tabloya yansıması.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1044,3 +1052,5 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `614fc97` | 9 Ekim | Biten portrelerin gözden geçirilmesi |
 | `89781af` | 9 Ekim | Tanınmış oyuncular için alternatif Commons fotoğrafı |
 | `3c7138e` | 9 Ekim | Alternatif fotoğraf aramasının yeniden çalıştırılabilir olması |
+| `c8cdb0f` | 9 Ekim | Elle seçilen portre kaynakları, ret listesi ve üretimin belgelenmesi |
+| `5dfbc6e` | 9 Ekim | Yeni portrelerin uygulama veritabanına yazılması |
