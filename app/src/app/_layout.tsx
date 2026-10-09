@@ -15,6 +15,7 @@ import { AuthProvider } from '@/auth/auth-provider';
 import { OfflineBanner } from '@/components/offline-banner';
 import { Colors } from '@/constants/theme';
 import { DatabaseProvider } from '@/data/database-provider';
+import { UpdateGate } from '@/update/update-gate';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
         <DatabaseProvider>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
           <OfflineBanner />
+          <UpdateGate />
         </DatabaseProvider>
       </AuthProvider>
     </ThemeProvider>

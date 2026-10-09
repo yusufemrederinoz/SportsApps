@@ -25,6 +25,12 @@
     "offline": "İnternet bağlantısı yok",
     "offlineHint": "Bağlantını kontrol et. Maçtaysan 30 saniye içinde dönmezsen maçı kaybedersin."
   },
+  "update": {
+    "title": "Yeni sürüm hazır",
+    "body": "Maç oynayabilmek için uygulamayı güncellemen gerekiyor. Güncelleme kısa sürer; hesabın ve puanların yerinde kalır.",
+    "action": "Güncelle",
+    "later": "Şimdi değil"
+  },
   "identity": {
     "or": "ya da",
     "google": "Google ile devam et",

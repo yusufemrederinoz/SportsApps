@@ -203,6 +203,12 @@ afterEach(async () => {
 });
 
 describe.skipIf(!available)('play gateway', () => {
+  it('tells clients which protocol and data version they need', async () => {
+    const response = await app.inject({ method: 'GET', url: '/v1/version' });
+    expect(response.statusCode).toBe(200);
+    expect(response.json()).toEqual({ protocol: PLAY_PROTOCOL_VERSION, dataVersion: football.dataVersion });
+  });
+
   it('refuses a connection with a bad token or outdated data', async () => {
     const auth = await guest();
     const stranger = await open(auth, { token: 'not-a-token' });

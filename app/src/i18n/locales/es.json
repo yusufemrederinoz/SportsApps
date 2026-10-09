@@ -25,6 +25,12 @@
     "offline": "Sin conexión a internet",
     "offlineHint": "Revisa tu conexión. Si estás en un partido y no vuelves en 30 segundos, lo pierdes."
   },
+  "update": {
+    "title": "Nueva versión disponible",
+    "body": "Para jugar partidos tienes que actualizar la app. Es rápido, y tu cuenta y tus puntos se mantienen.",
+    "action": "Actualizar",
+    "later": "Ahora no"
+  },
   "identity": {
     "or": "o",
     "google": "Continuar con Google",

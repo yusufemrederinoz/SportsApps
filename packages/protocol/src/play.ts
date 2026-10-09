@@ -14,6 +14,11 @@ export const PLAY_PROTOCOL_VERSION = 1;
 export const ROOM_CODE_LENGTH = 5;
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+export interface VersionResponse {
+  protocol: number;
+  dataVersion: string | null;
+}
+
 export type PlaySide = 'x' | 'o';
 export type PlayDifficulty = 1 | 2 | 3;
 export type PlayFinishReason = 'line' | 'cells' | 'misses' | 'second' | 'forfeit' | 'score' | 'speed';

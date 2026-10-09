@@ -17,6 +17,7 @@ import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, Motion, Radius, Spacing } from '@/constants/theme';
 import { useUppercase } from '@/i18n/uppercase';
+import { openStoreListing } from '@/update/open-store-listing';
 
 import type { OnlineFailure, OnlinePhase } from './use-online-match';
 
@@ -79,6 +80,7 @@ export function OnlineLobby({ phase, failure, roomCode, gameLabel, onRetry, onLe
           </ThemedText>
         </View>
         <View style={styles.actions}>
+          {failure === 'outdated-client' ? <ActionButton label={t('update.action')} onPress={openStoreListing} /> : null}
           {failure && FINAL_FAILURES.includes(failure) ? null : <ActionButton label={t('online.retry')} onPress={onRetry} />}
           <ActionButton label={t('match.home')} onPress={onLeave} variant="secondary" />
         </View>

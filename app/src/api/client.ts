@@ -25,6 +25,7 @@ import {
   type PuzzleRankingResponse,
   type RegisterRequest,
   type ResetPasswordRequest,
+  type VersionResponse,
   type WalletResponse,
 } from '@sportapps/protocol';
 
@@ -99,6 +100,7 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
 
   return {
     configured: baseUrl !== null,
+    version: () => request<VersionResponse>('GET', '/version'),
     guest: () => request<AuthResponse>('POST', '/auth/guest'),
     me: (token: string) => request<AccountResponse>('GET', '/me', { token }),
     register: (input: RegisterRequest) => request<AuthResponse>('POST', '/auth/register', { body: input }),

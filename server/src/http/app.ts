@@ -8,6 +8,7 @@ import {
   EMAIL_MAX_LENGTH,
   GAME_IDS,
   PASSWORD_MAX_LENGTH,
+  PLAY_PROTOCOL_VERSION,
   PUSH_PLATFORMS,
   RESET_CODE_LENGTH,
   type AccountResponse,
@@ -35,6 +36,7 @@ import {
   type PuzzleRankingResponse,
   type RegisterRequest,
   type ResetPasswordRequest,
+  type VersionResponse,
   type WalletResponse,
 } from '@sportapps/protocol';
 import fastify, { type FastifyError, type FastifyInstance, type FastifyRequest } from 'fastify';
@@ -353,6 +355,11 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
   app.setNotFoundHandler((_, reply) => reply.code(404).send(errorBody(new ApiError('not-found'))));
 
   app.get(`${API_PREFIX}/health`, () => ({ status: 'ok' }));
+
+  app.get(
+    `${API_PREFIX}/version`,
+    (): VersionResponse => ({ protocol: PLAY_PROTOCOL_VERSION, dataVersion: dependencies.football?.dataVersion ?? null }),
+  );
 
   app.get('/admin', (_, reply) => {
     if (!dependencies.adminKey) {

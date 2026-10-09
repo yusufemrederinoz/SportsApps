@@ -25,6 +25,12 @@
     "offline": "No internet connection",
     "offlineHint": "Check your connection. In a match you lose if you are not back within 30 seconds."
   },
+  "update": {
+    "title": "New version available",
+    "body": "You need to update the app to play matches. It only takes a moment, and your account and points stay as they are.",
+    "action": "Update",
+    "later": "Not now"
+  },
   "identity": {
     "or": "or",
     "google": "Continue with Google",
