@@ -917,6 +917,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Giderilemeyenler.** Futbolcu ve kulüp adlarının lisansı yok (5.2.1); uygulama içinden oyuncu engelleme yok; izleme izni penceresi AdMob'daki IDFA mesajına bağlı.
 - **Doğrulama.** Sunucu 276, uygulama 143 test. Emülatörde karşılama (bağlantılar), hesap (bildirim anahtarı, bildirme, bağlantılar), XOX ve Kart Düellosu ekranları görüldü. iOS'ta görülmedi; yeni derleme gerekiyor.
 
+### iOS yapı 7 ve Android'de düşen derleme (9 Ekim 2026)
+
+- **iOS yapı 7.** Yönerge düzeltmelerini taşıyan derleme `8cf99698` bitti, App Store Connect'e yüklendi ve Apple tarafından işlendi (durum VALID). TestFlight'ta denenebilir; sürüm sayfasında yapı 6 yerine 7 seçilmeli.
+- **Android'de sürüm kodu 13 derlenemedi.** EAS yalnızca "bilinmeyen Gradle hatası" dedi; günlükte asıl neden `lintVitalRelease` adımıydı: `"NSUserTrackingUsageDescription" is translated here but not found in default locale` (altı hata, dil başına bir). `app.json` içindeki `locales` ayarı bu Expo sürümünde Android'e de uygulanıyor ve dil dosyasındaki her anahtarı `values-b+<dil>/strings.xml` içine yazıyor; iOS'a özel izin metninin Android'in varsayılan dilinde karşılığı olmadığı için lint bunu ölümcül hata sayıyor. Sürüm kodu 12, `locales` eklenmeden önce derlendiği için sorun o zaman görülmedi; iOS derlemesi de etkilenmez.
+- **Düzeltme.** Altı dil dosyasında (`app/locales/<dil>.json`) metin `ios` anahtarının altına alındı. Expo'nun çözümleyicisi iki platform için ayrı ayrı çağrılarak denendi: iOS aynı anahtarı almaya devam ediyor, Android'e hiçbir metin yazılmıyor.
+- **Sürüm kodu 14.** Düzeltmeden sonra derleme `bbb04577` 20.53'te başladı, 21.09'da bitti; lint adımı geçti. Paket emülatöre kurulup açıldı: ana ekran geliyor, güncelleme ekranı çıkmıyor (veri sürümü sunucuyla aynı), hesap ekranında bildirim anahtarı, bildirme bağlantısı ve yasal bağlantılar görünüyor. Kullanıcı bu paketi Play'e sürüm kodu 12'nin güncellemesi olarak yükleyecek.
+- **Günlüğü okuma.** EAS derleme günlüğü Brotli ile sıkıştırılmış geliyor; Python'un `urllib`'i açmıyor, Node'un `fetch`'i açıyor. Satırlar JSON; Gradle hatası `RUN_GRADLEW` aşamasının sonunda.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1142,3 +1150,12 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `6432fbb` | 9 Ekim | Güncelleme uyarısının ve uzun tanıtım videosunun belgelenmesi |
 | `6a5923e` | 9 Ekim | Güncelleme ekranının zorunlu olması |
 | `177e6d7` | 9 Ekim | Gerçek ekranlardan mağaza görselleri üreteci |
+| `4c85bb2` | 9 Ekim | Tanıtım videolarına eşzamanlı ses efektleri ve mağaza görsellerinin belgelenmesi |
+| `9fab201` | 9 Ekim | Mağaza metinlerinin "zorunlu reklam yok" sözüyle başlaması |
+| `9acb376` | 9 Ekim | Günün bulmacasında tekil biçimler ve altı dilin iOS'a tanıtılması |
+| `21ead30` | 9 Ekim | App Store'a gönderim ayarı |
+| `9545393` | 9 Ekim | Özellik grafiğinin yüksek tuvallerde boşluk bırakması |
+| `8129ae0` | 9 Ekim | Mağaza başvurularının ve iOS derlemesinin belgelenmesi |
+| `a071ef5` | 9 Ekim | iOS arama klavyesi ve düello yerleşimi düzeltmeleri; gizlilik bağlantıları, bildirim anahtarı ve ad süzgeci |
+| `9a9b42b` | 9 Ekim | App Store yönerge taramasının belgelenmesi |
+| `e265391` | 9 Ekim | iOS izleme izni metninin Android kaynaklarının dışında tutulması |

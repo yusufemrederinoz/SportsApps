@@ -304,6 +304,7 @@ Dil ve pazar ayrı boyutlardır: dil arayüz metnini, pazar oyuncuların bilinir
 | Parça | Dosya |
 |---|---|
 | Uygulama arayüzü | `app/src/i18n/locales/<dil>.json`; diller `app/src/i18n/languages.ts` içinde kayıtlı |
+| iOS izin metinleri | `app/locales/<dil>.json`, `app.json` içindeki `locales` ile bağlı. Metinler `ios` anahtarının altında durur; kökte dururlarsa Expo aynı anahtarları Android kaynaklarına da yazar ve derleme lint adımında durur |
 | Şifre sıfırlama postası | `server/src/mail/messages.json` |
 | Bildirimler | `server/src/notifications/messages.json` |
 | Site ve yasal sayfalar | `deploy/site/<dil>.html`, `deploy/site/<dil>/{privacy,terms,delete-account}.html`; Türkçesi kökte |

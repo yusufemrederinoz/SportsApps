@@ -267,9 +267,9 @@ Yapılanlar: ad, paket kimliği ve ikon; EAS derlemeleri (Android ve iOS); canl�
 
 Dil desteği (9 Ekim 2026): uygulama, posta, bildirimler, site, yasal sayfalar ve mağaza metinleri Türkçe ve İngilizceye ek olarak Almanca, İspanyolca, Fransızca ve İtalyanca. Türkiye dışındaki oyuncular tek bir uluslararası pazarda. Yayın altı ülkede aynı gün yapılacak. On birinci derleme (sürüm kodu 11) alındı ve sunucu aynı veriyle dağıtıldı. Sosyal medya için 59 ve 25 saniyelik iki tanıtım videosu ve akış görseli hazır (`data/build/promo/`). Açılışta zorunlu güncelleme ekranı on ikinci derlemede. Mağaza görselleri (Türkçe ve İngilizce, iki mağaza ölçüsünde) `data/build/store/submission/` içinde hazır.
 
-Google Play başvurusu incelemede (açık test kanalı; üretime yükseltme bekliyor). iOS yapı numarası 6 App Store Connect'e yüklendi.
+Google Play başvurusu incelemede (açık test kanalı; üretime yükseltme bekliyor). iOS yapı numarası 6 App Store Connect'e yüklendi; düzeltmeleri taşıyan yapı 7 de yüklendi ve işlendi.
 
-Apple yönergelerine göre tarama yapıldı; gizlilik bağlantıları, bildirim anahtarı, ad süzgeci ve iOS düzeltmeleri yeni derlemeyi bekliyor.
+Apple yönergelerine göre tarama yapıldı; gizlilik bağlantıları, bildirim anahtarı, ad süzgeci ve iOS düzeltmeleri iOS yapı 7 ve Android sürüm kodu 14 ile geliyor (sürüm kodu 13 derlenemedi).
 
 Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, iOS bildirim anahtarı (APNs), çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
 
