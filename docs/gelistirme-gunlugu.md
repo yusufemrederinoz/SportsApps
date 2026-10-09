@@ -925,6 +925,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Sürüm kodu 14.** Düzeltmeden sonra derleme `bbb04577` 20.53'te başladı, 21.09'da bitti; lint adımı geçti. Paket emülatöre kurulup açıldı: ana ekran geliyor, güncelleme ekranı çıkmıyor (veri sürümü sunucuyla aynı), hesap ekranında bildirim anahtarı, bildirme bağlantısı ve yasal bağlantılar görünüyor. Kullanıcı bu paketi Play'e sürüm kodu 12'nin güncellemesi olarak yükleyecek.
 - **Günlüğü okuma.** EAS derleme günlüğü Brotli ile sıkıştırılmış geliyor; Python'un `urllib`'i açmıyor, Node'un `fetch`'i açıyor. Satırlar JSON; Gradle hatası `RUN_GRADLEW` aşamasının sonunda.
 
+### App Store Connect formları (10 Ekim 2026)
+
+- Kullanıcı App Store Connect'te formları dolduruyor; cevapları ekran ekran birlikte belirledik. Gol paketleri gönderim taslağına eklenmişti ama sürüm yoktu; ilk paketler sürümle birlikte incelenir, sürüm sayfasından "Add for Review" ile aynı taslağa eklenir.
+- **Yaş derecesi.** Soru formu 4+ hesapladı. Kullanım koşullarımız en az 13 yaş istediği ve Apple bu durumda derecenin ona uymasını şart koştuğu için 13+ seçilmesini önerdim.
+- **Gizlilik beyanı.** Cevaplar gizlilik politikasından ve koddan çıkarıldı; AdMob'un topladıkları için Google'ın yayımladığı eşleme okundu. Tablo teknik mimaride ("App Store Connect beyanları").
+- **Kontrol edilenler.** Bağlantılar uygulama içi tarayıcıda değil telefonun tarayıcısında açılıyor; sohbet yok; goller sabit jokerlere harcanıyor, rastgele ödül yok; canlı sunucuda Apple satın alma doğrulama ayarları tanımlı. iOS'ta deneme satın alması hâlâ yapılmadı.
+- **Kullanıcıda kalanlar.** AdMob IDFA mesajının yayımlanması artık şart (izleme beyan ediliyor); ülke seçiminde Vietnam ve Çin dışarıda bırakılacak; göndermeden önce TestFlight'ta sandbox satın alması denenecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1159,3 +1167,4 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `a071ef5` | 9 Ekim | iOS arama klavyesi ve düello yerleşimi düzeltmeleri; gizlilik bağlantıları, bildirim anahtarı ve ad süzgeci |
 | `9a9b42b` | 9 Ekim | App Store yönerge taramasının belgelenmesi |
 | `e265391` | 9 Ekim | iOS izleme izni metninin Android kaynaklarının dışında tutulması |
+| `ca5a5a2` | 9 Ekim | Düşen Android derlemesinin, düzeltmesinin ve yeni derlemelerin belgelenmesi |

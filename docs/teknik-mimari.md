@@ -868,6 +868,34 @@ App Store inceleme yönergeleri 9 Ekim 2026'da okundu ve uygulama onlara göre t
 
 Google Play'in kullanıcı verisi politikası da gizlilik politikasının uygulama içinden açılabilmesini ister; aynı bağlantılar onu da karşılar.
 
+### App Store Connect beyanları
+
+Formlara girilen cevaplar koddan ve gizlilik politikasından çıkarıldı (10 Ekim 2026). Uygulamaya veri toplayan bir şey eklenirse (analiz, çökme raporu, sohbet) bu beyanlar da güncellenmeli.
+
+- **Ad ve kategori.** Ad Play'dekiyle aynı ("ChallengeGoal: Futbol Düellosu"), alt başlık "Futbol bilgi oyunları"; kategori Games (Trivia, Sports), ikincil kategori Sports.
+- **İçerik hakları.** Üçüncü taraf içerik var ve haklarına sahibiz: veri Wikidata'dan (CC0), portreler serbest lisanslı Commons fotoğraflarından.
+- **Yaş derecesi.** Sorulara göre 4+ çıkıyor; kullanım koşulları en az 13 yaş istediği için elle 13+ yapılır. Reklam var; kullanıcı içeriği, sohbet, sınırsız web erişimi, kumar ve ödül kutusu yok.
+- **Ülkeler.** Vietnam ve Çin (anakara) dışarıda bırakılır; ikisi de oyunlar için devlet lisansı ister.
+- **Şifreleme.** Yalnızca standart HTTPS; yapı `ITSAppUsesNonExemptEncryption: false` beyan eder, belge yüklenmez.
+- **Sunucu bildirimleri ve ortak gizli anahtar.** Kullanılmaz; satın almalar App Store Server API'siyle doğrulanır.
+
+Gizlilik beyanı (App Privacy). İlk beş satır kendi sunucumuzun tuttuğu veridir; AdMob satırları Google'ın yayımladığı eşlemeye göredir (`developers.google.com/admob/ios/privacy/data-disclosure`). Google bu verinin kimliğe bağlı olup olmadığını söylemediği için temkinli taraf seçildi.
+
+| Veri türü | Amaç | Kimliğe bağlı | İzleme |
+|---|---|---|---|
+| Contact Info → Email Address | App Functionality | Evet | Hayır |
+| Identifiers → User ID | App Functionality | Evet | Hayır |
+| User Content → Gameplay Content | App Functionality | Evet | Hayır |
+| Purchases → Purchase History | App Functionality | Evet | Hayır |
+| Identifiers → Device ID (bildirim anahtarı ve reklam kimliği) | App Functionality, Third-Party Advertising, Analytics | Evet | Evet |
+| Location → Coarse Location (AdMob, IP adresinden) | Third-Party Advertising | Evet | Evet |
+| Usage Data → Advertising Data (AdMob) | Third-Party Advertising, Analytics | Evet | Evet |
+| Usage Data → Product Interaction (AdMob) | Third-Party Advertising | Evet | Evet |
+| Diagnostics → Performance Data (AdMob) | Analytics, Third-Party Advertising | Evet | Hayır |
+| Diagnostics → Crash Data (AdMob) | Analytics, Third-Party Advertising | Hayır | Hayır |
+
+İzleme beyan edildiği için izleme izni penceresinin gerçekten çıkması gerekir; pencere AdMob'daki IDFA mesajına bağlıdır. Mesaj yayımlanmadan incelemeye gönderilirse beyanla uygulama çelişir (5.1.2).
+
 ## Testler
 
 | Paket | Test sayısı | Neyi denetler |
