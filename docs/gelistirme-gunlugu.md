@@ -874,6 +874,23 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - İlk akış görselinde kazanan çizgi kartlardaki mevki harflerini kapatıyordu; görselde çizgi yerine kazanan üç kart parlak çerçeveyle gösterildi. Videoda çizgi kısa süre göründüğü için kaldı.
 - Uygulamanın gerçek ekran kaydı kullanılmadı; örnek maç sayfada yeniden çizildi (sitedeki örnekle aynı ızgara ve aynı beş futbolcu).
 
+### Açılışta güncelleme uyarısı (9 Ekim 2026)
+
+- **İstek.** Uygulama güncelleme gerektiriyorsa oyuncu bunu maç arama ekranında değil, uygulamaya girer girmez görmeli ve bir düğmeyle mağazaya gidebilmeli.
+- **Yapılan.** Sunucuya `GET /v1/version` ucu eklendi; uygulama açılışta ve arka plandan dönüşte kendi sürümüyle karşılaştırıyor ve gerekirse tam ekran uyarı gösteriyor. Maç ekranındaki "güncelle" hatasına da aynı düğme kondu. Metinler altı dilde.
+- **Benim kararım.** Uyarı "Şimdi değil" ile kapatılabiliyor. Gerekçe: mağaza güncellemesi her telefona aynı anda ulaşmıyor; kapatılamayan bir ekran, güncelleme henüz görünmeyen oyuncuyu çıkmaza sokar. Kullanıcı isterse zorunlu yapılır.
+- **Emülatör.** Yerel sunucuya daha yeni bir veri sürümü verilerek uyarı görüldü (Türkçe ve İtalyanca). "Güncelle" emülatörde Play Store olmadığı için mağazanın web sayfasını tarayıcıda açtı; geri tuşu uyarıyı kapattı.
+- **Ders.** Uyarı penceresindeki öğelerin `uiautomator` koordinatları ilk okumada durum çubuğu kadar kayık çıktı; dokunma boşa gitti. Ekran görüntüsündeki konum esas alınmalı.
+- **Bekleyen.** Uyarı on ikinci derlemeyle telefona ulaşır; derleme kullanıcının onayını bekliyor. Sunucudaki uç dağıtılmadı; derlemeyle birlikte dağıtılacak.
+
+### 59 saniyelik tanıtım videosu (9 Ekim 2026)
+
+- **İstek.** İlk video (23 saniye) kısa bulundu. XOX, Kart Düellosu, Açık Artırma ("say bakalım") ve Zincir'in oynanışını gösteren 59 saniyelik ikinci bir video istendi. İki ek koşul: "zorunlu reklam yok" açılışta görünmeli (en güçlü yan), video yayından sonra paylaşılacağı için "yakında" geçmemeli.
+- **Yapılan.** Tanıtım sayfası kurgulara ayrıldı (`short`, `long`) ve üç yeni oyun sahnesi yazıldı. Ekranlar 7-8 Ekim'de alınmış emülatör görüntülerine bakılarak çizildi; metinler uygulamadaki çevirilerden, örnek maçların verisi veritabanından alındı.
+- **Doğrulama.** "Zorunlu reklam yok" iddiası koddan denetlendi: uygulamada yalnızca `RewardedAd` kullanılıyor, geçiş reklamı ya da afiş yok.
+- **Kaynaklar.** Videolarda görünen on iki yeni futbolcunun fotoğraf kaynakları sitenin altı dildeki "Görsel kaynakları" listesine eklendi; paylaşım metni bütün kaynakları sayıyor.
+- **Kısa video ve görsel** de aynı açılış ve kapanışla yeniden üretildi (25,5 saniye).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1092,3 +1109,7 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `a0d89c0` | 9 Ekim | Uluslararası pazarın ve altı dildeki adların uygulama veritabanına yazılması |
 | `fab1f54` | 9 Ekim | Dört yeni dilin ve uluslararası pazarın belgelenmesi |
 | `16e6bc6` | 9 Ekim | Bot kadrosunun pazar başına kalması kararı |
+| `4cd99d5` | 9 Ekim | Kare kare tanıtım videosu ve akış görseli üreteci |
+| `d9b523f` | 9 Ekim | On birinci derleme, altı dilin yayını ve tanıtım malzemesinin belgelenmesi |
+| `a60bf84` | 9 Ekim | Açılışta güncelleme uyarısı ve mağaza bağlantısı |
+| `3f80f6d` | 9 Ekim | Dört oyunun oynanışını gösteren 59 saniyelik kurgu ve "zorunlu reklam yok" açılışı |
