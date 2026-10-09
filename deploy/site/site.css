@@ -195,6 +195,68 @@ h3 {
   border-color: var(--volt);
 }
 
+.languages {
+  position: relative;
+}
+
+.languages summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1.5px solid var(--stroke);
+  border-radius: 8px;
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+
+.languages summary::-webkit-details-marker {
+  display: none;
+}
+
+.languages summary::after {
+  content: "";
+  margin-left: 8px;
+  border: 5px solid transparent;
+  border-top-color: var(--muted);
+  border-bottom-width: 0;
+}
+
+.languages summary:hover,
+.languages[open] summary {
+  border-color: var(--volt);
+}
+
+.languages div {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 10;
+  display: grid;
+  min-width: 160px;
+  padding: 6px;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  background: var(--panel-raised);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.languages div a {
+  justify-content: flex-start;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  color: var(--text);
+}
+
+.languages div a:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .wrap {
   max-width: var(--page);
   margin: 0 auto;
@@ -819,7 +881,7 @@ footer p {
     padding-bottom: 8px;
   }
 
-  .links a:not(.language) {
+  .links > a:not(.language) {
     display: none;
   }
 
