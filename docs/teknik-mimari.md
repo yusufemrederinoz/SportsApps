@@ -826,10 +826,10 @@ Açılış akışı:
 Online maç, uygulamadaki veri sürümü sunucununkiyle aynı değilse açılmaz. Oyuncu bunu maç ararken değil, uygulamayı açar açmaz öğrenir.
 
 - **Denetim.** Uygulama açılışta ve arka plandan her dönüşte `GET /v1/version` ister; sunucunun veri sürümü ya da protokol numarası uygulamadakinden yeniyse uyarı çıkar. Uygulama sunucudan yeniyse (yeni derleme sunucudan önce kurulduysa) ya da sunucuya ulaşılamıyorsa uyarı çıkmaz.
-- **Ekran.** Tam ekran: "Yeni sürüm hazır", kısa açıklama, "Güncelle" ve "Şimdi değil". "Güncelle" mağaza uygulamasını açar (Android `market://details?id=com.challengegoal.app`, iOS `itms-apps://apps.apple.com/app/id6820528682`); açılamazsa mağazanın web sayfasına düşer. "Şimdi değil" ve geri tuşu uyarıyı o oturum için kapatır; mağaza, tablo ve hesap ekranları kullanılabilir kalır.
+- **Ekran.** Tam ekran ve zorunlu: "Yeni sürüm hazır", kısa açıklama ve tek düğme, "Güncelle". Düğme mağaza uygulamasını açar (Android `market://details?id=com.challengegoal.app`, iOS `itms-apps://apps.apple.com/app/id6820528682`); açılamazsa mağazanın web sayfasına düşer. Ekran kapatılamaz; Android geri tuşu uygulamadan çıkarır, yeniden açınca ekran yine gelir. Kullanıcı 9 Ekim 2026'da zorunlu olmasına karar verdi.
 - **Maç ekranı.** Eski uygulamayla maç aranırsa çıkan hata ekranında da aynı "Güncelle" düğmesi vardır.
 - **Kod.** `app/src/update/`: `requirement.ts` (karar), `store-link.ts` (mağaza adresleri), `use-update-required.ts` (denetim), `update-gate.tsx` (ekran); kök yerleşimde `UpdateGate` olarak durur.
-- **Dağıtım sırası.** Sunucu yeni veriyle, yeni sürüm mağazada indirilebilir olduktan sonra dağıtılmalıdır. Önce dağıtılırsa oyuncuya "güncelle" denir ama mağazada güncelleme yoktur.
+- **Dağıtım sırası.** Sunucu yeni veriyle, yeni sürüm mağazada herkese indirilebilir olduktan sonra dağıtılmalıdır. Ekran zorunlu olduğu için önce dağıtılırsa oyuncu uygulamaya giremez ama mağazada güncelleme de bulamaz. Mağazalar güncellemeyi kademeli gösterebildiğinden yayından sonra birkaç saat beklemek güvenlidir. Her veri güncellemesi bu yüzden herkes için zorunlu bir uygulama güncellemesidir.
 - **Kapsam.** Uyarı on ikinci derlemeden itibaren vardır; on birinci ve öncesi yalnızca maç ekranındaki hata metnini gösterir.
 
 ## Testler

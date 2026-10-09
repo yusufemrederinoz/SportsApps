@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "Nouvelle version disponible",
-    "body": "Pour jouer des matchs, tu dois mettre l'appli à jour. C'est rapide, et ton compte et tes points sont conservés.",
-    "action": "Mettre à jour",
-    "later": "Plus tard"
+    "body": "Pour continuer à jouer, tu dois mettre l'appli à jour. C'est rapide, et ton compte et tes points sont conservés.",
+    "action": "Mettre à jour"
   },
   "identity": {
     "or": "ou",

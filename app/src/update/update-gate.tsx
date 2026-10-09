@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, StyleSheet, View } from 'react-native';
+import { BackHandler, Modal, StyleSheet, View } from 'react-native';
 
 import { ActionButton } from '@/components/action-button';
 import { GoalIcon } from '@/components/goal-icon';
@@ -18,11 +17,9 @@ export function UpdateGate() {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const required = useUpdateRequired();
-  const [dismissed, setDismissed] = useState(false);
-  const dismiss = () => setDismissed(true);
 
   return (
-    <Modal visible={required && !dismissed} animationType="fade" statusBarTranslucent onRequestClose={dismiss}>
+    <Modal visible={required} animationType="fade" statusBarTranslucent onRequestClose={() => BackHandler.exitApp()}>
       <Screen contentStyle={styles.content}>
         <View style={styles.center} accessibilityViewIsModal>
           <View style={styles.ball}>
@@ -35,10 +32,7 @@ export function UpdateGate() {
             {t('update.body')}
           </ThemedText>
         </View>
-        <View style={styles.actions}>
-          <ActionButton label={t('update.action')} onPress={openStoreListing} />
-          <ActionButton label={t('update.later')} onPress={dismiss} variant="secondary" />
-        </View>
+        <ActionButton label={t('update.action')} onPress={openStoreListing} />
       </Screen>
     </Modal>
   );
@@ -60,8 +54,5 @@ const styles = StyleSheet.create({
   },
   centered: {
     textAlign: 'center',
-  },
-  actions: {
-    gap: Spacing.three,
   },
 });

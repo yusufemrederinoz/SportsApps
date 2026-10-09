@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "Nueva versión disponible",
-    "body": "Para jugar partidos tienes que actualizar la app. Es rápido, y tu cuenta y tus puntos se mantienen.",
-    "action": "Actualizar",
-    "later": "Ahora no"
+    "body": "Para seguir jugando tienes que actualizar la app. Es rápido, y tu cuenta y tus puntos se mantienen.",
+    "action": "Actualizar"
   },
   "identity": {
     "or": "o",

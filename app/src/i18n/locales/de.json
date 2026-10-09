@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "Neue Version verfügbar",
-    "body": "Um Matches zu spielen, musst du die App aktualisieren. Das geht schnell; dein Konto und deine Punkte bleiben erhalten.",
-    "action": "Aktualisieren",
-    "later": "Nicht jetzt"
+    "body": "Um weiterzuspielen, musst du die App aktualisieren. Das geht schnell; dein Konto und deine Punkte bleiben erhalten.",
+    "action": "Aktualisieren"
   },
   "identity": {
     "or": "oder",

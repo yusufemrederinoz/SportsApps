@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "Yeni sürüm hazır",
-    "body": "Maç oynayabilmek için uygulamayı güncellemen gerekiyor. Güncelleme kısa sürer; hesabın ve puanların yerinde kalır.",
-    "action": "Güncelle",
-    "later": "Şimdi değil"
+    "body": "Devam etmek için uygulamayı güncellemen gerekiyor. Güncelleme kısa sürer; hesabın ve puanların yerinde kalır.",
+    "action": "Güncelle"
   },
   "identity": {
     "or": "ya da",

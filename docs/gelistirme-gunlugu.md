@@ -878,10 +878,10 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 
 - **İstek.** Uygulama güncelleme gerektiriyorsa oyuncu bunu maç arama ekranında değil, uygulamaya girer girmez görmeli ve bir düğmeyle mağazaya gidebilmeli.
 - **Yapılan.** Sunucuya `GET /v1/version` ucu eklendi; uygulama açılışta ve arka plandan dönüşte kendi sürümüyle karşılaştırıyor ve gerekirse tam ekran uyarı gösteriyor. Maç ekranındaki "güncelle" hatasına da aynı düğme kondu. Metinler altı dilde.
-- **Benim kararım.** Uyarı "Şimdi değil" ile kapatılabiliyor. Gerekçe: mağaza güncellemesi her telefona aynı anda ulaşmıyor; kapatılamayan bir ekran, güncelleme henüz görünmeyen oyuncuyu çıkmaza sokar. Kullanıcı isterse zorunlu yapılır.
-- **Emülatör.** Yerel sunucuya daha yeni bir veri sürümü verilerek uyarı görüldü (Türkçe ve İtalyanca). "Güncelle" emülatörde Play Store olmadığı için mağazanın web sayfasını tarayıcıda açtı; geri tuşu uyarıyı kapattı.
+- **Zorunlu.** İlk sürümde uyarıyı "Şimdi değil" ile kapatılabilir yapmıştım (mağaza güncellemesi her telefona aynı anda ulaşmadığı için). Kullanıcıya soruldu, zorunlu olmasını seçti: düğme kaldırıldı, metin "Devam etmek için…" oldu, geri tuşu uygulamadan çıkarıyor.
+- **Emülatör.** Yerel sunucuya daha yeni bir veri sürümü verilerek uyarı görüldü (Türkçe ve İtalyanca). "Güncelle" emülatörde Play Store olmadığı için mağazanın web sayfasını tarayıcıda açtı. Zorunlu halde geri tuşu ana ekrana döndürdü, uygulama yeniden açılınca uyarı yine geldi.
 - **Ders.** Uyarı penceresindeki öğelerin `uiautomator` koordinatları ilk okumada durum çubuğu kadar kayık çıktı; dokunma boşa gitti. Ekran görüntüsündeki konum esas alınmalı.
-- **Bekleyen.** Uyarı on ikinci derlemeyle telefona ulaşır; derleme kullanıcının onayını bekliyor. Sunucudaki uç dağıtılmadı; derlemeyle birlikte dağıtılacak.
+- **Derleme.** Kullanıcı "şimdi derle ve dağıt" dedi; on ikinci derleme başlatıldı, sunucu yeni uçla dağıtıldı (veri sürümü değişmediği için on birinci derleme çalışmaya devam eder).
 
 ### 59 saniyelik tanıtım videosu (9 Ekim 2026)
 

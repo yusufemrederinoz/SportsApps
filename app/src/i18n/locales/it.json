@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "Nuova versione disponibile",
-    "body": "Per giocare le partite devi aggiornare l'app. Ci vuole un attimo, e il tuo account e i tuoi punti restano al loro posto.",
-    "action": "Aggiorna",
-    "later": "Non ora"
+    "body": "Per continuare a giocare devi aggiornare l'app. Ci vuole un attimo, e il tuo account e i tuoi punti restano al loro posto.",
+    "action": "Aggiorna"
   },
   "identity": {
     "or": "oppure",

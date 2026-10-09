@@ -27,9 +27,8 @@
   },
   "update": {
     "title": "New version available",
-    "body": "You need to update the app to play matches. It only takes a moment, and your account and points stay as they are.",
-    "action": "Update",
-    "later": "Not now"
+    "body": "You need to update the app to keep playing. It only takes a moment, and your account and points stay as they are.",
+    "action": "Update"
   },
   "identity": {
     "or": "or",
