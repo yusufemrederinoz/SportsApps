@@ -109,9 +109,14 @@ const stores = parameters.get('stores') ?? 'both';
 const stage = document.querySelector('.stage');
 const loaded = new Map();
 const scripts = [];
+const cues = [];
 
 const at = (start, offset) => Number((start + offset).toFixed(2));
 const fill = (template, values) => template.replace(/\{\{(\w+)\}\}/g, (_, name) => String(values[name] ?? ''));
+
+function cue(time, sound, gain = 1, rate = 1) {
+  cues.push({ time: Number(time.toFixed(3)), sound, gain, rate });
+}
 
 function scripted(kind, payload) {
   scripts.push({ kind, payload });
@@ -161,10 +166,16 @@ function scoreboard(texts, start, turns, scores) {
 }
 
 function typing(entries, placeholder, classes, time) {
+  entries.forEach(({ text, from, until }) => {
+    for (let index = 0; index < text.length; index += 1) {
+      cue(from + ((until - from) * index) / text.length, 'tick', 0.22, 1.25);
+    }
+  });
   return `<div class="search empty ${classes}" style="--t: ${time}" ${scripted('typing', { entries, placeholder })}>${placeholder}</div>`;
 }
 
 function gameHeader(texts, start, classes = '') {
+  cue(at(start, 0.1), 'impact', 0.5);
   return `<div class="display game-title in slam ${classes}" style="--t: ${at(start, 0.1)}" data-fit>${texts.title}</div>
     <p class="game-rule in rise" style="--t: ${at(start, 0.25)}">${texts.rule}</p>`;
 }
@@ -173,6 +184,7 @@ function cell(texts, start, row, column) {
   const move = GRID.moves.find((candidate) => candidate.row === row && candidate.column === column);
   if (!move) return '<div class="cell"></div>';
   const from = at(start, move.typed ? move.typed[0] - 0.05 : move.at - 0.25);
+  cue(at(start, move.at), move.side === 'x' ? 'correct' : 'impact', move.side === 'x' ? 0.7 : 0.35);
   return `<div class="cell ${move.side} ${row === column ? 'win' : 'rest'}" style="--t: ${at(start, move.at)}">
     <i class="target" style="--from: ${from}"></i><i class="ring"></i>
     ${card(texts, move.footballer, move.side, 'flip shiny')}
@@ -192,6 +204,12 @@ function board(texts, start) {
 
 function hook(texts, start) {
   const [first, second, third] = texts.hook;
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  cue(at(start, 0.2), 'whistle', 0.45);
+  cue(at(start, 0.55), 'impact', 0.5);
+  cue(at(start, 0.85), 'impact', 0.5);
+  cue(at(start, 1.2), 'impact', 0.7);
+  cue(at(start, 1.8), 'impact', 1);
   return `<canvas class="ball" width="1400" height="1400" data-job="alev-large" data-count="79" data-at="0" data-rate="30" data-loop="1"></canvas>
     <div class="copy">
       <p class="eyebrow in rise" style="--t: ${at(start, 0.4)}">${texts.eyebrow}</p>
@@ -210,6 +228,9 @@ function play(texts, start) {
       release: at(start, move.at + TYPED_HOLD),
     }));
   const result = at(start, GRID.result);
+  cue(at(start, 0.1), 'impact', 0.5);
+  cue(at(start, GRID.won), 'whoosh', 0.7);
+  cue(at(result, 0.12), 'win', 1);
   return `<div class="display title in slam" style="--t: ${at(start, 0.1)}">${texts.grid.title}</div>
     <p class="rule-text in rise" style="--t: ${at(start, 0.25)}">${texts.grid.rule}</p>
     ${board(texts, start)}
@@ -225,6 +246,12 @@ function duelRound(texts, start, round, index) {
   const [from, until] = round.window;
   const open = at(start, from);
   const [mine, theirs] = round.values;
+  cue(open, 'whoosh', 0.45);
+  cue(at(open, 0.6), 'tick', 0.7);
+  cue(at(open, 0.9), 'tick', 0.5, 0.8);
+  cue(at(open, 1.7), 'whoosh', 0.5);
+  cue(at(open, 2.25), 'impact', 0.5);
+  cue(at(open, 2.75), 'correct', 1);
   return `<div class="layer state" style="--start: ${open}; --end: ${until === NEVER ? NEVER : at(start, until)}">
     <div class="panel question"><strong data-fit>${texts.duel.questions[index]}</strong></div>
     <div class="versus">
@@ -251,6 +278,8 @@ function duel(texts, start) {
     picked.map((time, index) => [time, fill(texts.duel.count, { picked: index + 1 })]),
   );
   const table = at(start, pickUntil);
+  picked.forEach((time, index) => cue(time, 'tick', 0.6, 0.9 + index * 0.05));
+  cue(at(table, -0.5), 'impact', 0.4);
   const rounds = DUEL.rounds.map((round) => at(start, round.window[0]));
   const spent = (key) => {
     const index = DUEL.rounds.findIndex((round) => round.mine === key);
@@ -288,6 +317,10 @@ function auction(texts, start) {
     at: at(start, name.at),
   }));
   const last = bids[bids.length - 1].amount;
+  bids.forEach((bid) => cue(bid.at, bid.side === 'you' ? 'tick' : 'impact', bid.side === 'you' ? 0.8 : 0.5));
+  cue(challenged, 'impact', 1);
+  names.forEach((name, index) => cue(name.at, 'correct', 0.6, 1 + index * 0.06));
+  cue(at(start, AUCTION.proved), 'win', 1);
   const turns = [[open, 'you']].concat(
     bids.map((bid) => [bid.at, bid.side === 'you' ? 'rival' : 'you']),
     [[prove, 'you']],
@@ -331,6 +364,11 @@ function chain(texts, start) {
   const links = CHAIN.links.map((link) => ({ ...link, at: at(start, link.at) }));
   const closing = at(start, CHAIN.closing);
   const said = links.slice(1);
+  links.forEach((link) => {
+    cue(link.at, 'whoosh', 0.5);
+    cue(at(link.at, 0.25), link.side === 'x' ? 'correct' : 'tick', 0.6);
+  });
+  cue(closing, 'impact', 0.7);
   const turns = [[open, 'you']].concat(said.map((link) => [link.at, link.side === 'x' ? 'rival' : 'you']));
   const turnTexts = turns
     .map(([time, side]) => [time, side === 'you' ? texts.chain.yourTurn : texts.chain.theirTurn, side])
@@ -363,6 +401,8 @@ function chain(texts, start) {
 }
 
 function games(texts, start) {
+  cue(at(start, 0.2), 'impact', 0.6);
+  texts.games.items.forEach((_, index) => cue(at(start, 0.65 + index * 0.14), 'tick', 0.5, 0.9 + index * 0.05));
   const tiles = texts.games.items.map(
     ([name, line], index) =>
       `<div class="tile in pop" style="--t: ${at(start, 0.65 + index * 0.14)}"><small>${String(index + 1).padStart(2, '0')}</small><strong data-fit>${name}</strong><p>${line}</p></div>`,
@@ -372,6 +412,9 @@ function games(texts, start) {
 }
 
 function features(texts, start) {
+  cue(at(start, 0.15), 'impact', 0.6);
+  texts.features.items.forEach((_, index) => cue(at(start, 0.45 + index * 0.3), 'whoosh', 0.35));
+  cue(at(start, 1.9), 'impact', 0.6);
   const perks = texts.features.items.map(
     ([name, line], index) =>
       `<div class="perk in ${index % 2 ? 'from-right' : 'from-left'}" style="--t: ${at(start, 0.45 + index * 0.3)}; --tone: ${PERK_TONES[index]}"><strong data-fit>${name}</strong><p>${line}</p></div>`,
@@ -386,6 +429,12 @@ function storeNames(texts) {
 }
 
 function finale(texts, start) {
+  cue(at(start, 0.1), 'whoosh', 0.7);
+  cue(at(start, 0.5), 'impact', 0.9);
+  cue(at(start, 1.15), 'impact', 0.8);
+  cue(at(start, 1.85), 'tick', 0.5);
+  cue(at(start, 1.95), 'tick', 0.5, 1.1);
+  cue(at(start, 2.2), 'win', 0.8);
   const pills = storeNames(texts).map(
     (name, index) => `<div class="in ${index % 2 ? 'from-right' : 'from-left'}" style="--t: ${at(start, 1.85 + index * 0.1)}">${name}</div>`,
   );
@@ -407,7 +456,10 @@ function video(texts) {
   cut.forEach(([name, length], index) => {
     const end = index + 1 < cut.length ? at(start, length) : NEVER;
     parts.push(`<section class="scene ${name}" style="--start: ${start}; --end: ${end}">${SCENES[name](texts, start)}</section>`);
-    if (index > 0) parts.push(`<i class="wipe" style="--t: ${start}"></i>`);
+    if (index > 0) {
+      parts.push(`<i class="wipe" style="--t: ${start}"></i>`);
+      cue(at(start, -0.1), 'whoosh', 0.6);
+    }
     start = at(start, length);
   });
   return { markup: parts.join(''), duration: start };
@@ -512,4 +564,5 @@ window.seek = async (seconds) => {
 };
 
 await window.seek(0);
+window.cues = cues.sort((first, second) => first.time - second.time);
 window.duration = duration;

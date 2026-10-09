@@ -739,7 +739,7 @@ Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir 
 
 | Çıktı | Boyut | Dosya |
 |---|---|---|
-| Uzun video: dört oyunun oynanışı | 1080×1920, 30 kare/sn, 59 sn, H.264, sessiz ses kanalı | `challengegoal-<dil>-long.mp4` |
+| Uzun video: dört oyunun oynanışı | 1080×1920, 30 kare/sn, 59 sn, H.264, ses efektleriyle | `challengegoal-<dil>-long.mp4` |
 | Kısa video | aynı biçim, 25,5 sn | `challengegoal-<dil>.mp4` |
 | Akış görseli | 1080×1350 | `challengegoal-<dil>-post.png` |
 | Paylaşım metni | — | `challengegoal-<dil>-caption.txt` (elle yazılır) |
@@ -748,9 +748,22 @@ Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir 
 - **Oyun sahneleri.** Uygulamanın gerçek ekran kaydı değildir; ekranlar emülatör görüntülerine bakılarak sayfada yeniden çizilmiştir ve metinler uygulamadaki çevirilerle aynıdır. Örnek maçlardaki bilgiler veritabanından alınmıştır: Kart Düellosu'nda "Süper Lig tarihindeki yabancılar" konsepti, Eto'o 368 gole karşı Gómez 333 ve Osimhen (1998) ile Džeko (1986); Açık Artırma'da Real Madrid CF × Brezilya için Ronaldo, Kaká, Marcelo, Casemiro, Rodrygo; Zincir'de Arda Güler, Mbappé (Real Madrid CF), Messi (Paris Saint-Germain), Arda Turan (FC Barcelona).
 - **Kare kare yakalama.** Bütün hareketler CSS animasyonudur ve duraklatılmış durur. `capture.mjs` sayfayı başsız Chrome'da açar (yazılımla çizim, ekran kartına dokunmaz), Chrome'un uzaktan denetim ucuna bağlanır ve her kare için `seek(saniye)` çağırır: animasyonların zamanı o ana alınır; top kareleri, yazılan adlar, sayaçlar ve skorlar güncellenir; ekran görüntüsü kaydedilir. Sonuç gerçek zamandan bağımsızdır. Araç kendi önceliğini düşürür, kodlamada iki iş parçacığı kullanır, iş bitince ara kareleri siler.
 - **Komutlar** (depo kökünde): `node data/branding/promo/capture.mjs video tr cut=long`, `node data/branding/promo/capture.mjs video tr`, `node data/branding/promo/capture.mjs poster tr`. Belirli anları görmek için `at=8.8,16` eklenir. Kapanıştaki mağazalar `stores=play` ya da `stores=apple` ile teke indirilir (dosya adına eklenir).
+- **Ses efektleri.** Sahneler kendi ses işaretlerini üretir (`cue(zaman, ses, şiddet, hız)`): kart düşmesi, yazma tıkırtısı, damga, geçiş, tur ve maç sonucu. `sound.mjs` bu işaretleri uygulamanın kendi efekt dosyalarıyla (`app/assets/sounds/*.wav`) tek bir parçada karıştırır; her efekt önce kendi tepe değerine göre dengelenir, parça −3 dBFS tepeye indirilir. Görüntü değişirse ses de kendiliğinden kayar. Videoya müzik eklenmez. Var olan videonun yalnızca sesini yenilemek için `node data/branding/promo/capture.mjs sound tr cut=long`; efektlerin tek başına hali `challengegoal-<dil>-long-sfx.wav`.
 - **Önce gereken.** Alev topunun büyük kareleri: `node data/branding/animation/capture.mjs alev-large` (1400 piksel, 79 kare).
 - **Başka dil.** `texts.json` içine o dilin metinleri eklenir ve komut o dil koduyla çalıştırılır; uzun satırlar kendiliğinden küçülür.
-- **Kurallar.** "Zorunlu reklam yok" açılışın ilk saniyelerinde ve kapanışta yer alır (uygulamada yalnızca oyuncunun kendi açtığı ödüllü reklam vardır). Malzeme uygulama yayımlandıktan sonra paylaşılacağı için "yakında" yazmaz; kapanış "Ücretsiz indir" der. Videolardaki futbolcuların fotoğraf kaynakları sitenin "Görsel kaynakları" listesinde ve paylaşım metninde sayılır; kapanışta görsellerin yapay zekâ çizimi olduğu yazar. Videoda müzik yoktur; paylaşan kişi platformun kendi müzik kitaplığından ekler.
+- **Kurallar.** "Zorunlu reklam yok" açılışın ilk saniyelerinde ve kapanışta yer alır (uygulamada yalnızca oyuncunun kendi açtığı ödüllü reklam vardır). Malzeme uygulama yayımlandıktan sonra paylaşılacağı için "yakında" yazmaz; kapanış "Ücretsiz indir" der. Videolardaki futbolcuların fotoğraf kaynakları sitenin "Görsel kaynakları" listesinde ve paylaşım metninde sayılır; kapanışta görsellerin yapay zekâ çizimi olduğu yazar. Videoda müzik yoktur, yalnızca ses efektleri vardır; müziği paylaşan kişi ekler.
+
+### Mağaza ekran görüntüleri
+
+Mağazalar ekran görüntülerinin uygulamanın gerçek ekranları olmasını ister; bu yüzden tanıtım videosundaki çizimler değil, yayın derlemesinden alınan görüntüler kullanılır.
+
+- **Derlemeyi emülatöre kurma.** Üretim derlemesi AAB'dir ve doğrudan kurulamaz. `bundletool build-apks --mode=universal` ile tek bir APK çıkarılır (deneme anahtarıyla imzalanır, Java olarak `%LOCALAPPDATA%\Android\jdk-17` kullanılır) ve `adb install` ile kurulur. Uygulama canlı sunucuya bağlanır; Expo Go'daki geliştirici düğmesi görüntüde olmaz.
+- **Hesap.** Görüntülerde misafir adı çıkmasın diye canlı sunucuda bir deneme hesabı açıldı (`Kaptan10`, `ekran@challengegoal.app`); şifresi `C:\Users\yusuf\.challengegoal\screenshot-account.txt` içinde.
+- **Yakalama.** Dil `adb shell cmd locale set-app-locales com.challengegoal.app --locales en-US` ile değişir. Günün bulmacası süresizdir: hücreler veritabanından seçilen ünlü ve portreli cevaplarla tek tek doldurulur. Maçlar zamanlıdır ve `uiautomator` sayaç animasyonu yüzünden bayat içerik döndürür; bu yüzden bota karşı maç açılıp saniyede bir ekran görüntüsü alınır ve en iyi kare seçilir. Kart Düellosu'nda "Rastgele tamamla" ile el kurulur, ilk kart körlemesine oynanır.
+- **Görseller.** `data/branding/store_screenshots.py` ham görüntünün durum çubuğunu ve alt hareket çubuğunu keser (iOS mağazasında Android arayüzü görünmemeli), başlık ve alt başlıkla koyu zemine yerleştirir. Başlıklar `store_captions.json` içindedir. Çıktı: Google Play için 1080×1920, App Store için 1290×2796 (6,9 inç yuvası bu ölçüyü kabul eder), saydamlık kanalı yok.
+- **Set.** Dil başına beş görsel: ana ekran ("Zorunlu reklam yok"), günün bulmacası, Kart Düellosu (kazanılan tur), Açık Artırma, Zincir. Türkçe ve İngilizce hazır; diğer dillerin mağaza sayfaları İngilizce görselleri kullanır.
+- **Konum.** Ham görüntüler `data/build/store/raw/<dil>/`, görseller `data/build/store/screenshots/<dil>/<mağaza>/`, teslim klasörü `data/build/store/submission/` (simge ve tanıtım görseliyle birlikte). Hiçbiri depoya girmez.
+- **Tablet.** `supportsTablet` kapalı olduğu için iPad görüntüsü gerekmez.
 
 ## Bildirimler
 

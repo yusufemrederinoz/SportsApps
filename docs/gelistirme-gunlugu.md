@@ -891,6 +891,14 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 - **Kaynaklar.** Videolarda görünen on iki yeni futbolcunun fotoğraf kaynakları sitenin altı dildeki "Görsel kaynakları" listesine eklendi; paylaşım metni bütün kaynakları sayıyor.
 - **Kısa video ve görsel** de aynı açılış ve kapanışla yeniden üretildi (25,5 saniye).
 
+### On ikinci derleme, mağaza görselleri ve videonun sesi (9 Ekim 2026)
+
+- **On ikinci derleme** `d5c8e0b1` bitti (zorunlu güncelleme ekranıyla). Sunucu `GET /v1/version` ucuyla dağıtıldı; veri sürümü aynı kaldığı için on birinci derleme de çalışıyor.
+- **Mağaza görselleri.** Kullanıcı aynı gün başvuru yapmak için iki mağazanın görsellerini istedi. On birinci derleme `bundletool` ile emülatöre kuruldu ve gerçek ekranlar yakalandı: ana ekran, günün bulmacası (sekiz ünlü oyuncu kartıyla), Kart Düellosu'nda kazanılan tur, Açık Artırma'da rakibin teklifi, Zincir. Türkçe ve İngilizce beşer görsel iki mağazanın ölçüsünde üretildi; İngilizce tanıtım görseli de eklendi.
+- **Zorlandığım yer.** Bota karşı XOX maçında hamleyi yetiştiremedim: tur 15 saniye, benim bir komutla sonraki arasındaki gecikmem daha uzun, `uiautomator` da maç sırasında bayat ekran veriyor. İki maç süre aşımıyla kaybedildi. Izgara görüntüsü için süresiz olan günün bulmacası kullanıldı; diğer oyunlarda maç açılıp saniyede bir kare alındı.
+- **Bulunan küçük hata.** İngilizcede "1 guesses" yazıyor (çoğul biçimi yok); Almanca, İspanyolca, Fransızca ve İtalyancada da aynı kalıp var. Mağaza görselinde küçük puntoyla görünüyor. Sonraki derlemede düzeltilmeli.
+- **Videonun sesi.** 59 saniyelik videoya (kısa videoya da) görüntüyle eşzamanlı ses efektleri eklendi. Efektler uygulamanın kendi ses dosyaları; sahneler işaretleri kendisi ürettiği için ses görüntüden kaymaz. Sesi dinleyemedim; yalnızca düzeyleri ölçtüm (tepe −3 dBFS, yazma tıkırtısı −33, kart sesi −14, kazanma melodisi −8,5 dBFS). Kullanıcı müziği sonradan kendisi ekleyecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1113,3 +1121,6 @@ Derleme göndermeden, bekleyen arayüz değişiklikleri emülatörde Expo Go ile
 | `d9b523f` | 9 Ekim | On birinci derleme, altı dilin yayını ve tanıtım malzemesinin belgelenmesi |
 | `a60bf84` | 9 Ekim | Açılışta güncelleme uyarısı ve mağaza bağlantısı |
 | `3f80f6d` | 9 Ekim | Dört oyunun oynanışını gösteren 59 saniyelik kurgu ve "zorunlu reklam yok" açılışı |
+| `6432fbb` | 9 Ekim | Güncelleme uyarısının ve uzun tanıtım videosunun belgelenmesi |
+| `6a5923e` | 9 Ekim | Güncelleme ekranının zorunlu olması |
+| `177e6d7` | 9 Ekim | Gerçek ekranlardan mağaza görselleri üreteci |

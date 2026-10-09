@@ -1,15 +1,18 @@
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import os from 'node:os';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { loadSounds, mix, writeWave } from './sound.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..', '..', '..');
 const BUILD = join(ROOT, 'data', 'build', 'promo');
 const CHROME = process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const FFMPEG = process.env.FFMPEG_PATH ?? 'ffmpeg';
+const SOUNDS = join(ROOT, 'app', 'assets', 'sounds');
 const PORT = 8793;
 const DEBUG_PORT = 9337;
 const FPS = 30;
@@ -36,7 +39,8 @@ const options = Object.fromEntries(extras.map((extra) => extra.split('=')));
 const cut = options.cut ?? 'short';
 const stores = options.stores ?? 'both';
 const name = ['challengegoal', language, cut === 'short' ? null : cut, stores === 'both' ? null : stores].filter(Boolean).join('-');
-const [width, height] = SIZES[mode];
+const page = mode === 'poster' ? 'poster' : 'video';
+const [width, height] = SIZES[page];
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
 os.setPriority(os.constants.priority.PRIORITY_BELOW_NORMAL);
@@ -115,7 +119,17 @@ function run(command, parameters) {
   });
 }
 
-function encode(frames, output) {
+function soundtrack(cues, duration) {
+  const path = join(BUILD, `${name}-sfx.wav`);
+  writeWave(path, mix(cues, duration, loadSounds(SOUNDS)));
+  return path;
+}
+
+function dub(video, audio, output) {
+  return run(FFMPEG, ['-y', '-loglevel', 'error', '-i', video, '-i', audio, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', output]);
+}
+
+function encode(frames, audio, output) {
   return run(FFMPEG, [
     '-y',
     '-loglevel',
@@ -124,11 +138,8 @@ function encode(frames, output) {
     String(FPS),
     '-i',
     join(frames, '%04d.png'),
-    '-f',
-    'lavfi',
     '-i',
-    'anullsrc=channel_layout=stereo:sample_rate=44100',
-    '-shortest',
+    audio,
     '-vf',
     'scale=out_color_matrix=bt709:out_range=tv,format=yuv420p',
     '-c:v',
@@ -146,7 +157,7 @@ function encode(frames, output) {
     '-c:a',
     'aac',
     '-b:a',
-    '128k',
+    '192k',
     '-movflags',
     '+faststart',
     '-threads',
@@ -178,7 +189,7 @@ try {
   const send = await connect(await pageSocket());
   await send('Emulation.setDeviceMetricsOverride', { width, height, deviceScaleFactor: 1, mobile: false });
   await send('Page.navigate', {
-    url: `http://127.0.0.1:${PORT}/promo/promo.html?lang=${language}&mode=${mode}&cut=${cut}&stores=${stores}`,
+    url: `http://127.0.0.1:${PORT}/promo/promo.html?lang=${language}&mode=${page}&cut=${cut}&stores=${stores}`,
   });
   let duration;
   for (let attempt = 0; attempt < 300 && duration === undefined; attempt += 1) {
@@ -187,7 +198,13 @@ try {
   }
   if (duration === undefined) throw new Error('page never became ready');
 
-  if (mode === 'poster') {
+  if (mode === 'sound') {
+    const output = join(BUILD, `${name}.mp4`);
+    const dubbed = join(BUILD, `${name}-dubbed.mp4`);
+    await dub(output, soundtrack(await evaluate(send, 'window.cues'), duration), dubbed);
+    renameSync(dubbed, output);
+    console.log(output);
+  } else if (mode === 'poster') {
     const output = join(BUILD, `${name}-post.png`);
     await screenshot(send, output);
     console.log(output);
@@ -210,7 +227,7 @@ try {
       if (index % 60 === 59) console.log(`${index + 1}/${total} frames, ${Math.round((Date.now() - started) / 1000)} s`);
     }
     const output = join(BUILD, `${name}.mp4`);
-    await encode(frames, output);
+    await encode(frames, soundtrack(await evaluate(send, 'window.cues'), duration), output);
     if (!options.keep) rmSync(frames, { recursive: true, force: true });
     console.log(output);
   }
