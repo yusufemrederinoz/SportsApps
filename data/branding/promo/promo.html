@@ -1,0 +1,989 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ChallengeGoal promo</title>
+    <style>
+      @font-face {
+        font-family: "Barlow";
+        font-weight: 500;
+        src: url("/fonts/Barlow_500Medium.ttf");
+      }
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-weight: 600;
+        src: url("/fonts/BarlowCondensed_600SemiBold.ttf");
+      }
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-weight: 700;
+        src: url("/fonts/BarlowCondensed_700Bold.ttf");
+      }
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-weight: 800;
+        font-style: italic;
+        src: url("/fonts/BarlowCondensed_800ExtraBold_Italic.ttf");
+      }
+
+      :root {
+        --ink: #05070a;
+        --background: #0a0d12;
+        --panel: #121821;
+        --panel-raised: #1b2430;
+        --stroke: #2b3644;
+        --stroke-bright: #5b6b80;
+        --text: #f6f8fb;
+        --muted: #9ba8ba;
+        --body: #d5dbe5;
+        --volt: #c8ff2e;
+        --gold: #f3c653;
+        --gold-deep: #a8741a;
+        --blue: #5b9bff;
+        --blue-deep: #1d3faf;
+        --display: "Barlow Condensed", sans-serif;
+        --sans: "Barlow", sans-serif;
+        --cell: 216px;
+        --head: 188px;
+        --top: 110px;
+        --gap: 16px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--ink);
+      }
+
+      body.poster {
+        height: 1350px;
+      }
+
+      .stage {
+        position: relative;
+        width: 1080px;
+        height: 100%;
+        overflow: hidden;
+        color: var(--text);
+        font-family: var(--sans);
+        background:
+          radial-gradient(90% 46% at 50% 0%, rgba(200, 255, 46, 0.2), transparent 70%),
+          radial-gradient(80% 40% at 100% 100%, rgba(91, 155, 255, 0.2), transparent 70%),
+          radial-gradient(70% 36% at 0% 78%, rgba(243, 198, 83, 0.13), transparent 70%),
+          linear-gradient(180deg, #0f141c, var(--ink));
+      }
+
+      .display {
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        text-transform: none;
+        line-height: 0.94;
+        white-space: nowrap;
+      }
+
+      .beam {
+        position: absolute;
+        top: -300px;
+        width: 260px;
+        height: 2600px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.11), transparent 75%);
+        filter: blur(34px);
+        transform-origin: top center;
+        animation: sway var(--period) ease-in-out 0s infinite alternate both;
+      }
+
+      .mote {
+        position: absolute;
+        bottom: -40px;
+        width: var(--size);
+        height: var(--size);
+        border-radius: 50%;
+        background: var(--volt);
+        opacity: 0;
+        animation: float var(--period) linear var(--offset) infinite both;
+      }
+
+      .wipe {
+        position: absolute;
+        top: -10%;
+        left: 0;
+        width: 100%;
+        height: 120%;
+        background: linear-gradient(90deg, transparent, rgba(200, 255, 46, 0.5) 45%, rgba(255, 255, 255, 0.75) 50%, rgba(200, 255, 46, 0.5) 55%, transparent);
+        transform: translateX(-130%) skewX(-18deg);
+        animation: wipe 0.5s ease-in-out calc(var(--t) * 1s - 0.22s) both;
+        z-index: 5;
+      }
+
+      .scene {
+        position: absolute;
+        inset: 0;
+        animation:
+          scene-in 0.38s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--start) * 1s) both,
+          scene-out 0.28s ease-in calc(var(--end) * 1s) forwards;
+      }
+
+      .eyebrow {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 40px;
+        letter-spacing: 0.16em;
+        color: var(--volt);
+      }
+
+      .in {
+        animation-duration: 0.5s;
+        animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+        animation-delay: calc(var(--t) * 1s);
+        animation-fill-mode: both;
+      }
+
+      .pop {
+        animation-name: pop;
+      }
+
+      .rise {
+        animation-name: rise;
+      }
+
+      .slam {
+        animation-name: slam;
+        animation-duration: 0.42s;
+      }
+
+      .from-left {
+        animation-name: from-left;
+      }
+
+      .from-right {
+        animation-name: from-right;
+      }
+
+      .hook .ball {
+        position: absolute;
+        top: -230px;
+        left: -286px;
+        width: 1400px;
+        height: 1400px;
+        animation: fly-in 0.75s cubic-bezier(0.15, 0.9, 0.25, 1) 0.05s both;
+      }
+
+      .hook .copy {
+        position: absolute;
+        top: 850px;
+        left: 70px;
+        width: 940px;
+      }
+
+      .hook h1 {
+        margin-top: 22px;
+        font-size: 184px;
+      }
+
+      .hook h1 span,
+      .hook h1 em {
+        display: block;
+        transform-origin: left center;
+      }
+
+      .hook h1 em {
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.55);
+      }
+
+      .play .title {
+        position: absolute;
+        top: 262px;
+        left: 70px;
+        font-size: 168px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.45);
+      }
+
+      .play .rule-text {
+        position: absolute;
+        top: 300px;
+        left: 400px;
+        width: 610px;
+        font-size: 40px;
+        line-height: 1.2;
+        color: var(--body);
+      }
+
+      .board {
+        position: absolute;
+        top: 470px;
+        left: 70px;
+        width: 940px;
+        padding: 28px;
+        border: 2px solid var(--stroke);
+        border-radius: 34px;
+        background: linear-gradient(160deg, var(--panel-raised), var(--panel) 55%, var(--ink));
+        box-shadow: 0 40px 110px rgba(0, 0, 0, 0.6);
+      }
+
+      .grid {
+        position: relative;
+        display: grid;
+        grid-template-columns: var(--head) repeat(3, var(--cell));
+        grid-template-rows: var(--top) repeat(3, var(--cell));
+        gap: var(--gap);
+      }
+
+      .header {
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 8px;
+        border: 1.5px solid var(--stroke);
+        border-radius: 22px;
+        background: var(--panel-raised);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 34px;
+        letter-spacing: 0.04em;
+        line-height: 1;
+        text-align: center;
+      }
+
+      .header svg {
+        width: 92px;
+        height: 103px;
+      }
+
+      .header.club {
+        font-size: 26px;
+        padding: 0 8px;
+      }
+
+      .cell {
+        position: relative;
+        border: 2px solid var(--stroke);
+        border-radius: 22px;
+        background: var(--ink);
+      }
+
+      .cell.win {
+        animation: pulse 0.5s ease-in-out calc(var(--won) * 1s + 0.1s) both;
+      }
+
+      .cell.rest {
+        animation: dim 0.35s ease-out calc(var(--won) * 1s + 0.1s) forwards;
+      }
+
+      .target {
+        position: absolute;
+        inset: -4px;
+        border: 5px solid var(--tone);
+        border-radius: 24px;
+        box-shadow:
+          0 0 34px var(--tone),
+          inset 0 0 26px color-mix(in srgb, var(--tone) 45%, transparent);
+        opacity: 0;
+        animation: target calc((var(--t) - var(--from)) * 1s + 0.1s) linear calc(var(--from) * 1s) both;
+      }
+
+      .ring {
+        position: absolute;
+        inset: 0;
+        border: 6px solid var(--tone);
+        border-radius: 24px;
+        opacity: 0;
+        animation: ring 0.6s ease-out calc(var(--t) * 1s + 0.12s) both;
+      }
+
+      .card {
+        position: absolute;
+        inset: -2px;
+        overflow: hidden;
+        border: 3px solid var(--tone);
+        border-radius: 22px;
+        background: var(--face);
+        color: var(--ink);
+        animation: flip 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--t) * 1s) both;
+      }
+
+      .card img {
+        position: absolute;
+        top: 2%;
+        right: 1%;
+        width: 70%;
+      }
+
+      .card b {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 44px;
+        line-height: 1;
+      }
+
+      .card span {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 30%;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 28px;
+        white-space: nowrap;
+      }
+
+      .card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 45%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+        transform: translateX(-160%) skewX(-20deg);
+        animation: shine 0.6s ease-out calc(var(--t) * 1s + 0.28s) both;
+      }
+
+      .x {
+        --tone: var(--gold);
+        --face: linear-gradient(150deg, #fff1c2, var(--gold) 45%, var(--gold-deep));
+      }
+
+      .o {
+        --tone: var(--blue);
+        --face: linear-gradient(150deg, #e3eeff, var(--blue) 45%, var(--blue-deep));
+      }
+
+      .line {
+        position: absolute;
+        left: calc(var(--head) + var(--gap) + var(--cell) / 2);
+        top: calc(var(--top) + var(--gap) + var(--cell) / 2);
+        width: 0;
+        height: 0;
+        transform: rotate(45deg);
+        z-index: 2;
+      }
+
+      .line i {
+        position: absolute;
+        left: -84px;
+        top: -10px;
+        width: 824px;
+        height: 20px;
+        border-radius: 10px;
+        background: var(--volt);
+        box-shadow:
+          0 0 26px var(--volt),
+          0 0 70px rgba(200, 255, 46, 0.7);
+        transform-origin: left center;
+        animation: grow 0.38s cubic-bezier(0.3, 0.9, 0.3, 1) calc(var(--won) * 1s) both;
+      }
+
+      .search {
+        position: absolute;
+        top: 1368px;
+        left: 70px;
+        width: 940px;
+        height: 104px;
+        display: flex;
+        align-items: center;
+        padding: 0 40px;
+        border: 2px solid var(--stroke-bright);
+        border-radius: 26px;
+        background: var(--panel);
+        font-size: 44px;
+        color: var(--text);
+      }
+
+      .search.empty {
+        color: var(--muted);
+      }
+
+      .search.live {
+        border-color: var(--volt);
+        box-shadow: 0 0 40px rgba(200, 255, 46, 0.25);
+      }
+
+      .search.live::after {
+        content: "";
+        width: 4px;
+        height: 52px;
+        margin-left: 6px;
+        background: var(--volt);
+      }
+
+      .result {
+        position: absolute;
+        inset: 0;
+        z-index: 3;
+        background: rgba(5, 7, 10, 0.86);
+        animation: fade 0.28s ease-out calc(var(--t) * 1s) both;
+      }
+
+      .result h2 {
+        position: absolute;
+        top: 420px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-size: 210px;
+        color: var(--volt);
+        text-shadow: 0 0 80px rgba(200, 255, 46, 0.6);
+        animation-delay: calc(var(--t) * 1s + 0.12s);
+      }
+
+      .result p {
+        position: absolute;
+        top: 1330px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 50px;
+        letter-spacing: 0.08em;
+        animation-delay: calc(var(--t) * 1s + 0.5s);
+      }
+
+      .result canvas {
+        position: absolute;
+        top: 366px;
+        left: -276px;
+        width: 1620px;
+        height: 1080px;
+      }
+
+      .heading {
+        position: absolute;
+        top: 270px;
+        left: 70px;
+        width: 940px;
+      }
+
+      .heading .big {
+        font-size: 200px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.45);
+      }
+
+      .heading .small {
+        font-size: 112px;
+      }
+
+      .heading .wide {
+        font-size: 150px;
+      }
+
+      .tiles {
+        position: absolute;
+        top: 640px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+      }
+
+      .tile {
+        position: relative;
+        height: 188px;
+        padding: 22px 26px;
+        overflow: hidden;
+        border: 2px solid var(--stroke);
+        border-radius: 24px;
+        background: linear-gradient(160deg, var(--panel-raised), var(--panel));
+      }
+
+      .tile small {
+        display: block;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.1em;
+        color: var(--volt);
+      }
+
+      .tile strong {
+        display: block;
+        margin-top: 4px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 54px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .tile p {
+        margin-top: 10px;
+        font-size: 27px;
+        line-height: 1.15;
+        color: var(--muted);
+      }
+
+      .tile::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(200, 255, 46, 0.22), transparent);
+        transform: translateX(-160%) skewX(-20deg);
+        animation: shine 0.7s ease-out calc(var(--t) * 1s + 0.3s) both;
+      }
+
+      .perks {
+        position: absolute;
+        top: 500px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        gap: 22px;
+      }
+
+      .perk {
+        padding: 30px 36px 32px;
+        border: 2px solid var(--stroke);
+        border-left: 12px solid var(--tone);
+        border-radius: 24px;
+        background: linear-gradient(120deg, var(--panel-raised), var(--panel));
+      }
+
+      .perk strong {
+        display: block;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 60px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .perk p {
+        margin-top: 10px;
+        font-size: 32px;
+        color: var(--body);
+      }
+
+      .numbers {
+        position: absolute;
+        top: 1290px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+      }
+
+      .numbers .figure {
+        font-size: 150px;
+        color: var(--gold);
+      }
+
+      .numbers .figure small {
+        font-size: 72px;
+        color: var(--text);
+      }
+
+      .numbers p {
+        margin-top: 6px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 36px;
+        letter-spacing: 0.06em;
+        color: var(--body);
+      }
+
+      .finale .ball {
+        position: absolute;
+        top: -190px;
+        left: -316px;
+        width: 1400px;
+        height: 1400px;
+        transform-origin: 63% 54%;
+      }
+
+      .finale .wordmark {
+        position: absolute;
+        top: 890px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-size: 158px;
+      }
+
+      .finale .wordmark span {
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
+      }
+
+      .finale .underline {
+        position: absolute;
+        top: 1052px;
+        left: 250px;
+        width: 580px;
+        height: 12px;
+        border-radius: 6px;
+        background: var(--volt);
+        box-shadow: 0 0 34px rgba(200, 255, 46, 0.8);
+        transform-origin: left center;
+        animation: grow 0.5s cubic-bezier(0.3, 0.9, 0.3, 1) calc(var(--t) * 1s) both;
+      }
+
+      .finale .soon {
+        position: absolute;
+        top: 1118px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+      }
+
+      .stores {
+        position: absolute;
+        top: 1186px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .stores div {
+        height: 116px;
+        display: grid;
+        place-items: center;
+        border: 2px solid var(--stroke-bright);
+        border-radius: 26px;
+        background: var(--panel);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 56px;
+      }
+
+      .finale .site {
+        position: absolute;
+        top: 1340px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 60px;
+        letter-spacing: 0.04em;
+      }
+
+      .finale .notice {
+        position: absolute;
+        top: 1436px;
+        left: 110px;
+        width: 860px;
+        text-align: center;
+        font-size: 23px;
+        line-height: 1.3;
+        color: var(--muted);
+      }
+
+      .poster .brand {
+        position: absolute;
+        top: 44px;
+        left: 40px;
+        display: flex;
+        align-items: center;
+        font-size: 76px;
+      }
+
+      .poster .brand img {
+        width: 132px;
+        height: 132px;
+        margin-right: 22px;
+      }
+
+      .poster .brand span {
+        color: var(--volt);
+      }
+
+      .poster h1 {
+        position: absolute;
+        top: 236px;
+        left: 70px;
+        width: 940px;
+        font-size: 124px;
+      }
+
+      .poster h1 span,
+      .poster h1 em {
+        display: block;
+      }
+
+      .poster h1 em {
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.55);
+      }
+
+      .poster .board {
+        top: 610px;
+        left: 420px;
+        transform: scale(0.66);
+        transform-origin: top left;
+      }
+
+      .poster .line {
+        display: none;
+      }
+
+      .poster .win .card {
+        box-shadow:
+          0 0 0 5px var(--volt),
+          0 0 44px rgba(200, 255, 46, 0.75);
+      }
+
+      .poster .soon {
+        position: absolute;
+        top: 1210px;
+        left: 70px;
+        font-size: 40px;
+      }
+
+      .poster .site {
+        position: absolute;
+        top: 1264px;
+        left: 70px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 44px;
+      }
+
+      .poster .notice {
+        position: absolute;
+        top: 1262px;
+        left: 480px;
+        width: 560px;
+        text-align: right;
+        font-size: 18px;
+        line-height: 1.3;
+        color: var(--muted);
+      }
+
+      .poster .pitch {
+        position: absolute;
+        top: 650px;
+        left: 70px;
+        width: 320px;
+        font-size: 36px;
+        line-height: 1.25;
+        color: var(--body);
+      }
+
+      .poster .pitch strong {
+        display: block;
+        margin-top: 26px;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 96px;
+        line-height: 0.95;
+        color: var(--gold);
+      }
+
+      .poster .pitch small {
+        display: block;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 0.06em;
+        color: var(--body);
+      }
+
+      .poster * {
+        animation: none !important;
+      }
+
+      @keyframes scene-in {
+        from {
+          opacity: 0;
+          transform: translateY(36px);
+        }
+      }
+
+      @keyframes scene-out {
+        to {
+          opacity: 0;
+          transform: translateY(-60px) scale(0.97);
+        }
+      }
+
+      @keyframes pop {
+        0% {
+          opacity: 0;
+          transform: scale(0.55);
+        }
+        60% {
+          opacity: 1;
+          transform: scale(1.07);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(46px);
+        }
+      }
+
+      @keyframes slam {
+        0% {
+          opacity: 0;
+          transform: scale(1.7);
+          filter: blur(10px);
+        }
+        55% {
+          opacity: 1;
+          transform: scale(0.96);
+          filter: blur(0);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes from-left {
+        from {
+          opacity: 0;
+          transform: translateX(-160px);
+        }
+      }
+
+      @keyframes from-right {
+        from {
+          opacity: 0;
+          transform: translateX(160px);
+        }
+      }
+
+      @keyframes fly-in {
+        from {
+          transform: translateX(-1100px) rotate(-8deg);
+        }
+      }
+
+      @keyframes flip {
+        0% {
+          opacity: 0;
+          transform: perspective(900px) rotateY(-100deg) scale(0.7);
+        }
+        60% {
+          opacity: 1;
+          transform: perspective(900px) rotateY(12deg) scale(1.06);
+        }
+        100% {
+          transform: perspective(900px) rotateY(0) scale(1);
+        }
+      }
+
+      @keyframes shine {
+        to {
+          transform: translateX(320%) skewX(-20deg);
+        }
+      }
+
+      @keyframes ring {
+        0% {
+          opacity: 0;
+          transform: scale(0.7);
+        }
+        12% {
+          opacity: 0.9;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1.7);
+        }
+      }
+
+      @keyframes target {
+        0% {
+          opacity: 0;
+        }
+        20%,
+        85% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes grow {
+        from {
+          transform: scaleX(0);
+        }
+      }
+
+      @keyframes pulse {
+        50% {
+          transform: scale(1.08);
+        }
+      }
+
+      @keyframes dim {
+        to {
+          opacity: 0.38;
+        }
+      }
+
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+      }
+
+      @keyframes wipe {
+        to {
+          transform: translateX(130%) skewX(-18deg);
+        }
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0);
+          opacity: 0;
+        }
+        12%,
+        85% {
+          opacity: var(--alpha);
+        }
+        100% {
+          transform: translateY(-2100px);
+          opacity: 0;
+        }
+      }
+
+      @keyframes sway {
+        from {
+          transform: rotate(var(--from));
+        }
+        to {
+          transform: rotate(var(--to));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage"></div>
+    <script type="module" src="/promo/promo.js"></script>
+  </body>
+</html>

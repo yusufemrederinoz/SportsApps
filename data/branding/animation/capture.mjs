@@ -16,6 +16,7 @@ const JOBS = {
   gol: { concept: 'Gol', layout: 'Sadece top', frames: 78, step: 2600 / 78, size: 900, aspect: 1.5 },
   kupa: { concept: 'Kupa', layout: 'Sadece top', frames: 96, step: 3200 / 96, size: 1400, aspect: 1.2 },
   alev: { concept: 'Alev', layout: 'Yatay', frames: 79, step: SPIN_PERIOD / 79, size: 640, ground: 0 },
+  'alev-large': { concept: 'Alev', layout: 'Yatay', frames: 79, step: SPIN_PERIOD / 79, size: 1400, ground: 0 },
   ball: { concept: 'Alev', layout: 'Sadece top', size: 2800, ground: 0, still: 'named' },
   'ball-plain': { concept: 'Alev', layout: 'Sadece top', size: 2800, ground: 0, still: 'plain' },
 };

@@ -1,0 +1,51 @@
+{
+  "tr": {
+    "eyebrow": "FUTBOL BİLGİ OYUNLARI",
+    "hook": ["FUTBOLU", "KİM DAHA İYİ", "BİLİYOR?"],
+    "grid": {
+      "title": "XOX",
+      "rule": "İki ölçüte de uyan futbolcuyu yaz, hücreyi al",
+      "columns": ["TÜRKİYE", "BREZİLYA", "FRANSA"],
+      "rows": ["GALATASARAY", "REAL MADRID", "BAYERN MÜNİH"],
+      "positions": { "GK": "KL", "DF": "DF", "MF": "OS", "FW": "FV" },
+      "search": "Futbolcu adı yaz",
+      "line": "ÜÇ HÜCREYİ YAN YANA GETİR",
+      "win": "KAZANDIN!"
+    },
+    "games": {
+      "count": "8 OYUN",
+      "title": "TEK UYGULAMA",
+      "items": [
+        ["XOX", "Üç hücreyi yan yana getir"],
+        ["KART DÜELLOSU", "7 kartını seç, tur tur kapıştır"],
+        ["KADRO KUR", "En güçlü kadroyu sen kur"],
+        ["HANGİSİ YÜKSEK", "Yüksek olanı bil, seriyi sürdür"],
+        ["ZİNCİR", "Aynı kulüpte oynamış birini söyle"],
+        ["AÇIK ARTIRMA", "Kaç cevap sayarsın? Artır"],
+        ["İLK 10", "Listedeki adları sırayla bulun"],
+        ["KARİYER YOLU", "En az ipucuyla futbolcuyu bil"]
+      ]
+    },
+    "features": {
+      "title": "MAÇ HEP HAZIR",
+      "items": [
+        ["ONLINE EŞLEŞME", "Oyununu ve zorluğunu seç, sıraya gir"],
+        ["ARKADAŞINLA OYNA", "Bir oda kur, kodu paylaş"],
+        ["GÜNÜN BULMACASI", "Her gün herkese aynı ızgara"],
+        ["SEVİYE VE LİDER TABLOSU", "Puan topla, haftalık tabloda yerini al"]
+      ],
+      "number": "70.000+",
+      "numberLabel": "FUTBOLCU",
+      "leagues": "SÜPER LİG VE AVRUPA'NIN BEŞ BÜYÜK LİGİ"
+    },
+    "end": {
+      "soon": "YAKINDA",
+      "stores": ["Google Play", "App Store"],
+      "site": "challengegoal.app",
+      "notice": "Futbolcu görselleri yapay zekâ ile çizilmiştir; kaynaklar challengegoal.app adresinde. ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir."
+    },
+    "poster": {
+      "soon": "YAKINDA GOOGLE PLAY VE APP STORE'DA"
+    }
+  }
+}
