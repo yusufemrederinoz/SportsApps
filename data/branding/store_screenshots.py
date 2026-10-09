@@ -14,7 +14,7 @@ ORDER = ("home", "puzzle", "duel", "auction", "chain")
 SCREEN_CROP = (0, 124, 1080, 2330)
 LAYOUTS = {
     "play": {"size": (1080, 1920), "title": 112, "subtitle": 40, "top": 92, "screen_top": 350, "bottom": 46},
-    "appstore": {"size": (1290, 2796), "title": 150, "subtitle": 54, "top": 150, "screen_top": 520, "bottom": 70},
+    "appstore": {"size": (1206, 2622), "title": 140, "subtitle": 50, "top": 140, "screen_top": 486, "bottom": 66},
 }
 INK = (5, 7, 10)
 SKY = (15, 20, 28)

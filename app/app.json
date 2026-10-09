@@ -74,7 +74,9 @@
           "iosAppId": "ca-app-pub-1202798518025462~9095009895",
           "delayAppMeasurementInit": true,
           "userTrackingUsageDescription": "Your device identifier is used to show you more relevant ads.",
-          "skAdNetworkItems": ["cstr6suwn9.skadnetwork"]
+          "skAdNetworkItems": [
+            "cstr6suwn9.skadnetwork"
+          ]
         }
       ]
     ],
@@ -89,7 +91,15 @@
         "projectId": "b4bfd1e3-6874-48de-8140-6b6428c61ae7"
       }
     },
-    "owner": "coptorbasi"
+    "owner": "coptorbasi",
+    "locales": {
+      "en": "./locales/en.json",
+      "tr": "./locales/tr.json",
+      "de": "./locales/de.json",
+      "es": "./locales/es.json",
+      "fr": "./locales/fr.json",
+      "it": "./locales/it.json"
+    }
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-1202798518025462~3080265885",

@@ -230,13 +230,13 @@ function PuzzleScreen() {
         {puzzle && gridView && session ? (
           <>
             <View style={styles.stats}>
-              <View style={styles.pips} accessible accessibilityLabel={t('puzzle.guessesLeft', { guesses: puzzle.guessesLeft })}>
+              <View style={styles.pips} accessible accessibilityLabel={t(puzzle.guessesLeft === 1 ? 'puzzle.guessesLeftOne' : 'puzzle.guessesLeft', { guesses: puzzle.guessesLeft })}>
                 {Array.from({ length: PUZZLE_GUESSES }, (_, index) => (
                   <View key={index} style={[styles.pip, index < puzzle.guessesLeft && styles.pipLeft]} />
                 ))}
               </View>
               <ThemedText type="label" themeColor="volt">
-                {uppercase(t('puzzle.guessesLeft', { guesses: puzzle.guessesLeft }))}
+                {uppercase(t(puzzle.guessesLeft === 1 ? 'puzzle.guessesLeftOne' : 'puzzle.guessesLeft', { guesses: puzzle.guessesLeft }))}
               </ThemedText>
               <ThemedText style={styles.score}>{uppercase(t('puzzle.score', { score: puzzle.score }))}</ThemedText>
             </View>
@@ -274,12 +274,12 @@ function PuzzleScreen() {
                   </ThemedText>
                   <ThemedText style={styles.summaryScore}>{uppercase(t('puzzle.score', { score: puzzle.score }))}</ThemedText>
                   <ThemedText type="label" style={styles.summaryInk}>
-                    {`${filled}/${PUZZLE_GUESSES} · ${uppercase(t('puzzle.players', { players: puzzle.players }))}`}
+                    {`${filled}/${PUZZLE_GUESSES} · ${uppercase(t(puzzle.players === 1 ? 'puzzle.playersOne' : 'puzzle.players', { players: puzzle.players }))}`}
                   </ThemedText>
                   {puzzle.rewardGoals ? (
                     <View style={styles.reward}>
                       <GoalIcon size={20} />
-                      <ThemedText style={styles.rewardText}>{t('puzzle.reward', { goals: puzzle.rewardGoals })}</ThemedText>
+                      <ThemedText style={styles.rewardText}>{t(puzzle.rewardGoals === 1 ? 'puzzle.rewardOne' : 'puzzle.reward', { goals: puzzle.rewardGoals })}</ThemedText>
                     </View>
                   ) : null}
                 </MetalPlate>
