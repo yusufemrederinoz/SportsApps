@@ -231,6 +231,7 @@ export function RareMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

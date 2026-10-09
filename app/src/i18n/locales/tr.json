@@ -19,7 +19,10 @@
     "tagline": "{{games}} futbol bilgi oyunu. Rakibini bul, puan topla, seviye atla."
   },
   "legal": {
-    "notice": "ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir."
+    "notice": "ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir. Futbolcu görselleri yapay zekâ ile üretilmiş çizimlerdir, gerçek fotoğraf değildir.",
+    "privacy": "Gizlilik politikası",
+    "terms": "Kullanım koşulları",
+    "consent": "Devam ederek kullanım koşullarını ve gizlilik politikasını kabul etmiş olursun."
   },
   "network": {
     "offline": "İnternet bağlantısı yok",
@@ -172,6 +175,9 @@
     "historyLoss": "Mağlubiyet",
     "historyDraw": "Beraberlik",
     "credits": "Görsel kaynakları",
+    "notifications": "Bildirimler",
+    "notificationsHint": "Günün bulmacası, haftalık sonuç ve seri hatırlatmaları. İstediğin zaman kapatabilirsin.",
+    "report": "Sorun ya da oyuncu bildir",
     "delete": "Hesabı sil",
     "deleteTitle": "Hesap silinsin mi?",
     "deleteMessage": "Hesabın, puanların, seviyen, gollerin ve maç geçmişin kalıcı olarak silinir. Bu işlem geri alınamaz.",

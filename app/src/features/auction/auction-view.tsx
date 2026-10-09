@@ -193,6 +193,7 @@ export function AuctionMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

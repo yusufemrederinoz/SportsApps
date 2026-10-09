@@ -81,6 +81,7 @@ export function MatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

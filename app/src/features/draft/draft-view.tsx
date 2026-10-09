@@ -135,6 +135,7 @@ export function DraftMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

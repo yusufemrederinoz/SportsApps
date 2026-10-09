@@ -19,7 +19,10 @@
     "tagline": "{{games}} football quiz games. Find an opponent, earn points, level up."
   },
   "legal": {
-    "notice": "ChallengeGoal is not affiliated with any club, league, federation or footballer. Footballer images are AI-generated illustrations, not real photographs."
+    "notice": "ChallengeGoal is not affiliated with any club, league, federation or footballer. Footballer images are AI-generated illustrations, not real photographs.",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "consent": "By continuing you accept the terms of use and the privacy policy."
   },
   "network": {
     "offline": "No internet connection",
@@ -172,6 +175,9 @@
     "historyLoss": "Loss",
     "historyDraw": "Draw",
     "credits": "Image sources",
+    "notifications": "Notifications",
+    "notificationsHint": "Daily puzzle, weekly result and streak reminders. You can turn them off at any time.",
+    "report": "Report a problem or a player",
     "delete": "Delete account",
     "deleteTitle": "Delete the account?",
     "deleteMessage": "Your account, points, level, goals and match history are deleted for good. This cannot be undone.",

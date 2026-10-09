@@ -19,7 +19,10 @@
     "tagline": "{{games}} jeux de quiz foot. Trouve un adversaire, marque des points, monte de niveau."
   },
   "legal": {
-    "notice": "ChallengeGoal n'est affilié à aucun club, aucune ligue, aucune fédération ni aucun footballeur. Les images des footballeurs sont des illustrations générées par IA, et non de vraies photos."
+    "notice": "ChallengeGoal n'est affilié à aucun club, aucune ligue, aucune fédération ni aucun footballeur. Les images des footballeurs sont des illustrations générées par IA, et non de vraies photos.",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "consent": "En continuant, tu acceptes les conditions d'utilisation et la politique de confidentialité."
   },
   "network": {
     "offline": "Pas de connexion Internet",
@@ -172,6 +175,9 @@
     "historyLoss": "Défaite",
     "historyDraw": "Nul",
     "credits": "Sources des images",
+    "notifications": "Notifications",
+    "notificationsHint": "Défi du jour, résultat de la semaine et rappels de série. Tu peux les désactiver à tout moment.",
+    "report": "Signaler un problème ou un joueur",
     "delete": "Supprimer le compte",
     "deleteTitle": "Supprimer le compte ?",
     "deleteMessage": "Ton compte, tes points, ton niveau, tes buts et ton historique de matchs sont supprimés définitivement. Cette action est irréversible.",

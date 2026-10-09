@@ -156,6 +156,7 @@ export function CareerMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

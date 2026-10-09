@@ -162,6 +162,7 @@ export function HigherMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

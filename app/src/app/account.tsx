@@ -1,20 +1,23 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
 import { ConfirmDialog } from '@/components/confirm-dialog';
+import { LegalLinks } from '@/components/legal-links';
 import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import { AdPrivacyLink } from '@/features/account/ad-privacy-link';
 import { MatchHistory } from '@/features/account/match-history';
+import { NotificationSetting } from '@/features/account/notification-setting';
 import { useUppercase } from '@/i18n/uppercase';
+import { reportUrl } from '@/legal/links';
 
 function AccountScreen() {
   const { t } = useTranslation();
@@ -83,6 +86,16 @@ function AccountScreen() {
             </View>
             {account.isGuest ? <ThemedText themeColor="textSecondary">{t('account.guestNote')}</ThemedText> : null}
             {state.status === 'signed-in' ? <MatchHistory token={state.token} /> : null}
+            {state.status === 'signed-in' ? <NotificationSetting token={state.token} /> : null}
+            <Pressable
+              accessibilityRole="link"
+              onPress={() => void Linking.openURL(reportUrl(t('account.report'), account.username)).catch(() => undefined)}
+              style={styles.credits}>
+              <ThemedText type="label" themeColor="textSecondary" style={styles.creditsLabel}>
+                {`${uppercase(t('account.report'))} ›`}
+              </ThemedText>
+            </Pressable>
+            <LegalLinks />
           </Animated.View>
         ) : (
           <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.section}>

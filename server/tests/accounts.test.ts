@@ -139,6 +139,12 @@ describe('registration', () => {
     });
   });
 
+  it('refuses an offensive username', async () => {
+    const refused = await call<{ error: { code: string } }>('POST', '/auth/register', { ...credentials, username: 'or0spu_10' });
+    expect(refused.status).toBe(400);
+    expect(refused.body.error.code).toBe('invalid-username');
+  });
+
   it('refuses to create or enter an account while a session is active', async () => {
     const current = await guest();
     const attempts = [

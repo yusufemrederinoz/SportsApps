@@ -215,6 +215,7 @@ export function ChainMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (

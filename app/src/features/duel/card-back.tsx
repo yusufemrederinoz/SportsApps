@@ -10,6 +10,7 @@ import { Colors, Fonts, Motion, type Finish } from '@/constants/theme';
 const STRIPE = 'rgba(255, 255, 255, 0.06)';
 const STRIPES = [-0.1, 0.2, 0.5, 0.8];
 const MARK = '?';
+const EDGE = 1;
 
 interface CardBackProps {
   size: number;
@@ -18,7 +19,8 @@ interface CardBackProps {
 }
 
 export function CardBack({ size, finish, accessibilityLabel }: CardBackProps) {
-  const path = platePath(size, size, size * 0.12, 'right', size * 0.2);
+  const inner = size - EDGE * 2;
+  const path = platePath(inner, inner, inner * 0.12, 'right', inner * 0.2);
 
   return (
     <Animated.View
@@ -27,28 +29,30 @@ export function CardBack({ size, finish, accessibilityLabel }: CardBackProps) {
       accessibilityLabel={accessibilityLabel}
       style={{ width: size, height: size }}>
       <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Group clip={path}>
-          <Rect x={0} y={0} width={size} height={size}>
-            <LinearGradient
-              start={vec(0, 0)}
-              end={vec(size * 0.6, size)}
-              colors={[Colors.panelRaised, Colors.panel, Colors.ink]}
-              positions={[0, 0.5, 1]}
-            />
-          </Rect>
-          {STRIPES.map((offset) => (
-            <Rect
-              key={offset}
-              x={size * offset}
-              y={-size * 0.3}
-              width={size * 0.12}
-              height={size * 1.8}
-              color={STRIPE}
-              transform={[{ rotate: -0.5 }]}
-            />
-          ))}
+        <Group transform={[{ translateX: EDGE }, { translateY: EDGE }]}>
+          <Group clip={path}>
+            <Rect x={0} y={0} width={inner} height={inner}>
+              <LinearGradient
+                start={vec(0, 0)}
+                end={vec(inner * 0.6, inner)}
+                colors={[Colors.panelRaised, Colors.panel, Colors.ink]}
+                positions={[0, 0.5, 1]}
+              />
+            </Rect>
+            {STRIPES.map((offset) => (
+              <Rect
+                key={offset}
+                x={inner * offset}
+                y={-inner * 0.3}
+                width={inner * 0.12}
+                height={inner * 1.8}
+                color={STRIPE}
+                transform={[{ rotate: -0.5 }]}
+              />
+            ))}
+          </Group>
+          <Path path={path} style="stroke" strokeWidth={2} color={finish.base} />
         </Group>
-        <Path path={path} style="stroke" strokeWidth={2} color={finish.base} />
       </Canvas>
       <View style={styles.center} pointerEvents="none">
         <ThemedText style={[styles.mark, { color: finish.base, fontSize: size * 0.56, lineHeight: size * 0.6 }]}>{MARK}</ThemedText>

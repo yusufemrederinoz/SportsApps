@@ -114,6 +114,8 @@ export function createApiClient(baseUrl: string | null, fetcher: typeof fetch = 
     deleteAccount: (token: string) => request<void>('DELETE', '/account', { token }),
     registerPushToken: (token: string, device: PushTokenRequest) =>
       request<void>('POST', '/push-token', { token, body: device }),
+    removePushToken: (token: string, pushToken: string) =>
+      request<void>('DELETE', '/push-token', { token, body: { token: pushToken } }),
     chooseUsername: (token: string, username: string) =>
       request<AccountResponse>('POST', '/account/username', { token, body: { username } }),
     matches: (token: string, filter: HistoryFilter = {}) =>

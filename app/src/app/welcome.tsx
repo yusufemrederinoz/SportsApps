@@ -7,6 +7,7 @@ import Animated, { FadeInDown, FadeInLeft } from 'react-native-reanimated';
 import { useAuth } from '@/auth/auth-provider';
 import { EntryGate } from '@/auth/entry-gate';
 import { ActionButton } from '@/components/action-button';
+import { LegalLinks } from '@/components/legal-links';
 import { LegalNotice } from '@/components/legal-notice';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
@@ -57,6 +58,7 @@ function WelcomeScreen() {
           {t('welcome.guestHint')}
         </ThemedText>
         <LegalNotice />
+        <LegalLinks consent />
       </Animated.View>
     </Screen>
   );

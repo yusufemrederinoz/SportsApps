@@ -25,7 +25,7 @@ function supported(): boolean {
   return Platform.OS !== 'web' && Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
 }
 
-async function deviceToken(): Promise<string | null> {
+async function deviceToken(ask: boolean): Promise<string | null> {
   if (!supported()) {
     return null;
   }
@@ -37,7 +37,7 @@ async function deviceToken(): Promise<string | null> {
     });
   }
   const current = await Notifications.getPermissionsAsync();
-  const permission = current.granted || !current.canAskAgain ? current : await Notifications.requestPermissionsAsync();
+  const permission = current.granted || !current.canAskAgain || !ask ? current : await Notifications.requestPermissionsAsync();
   if (!permission.granted) {
     return null;
   }
@@ -47,11 +47,18 @@ async function deviceToken(): Promise<string | null> {
 }
 
 export async function registerForPush(api: ApiClient, sessionToken: string, language: string): Promise<string | null> {
-  const token = await deviceToken();
+  const token = await deviceToken(true);
   if (token) {
     await api.registerPushToken(sessionToken, { token, platform: Platform.OS as PushPlatform, language });
   }
   return token;
+}
+
+export async function unregisterFromPush(api: ApiClient, sessionToken: string): Promise<void> {
+  const token = await deviceToken(false);
+  if (token) {
+    await api.removePushToken(sessionToken, token);
+  }
 }
 
 export async function watchNotificationTaps(open: (route: NotificationRoute) => void): Promise<() => void> {

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@/api';
 import { useAuth } from '@/auth/auth-provider';
 
+import { notificationsMuted } from './preference';
 import { registerForPush, watchNotificationTaps } from './push';
 
 export function usePush(ready: boolean) {
@@ -15,11 +16,18 @@ export function usePush(ready: boolean) {
   const language = i18n.language;
 
   useEffect(() => {
-    if (ready && sessionToken) {
-      registerForPush(api, sessionToken, language).catch((error: unknown) => {
+    if (!ready || !sessionToken) {
+      return undefined;
+    }
+    let cancelled = false;
+    void notificationsMuted()
+      .then((muted) => (muted || cancelled ? null : registerForPush(api, sessionToken, language)))
+      .catch((error: unknown) => {
         console.warn('Could not register for notifications', error);
       });
-    }
+    return () => {
+      cancelled = true;
+    };
   }, [ready, sessionToken, language]);
 
   useEffect(() => {

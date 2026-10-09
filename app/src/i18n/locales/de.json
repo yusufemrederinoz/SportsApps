@@ -19,7 +19,10 @@
     "tagline": "{{games}} Fußball-Quizspiele. Finde Gegner, hol Punkte, steig auf."
   },
   "legal": {
-    "notice": "ChallengeGoal steht in keiner Verbindung zu Vereinen, Ligen, Verbänden oder Fußballern. Die Fußballerbilder sind KI-generierte Illustrationen, keine echten Fotos."
+    "notice": "ChallengeGoal steht in keiner Verbindung zu Vereinen, Ligen, Verbänden oder Fußballern. Die Fußballerbilder sind KI-generierte Illustrationen, keine echten Fotos.",
+    "privacy": "Datenschutz",
+    "terms": "Nutzungsbedingungen",
+    "consent": "Wenn du fortfährst, akzeptierst du die Nutzungsbedingungen und die Datenschutzerklärung."
   },
   "network": {
     "offline": "Keine Internetverbindung",
@@ -172,6 +175,9 @@
     "historyLoss": "Niederlage",
     "historyDraw": "Remis",
     "credits": "Bildquellen",
+    "notifications": "Mitteilungen",
+    "notificationsHint": "Tagesrätsel, Wochenergebnis und Serien-Erinnerungen. Du kannst sie jederzeit ausschalten.",
+    "report": "Problem oder Spieler melden",
     "delete": "Konto löschen",
     "deleteTitle": "Konto löschen?",
     "deleteMessage": "Dein Konto, deine Punkte, dein Level, deine Tore und dein Match-Verlauf werden endgültig gelöscht. Das lässt sich nicht rückgängig machen.",

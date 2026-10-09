@@ -16,7 +16,7 @@ import { URGENT_SECONDS } from './use-match-effects';
 
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const NO_ROLE = '-';
-const FOCUS_DELAYS = [300, 800];
+const FOCUS_DELAYS = Platform.OS === 'android' ? [300, 800] : [];
 
 export type SearchFilter =
   | { kind: 'concept'; concept: DuelConcept }

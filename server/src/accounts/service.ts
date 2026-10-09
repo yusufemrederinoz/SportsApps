@@ -24,6 +24,7 @@ import type { Mailer } from '../mail/mailer';
 import { passwordResetMail } from '../mail/texts';
 import type { AppleTokens } from './apple-tokens';
 import type { IdentityVerifiers } from './identity';
+import { isAllowedUsername } from './names';
 import { hashPassword, verifyPassword } from './passwords';
 import { createAccountRepository, type UserRow } from './repository';
 import { createSessionToken, hashToken } from './tokens';
@@ -177,7 +178,7 @@ export function createAccountService(database: Database, options: AccountService
     async register(input: RegisterRequest): Promise<AuthResponse> {
       const email = input.email.trim();
       const username = input.username.trim();
-      if (!isValidUsername(username)) {
+      if (!isValidUsername(username) || !isAllowedUsername(username)) {
         throw new ApiError('invalid-username');
       }
       if (!isValidEmail(email)) {
@@ -298,7 +299,7 @@ export function createAccountService(database: Database, options: AccountService
       if (user.username_pending !== 1) {
         throw new ApiError('username-locked');
       }
-      if (!isValidUsername(username)) {
+      if (!isValidUsername(username) || !isAllowedUsername(username)) {
         throw new ApiError('invalid-username');
       }
       return transaction(database, () => {

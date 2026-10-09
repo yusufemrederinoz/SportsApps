@@ -4,6 +4,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 import { MetalPlate } from '@/components/metal-plate';
@@ -27,8 +28,9 @@ import { QUESTION_KEYS, conceptTitle } from './labels';
 import { useDuelEffects } from './use-duel-effects';
 
 const HAND_COLUMNS = 4;
-const HAND_HEIGHT_SHARE = 0.105;
-const ARENA_HEIGHT_SHARE = 0.165;
+const HAND_HEIGHT_SHARE = 0.1;
+const ARENA_HEIGHT_SHARE = 0.16;
+const PICK_HEIGHT_SHARE = 0.13;
 const ARENA_GUTTER = 72;
 const MAXIMUM_CARD_SIZE = 132;
 
@@ -78,7 +80,9 @@ export function DuelMatchView({
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const nameUppercase = useNameUppercase();
-  const { width, height } = useWindowDimensions();
+  const { width, height: windowHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const height = windowHeight - insets.top - insets.bottom;
   const { view, side } = duel;
   const rival = opponentOf(side);
   const label = useConceptLabel(view.concept, duel.market.code);
@@ -91,7 +95,7 @@ export function DuelMatchView({
   );
   const arenaSize = Math.floor(Math.min((contentWidth - ARENA_GUTTER) / 2, height * ARENA_HEIGHT_SHARE));
   const pickCardSize = Math.floor(
-    Math.min((contentWidth - Spacing.two * (HAND_COLUMNS - 1)) / HAND_COLUMNS, height * 0.13, MAXIMUM_CARD_SIZE),
+    Math.min((contentWidth - Spacing.two * (HAND_COLUMNS - 1)) / HAND_COLUMNS, height * PICK_HEIGHT_SHARE, MAXIMUM_CARD_SIZE),
   );
 
   const names = { [side]: t('match.you'), [rival]: duel.usernames[rival] } as Record<Side, string>;
@@ -121,6 +125,7 @@ export function DuelMatchView({
 
   return (
     <Screen
+      scroll
       contentStyle={styles.content}
       overlay={
         result ? (
