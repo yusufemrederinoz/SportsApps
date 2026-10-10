@@ -400,6 +400,46 @@ Assistenza: destek@challengegoal.app
 calcio,quiz,trivia,xox,tris,calciatori,serie a,formazione,carriera,duello,online,partita,indovina
 ```
 
+## App Store inceleme notu (İngilizce)
+
+Apple 10 Ekim 2026'da ilk başvuruya "Guideline 2.1 - Information Needed" ile yedi maddelik bilgi ve bir ekran kaydı istedi. Aşağıdaki metin hem cevap olarak gönderilir hem de sürüm sayfasındaki App Review Information → Notes alanına yazılır (sınır 4.000 karakter). Uygulamada bu maddelerden birini değiştiren bir şey olursa (yeni servis, yeni satın alma, yeni oyun) metin de güncellenmeli.
+
+```
+Hello, and thank you for the review. The requested information is below.
+
+1. SCREEN RECORDING
+Attached to this reply. Recorded on an iPhone running iOS [VERSION]. It shows launch, account creation, a match, the daily puzzle, the Goal Store with an In-App Purchase, sign-out and sign-in, the report option and account deletion.
+
+2. PURPOSE AND AUDIENCE
+ChallengeGoal is a football (soccer) trivia game for fans aged 13 and over. It offers eight short quiz games built on real career data, for example XOX: name a footballer who played for both the club in the row and the country in the column. Players test their knowledge against other players, a friend or the bot, earn points, level up and appear on a leaderboard. There is also one daily puzzle.
+
+3. HOW TO ACCESS THE MAIN FEATURES
+- No account is needed: tap "Continue as guest" on the first screen. A demo member account (review@challengegoal.app) is in the Sign-In Information fields.
+- Home screen: pick a game and a difficulty, then "Online match", "Versus bot" or "Play a friend" (a private room with a code).
+- Online match pairs you with another player. If nobody is waiting, a computer-controlled opponent joins after a short wait, so a match always starts.
+- "Daily puzzle" and "Leaderboard" are on the home screen. The account screen (top right) has sign-out, the notification switch, "Report a problem or a player", the privacy policy, the terms and "Delete account".
+- The App Tracking Transparency prompt appears the first time the Goal Store is opened.
+
+4. EXTERNAL SERVICES
+- Our own server (hosted by Contabo in Germany): accounts, matchmaking, scores.
+- Sign in with Apple and Google Sign-In for authentication; email and password is also available.
+- Apple In-App Purchase; purchases are verified with the App Store Server API.
+- Google AdMob: optional rewarded ads only, no banners or interstitials.
+- Expo push service and APNs for notifications.
+- Resend for the password reset email.
+- Football data comes from Wikidata and is bundled in the app. The app calls no AI service. Footballer portraits were prepared in advance as AI-redrawn illustrations of freely licensed Wikimedia Commons photos.
+
+5. REGIONAL DIFFERENCES
+The app works the same in every region. It is available in Turkish, English, German, Spanish, French and Italian. Players who use it in Turkish get questions, a daily puzzle and matchmaking centred on the Turkish league; all other languages share one international set. The leaderboard is global.
+
+6. THIRD-PARTY MATERIAL
+The app is not affiliated with or endorsed by any club, league, federation or footballer, and its terms say so. It uses no official logos, kits or league branding; club crests are our own original drawings. Footballer and club names and career facts are factual data from Wikidata, published under CC0. Portraits are illustrations derived from Wikimedia Commons photos under CC0, public domain, CC BY or CC BY-SA licences; the source, author and licence of each one is listed in the app under Account > Image sources.
+
+7. IN-APP PURCHASES
+Four consumable packs of "goals", the in-game currency: 30, 100, 250 and 600 goals (goals_cg_30, goals_cg_100, goals_cg_250, goals_cg_600). Goals are spent only on jokers during a match (hint, extra time and similar, 3 goals each). Goals are also earned for free: 15 welcome goals, a daily reward, winning matches, the daily puzzle and optional rewarded ads. Nothing is locked behind payment.
+To reach the purchase flow: sign in with the demo account (guests cannot buy), tap the goal balance at the top of the home screen to open the Goal Store and choose a pack.
+```
+
 ## Görseller
 
 | Görsel | Dosya | Not |

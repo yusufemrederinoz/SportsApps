@@ -967,6 +967,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - Sunucuda kayıtlı üç iPhone vardı. Kullanıcının seçtiği hesabın (`yusufb`) cihazına tek bir deneme bildirimi gönderildi; Expo bileti ve Apple'ın teslim makbuzu `ok` döndü. Bildirimin ekranda göründüğünü kullanıcı doğrulayacak.
 - Yeni derleme gerekmedi; anahtar yalnızca Expo'nun bildirim servisinde kullanılıyor.
 
+### App Store'un bilgi isteği (10 Ekim 2026)
+
+- Apple ilk başvuruyu "Guideline 2.1 - Information Needed" ile geri çevirdi: hesabın inceleme geçmişi kısa olduğu için fiziksel cihazda çekilmiş bir ekran kaydı ve yedi maddelik bilgi istiyor (amaç ve kitle, erişim, dış servisler, bölgesel farklar, üçüncü taraf içerik, satın almalar). Bir hata bildirimi değil.
+- Cevap metni koddan ve yasal metinlerden doğrulanarak yazıldı; `docs/magaza-metinleri.md` içinde ("App Store inceleme notu"). Metin online sırada rakip yoksa bilgisayar kontrollü bir rakibin geldiğini açıkça söylüyor: incelemeciye yanlış bilgi verilmez, kullanım koşulları da aynısını yazıyor.
+- Kontrol edilenler: sunucunun satın alma doğrulaması canlı uç anahtarı reddedince sandbox ucuna geçiyor (inceleme ve TestFlight satın almaları sandbox'tadır); misafir hesap satın alamıyor, bu yüzden satın alma adımı üye hesabıyla gösterilecek.
+- Ekran kaydını kullanıcı kendi iPhone'unda çekecek; çekim sırası sohbette verildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
