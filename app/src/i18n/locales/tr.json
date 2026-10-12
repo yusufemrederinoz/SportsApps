@@ -31,7 +31,13 @@
   "update": {
     "title": "Yeni sürüm hazır",
     "body": "Devam etmek için uygulamayı güncellemen gerekiyor. Güncelleme kısa sürer; hesabın ve puanların yerinde kalır.",
-    "action": "Güncelle"
+    "action": "Güncelle",
+    "dataTitle": "Veriler güncelleniyor",
+    "dataBody": "Güncel kadrolar ve transferler indiriliyor. Birkaç saniye sürer.",
+    "dataFailedTitle": "Veriler indirilemedi",
+    "dataFailedBody": "Bağlantını kontrol edip tekrar dene. Online maçlar için güncel veri gerekir.",
+    "retry": "Tekrar dene",
+    "later": "Sonra"
   },
   "identity": {
     "or": "ya da",

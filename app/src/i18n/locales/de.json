@@ -31,7 +31,13 @@
   "update": {
     "title": "Neue Version verfügbar",
     "body": "Um weiterzuspielen, musst du die App aktualisieren. Das geht schnell; dein Konto und deine Punkte bleiben erhalten.",
-    "action": "Aktualisieren"
+    "action": "Aktualisieren",
+    "dataTitle": "Daten werden aktualisiert",
+    "dataBody": "Aktuelle Kader und Transfers werden geladen. Das dauert ein paar Sekunden.",
+    "dataFailedTitle": "Daten konnten nicht geladen werden",
+    "dataFailedBody": "Prüfe deine Verbindung und versuch es noch einmal. Online-Matches brauchen die aktuellen Daten.",
+    "retry": "Erneut versuchen",
+    "later": "Später"
   },
   "identity": {
     "or": "oder",

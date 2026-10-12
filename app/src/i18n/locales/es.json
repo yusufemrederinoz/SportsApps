@@ -31,7 +31,13 @@
   "update": {
     "title": "Nueva versión disponible",
     "body": "Para seguir jugando tienes que actualizar la app. Es rápido, y tu cuenta y tus puntos se mantienen.",
-    "action": "Actualizar"
+    "action": "Actualizar",
+    "dataTitle": "Actualizando datos",
+    "dataBody": "Descargando las plantillas y los fichajes más recientes. Tarda unos segundos.",
+    "dataFailedTitle": "No se han podido descargar los datos",
+    "dataFailedBody": "Comprueba tu conexión e inténtalo de nuevo. Los partidos online necesitan los datos actualizados.",
+    "retry": "Reintentar",
+    "later": "Más tarde"
   },
   "identity": {
     "or": "o",

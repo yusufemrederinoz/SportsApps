@@ -31,7 +31,13 @@
   "update": {
     "title": "Nuova versione disponibile",
     "body": "Per continuare a giocare devi aggiornare l'app. Ci vuole un attimo, e il tuo account e i tuoi punti restano al loro posto.",
-    "action": "Aggiorna"
+    "action": "Aggiorna",
+    "dataTitle": "Aggiornamento dei dati",
+    "dataBody": "Sto scaricando rose e trasferimenti più recenti. Ci vogliono pochi secondi.",
+    "dataFailedTitle": "Non è stato possibile scaricare i dati",
+    "dataFailedBody": "Controlla la connessione e riprova. Le partite online richiedono i dati aggiornati.",
+    "retry": "Riprova",
+    "later": "Più tardi"
   },
   "identity": {
     "or": "oppure",

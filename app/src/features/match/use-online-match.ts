@@ -24,7 +24,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { apiUrl } from '@/api';
-import version from '@/assets/data/version.json';
+import { activeDataVersion } from '@/data/data-version';
 import { useAuth } from '@/auth/auth-provider';
 import { loadFootballer, loadGrid, resolveMarket } from '@/data/queries';
 import type { Difficulty, FootballerSummary, GridView, Market } from '@/data/types';
@@ -349,7 +349,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
       connection = createPlayClient({
         url,
         token,
-        dataVersion: version.dataVersion,
+        dataVersion: activeDataVersion(),
         onMessage: (message) => {
           const receivedAt = Date.now();
           chain = chain

@@ -31,7 +31,13 @@
   "update": {
     "title": "New version available",
     "body": "You need to update the app to keep playing. It only takes a moment, and your account and points stay as they are.",
-    "action": "Update"
+    "action": "Update",
+    "dataTitle": "Updating data",
+    "dataBody": "Downloading the latest squads and transfers. This takes a few seconds.",
+    "dataFailedTitle": "The data could not be downloaded",
+    "dataFailedBody": "Check your connection and try again. Online matches need the latest data.",
+    "retry": "Try again",
+    "later": "Later"
   },
   "identity": {
     "or": "or",

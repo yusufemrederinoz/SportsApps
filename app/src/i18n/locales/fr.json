@@ -31,7 +31,13 @@
   "update": {
     "title": "Nouvelle version disponible",
     "body": "Pour continuer à jouer, tu dois mettre l'appli à jour. C'est rapide, et ton compte et tes points sont conservés.",
-    "action": "Mettre à jour"
+    "action": "Mettre à jour",
+    "dataTitle": "Mise à jour des données",
+    "dataBody": "Téléchargement des effectifs et des transferts les plus récents. Cela prend quelques secondes.",
+    "dataFailedTitle": "Les données n'ont pas pu être téléchargées",
+    "dataFailedBody": "Vérifie ta connexion et réessaie. Les matchs en ligne ont besoin des données à jour.",
+    "retry": "Réessayer",
+    "later": "Plus tard"
   },
   "identity": {
     "or": "ou",

@@ -16,6 +16,7 @@ import { OfflineBanner } from '@/components/offline-banner';
 import { Colors } from '@/constants/theme';
 import { DatabaseProvider } from '@/data/database-provider';
 import { UpdateGate } from '@/update/update-gate';
+import { useDataSync } from '@/update/use-data-sync';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -40,6 +41,7 @@ export default function RootLayout() {
     BarlowCondensed_800ExtraBold_Italic,
   });
   const ready = loaded || error !== null;
+  const sync = useDataSync();
 
   useEffect(() => {
     if (ready) {
@@ -58,8 +60,8 @@ export default function RootLayout() {
         <DatabaseProvider>
           <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: Colors.background } }} />
           <OfflineBanner />
-          <UpdateGate />
         </DatabaseProvider>
+        <UpdateGate {...sync} />
       </AuthProvider>
     </ThemeProvider>
   );
