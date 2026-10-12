@@ -1012,6 +1012,16 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İlk denemem yanlıştı.** Tahtaya "kalan yeri doldur" kuralı vermek kaydırılabilir alanda işe yaramadı: alan içeriği kadar büyüdüğü için yuvalar en büyük boyuta çıktı ve taşma arttı. Yükseklik bu yüzden açıkça hesaplanıyor.
 - **Doğrulama.** Kullanıcının ölçüsünde iki ekranın da düğmesi tamamen görünüyor; dolu yuvalar okunuyor. Varsayılan emülatör ölçüsünde (Pixel 7) ikisi de eskisi gibi. Uygulama 155 test. iOS'ta ve gerçek telefonda görülmedi.
 
+### iOS yapı 9 ve bu bilgisayarda derlenen Android sürüm kodu 16 (12 Ekim 2026)
+
+- Kullanıcı sığmama düzeltmesiyle birlikte iki derlemeyi onayladı.
+- **iOS yapı 9** Expo'da derlendi, App Store Connect'e yüklendi ve işlendi (VALID).
+- **Android Expo'da derlenemedi.** Hesap bu ayki ücretsiz Android derleme hakkını doldurmuş (1 Kasım'da sıfırlanıyor). Başarısız iki deneme yine de Expo'daki sürüm sayacını artırdı (15 → 17); bir sonraki Expo derlemesi 18 olur. Kullanıcıya üç yol soruldu ve "bu bilgisayarda derle" seçildi.
+- **Yerel derleme.** `expo prebuild` ile yerel proje üretildi, sürüm kodu 16 yapıldı, `gradlew bundleRelease` çalıştırıldı. İlk tur 19 dakika sürdü (Gradle, SDK ve NDK indirmeleri dahil) ve Windows'ta sorunsuz bitti. Kullanıcı yükleme anahtarını Expo'dan `eas credentials` ile indirdi; parmak izi Play'e kayıtlı olanla aynı (SHA-1 `95:00:D2:E4…8B:10`). İkinci tur paketi bu anahtarla imzaladı (1 dakika). Şifreler komut satırına yazılmadan, dosyadan okunup Gradle'a ortam değişkeniyle verildi.
+- **Karşılaştırma.** Yerel paket Expo'nun derlediği sürüm kodu 15 ile aynı yapıda: aynı imza sertifikası, sürüm kodu dışında aynı bildirim dosyası, aynı 1.825 dosya, aynı sunucu adresi, veri sürümü, Firebase ve AdMob ayarları. Fark: uygulama kodu 3,4 KB büyük (düzeltme) ve hata ayıklama sembolleri.
+- **Deneme.** Paket emülatöre kuruldu (kullanıcının ekran ölçüsü, canlı sunucu): Kadro Kur ve Zincir'de düğmeler tamamen görünüyor, bot maçları açılıyor.
+- **Yerler.** Paket `data/build/store/submission/google-play/challengegoal-1.0.0-16.aab`. Anahtar dosyaları depo dışındaki gizli klasöre taşındı (`android-credentials.json`, `android-upload-keystore.jks`). Aynı işi tek komutla yapan betik: `python deploy/android_local_build.py <sürüm kodu>`.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
