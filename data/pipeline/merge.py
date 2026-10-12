@@ -4,7 +4,7 @@ import urllib.parse
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from . import dumps, fame, transfermarkt, wikidata, wikipedia
+from . import dumps, fame, squads, transfermarkt, wikidata, wikipedia
 from .config import BASE_LANGUAGES, DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_POSITIONS
 from .registry import PlayerRegistry
 from .text import normalize
@@ -13,7 +13,9 @@ from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_
 CLUB_NAME_SLACK = 4
 NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *BASE_LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
 
-CURRENT_YEAR = datetime.date.today().year
+TODAY = datetime.date.today()
+CURRENT_YEAR = TODAY.year
+SEASON_YEAR = CURRENT_YEAR if TODAY.month >= 7 else CURRENT_YEAR - 1
 
 
 @dataclass
@@ -248,6 +250,17 @@ def collect_wikidata_spells(membership_rows, club_by_wikidata_id):
     return spells
 
 
+def add_squad_spells(spells, squad_members, refresh):
+    listed = {identifier for members in squad_members.values() for identifier in members}
+    newcomers = listed - set(spells)
+    accepted = {entity_id(row["player"]) for row in wikidata.footballers(newcomers, refresh)} if newcomers else set()
+    for club_id, members in squad_members.items():
+        for identifier in members:
+            if identifier in spells or identifier in accepted:
+                spells[identifier].setdefault(club_id, Spell()).add("wp", SEASON_YEAR, CURRENT_YEAR)
+    return accepted
+
+
 def link_by_identifier(transfermarkt_players, scope_ids, refresh):
     candidates = defaultdict(set)
     for row in wikidata.transfermarkt_player_ids(refresh):
@@ -356,10 +369,13 @@ def build(refresh=False, registry=None, views_month=None):
     transfermarkt_players = {int(row["player_id"]): row for row in transfermarkt.rows("players", refresh)}
     transfermarkt_spells = collect_transfermarkt_spells(clubs, transfermarkt_players, refresh)
     wikidata_spells = collect_wikidata_spells(membership_rows, club_by_wikidata_id)
+    squad_members = squads.current(club_by_wikidata_id, refresh)
+    squad_newcomers = add_squad_spells(wikidata_spells, squad_members, refresh)
     scope_ids = set(wikidata_spells)
 
     wikidata_by_transfermarkt, transfermarkt_by_wikidata = link_by_identifier(transfermarkt_players, scope_ids, refresh)
-    extra_ids = {wikidata_by_transfermarkt[key] for key in transfermarkt_spells if key in wikidata_by_transfermarkt} - scope_ids
+    linked_ids = {wikidata_by_transfermarkt[key] for key in transfermarkt_spells if key in wikidata_by_transfermarkt}
+    extra_ids = (linked_ids - scope_ids) | squad_newcomers
     scopes = [wikidata.club_scope(set(club_by_wikidata_id))] + wikidata.player_scopes(extra_ids)
     wikidata_players = load_wikidata_players(scopes, refresh)
     markets = read_override("markets.csv")
@@ -393,6 +409,7 @@ def build(refresh=False, registry=None, views_month=None):
     player_clubs = []
     unmapped_countries = Counter()
     rumors = 0
+    squad_spells = 0
 
     named = []
     for transfermarkt_id, wikidata_id in entities:
@@ -462,6 +479,7 @@ def build(refresh=False, registry=None, views_month=None):
             if spell.is_rumor:
                 rumors += 1
                 continue
+            squad_spells += spell.sources == {"wp"}
             player_clubs.append(
                 (
                     player_id,
@@ -517,6 +535,9 @@ def build(refresh=False, registry=None, views_month=None):
         "players_without_name": nameless,
         "women_excluded": len(women),
         "rumor_spells_dropped": rumors,
+        "squad_clubs": len(squad_members),
+        "squad_newcomers": len(squad_newcomers),
+        "squad_spells_added": squad_spells,
         "unmapped_countries": unmapped_countries.most_common(),
     }
     return {

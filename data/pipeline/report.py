@@ -54,6 +54,9 @@ def write(dataset):
         ("Dropped without a name", stats["players_without_name"]),
         ("Women excluded", stats["women_excluded"]),
         ("Unconfirmed current-year spells dropped", stats["rumor_spells_dropped"]),
+        ("Clubs with a current squad on Wikipedia", stats["squad_clubs"]),
+        ("Players known only from a current squad", stats["squad_newcomers"]),
+        ("Spells added from current squads", stats["squad_spells_added"]),
     ]
     sections += ["## Player linking", table(["Metric", "Value"], linking)]
 

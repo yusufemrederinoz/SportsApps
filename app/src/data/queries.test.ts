@@ -116,7 +116,7 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     expect(await names({ kind: 'club', clubId: GALATASARAY.referenceId }, 'icardi')).toContain('Mauro Icardi');
     expect(await names({ kind: 'club', clubId: REAL_MADRID.referenceId }, 'icardi')).toEqual([]);
     expect(await names({ kind: 'home-league-foreigners' }, 'icardi')).toContain('Mauro Icardi');
-    expect(await names({ kind: 'home-league-foreigners' }, 'calhanoglu')).toEqual([]);
+    expect(await names({ kind: 'home-league-foreigners' }, 'calhanoglu')).not.toContain('Hakan Çalhanoğlu');
     expect(await names({ kind: 'home-nationals-abroad' }, 'calhanoglu')).toContain('Hakan Çalhanoğlu');
     expect(await names({ kind: 'country', countryId: TURKEY.referenceId }, 'icardi')).toEqual([]);
     expect(await names({ kind: 'league', leagueCode: 'IT1' }, 'calhanoglu')).toContain('Hakan Çalhanoğlu');

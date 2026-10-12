@@ -14,6 +14,7 @@ INTER = 46
 PARIS_SAINT_GERMAIN = 583
 MILAN = 5
 ATLETICO_MADRID = 13
+LIVERPOOL = 31
 
 
 class KnownAnswersTest(unittest.TestCase):
@@ -71,9 +72,11 @@ class KnownAnswersTest(unittest.TestCase):
     def test_wikidata_fills_gaps_in_transfermarkt(self):
         self.assert_played_for("mario mandzukic", ATLETICO_MADRID)
 
-    def test_unconfirmed_current_year_spells_are_dropped(self):
-        self.assertFalse(self.players_named("mohamed salah") & self.players_at(TRABZONSPOR))
-        self.assertFalse(self.players_named("rafael leao") & self.players_at(GALATASARAY))
+    def test_current_squads_bring_the_latest_transfer_window(self):
+        self.assert_played_for("lesley ugochukwu", GALATASARAY)
+        self.assert_played_for("rafael leao", GALATASARAY, MILAN)
+        self.assert_played_for("mohamed salah", TRABZONSPOR, LIVERPOOL)
+        self.assert_played_for("romelu lukaku", FENERBAHCE, INTER)
 
     def test_every_club_and_country_is_named_in_every_language(self):
         named_tables = (("clubs", "club_names", "club_id"), ("countries", "country_names", "country_id"))

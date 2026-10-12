@@ -121,6 +121,19 @@ def memberships(club_ids, refresh=False):
     return select("memberships", query, refresh)
 
 
+def club_articles(club_ids, language, refresh=False):
+    query = (
+        "SELECT ?club ?title WHERE { VALUES ?club { %s } ?article schema:about ?club ; "
+        "schema:isPartOf <https://%s.wikipedia.org/> ; schema:name ?title }" % (values(club_ids), language)
+    )
+    return select(f"club-articles-{language}", query, refresh)
+
+
+def footballers(identifiers, refresh=False):
+    query = "SELECT ?player WHERE { VALUES ?player { %s } ?player wdt:P106 %s }" % (values(identifiers), FOOTBALLER)
+    return select("footballers", query, refresh)
+
+
 def labels(identifiers, refresh=False):
     query = (
         "SELECT ?item ?label (LANG(?label) AS ?language) WHERE { VALUES ?item { %s } "
