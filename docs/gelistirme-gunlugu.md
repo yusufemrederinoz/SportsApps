@@ -991,7 +991,8 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Emülatörde denenenler** (yerel sunucu, Expo Go): uygulamada yeni veri gömülüyken sunucu eski veriyi sunuyordu; uygulama 19,4 MB'lık dosyayı indirdi, ona geçti ve o veriyle online maç açıldı (sunucu sürümü kabul etti). Sunucu yeni veriye çevrilince uygulama indirme yapmadan gömülü veriye döndü ve eski dosyayı sildi. Yeni veriyle günün bulmacasında yaz transferi Kassoum Ouattara "Fransa × Beşiktaş" hücresine doğru cevap olarak kabul edildi.
 - **Denerken bulunan iki hata.** (1) Dosya kütüphanesinde "taşı" nesneyi yeni konuma çeviriyor; ardından "yarım dosyayı sil" diyerek az önce taşınan veritabanını siliyordum, uygulama boş bir veritabanı açıyordu. (2) SQLite kütüphanesi kendisine verilen klasör yolunu bir kez çözüyor; Expo Go'daki `%40...` içeren klasör adında çözülmüş yol başka bir klasöre gidiyordu. İkisi de düzeltildi; ikincisi yalnızca Expo Go'yu etkiliyordu, mağaza derlemesinde yolda özel karakter yok.
 - **Doğrulama.** Sunucu 286, uygulama 150, kural motoru 69, veri 82 test. "Veriler indirilemedi" ekranı ilk hatalar sırasında gerçek cihaz ekranında görüldü. iOS'ta denenmedi; sıkıştırılmış indirme orada beklendiği gibi çalışmazsa sıkıştırmasız ikinci deneme devreye girer, o da tutmazsa oyuncu "Sonra" ile içeri girebilir.
-- **Sırada.** Sunucu kodu eski veriyle dağıtılacak (uç hazır olsun diye), yeni derlemeler kullanıcının onayıyla alınacak, veri yeni derlemeler mağazada olunca yayımlanacak.
+- **Sunucu dağıtımı.** Canlı veritabanı yedeklendi, o sırada maç yoktu. Sunucu yeni kodla dağıtıldı; veri dosyası veri birimine eski sürümüyle (`20261009123459`) taşındı, depo artık yeni veriyi içerse de canlı sunucu eskisini sunuyor. `/v1/version` şema sürümünü ve boyutu veriyor, `/v1/data/20261009123459.db` 200 dönüyor (sıkıştırılmış 9 MB), başka sürüm 404.
+- **Sırada.** Yeni derlemeler kullanıcının onayıyla alınacak; veri (`sh deploy/deploy.sh data`, önce `portraits`) yeni derlemeler mağazalarda olunca yayımlanacak.
 
 ## Commit listesi
 
@@ -1232,3 +1233,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 | `9e11083` | 10 Ekim | Sunucu kapasitesi ölçümünün belgelenmesi |
 | `4dd4660` | 10 Ekim | Site SSS'sinde ve mağaza metinlerinde rakip ve çevrimdışı cevaplarının yeniden yazılması |
 | `4369555` | 10 Ekim | Yönetim panelinden bütün cihazlara bildirim gönderme |
+| `ab7eed5` | 12 Ekim | Vikipedi güncel kadrolarının veri hattına kaynak olarak eklenmesi |
+| `d9e413f` | 12 Ekim | Futbol veritabanının sunucudan indirilebilmesi ve imajın dışına alınması |
+| `d2df962` | 12 Ekim | Açılışta veri farkının mağaza güncellemesi yerine indirmeyle çözülmesi |
+| `2e17a05` | 12 Ekim | Yaz transfer dönemini içeren uygulama veritabanı |
