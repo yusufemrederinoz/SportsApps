@@ -1030,6 +1030,17 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Görülmeyen.** Veri indirme iPhone'da hiç çalışmadı. Sunucu kayıtlarında yapı 9'un bağlantısı yoktu; yapı 8'le yapılan kurulumda eski veri dosyası telefonda kaldığı için indirme tetiklenmedi. Kullanıcıya şimdi denemesi önerildi; denemeden yayımlamayı seçti. iPhone'da indirme ilk kez bir sonraki veri güncellemesinde çalışacak; ondan önce bir iPhone'da denenmeli (sunucu bir süreliğine farklı bir veri sürümüne alınarak ya da ayrı bir deneme sunucusuyla).
 - **Play.** Onaylanmış sürüm kodu 12 yayınlanmadı; yerine yerel derlenen 16 yüklenecek (`data/build/store/submission/google-play/challengegoal-1.0.0-16.aab`). Betikle ikinci kez derlenen paket ilkiyle bayt bayt aynı içerikte çıktı.
 
+### Sitenin 3B sahneyle yeniden kurulması (12 Ekim 2026)
+
+- Kullanıcı sitenin three.js kullanarak uygulamayı çok daha iyi tanıtmasını istedi.
+- **Yapı.** Altı dildeki ana sayfa elle yazılmış altı ayrı dosyaydı. Metinler `deploy/site-src/texts.json` içine çıkarıldı, sayfa tek şablondan üretilir oldu (`deploy/build_site.py`); yeni bölüm eklemek artık altı dosyayı elle değiştirmeyi gerektirmiyor. three.js ve esbuild geliştirme bağımlılığı olarak eklendi.
+- **Sahne.** Başlığın yanında dönen 3B top, çevresinde oyundaki kartlarla aynı görünümde futbolcu kartları; "Uygulamanın içinden" bölümünde gerçek ekran görüntülerini gösteren, başlık seçilince dönen 3B telefon. Görseller uygulamadan: portreler yayımlanan çizimler, ekranlar mağaza için alınan ham görüntüler.
+- **Vurgu.** "Zorunlu reklam yok" hem başlığın üstünde rozet hem de sayıların altında ayrı bir bant.
+- **Görerek bulunan hatalar.** Kartlar başlığın üstüne biniyordu (yörünge kutuya göre ölçeklendi). Dar ekranda başlık listesi telefonun altında kalıyor, dokunulan ekran görünmüyordu (başlıklar telefonun üstünde küçük düğmelere çevrildi). Yine dar ekranda telefon hiç çizilmiyordu: kutu dikey esnek düzende içeriği kadar daralıp sıfır genişliğe düşüyordu. Yazılı "hareketi durdur" düğmesi telefonda mağaza düğmesini kapatıyordu (yuvarlak simge düğmesi oldu).
+- **Erişilebilirlik.** "Hareketi azalt" ayarında sahne durağan; hareketi durduran düğme her zaman var; WebGL yoksa logo ve düz ekran görüntüsü gösterilir.
+- **Görsel kaynakları.** Liste 17 fotoğraftan 46'ya çıktı: 3B kartlardaki ve ekran görüntülerinde yüzü görünen futbolcuların hepsi sayılıyor. Çizimi olmayan iki futbolcu (Tarık Hodžić, Matteo Darmian) ekran görüntüsünde yüzsüz göründüğü için listede yok.
+- **Görülmeyen.** Sahne gerçek telefonda denenmedi. Dört yeni dilin sayfasında telefon İngilizce ekranları gösteriyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1275,3 +1286,5 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 | `2e17a05` | 12 Ekim | Yaz transfer dönemini içeren uygulama veritabanı |
 | `4d44089` | 12 Ekim | Kadro Kur ve Zincir ekranlarının kısa telefonlara sığdırılması |
 | `3db874c` | 12 Ekim | Yerel Android derleme betiği |
+| `c4c38d7` | 12 Ekim | Site üretimi için three.js ve esbuild |
+| `dcff505` | 12 Ekim | Ana sayfanın three.js sahnesiyle ve tek şablondan yeniden kurulması |

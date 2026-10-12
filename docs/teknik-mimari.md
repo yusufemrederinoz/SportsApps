@@ -37,6 +37,9 @@ SportApps/
 │   ├── tests/            Veri testleri
 │   ├── build/            Üretilen veritabanı, rapor ve oyuncu görselleri (depoya girmez)
 │   └── .cache/           İndirilen ham veri (depoya girmez)
+├── deploy/               Yayın: sunucu betikleri, Caddy ayarı, site
+│   ├── site-src/         Ana sayfanın kaynağı: şablon, metinler, 3B sahne
+│   └── site/             Yayımlanan site (ana sayfalar üretilir, yasal sayfalar elle yazılır)
 └── docs/                 Belgeler
 ```
 
@@ -60,6 +63,7 @@ Depo npm çalışma alanı (workspaces) olarak kuruludur: kökteki `package.json
 | Yalnızca ızgaraları yeniden üretmek | `data` | `python -m pipeline grids` |
 | Yalnızca uygulama veritabanını yeniden üretmek | `data` | `python -m pipeline bundle` |
 | Veri testleri | `data` | `python -m unittest discover -s tests -t .` |
+| Sitenin ana sayfalarını üretmek | `deploy` | `python build_site.py` |
 
 Veri hattı Python 3.12 ile yazıldı ve dış paket gerektirmez. Uygulama Node 24 ve npm 11 ile kuruldu.
 
@@ -310,11 +314,12 @@ Dil ve pazar ayrı boyutlardır: dil arayüz metnini, pazar oyuncuların bilinir
 | iOS izin metinleri | `app/locales/<dil>.json`, `app.json` içindeki `locales` ile bağlı. Metinler `ios` anahtarının altında durur; kökte dururlarsa Expo aynı anahtarları Android kaynaklarına da yazar ve derleme lint adımında durur |
 | Şifre sıfırlama postası | `server/src/mail/messages.json` |
 | Bildirimler | `server/src/notifications/messages.json` |
-| Site ve yasal sayfalar | `deploy/site/<dil>.html`, `deploy/site/<dil>/{privacy,terms,delete-account}.html`; Türkçesi kökte |
+| Site ana sayfası | `deploy/site-src/texts.json`; `deploy/site/<dil>.html` bundan üretilir, Türkçesi `index.html` |
+| Yasal sayfalar | `deploy/site/<dil>/{privacy,terms,delete-account}.html`; Türkçesi kökte |
 | Mağaza metinleri | `docs/magaza-metinleri.md` |
 
 - Yeni dil eklemek: yukarıdaki dosyalara dili eklemek, `data/pipeline/config.py` içindeki `LANGUAGES` listesine ve gerekirse `markets.csv` içindeki `fame_languages` sütununa yazmak, `deploy/localize.py` içindeki dil tablosuna eklemek.
-- `python deploy/localize.py` sitedeki her sayfaya dil menüsünü, `hreflang` bağlantılarını, kalıcı adresi ve paylaşım adresini yazar; var olan sayfalara göre çalışır, yeniden çalıştırılabilir.
+- `python deploy/localize.py` sitedeki her sayfaya dil menüsünü, `hreflang` bağlantılarını, kalıcı adresi ve paylaşım adresini yazar; var olan sayfalara göre çalışır, yeniden çalıştırılabilir. `build_site.py` ana sayfaları yazdıktan sonra bunu kendisi çalıştırır.
 - Kart üstündeki mevki kısaltmaları: Almanca TW/AB/MF/ST, İspanyolca PT/DF/MC/DL, Fransızca G/D/M/A, İtalyanca POR/DIF/CEN/ATT.
 - Emülatörde başka dili denemek: `adb shell cmd locale set-app-locales host.exp.exponent --locales de-DE`, uygulamayı kapatıp açmak; geri almak için aynı komut boş `--locales ""` ile.
 - Almanca, İspanyolca, Fransızca ve İtalyanca metinler makine çevirisidir; anahtar, yer tutucu ve mağaza sınırları denetlendi ama ana dili konuşan biri okumadı. Yasal sayfaların çevirisi bilgi amaçlıdır; her birinin başında Türkçe metnin geçerli olduğu yazar.
@@ -781,6 +786,34 @@ Mağazalar ekran görüntülerinin uygulamanın gerçek ekranları olmasını is
 - **iOS imza profili.** Uygulamaya yeni bir yetki (bildirim gibi) eklendiğinde etkileşimsiz EAS derlemesi eski profili yeniden kullanır ve Xcode "profile doesn't include the … capability" hatası verir. Yetki Apple tarafında uygulama kimliğine eklenince eski profil geçersiz olur; `EXPO_ASC_*` değişkenleriyle çalıştırılan sonraki derleme yenisini üretir.
 - **App Store'a yükleme.** `app/eas.json` içindeki `submit.production.ios` App Store Connect uygulama numarasını ve API anahtarının yolunu taşır; `eas submit --platform ios --id <derleme> --non-interactive` yeterlidir.
 
+## Site
+
+`challengegoal.app` ana sayfası üretilir; yasal sayfalar elle yazılmış HTML'dir. Hepsi `deploy/site` içinden Caddy ile sunulur.
+
+| Parça | Dosya |
+|---|---|
+| Şablon | `deploy/site-src/home.html` (`{{anahtar}}` yer tutucuları) |
+| Metinler | `deploy/site-src/texts.json` (altı dil, dil başına 100 anahtar) |
+| 3B sahnedeki kartlar | `deploy/site-src/cards.json`; portreleri `deploy/site/img/cards/<ad>.webp` (256 piksel) |
+| Görsel kaynakları listesi | `deploy/site-src/credits.json` (46 fotoğraf: kartlar, XOX örneği ve ekran görüntülerinde görünen futbolcular) |
+| Uygulama ekranları | `deploy/site/img/screens/{tr,en}/{home,puzzle,duel,chain,auction}.webp` (mağaza için alınan ham görüntülerden, 540 piksel genişlik) |
+| Sayfa betiği | `deploy/site-src/site.js` → `deploy/site/site.js` |
+| 3B sahne | `deploy/site-src/scene.js` → `deploy/site/scene.js` (three.js ile birlikte paketlenir) |
+| Üretici | `deploy/build_site.py` |
+| Stil | `deploy/site/site.css` (elle yazılır; yasal sayfalar da kullanır) |
+
+- **Üretme.** `deploy` klasöründe `python build_site.py`: iki betiği esbuild ile paketler, stil ve betiklerin özetinden sürüm damgası çıkarır (`?v=`), altı ana sayfayı yazar ve `localize.py`'yi çalıştırır. Üretilen altı ana sayfa ile paketlenmiş iki betik depoda durur; yayın `deploy/site` klasörünün sunucuya kopyalanmasından ibarettir. three.js ve esbuild kökteki `package.json` içinde geliştirme bağımlılığıdır.
+- **Sayfanın sırası.** "Zorunlu reklam yok" rozeti ve başlık, yanında top ve çevresinde dönen futbolcu kartları; sayılar; "Zorunlu reklam yok" bandı; 3B telefonda uygulama ekranları (beş başlık); sekiz oyun; XOX örnek tahtası ve görsel kaynakları; özellikler; sorular; iletişim.
+- **Sahne.** Bütün sayfanın arkasında tek, sabit ve saydam bir tuval (`#stage`) vardır. Top ve telefon sayfadaki iki kutuya bağlıdır (`data-anchor="ball"`, `data-anchor="phone"`): her karede kutunun ekrandaki yeri okunur, nesne oraya ve o boyuta konur. Böylece sahne sayfayla birlikte kayar ve her ekran genişliğine uyar. İki kutu da ekranda değilken sürekli çizim durur; yalnızca kaydırma sırasında çizilir.
+- **Top.** Küre üstünde gölgelendirici: 12 beşgen ve 20 altıgen panel, kesik yirmiyüzlünün yüz yönlerinden hesaplanır (doku yok); kuşaktaki CHALLENGEGOAL yazısı tuvale çizilen bir dokudur. Kartlar da tuvale çizilir (mevki kısaltması sayfanın dilinde, portre, soyad). Geniş ekranda 12, 700 pikselden dar ekranda 8 kart döner; yörünge kutunun içinde kalacak şekilde ölçeklenir.
+- **Telefon.** Gövde yuvarlatılmış köşeli bir kalıptan çıkarılır, ekran düzlemine uygulamanın gerçek ekran görüntüsü giydirilir. Başlık seçilince telefon bir tur döner ve görüntü dönüşün ortasında değişir. Ziyaretçi bir başlık seçmediyse ve telefon görünürdeyse başlıklar 4,5 saniyede bir sırayla geçer; fare listenin üstündeyken ya da odak listedeyken bekler. Türkçe sayfa Türkçe ekranları, diğer diller İngilizce ekranları gösterir (mağaza görsellerindeki durumla aynı).
+- **Dar ekran.** 960 pikselin altında top başlığın üstüne geçer. Başlıklar telefonun üstünde küçük düğmeler olur, seçilenin açıklaması telefonun altında yazar; böylece dokunulan başlığın ekranı görünürde kalır.
+- **Hareket.** İşletim sisteminde "hareketi azalt" açıksa sahne durağan çizilir ve başlıklar kendiliğinden geçmez. Sağ alttaki düğme hareketi durdurur ya da başlatır; seçim tarayıcıda saklanır (`challengegoal-motion`).
+- **Sahne yoksa.** WebGL 2 yoksa, tarayıcı veri tasarrufu istiyorsa ya da sahne betiği yüklenemezse sayfa `no-scene` sınıfını alır: topun yerinde logo, telefonun yerinde çerçeveli düz ekran görüntüsü görünür ve başlıklar yine çalışır. Betik hiç çalışmasa da sayfanın bütün metni okunur.
+- **Ağırlık.** Sahne betiği 570 KB (sıkıştırılmış 150 KB) ve sayfa çizildikten sonra ayrıca yüklenir; sayfa betiği 2 KB. Kart portreleri toplam 200 KB, ekran görüntüleri dil başına 200 KB.
+- **Kurallar.** Gerçek kulüp logosu yoktur. Mağaza düğmeleri uygulamalar yayımlanana kadar "Yakında" yazar; yayımlanınca şablondaki iki satır mağaza bağlantısına çevrilecek. Site rakibin yapay zekâ olabileceğinden söz etmez. Ekran görüntülerinde ya da kartlarda görünen her fotoğrafın kaynağı `credits.json` içinde olmalıdır.
+- **Denetim.** Başsız Chrome'da (yazılımla çizim) 1440, 1024, 820, 393 ve 360 piksel genişliklerde, altı dilde, hareket azaltılmışken ve WebGL kapalıyken ekran görüntüsü alınarak bakıldı: yatay taşma ve konsol hatası yok. Gerçek telefonda akıcılık ölçülmedi.
+
 ## Bildirimler
 
 Uygulama `expo-notifications` ile izin ister (ilk günlük ödül penceresi kapandıktan sonra), Expo bildirim anahtarını alır ve cihaz diliyle birlikte sunucuya kaydeder. Bildirime dokununca bulmaca bildirimi bulmacayı, haftalık sonuç lider tablosunu açar. Expo Go'da bildirim yoktur; kendi derlememiz gerekir.
@@ -970,6 +1003,7 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Ödüllü reklam, AdMob'da deneme cihazı olarak eklenen telefonda uçtan uca çalıştı (8 Ekim 2026: reklam, sunucu bildirimi, 2 gol). Gerçek reklam, uygulama mağazada yayımlanana kadar gelmez (`no-fill`). Avrupa rıza mesajına ChallengeGoal uygulamalarının eklenip yayımlanması ve iOS için IDFA açıklama mesajı kullanıcıda bekliyor.
 - İade edilen satın almanın golü geri alınmıyor; mağazaların iade bildirimleri dinlenmiyor.
 - Armalar, yalnızca baş portrelerin kart yerleşimi, bağlantı uyarısı, futbolcu aramada klavyenin açılması ve uyarı metinleri emülatörde (Expo Go) doğrulandı (8 Ekim 2026); gerçek telefonda sonraki derlemeyle görülecek. Puan koruma düğmesi ve şifremi unuttum ekranı hiçbir cihazda denenmedi; zincir düğümleri ve kadro yuvalarındaki yeni portre yerleşimi de görülmedi.
+- Sitedeki 3B sahne yalnızca başsız Chrome'da görüldü; gerçek telefonda akıcılığı ve pil etkisi ölçülmedi. Almanca, İspanyolca, Fransızca ve İtalyanca sayfalardaki telefon İngilizce ekran görüntülerini gösterir.
 - Canlı sunucunun yedekleri aynı sunucuda duruyor; sunucu dışına kopya alınmıyor.
 - İstek sınırı bellekte tutuluyor; sunucu yeniden başlayınca sıfırlanır ve birden fazla sunucuda paylaşılmaz.
 - Maçlar ve eşleştirme sırası da bellekte; sunucu yeniden başlarsa süren maçlar kaybolur ve tek sunucudan fazlası çalıştırılamaz.
