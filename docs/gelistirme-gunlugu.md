@@ -974,6 +974,16 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - Kontrol edilenler: sunucunun satın alma doğrulaması canlı uç anahtarı reddedince sandbox ucuna geçiyor (inceleme ve TestFlight satın almaları sandbox'tadır); misafir hesap satın alamıyor, bu yüzden satın alma adımı üye hesabıyla gösterilecek.
 - Ekran kaydını kullanıcı kendi iPhone'unda çekecek; çekim sırası sohbette verildi.
 
+### Eksik yaz transferleri ve güncel kadro kaynağı (12 Ekim 2026)
+
+- **Bildirim.** Kullanıcı Ugochukwu'nun Galatasaray'da olduğunu ama Kariyer Yolu'nda görünmediğini söyledi. Oyuncunun kaydı Burnley'de bitiyordu.
+- **Neden.** Tek oyuncuya özgü değil. transfermarkt-datasets kaynağı 5 Eylül'den beri güncellenmemiş ve içinde 2026 yaz dönemi yok (Ağustos için 18 transfer, maç kayıtları Haziran'da bitiyor). Wikidata bu oyuncuda Chelsea'de kalmış. Altı büyük kulübün Vikipedi'deki güncel kadrosuyla karşılaştırınca her birinde 1 ile 9 arası oyuncunun kulübü eksik çıktı (Lukaku, Vlahović, Leão, Bernardo Silva gibi).
+- **Benim hatam.** 7 Ekim'de Wikidata'daki 2026 başlangıçlı 288 kaydı (Salah → Trabzonspor, Leão → Galatasaray) söylenti sayıp atmıştım. Kulüplerin güncel kadroları bunların çoğunun gerçek olduğunu gösteriyor: Trabzonspor'un kadrosunda Salah, Galatasaray'ınkinde Leão var ve eski kulüplerinin kadrolarında yoklar. Kaynakta yaz dönemi olmadığı için gerçek transferleri "doğrulanmamış" görüp siliyordum.
+- **Çözüm.** Veri hattına üçüncü kaynak eklendi: İngilizce Vikipedi'deki kulüp maddelerinin güncel kadro bölümleri (`data/pipeline/squads.py`). Kadroda görülen oyuncuya kulüp eklenir; Wikidata'daki içinde bulunulan yıl kaydı kadroda da varsa artık söylenti sayılmaz. Augsburg'un Wikidata eşleşmesi yanlış kayda gidiyordu; düzeltme dosyasına eklendi.
+- **Sonuç** (yerel derleme, veri sürümü `20261012143758`): oyuncu 72.358 → 73.288 (930 yeni, silinen yok); oyuncu–kulüp kaydı 139.771 → 142.202 (2.432 yeni: 1.472'si mevcut oyunculara, 960'ı yeni oyunculara). Atılan söylenti kaydı 288 → 43. Ugochukwu'nun yolu Galatasaray'la bitiyor. Türkiye pazarında 40 oyuncunun puanı değişti; üçü belirgin (Şenol Güneş 25 → 76, Rıza Çalımbay 20 → 59, Turgay Şeren 22 → 51), çünkü Wikidata'dan yeniden çekilen madde adları düzeltilmiş.
+- **Doğrulama.** Veri 82, sunucu 285, uygulama 143, kural motoru 69 test. Eklenen kayıtların en bilinen 45'i gözle okundu; hepsi yaz dönemi transferi. Vikipedi'nin kendisi yanlışsa bunu ayırt edemem: kadro sayfası tek kaynak olan 1.883 kayıt var.
+- **Yayın.** Veri uygulamaya gömülü olduğu için düzeltme yeni derleme ister ve sunucu yeni sürümler mağazada olmadan yeni veriyle dağıtılamaz. Yeni veri henüz depoya gönderilmedi; kullanıcının kararı bekleniyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
