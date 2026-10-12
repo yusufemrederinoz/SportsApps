@@ -419,6 +419,7 @@ ChallengeGoal is a football (soccer) trivia game for fans aged 13 and over. It o
 - Online match pairs you with another player. If nobody is waiting, a computer-controlled opponent joins after a short wait, so a match always starts.
 - "Daily puzzle" and "Leaderboard" are on the home screen. The account screen (top right) has sign-out, the notification switch, "Report a problem or a player", the privacy policy, the terms and "Delete account".
 - The App Tracking Transparency prompt appears the first time the Goal Store is opened.
+- On first launch the app may show "Updating data" for a few seconds while it downloads the current football database (about 9 MB) from our server.
 
 4. EXTERNAL SERVICES
 - Our own server (hosted by Contabo in Germany): accounts, matchmaking, scores.
