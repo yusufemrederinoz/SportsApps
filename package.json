@@ -13,5 +13,9 @@
   },
   "allowScripts": {
     "@shopify/react-native-skia@2.6.2": true
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "three": "^0.186.1"
   }
 }
