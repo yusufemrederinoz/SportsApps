@@ -1,6 +1,8 @@
 import { createReadStream, readFileSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
+import { gzip } from 'node:zlib';
 
 import {
   ACTIVE_GAME_IDS,
@@ -11,6 +13,7 @@ import {
   PLAY_PROTOCOL_VERSION,
   PUSH_PLATFORMS,
   RESET_CODE_LENGTH,
+  dataFilePath,
   type AccountResponse,
   type AdStatusResponse,
   type ApiErrorResponse,
@@ -97,6 +100,9 @@ const USERNAME_INPUT_MAX_LENGTH = 64;
 const HISTORY_PAGE_SIZE = 30;
 const PORTRAIT_FILE = /^\d{1,12}\.webp$/;
 const PORTRAIT_CACHE_SECONDS = 7 * 24 * 60 * 60;
+const DATA_CACHE_SECONDS = 365 * 24 * 60 * 60;
+const DATA_CONTENT_TYPE = 'application/vnd.sqlite3';
+const compress = promisify(gzip);
 
 export interface AppDependencies {
   database: Database;
@@ -391,8 +397,32 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
 
   app.get(
     `${API_PREFIX}/version`,
-    (): VersionResponse => ({ protocol: PLAY_PROTOCOL_VERSION, dataVersion: dependencies.football?.dataVersion ?? null }),
+    (): VersionResponse => ({
+      protocol: PLAY_PROTOCOL_VERSION,
+      dataVersion: dependencies.football?.dataVersion ?? null,
+      schemaVersion: dependencies.football?.schemaVersion ?? null,
+      dataSize: dependencies.football?.dataSize ?? null,
+    }),
   );
+
+  let packedData: Promise<Buffer> | null = null;
+
+  app.get(`${API_PREFIX}/data/:file`, async (request, reply) => {
+    const { football } = dependencies;
+    if (!football || request.url.split('?')[0] !== `${API_PREFIX}${dataFilePath(football.dataVersion)}`) {
+      throw new ApiError('not-found');
+    }
+    void reply
+      .header('Content-Type', DATA_CONTENT_TYPE)
+      .header('Cache-Control', `public, max-age=${DATA_CACHE_SECONDS}, immutable`)
+      .header('Vary', 'Accept-Encoding');
+    if (!String(request.headers['accept-encoding'] ?? '').toLowerCase().includes('gzip')) {
+      return reply.header('Content-Length', football.dataSize).send(createReadStream(football.databasePath));
+    }
+    packedData ??= readFile(football.databasePath).then((content) => compress(content));
+    const packed = await packedData;
+    return reply.header('Content-Encoding', 'gzip').header('Content-Length', packed.length).send(packed);
+  });
 
   app.get('/admin', (_, reply) => {
     if (!dependencies.adminKey) {

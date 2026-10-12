@@ -9,12 +9,12 @@ COPY packages ./packages
 RUN npm ci --omit=dev --workspace @sportapps/server --no-audit --no-fund
 
 COPY server/src ./server/src
-COPY app/assets/data ./app/assets/data
 
 ENV NODE_ENV=production \
     HOST=0.0.0.0 \
     PORT=4000 \
     DATABASE_PATH=/data/sportapps.sqlite \
+    FOOTBALL_DATABASE_PATH=/data/football/football.db \
     PORTRAITS_PATH=/data/portraits
 
 VOLUME /data

@@ -17,6 +17,12 @@ export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export interface VersionResponse {
   protocol: number;
   dataVersion: string | null;
+  schemaVersion?: number | null;
+  dataSize?: number | null;
+}
+
+export function dataFilePath(dataVersion: string): string {
+  return `/data/${dataVersion}.db`;
 }
 
 export type PlaySide = 'x' | 'o';

@@ -1,5 +1,6 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { gunzipSync } from 'node:zlib';
 
 import { DRAFT_FORMATION, DUEL_HAND_SIZE, emptyCells, headersAt, openPositions, type Grid } from '@sportapps/game-core';
 import {
@@ -18,7 +19,7 @@ import type { WebSocket } from 'ws';
 
 import type { ServerConfig } from '../src/config';
 import { openDatabase } from '../src/database';
-import { openFootballLibrary, readDataVersion, type FootballLibrary } from '../src/football/library';
+import { openFootballLibrary, readDataManifest, type FootballLibrary } from '../src/football/library';
 import { buildApp } from '../src/http/app';
 
 const footballPath = fileURLToPath(new URL('../../app/assets/data/football.db', import.meta.url));
@@ -148,7 +149,7 @@ function gridOf(snapshot: MatchSnapshot): Grid {
 }
 
 beforeEach(async () => {
-  football = openFootballLibrary(footballPath, readDataVersion(footballPath));
+  football = openFootballLibrary(footballPath, readDataManifest(footballPath));
   app = buildApp({
     database: openDatabase(':memory:'),
     config,
@@ -206,7 +207,32 @@ describe.skipIf(!available)('play gateway', () => {
   it('tells clients which protocol and data version they need', async () => {
     const response = await app.inject({ method: 'GET', url: '/v1/version' });
     expect(response.statusCode).toBe(200);
-    expect(response.json()).toEqual({ protocol: PLAY_PROTOCOL_VERSION, dataVersion: football.dataVersion });
+    expect(response.json()).toEqual({
+      protocol: PLAY_PROTOCOL_VERSION,
+      dataVersion: football.dataVersion,
+      schemaVersion: football.schemaVersion,
+      dataSize: readFileSync(footballPath).length,
+    });
+  });
+
+  it('hands out the football database of the current data version', async () => {
+    const url = `/v1/data/${football.dataVersion}.db`;
+    const original = readFileSync(footballPath);
+
+    const plain = await app.inject({ method: 'GET', url });
+    expect(plain.statusCode).toBe(200);
+    expect(plain.headers['content-encoding']).toBeUndefined();
+    expect(plain.headers['cache-control']).toContain('immutable');
+    expect(plain.rawPayload.equals(original)).toBe(true);
+
+    const packed = await app.inject({ method: 'GET', url, headers: { 'accept-encoding': 'gzip, deflate' } });
+    expect(packed.statusCode).toBe(200);
+    expect(packed.headers['content-encoding']).toBe('gzip');
+    expect(packed.rawPayload.length).toBeLessThan(original.length);
+    expect(gunzipSync(packed.rawPayload).equals(original)).toBe(true);
+
+    expect((await app.inject({ method: 'GET', url: '/v1/data/20200101000000.db' })).statusCode).toBe(404);
+    expect((await app.inject({ method: 'GET', url: '/v1/data/football.db' })).statusCode).toBe(404);
   });
 
   it('refuses a connection with a bad token or outdated data', async () => {

@@ -25,6 +25,9 @@ const answerFor = (row: number, column: number) => (row + 1) * 10 + column + 4;
 
 const library: FootballLibrary = {
   dataVersion: 'test',
+  schemaVersion: 1,
+  databasePath: '',
+  dataSize: 0,
   hasMarket: (market) => market === 'tr' || market === 'empty',
   pickGrid: (market) => (market === 'tr' ? GRID : null),
   isCorrect: (footballerId, row, column) => footballerId % 100 === row.referenceId * 10 + column.referenceId,

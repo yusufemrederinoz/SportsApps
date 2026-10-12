@@ -6,7 +6,7 @@ import { loadAdminKey } from './admin/access';
 import { loadAdSettings } from './ads/setup';
 import { loadConfig } from './config';
 import { openDatabase } from './database';
-import { openFootballLibrary, readDataVersion } from './football/library';
+import { openFootballLibrary, readDataManifest } from './football/library';
 import { buildApp } from './http/app';
 import { loadMailer } from './mail/setup';
 import { loadPurchaseVerifiers } from './store/setup';
@@ -14,7 +14,7 @@ import { loadPurchaseVerifiers } from './store/setup';
 const config = loadConfig();
 const database = openDatabase(config.databasePath);
 const football = existsSync(config.footballDatabasePath)
-  ? openFootballLibrary(config.footballDatabasePath, readDataVersion(config.footballDatabasePath))
+  ? openFootballLibrary(config.footballDatabasePath, readDataManifest(config.footballDatabasePath))
   : undefined;
 const app = buildApp({
   database,

@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
@@ -57,8 +57,16 @@ const CHAIN_SEED_FAME = 55;
 const CHAIN_SEED_CLUBS = 3;
 const CHAIN_SEEDS = 200;
 
+export interface DataManifest {
+  dataVersion: string;
+  schemaVersion: number;
+}
+
 export interface FootballLibrary {
   readonly dataVersion: string;
+  readonly schemaVersion: number;
+  readonly databasePath: string;
+  readonly dataSize: number;
   hasMarket(market: string): boolean;
   pickGrid(market: string, difficulty: number, random?: () => number): Grid | null;
   isCorrect(footballerId: number, row: Header, column: Header): boolean;
@@ -100,14 +108,14 @@ export interface FootballLibrary {
   close(): void;
 }
 
-export function readDataVersion(databasePath: string): string {
-  const version = JSON.parse(readFileSync(join(dirname(databasePath), VERSION_FILE), 'utf8')) as {
-    dataVersion: string;
-  };
-  return version.dataVersion;
+export function readDataManifest(databasePath: string): DataManifest {
+  const { dataVersion, schemaVersion } = JSON.parse(
+    readFileSync(join(dirname(databasePath), VERSION_FILE), 'utf8'),
+  ) as DataManifest;
+  return { dataVersion, schemaVersion };
 }
 
-export function openFootballLibrary(databasePath: string, dataVersion: string): FootballLibrary {
+export function openFootballLibrary(databasePath: string, manifest: DataManifest): FootballLibrary {
   const database = new DatabaseSync(databasePath, { readOnly: true });
   const all = <T>({ sql, parameters }: Statement) => database.prepare(sql).all(...parameters) as T[];
   const first = <T>({ sql, parameters }: Statement) => database.prepare(sql).get(...parameters) as T | undefined;
@@ -140,7 +148,9 @@ export function openFootballLibrary(databasePath: string, dataVersion: string): 
   };
 
   return {
-    dataVersion,
+    ...manifest,
+    databasePath,
+    dataSize: statSync(databasePath).size,
 
     hasMarket(market) {
       return markets.has(market);
