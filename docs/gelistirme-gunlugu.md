@@ -1003,6 +1003,15 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
   - Uygulama verisi silinip sıfırdan açılınca "Veriler güncelleniyor" ekranı yaklaşık iki saniye göründü; 19.357.696 baytlık dosya canlı sunucudan indi, seçim kaydedildi ve uygulama tanıtım ekranına geçti. Misafir hesapla ana ekrana kadar gidildi (canlıda `guest613105` adlı bir deneme hesabı oluştu).
 - **Dikkat.** iOS yapı 8 de 1.0.0. Apple yapı 7'yi onaylarsa aynı sürüme yeni yapı eklenemez; düzeltme için 1.0.1 numaralı yeni bir derleme gerekir. Yapı 8 ancak onaydan önce başvurudaki yapının yerine konursa kullanılabilir.
 
+### Kısa ekranda taşan oyun ekranları (12 Ekim 2026)
+
+- **Bildirim.** Kullanıcı kendi telefonundan Kadro Kur ekranını gönderdi: alttaki "Futbolcu seç" düğmesi ekranın dışında kalıyordu. Kaydırma vardı ama asıl düğmenin ilk bakışta görünmemesi kabul edilemez.
+- **Yeniden üretme.** Emülatör telefonun ölçüsüne ayarlandı (1080×2340, yoğunluk 440; yaklaşık 393×851 birim). Sekiz oyun bota karşı tek tek açıldı. Taşanlar: Kadro Kur (düğme yaklaşık 50 birim dışarıda) ve Zincir (düğmenin alt kenarı kesik). Kart Düellosu, Hangisi Yüksek, Açık Artırma, İlk 10 ve Kariyer Yolu sığıyor; XOX bu turda görülmedi.
+- **Kadro Kur.** Kadro tahtalarının yüksekliği sabit bir orandan değil, kalan alandan hesaplanıyor: `Screen` görünen alanın yüksekliğini bildiriyor (`onContentHeight`), üst ve alt bölümler ölçülüyor, tahtalara kalan yer veriliyor ve yuva boyutu ondan çıkıyor (40–60 birim; `features/draft/board-size.ts`). 800 birimden kısa ekranlarda bölümler arası boşluk 12'den 8'e iniyor; kulüp kartı biraz küçüldü; durum satırı tek satıra sığacak şekilde küçülüyor (iki satıra taşınca düğmeyi aşağı itiyordu).
+- **Zincir.** Son halkanın kartı, içerik ekrana sığmıyorsa küçülüyor (en az 112 birim; `components/fit.ts`). Sığıyorsa eski boyutunda kalıyor.
+- **İlk denemem yanlıştı.** Tahtaya "kalan yeri doldur" kuralı vermek kaydırılabilir alanda işe yaramadı: alan içeriği kadar büyüdüğü için yuvalar en büyük boyuta çıktı ve taşma arttı. Yükseklik bu yüzden açıkça hesaplanıyor.
+- **Doğrulama.** Kullanıcının ölçüsünde iki ekranın da düğmesi tamamen görünüyor; dolu yuvalar okunuyor. Varsayılan emülatör ölçüsünde (Pixel 7) ikisi de eskisi gibi. Uygulama 155 test. iOS'ta ve gerçek telefonda görülmedi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

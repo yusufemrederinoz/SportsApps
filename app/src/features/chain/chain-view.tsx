@@ -11,6 +11,7 @@ import { portraitUrl } from '@/api';
 import { ActionButton } from '@/components/action-button';
 import { ClubCrest } from '@/components/club-crest';
 import { MetalPlate } from '@/components/metal-plate';
+import { fitSize } from '@/components/fit';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
@@ -35,6 +36,7 @@ import { chainCardIds, chainClubIds } from './online';
 
 const CARD_HEIGHT_SHARE = 0.2;
 const MAXIMUM_CARD_SIZE = 180;
+const MINIMUM_CARD_SIZE = 112;
 const NODE_SIZE = 40;
 const CREST_SIZE = 28;
 
@@ -169,6 +171,8 @@ export function ChainMatchView({
   const nameUppercase = useNameUppercase();
   const uppercaseAround = useUppercaseAround();
   const { height } = useWindowDimensions();
+  const [contentHeight, setContentHeight] = useState(0);
+  const [fixedHeight, setFixedHeight] = useState(0);
   const [searching, setSearching] = useState<number | null>(null);
   const strip = useRef<ScrollView>(null);
   const { view, side } = chain;
@@ -182,7 +186,12 @@ export function ChainMatchView({
   const myTurn = playing && view.turn === side;
   const canSay = myTurn && canAct;
   const urgent = myTurn && secondsLeft <= URGENT_SECONDS;
-  const cardSize = Math.floor(Math.min(MAXIMUM_CARD_SIZE, height * CARD_HEIGHT_SHARE));
+  const cardSize = fitSize(
+    Math.floor(Math.min(MAXIMUM_CARD_SIZE, height * CARD_HEIGHT_SHARE)),
+    MINIMUM_CARD_SIZE,
+    contentHeight,
+    fixedHeight,
+  );
   const names = { [side]: t('match.you'), [rival]: chain.usernames[rival] } as Record<Side, string>;
   const current = view.chain.at(-1) ?? null;
   const previous = view.chain.slice(0, -1);
@@ -217,6 +226,7 @@ export function ChainMatchView({
     <Screen
       scroll
       contentStyle={styles.content}
+      onContentHeight={setContentHeight}
       overlay={
         result ? (
           <ResultOverlay
@@ -231,128 +241,136 @@ export function ChainMatchView({
           />
         ) : null
       }>
-      <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.topBar}>
-        <Pressable accessibilityRole="button" onPress={onQuit} style={styles.quit} hitSlop={Spacing.two}>
+      <View
+        style={styles.body}
+        onLayout={(event) => setFixedHeight(event.nativeEvent.layout.height - (current ? cardSize : 0))}>
+        <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.topBar}>
+          <Pressable accessibilityRole="button" onPress={onQuit} style={styles.quit} hitSlop={Spacing.two}>
+            <ThemedText type="label" themeColor="textSecondary">
+              {`‹ ${uppercase(t('match.quit'))}`}
+            </ThemedText>
+          </Pressable>
+          <View style={styles.tag}>
+            <ThemedText type="label" themeColor="onAccent">
+              {uppercase(t('chain.round', { round: view.round, target: view.roundsToWin }))}
+            </ThemedText>
+          </View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
+          <Scoreboard
+            side={side}
+            names={names}
+            scores={view.scores}
+            activeSide={playing ? view.turn : null}
+            center={
+              <TurnTimer
+                key={turnKey}
+                turnEndsAt={chain.deadlineAt}
+                totalSeconds={view.turnSeconds}
+                secondsLeft={playing ? secondsLeft : 0}
+                color={urgent ? Colors.negative : playing ? Finishes[view.turn].base : Colors.strokeBright}
+                running={playing}
+                urgent={urgent}
+                accessibilityLabel={t('match.secondsLeft', { seconds: secondsLeft })}
+              />
+            }
+          />
+        </Animated.View>
+
+        <JokerBar scope={`${view.round}-${view.chain.length}`} available={() => myTurn} />
+
+        <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
+          <ThemedText style={styles.rule}>{uppercase(t('chain.rule'))}</ThemedText>
+          <ThemedText type="small" themeColor="textSecondary">
+            {t('chain.scope')}
+          </ThemedText>
+        </MetalPlate>
+
+        <ScrollView
+          ref={strip}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.strip}
+          contentContainerStyle={styles.stripContent}>
+          {previous.map((link, index) => {
+            const next = view.chain[index + 1];
+            const club = next?.clubId ? clubs[next.clubId] : undefined;
+            return (
+              <Animated.View key={`${view.round}-${link.footballerId}`} entering={FadeInRight.duration(Motion.base)} style={styles.stripItem}>
+                <Node footballer={chain.cards[link.footballerId] ?? null} side={link.side} />
+                <View style={styles.connector}>
+                  <View style={styles.connectorLine} />
+                  <ThemedText style={styles.connectorText} numberOfLines={1}>
+                    {club ? nameUppercase(club.name, club.local) : ''}
+                  </ThemedText>
+                </View>
+              </Animated.View>
+            );
+          })}
+        </ScrollView>
+
+        <View style={styles.current}>
           <ThemedText type="label" themeColor="textSecondary">
-            {`‹ ${uppercase(t('match.quit'))}`}
+            {uppercase(t('chain.last'))}
           </ThemedText>
-        </Pressable>
-        <View style={styles.tag}>
-          <ThemedText type="label" themeColor="onAccent">
-            {uppercase(t('chain.round', { round: view.round, target: view.roundsToWin }))}
-          </ThemedText>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
-        <Scoreboard
-          side={side}
-          names={names}
-          scores={view.scores}
-          activeSide={playing ? view.turn : null}
-          center={
-            <TurnTimer
-              key={turnKey}
-              turnEndsAt={chain.deadlineAt}
-              totalSeconds={view.turnSeconds}
-              secondsLeft={playing ? secondsLeft : 0}
-              color={urgent ? Colors.negative : playing ? Finishes[view.turn].base : Colors.strokeBright}
-              running={playing}
-              urgent={urgent}
-              accessibilityLabel={t('match.secondsLeft', { seconds: secondsLeft })}
+          {current ? (
+            <FootballerCard
+              key={`${view.round}-${current.footballerId}`}
+              footballer={currentFootballer}
+              side={current.side ?? view.turn}
+              size={cardSize}
+              emphasis="none"
+              watermark={false}
             />
-          }
-        />
-      </Animated.View>
+          ) : null}
+          <View style={styles.via}>
+            {current?.clubId ? <ClubCrest clubId={current.clubId} size={CREST_SIZE} /> : null}
+            <ThemedText type="smallBold" themeColor="gold" style={styles.centered}>
+              {linkClub ? t('chain.via', { club: nameUppercase(linkClub.name, linkClub.local) }) : ' '}
+            </ThemedText>
+          </View>
+        </View>
 
-      <JokerBar scope={`${view.round}-${view.chain.length}`} available={() => myTurn} />
+        <View style={styles.status}>
+          <ThemedText key={`${turnKey}-${statusLine.text}`} type="subtitle" themeColor={statusLine.color} style={styles.centered} accessibilityLiveRegion="polite">
+            {statusLine.text}
+          </ThemedText>
+          {notice && !result ? (
+            <ThemedText type="small" themeColor="gold" style={styles.centered}>
+              {notice}
+            </ThemedText>
+          ) : null}
+        </View>
 
-      <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
-        <ThemedText style={styles.rule}>{uppercase(t('chain.rule'))}</ThemedText>
-        <ThemedText type="small" themeColor="textSecondary">
-          {t('chain.scope')}
-        </ThemedText>
-      </MetalPlate>
+        <View style={styles.action}>
+          {canSay ? <ActionButton label={t('chain.say')} onPress={() => setSearching(view.chain.length)} /> : null}
+        </View>
 
-      <ScrollView
-        ref={strip}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.strip}
-        contentContainerStyle={styles.stripContent}>
-        {previous.map((link, index) => {
-          const next = view.chain[index + 1];
-          const club = next?.clubId ? clubs[next.clubId] : undefined;
-          return (
-            <Animated.View key={`${view.round}-${link.footballerId}`} entering={FadeInRight.duration(Motion.base)} style={styles.stripItem}>
-              <Node footballer={chain.cards[link.footballerId] ?? null} side={link.side} />
-              <View style={styles.connector}>
-                <View style={styles.connectorLine} />
-                <ThemedText style={styles.connectorText} numberOfLines={1}>
-                  {club ? nameUppercase(club.name, club.local) : ''}
-                </ThemedText>
-              </View>
-            </Animated.View>
-          );
-        })}
-      </ScrollView>
-
-      <View style={styles.current}>
-        <ThemedText type="label" themeColor="textSecondary">
-          {uppercase(t('chain.last'))}
-        </ThemedText>
-        {current ? (
-          <FootballerCard
-            key={`${view.round}-${current.footballerId}`}
-            footballer={currentFootballer}
-            side={current.side ?? view.turn}
-            size={cardSize}
-            emphasis="none"
-            watermark={false}
+        {canSay && searching === view.chain.length && current ? (
+          <FootballerSearch
+            title={currentFootballer ? t('chain.searchTitle', { name: currentFootballer.name }) : ''}
+            market={chain.market.code}
+            secondsLeft={secondsLeft}
+            excludedIds={chainCardIds(view)}
+            onSelect={(footballer) => {
+              setSearching(null);
+              onAct({ kind: 'link', footballerId: footballer.id });
+            }}
+            onClose={() => setSearching(null)}
           />
         ) : null}
-        <View style={styles.via}>
-          {current?.clubId ? <ClubCrest clubId={current.clubId} size={CREST_SIZE} /> : null}
-          <ThemedText type="smallBold" themeColor="gold" style={styles.centered}>
-            {linkClub ? t('chain.via', { club: nameUppercase(linkClub.name, linkClub.local) }) : ' '}
-          </ThemedText>
-        </View>
       </View>
-
-      <View style={styles.status}>
-        <ThemedText key={`${turnKey}-${statusLine.text}`} type="subtitle" themeColor={statusLine.color} style={styles.centered} accessibilityLiveRegion="polite">
-          {statusLine.text}
-        </ThemedText>
-        {notice && !result ? (
-          <ThemedText type="small" themeColor="gold" style={styles.centered}>
-            {notice}
-          </ThemedText>
-        ) : null}
-      </View>
-
-      <View style={styles.action}>
-        {canSay ? <ActionButton label={t('chain.say')} onPress={() => setSearching(view.chain.length)} /> : null}
-      </View>
-
-      {canSay && searching === view.chain.length && current ? (
-        <FootballerSearch
-          title={currentFootballer ? t('chain.searchTitle', { name: currentFootballer.name }) : ''}
-          market={chain.market.code}
-          secondsLeft={secondsLeft}
-          excludedIds={chainCardIds(view)}
-          onSelect={(footballer) => {
-            setSearching(null);
-            onAct({ kind: 'link', footballerId: footballer.id });
-          }}
-          onClose={() => setSearching(null)}
-        />
-      ) : null}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   content: {
+    alignItems: 'stretch',
+  },
+  body: {
+    flexGrow: 1,
     alignItems: 'center',
     gap: Spacing.three,
   },

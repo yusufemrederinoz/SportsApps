@@ -5,11 +5,12 @@ import { use, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ActionButton } from '@/components/action-button';
 import { ClubCrest } from '@/components/club-crest';
 import { MetalPlate } from '@/components/metal-plate';
-import { Screen } from '@/components/screen';
+import { SCREEN_BOTTOM_PADDING, Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
 import { loadClubLabel } from '@/data/queries';
@@ -26,12 +27,15 @@ import type { OnlineDraft } from '@/features/match/use-online-match';
 import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
 import { draftCardIds } from './online';
+import { boardHeightFor, slotSizeFor } from './board-size';
 import { LineupBoard } from './lineup-board';
 import { useDraftEffects } from './use-draft-effects';
 
-const SLOT_HEIGHT_SHARE = 0.058;
-const MAXIMUM_SLOT_SIZE = 60;
-const CREST_SIZE = 40;
+const BOARD_HEIGHT_SHARE = 0.45;
+const CREST_SIZE = 32;
+const SECTION_GAP = Spacing.two + Spacing.one;
+const COMPACT_GAP = Spacing.two;
+const COMPACT_HEIGHT = 800;
 
 interface DraftMatchViewProps {
   draft: OnlineDraft;
@@ -82,7 +86,11 @@ export function DraftMatchView({
   const uppercase = useUppercase();
   const nameUppercase = useNameUppercase();
   const uppercaseAround = useUppercaseAround();
-  const { height } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
+  const [contentHeight, setContentHeight] = useState(0);
+  const [headHeight, setHeadHeight] = useState(0);
+  const [footHeight, setFootHeight] = useState(0);
   const [searching, setSearching] = useState<number | null>(null);
   const { view, side } = draft;
   const rival = opponentOf(side);
@@ -100,7 +108,13 @@ export function DraftMatchView({
   const ownPicked = view.picked[side];
   const canPick = running && !ownPicked && canAct;
   const urgent = running && !ownPicked && secondsLeft <= URGENT_SECONDS;
-  const slotSize = Math.floor(Math.min(MAXIMUM_SLOT_SIZE, height * SLOT_HEIGHT_SHARE));
+  const available = contentHeight || windowHeight - insets.top - insets.bottom - SCREEN_BOTTOM_PADDING;
+  const gap = available < COMPACT_HEIGHT ? COMPACT_GAP : SECTION_GAP;
+  const measured = headHeight > 0 && footHeight > 0;
+  const boardHeight = boardHeightFor(
+    measured ? available - headHeight - footHeight - gap * 2 : available * BOARD_HEIGHT_SHARE,
+  );
+  const slotSize = slotSizeFor(boardHeight);
   const names = { [side]: t('match.you'), [rival]: draft.usernames[rival] } as Record<Side, string>;
   const clubTitle = club ? nameUppercase(club.name, club.local) : '';
   const won = result?.winner === side;
@@ -136,7 +150,8 @@ export function DraftMatchView({
   return (
     <Screen
       scroll
-      contentStyle={styles.content}
+      contentStyle={[styles.content, { gap }]}
+      onContentHeight={setContentHeight}
       overlay={
         result ? (
           <ResultOverlay
@@ -155,60 +170,63 @@ export function DraftMatchView({
           />
         ) : null
       }>
-      <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.topBar}>
-        <Pressable accessibilityRole="button" onPress={onQuit} style={styles.quit} hitSlop={Spacing.two}>
-          <ThemedText type="label" themeColor="textSecondary">
-            {`‹ ${uppercase(t('match.quit'))}`}
-          </ThemedText>
-        </Pressable>
-        <View style={styles.tag}>
-          <ThemedText type="label" themeColor="onAccent">
-            {uppercase(t('draft.round', { round: view.round, total: view.totalRounds }))}
-          </ThemedText>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
-        <Scoreboard
-          side={side}
-          names={names}
-          scores={view.scores}
-          activeSide={running ? (ownPicked ? (view.picked[rival] ? null : rival) : side) : null}
-          compact
-          center={
-            <TurnTimer
-              turnEndsAt={draft.deadlineAt}
-              totalSeconds={DRAFT_PICK_SECONDS}
-              secondsLeft={running ? secondsLeft : 0}
-              color={urgent ? Colors.negative : running ? Colors.volt : Colors.strokeBright}
-              running={running}
-              urgent={urgent}
-              accessibilityLabel={t('match.secondsLeft', { seconds: secondsLeft })}
-            />
-          }
-        />
-      </Animated.View>
-
-      <JokerBar scope={view.round} available={() => running && !view.picked[side]} />
-
-      <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
-        <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
-          <ThemedText type="label" themeColor="volt">
-            {uppercase(t('draft.clubLabel'))}
-          </ThemedText>
-          <View style={styles.clubRow}>
-            {clubId !== null ? <ClubCrest clubId={clubId} size={CREST_SIZE} /> : null}
-            <ThemedText style={styles.club} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
-              {clubTitle}
+      <View style={[styles.section, { gap }]} onLayout={(event) => setHeadHeight(event.nativeEvent.layout.height)}>
+        <Animated.View entering={FadeIn.duration(Motion.base)} style={styles.topBar}>
+          <Pressable accessibilityRole="button" onPress={onQuit} style={styles.quit} hitSlop={Spacing.two}>
+            <ThemedText type="label" themeColor="textSecondary">
+              {`‹ ${uppercase(t('match.quit'))}`}
+            </ThemedText>
+          </Pressable>
+          <View style={styles.tag}>
+            <ThemedText type="label" themeColor="onAccent">
+              {uppercase(t('draft.round', { round: view.round, total: view.totalRounds }))}
             </ThemedText>
           </View>
-          <ThemedText type="small" themeColor="textSecondary">
-            {t('draft.target')}
-          </ThemedText>
-        </MetalPlate>
-      </Animated.View>
+        </Animated.View>
 
-      <View style={styles.boards}>
+        <Animated.View entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
+          <Scoreboard
+            side={side}
+            names={names}
+            scores={view.scores}
+            activeSide={running ? (ownPicked ? (view.picked[rival] ? null : rival) : side) : null}
+            compact
+            center={
+              <TurnTimer
+                turnEndsAt={draft.deadlineAt}
+                totalSeconds={DRAFT_PICK_SECONDS}
+                secondsLeft={running ? secondsLeft : 0}
+                color={urgent ? Colors.negative : running ? Colors.volt : Colors.strokeBright}
+                running={running}
+                urgent={urgent}
+                accessibilityLabel={t('match.secondsLeft', { seconds: secondsLeft })}
+              />
+            }
+          />
+        </Animated.View>
+
+        <JokerBar scope={view.round} available={() => running && !view.picked[side]} />
+
+        <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
+          <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
+            <ThemedText type="label" themeColor="volt">
+              {uppercase(t('draft.clubLabel'))}
+            </ThemedText>
+            <View style={styles.clubRow}>
+              {clubId !== null ? <ClubCrest clubId={clubId} size={CREST_SIZE} /> : null}
+              <ThemedText style={styles.club} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+                {clubTitle}
+              </ThemedText>
+            </View>
+            <ThemedText type="small" themeColor="textSecondary">
+              {t('draft.target')}
+            </ThemedText>
+          </MetalPlate>
+        </Animated.View>
+
+      </View>
+
+      <View style={[styles.boards, { height: boardHeight }]}>
         {ownSideFirst(side).map((boardSide) => (
           <LineupBoard
             key={boardSide}
@@ -222,19 +240,29 @@ export function DraftMatchView({
         ))}
       </View>
 
-      <View style={styles.status}>
-        <ThemedText key={`${roundKey}-${current.text}`} type="subtitle" themeColor={current.color} style={styles.centered} accessibilityLiveRegion="polite">
-          {current.text}
-        </ThemedText>
-        {notice && !result ? (
-          <ThemedText type="small" themeColor="gold" style={styles.centered} accessibilityLiveRegion="polite">
-            {notice}
+      <View style={[styles.section, { gap }]} onLayout={(event) => setFootHeight(event.nativeEvent.layout.height)}>
+        <View style={styles.status}>
+          <ThemedText
+            key={`${roundKey}-${current.text}`}
+            type="subtitle"
+            themeColor={current.color}
+            style={styles.centered}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.6}
+            accessibilityLiveRegion="polite">
+            {current.text}
           </ThemedText>
-        ) : null}
-      </View>
+          {notice && !result ? (
+            <ThemedText type="small" themeColor="gold" style={styles.centered} accessibilityLiveRegion="polite">
+              {notice}
+            </ThemedText>
+          ) : null}
+        </View>
 
-      <View style={styles.action}>
-        {canPick ? <ActionButton label={t('draft.choose')} onPress={() => setSearching(view.round)} /> : null}
+        <View style={styles.action}>
+          {canPick ? <ActionButton label={t('draft.choose')} onPress={() => setSearching(view.round)} /> : null}
+        </View>
       </View>
 
       {canPick && searching === view.round && clubId !== null ? (
@@ -265,7 +293,6 @@ export function DraftMatchView({
 const styles = StyleSheet.create({
   content: {
     alignItems: 'center',
-    gap: Spacing.three,
   },
   stretch: {
     alignSelf: 'stretch',
@@ -300,9 +327,13 @@ const styles = StyleSheet.create({
   club: {
     flexShrink: 1,
     fontFamily: Fonts.display,
-    fontSize: 30,
-    lineHeight: 32,
+    fontSize: 26,
+    lineHeight: 28,
     color: Colors.text,
+  },
+  section: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
   },
   boards: {
     alignSelf: 'stretch',
@@ -310,7 +341,6 @@ const styles = StyleSheet.create({
     gap: Spacing.two,
   },
   status: {
-    flex: 1,
     alignSelf: 'stretch',
     justifyContent: 'center',
     gap: Spacing.one,

@@ -12,6 +12,8 @@ import { Colors, Finishes, Fonts, Motion, Spacing } from '@/constants/theme';
 import type { PlayedFootballer } from '@/features/match/session';
 import { useUppercase } from '@/i18n/uppercase';
 
+import { BOARD_PADDING, HEADER_HEIGHT, NAME_HEIGHT, ROW_GAP, VALUE_HEIGHT } from './board-size';
+
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const ROWS: readonly DraftSlotView['position'][] = ['FW', 'MF', 'DF', 'GK'];
 const ARRIVAL = new Keyframe({
@@ -137,9 +139,10 @@ export function LineupBoard({ side, name, lineup, cards, slotSize, active }: Lin
 const styles = StyleSheet.create({
   board: {
     flex: 1,
-    paddingVertical: Spacing.two,
+    justifyContent: 'space-between',
+    paddingVertical: BOARD_PADDING,
     paddingHorizontal: Spacing.one,
-    gap: Spacing.one,
+    gap: ROW_GAP,
     borderWidth: 1.5,
     borderColor: 'transparent',
     borderRadius: 14,
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: Fonts.heading,
     fontSize: 16,
-    lineHeight: 18,
+    lineHeight: HEADER_HEIGHT,
     letterSpacing: 0.6,
   },
   row: {
@@ -196,15 +199,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: Fonts.bodyBold,
     fontSize: 11,
-    lineHeight: 14,
+    lineHeight: NAME_HEIGHT,
     color: Colors.text,
   },
   value: {
     alignSelf: 'stretch',
     textAlign: 'center',
     fontFamily: Fonts.display,
-    fontSize: 15,
-    lineHeight: 17,
+    fontSize: 14,
+    lineHeight: VALUE_HEIGHT,
     fontVariant: ['tabular-nums'],
   },
 });
