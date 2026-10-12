@@ -4,10 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>ChallengeGoal — Juegos de trivia de fútbol</title>
-    <meta
-      name="description"
-      content="ChallengeGoal: 8 juegos de trivia de fútbol, de XOX a Trayectoria. Juega online o con un amigo, suma puntos y sube de nivel."
-    />
+    <meta name="description" content="ChallengeGoal: 8 juegos de trivia de fútbol, de XOX a Trayectoria. Juega online o con un amigo, suma puntos y sube de nivel." />
     <meta name="theme-color" content="#0a0d12" />
     <link rel="canonical" href="https://challengegoal.app/es" />
     <link rel="alternate" hreflang="tr" href="https://challengegoal.app/" />
@@ -26,10 +23,11 @@
     <meta property="og:image" content="https://challengegoal.app/img/share.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preload" href="/fonts/BarlowCondensed_800ExtraBold_Italic.ttf" as="font" type="font/ttf" crossorigin />
-    <link rel="stylesheet" href="/site.css" />
+    <link rel="stylesheet" href="/site.css?v=01b1f291dc" />
   </head>
-  <body>
+  <body class="home">
     <a class="skip" href="#content">Saltar al contenido</a>
+    <canvas id="stage" aria-hidden="true"></canvas>
     <header class="bar">
       <a class="brand" href="/es"><picture><source srcset="/img/flame.webp" type="image/webp" media="(prefers-reduced-motion: no-preference)" /><img src="/img/flame.png" alt="" width="74" height="44" /></picture>CHALLENGE<span>GOAL</span></a>
       <nav class="links" aria-label="Página">
@@ -42,45 +40,18 @@
 
     <main id="content">
       <div class="wrap hero">
-        <div>
-          <p class="eyebrow">Juegos de trivia de fútbol</p>
+        <div class="hero-copy">
+          <p class="badge">Sin anuncios obligatorios</p>
           <h1>¿Quién sabe <em>más de fútbol?</em></h1>
-          <p class="lead">
-            ChallengeGoal tiene 8 juegos de trivia de fútbol, de XOX a Trayectoria. Juega online o con un amigo, suma puntos
-            y sube de nivel.
-          </p>
+          <p class="lead">ChallengeGoal tiene 8 juegos de trivia de fútbol, de XOX a Trayectoria. Juega online o con un amigo, suma puntos y sube de nivel.</p>
           <ul class="stores" aria-label="Tiendas">
             <li><small>Próximamente</small><strong>Google Play</strong></li>
             <li><small>Próximamente</small><strong>App Store</strong></li>
           </ul>
         </div>
-
-        <figure class="board">
-          <div class="grid" role="img" aria-label="Un tablero de XOX de ejemplo: clubes en las filas, países en las columnas y cartas de futbolistas doradas y azules en las casillas ocupadas.">
-            <span class="corner"></span>
-            <span class="rule top">Turquía</span>
-            <span class="rule top">Brasil</span>
-            <span class="rule top">Francia</span>
-            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-gs"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-gs)"><rect x="0" y="0" width="100" height="112" fill="#FDB912"/><rect x="50" y="0" width="50" height="112" fill="#A90432"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#A90432" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">GS</text></svg><span>Galatasaray</span></span>
-            <span class="cell x card"><b>DL</b><img src="/img/players/arda-turan.webp" alt="" width="88" height="88" loading="lazy" /><span>Arda Turan</span></span>
-            <span class="cell o card"><b>PT</b><img src="/img/players/taffarel.webp" alt="" width="88" height="88" loading="lazy" /><span>Cláudio Taffarel</span></span>
-            <span class="cell"></span>
-            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-rma"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-rma)"><rect x="0" y="0" width="100" height="112" fill="#FFFFFF"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#FEBE10" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">RMA</text></svg><span>Real Madrid</span></span>
-            <span class="cell"></span>
-            <span class="cell x card"><b>DF</b><img src="/img/players/roberto-carlos.webp" alt="" width="88" height="88" loading="lazy" /><span>Roberto Carlos</span></span>
-            <span class="cell o card"><b>MC</b><img src="/img/players/zidane.webp" alt="" width="88" height="88" loading="lazy" /><span>Zinédine Zidane</span></span>
-            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-fcb"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-fcb)"><rect x="0" y="0" width="100" height="112" fill="#DC052D"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#0066B2" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">FCB</text></svg><span>Bayern Múnich</span></span>
-            <span class="cell next"></span>
-            <span class="cell"></span>
-            <span class="cell o card"><b>DL</b><img src="/img/players/ribery.webp" alt="" width="88" height="88" loading="lazy" /><span>Franck Ribéry</span></span>
-          </div>
-          <figcaption>Escribe un futbolista que encaje con los dos y llévate la casilla</figcaption>
-          <details class="credits">
-            <summary>Fuentes de imágenes</summary>
-            <p>Las imágenes de los futbolistas se han redibujado con IA a partir de fotografías de Wikimedia Commons y se comparten con la misma licencia que la fotografía de origen. También figuran los futbolistas que aparecen en nuestros vídeos promocionales.</p>
-            <ul><li>Arda Turan: <a href="https://commons.wikimedia.org/wiki/File:Arda_Turan%2C_Ey%C3%BCpspor_Teknik_Direkt%C3%B6r%C3%BC%2C_1_Eyl%C3%BCl_2024_Kas%C4%B1mpa%C5%9Fa_Stadyumu.jpg" rel="noopener">foto</a>, HakanIST, <a href="https://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Cláudio Taffarel: <a href="https://commons.wikimedia.org/wiki/File:Taffarel_2018.png" rel="noopener">foto</a>, Кирилл Венедиктов, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Roberto Carlos: <a href="https://commons.wikimedia.org/wiki/File:LS3_1288_%2853332367864%29_%28cropped%29.jpg" rel="noopener">foto</a>, Web Summit, <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener">CC BY 2.0</a></li><li>Zinédine Zidane: <a href="https://commons.wikimedia.org/wiki/File:Zinedine_Zidane_by_Tasnim_03.jpg" rel="noopener">foto</a>, Hadi Abyar, <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener">CC BY 4.0</a></li><li>Franck Ribéry: <a href="https://commons.wikimedia.org/wiki/File:Franck_Ribery_2019_%28cropped%29.jpg" rel="noopener">foto</a>, Sven Mandel, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Samuel Eto’o: <a href="https://commons.wikimedia.org/wiki/File:Sammuel_Eto%27o_Fils_02.jpg" rel="noopener">foto</a>, BACHELOR45, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Didier Drogba: <a href="https://commons.wikimedia.org/wiki/File:Didier_Drogba_%282019%29_%28cropped%29.jpg" rel="noopener">foto</a>, Y.Leclercq©, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Mauro Icardi: <a href="https://commons.wikimedia.org/wiki/File:Mauro_Icardi_en_2025.jpg" rel="noopener">foto</a>, Telefe, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Victor Osimhen: <a href="https://commons.wikimedia.org/wiki/File:Victor-osimhen-nigeria-2024-3-4.jpg" rel="noopener">foto</a>, Fédération Guinéenne Football, <a href="" rel="license noopener">Public domain</a></li><li>Alex: <a href="https://commons.wikimedia.org/wiki/File:Alexsandro_de_Souza.jpg" rel="noopener">foto</a>, Serkan YAKIN - antu.com, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Wesley Sneijder: <a href="https://commons.wikimedia.org/wiki/File:Wesley_Sneijder_at_Sports_Festival_2025.jpg" rel="noopener">foto</a>, Nuță Lucian, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Fernando Muslera: <a href="https://commons.wikimedia.org/wiki/File:Fernando_Muslera_in_2021.jpg" rel="noopener">foto</a>, Анна Нэсси, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Mario Gómez: <a href="https://commons.wikimedia.org/wiki/File:Mario_gomez.jpg" rel="noopener">foto</a>, Jeollo von VfB-exklusiv.de, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Edin Džeko: <a href="https://commons.wikimedia.org/wiki/File:20150331_2026_AUT_BIH_2177_Edin_D%C5%BEeko_%28cropped%29.jpg" rel="noopener">foto</a>, Ailura, <a href="https://creativecommons.org/licenses/by-sa/3.0/at/deed.en" rel="license noopener">CC BY-SA 3.0 at</a></li><li>Arda Güler: <a href="https://commons.wikimedia.org/wiki/File:Derbide_Fenerbah%C3%A7e_Yedek_Oyuncu_Arda_G%C3%BCler_%282021-22_S%C3%BCper_Lig_-_Cropped%29.jpg" rel="noopener">foto</a>, beIN SPORTS Türkiye, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Kylian Mbappé: <a href="https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg" rel="noopener">foto</a>, Bryan Berlin, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Lionel Messi: <a href="https://commons.wikimedia.org/wiki/File:Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg" rel="noopener">foto</a>, Bryan Berlin, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li></ul>
-          </details>
-        </figure>
+        <div class="hero-stage" data-anchor="ball" aria-hidden="true">
+          <img class="fallback" src="/img/mark.png" alt="" width="512" height="512" />
+        </div>
       </div>
 
       <div class="wrap">
@@ -103,6 +74,33 @@
           </div>
         </dl>
       </div>
+
+      <div class="wrap">
+        <section class="promise" aria-labelledby="promise-title">
+          <h2 id="promise-title">Sin anuncios obligatorios</h2>
+          <p>No aparecen anuncios en mitad de un partido. Solo ves un anuncio cuando tú quieres, para ganar goles.</p>
+        </section>
+      </div>
+
+      <section class="wrap showcase" aria-labelledby="showcase-title">
+        <div class="heading">
+          <h2 id="showcase-title">Dentro de la app</h2>
+          <p>Pantallas reales. Toca un título para verlo en el móvil.</p>
+        </div>
+        <div class="showcase-body">
+          <div class="phone" data-anchor="phone" data-label="Captura de la app" role="img" aria-label="Captura de la app: Pantalla de inicio">
+            <img class="fallback" src="/img/screens/en/home.webp" alt="" width="540" height="1103" />
+          </div>
+          <p class="screen-note">Todos son juegos por turnos para dos. Cada uno tiene sus propios puntos y sus propios comodines.</p>
+          <ul class="screens">
+            <li><button type="button" data-screen="home" aria-pressed="true"><strong>Pantalla de inicio</strong><span>Todos son juegos por turnos para dos. Cada uno tiene sus propios puntos y sus propios comodines.</span></button></li>
+            <li><button type="button" data-screen="puzzle" aria-pressed="false"><strong>Reto diario</strong><span>El mismo tablero para todos, cada día. Cuanto menos repetida sea tu respuesta, más puntos te llevas.</span></button></li>
+            <li><button type="button" data-screen="duel" aria-pressed="false"><strong>Duelo de Cartas</strong><span>Elige 7 futbolistas que encajen con el tema. Las preguntas son secretas; en cada ronda juegas una carta contra la de tu rival.</span></button></li>
+            <li><button type="button" data-screen="chain" aria-pressed="false"><strong>Cadena de Clubes</strong><span>Di un futbolista que haya compartido club con el anterior. Si rompes la cadena, pierdes la ronda.</span></button></li>
+            <li><button type="button" data-screen="auction" aria-pressed="false"><strong>Subasta de Respuestas</strong><span>Di cuántas respuestas te sabes y sube la puja. Si tu rival te dice «demuéstralo», tienes que decirlas.</span></button></li>
+          </ul>
+        </div>
+      </section>
 
       <section class="wrap" id="games" aria-labelledby="games-title">
         <div class="heading">
@@ -145,6 +143,39 @@
         </ol>
       </section>
 
+      <section class="wrap how" aria-labelledby="how-title">
+        <div class="heading">
+          <h2 id="how-title">Cómo se juega al XOX</h2>
+          <p>Escribe un futbolista que encaje con la fila y la columna, y haz tres en raya.</p>
+        </div>
+        <figure class="board">
+          <div class="grid" role="img" aria-label="Un tablero de XOX de ejemplo: clubes en las filas, países en las columnas y cartas de futbolistas doradas y azules en las casillas ocupadas.">
+            <span class="corner"></span>
+            <span class="rule top">Turquía</span>
+            <span class="rule top">Brasil</span>
+            <span class="rule top">Francia</span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-gs"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-gs)"><rect x="0" y="0" width="100" height="112" fill="#FDB912"/><rect x="50" y="0" width="50" height="112" fill="#A90432"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#A90432" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">GS</text></svg><span>Galatasaray</span></span>
+            <span class="cell x card"><b>DL</b><img src="/img/players/arda-turan.webp" alt="" width="88" height="88" loading="lazy" /><span>Arda Turan</span></span>
+            <span class="cell o card"><b>PT</b><img src="/img/players/taffarel.webp" alt="" width="88" height="88" loading="lazy" /><span>Cláudio Taffarel</span></span>
+            <span class="cell"></span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-rma"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-rma)"><rect x="0" y="0" width="100" height="112" fill="#FFFFFF"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#FEBE10" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">RMA</text></svg><span>Real Madrid</span></span>
+            <span class="cell"></span>
+            <span class="cell x card"><b>DF</b><img src="/img/players/roberto-carlos.webp" alt="" width="88" height="88" loading="lazy" /><span>Roberto Carlos</span></span>
+            <span class="cell o card"><b>MC</b><img src="/img/players/zidane.webp" alt="" width="88" height="88" loading="lazy" /><span>Zinédine Zidane</span></span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-fcb"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-fcb)"><rect x="0" y="0" width="100" height="112" fill="#DC052D"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#0066B2" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">FCB</text></svg><span>Bayern Múnich</span></span>
+            <span class="cell next"></span>
+            <span class="cell"></span>
+            <span class="cell o card"><b>DL</b><img src="/img/players/ribery.webp" alt="" width="88" height="88" loading="lazy" /><span>Franck Ribéry</span></span>
+          </div>
+          <figcaption>Escribe un futbolista que encaje con los dos y llévate la casilla</figcaption>
+          <details class="credits">
+            <summary>Fuentes de imágenes</summary>
+            <p>Las imágenes de los futbolistas se han redibujado con IA a partir de fotografías de Wikimedia Commons y se comparten con la misma licencia que la fotografía de origen. También figuran los futbolistas que aparecen en nuestros vídeos promocionales.</p>
+            <ul><li>Arda Turan: <a href="https://commons.wikimedia.org/wiki/File:Arda_Turan,_Ey%C3%BCpspor_Teknik_Direkt%C3%B6r%C3%BC,_1_Eyl%C3%BCl_2024_Kas%C4%B1mpa%C5%9Fa_Stadyumu.jpg" rel="noopener">foto</a>, HakanIST, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Cláudio Taffarel: <a href="https://commons.wikimedia.org/wiki/File:Taffarel_2018.png" rel="noopener">foto</a>, Кирилл Венедиктов, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Roberto Carlos: <a href="https://commons.wikimedia.org/wiki/File:LS3_1288_(53332367864)_(cropped).jpg" rel="noopener">foto</a>, Web Summit, <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener">CC BY 2.0</a></li><li>Zinédine Zidane: <a href="https://commons.wikimedia.org/wiki/File:Zinedine_Zidane_by_Tasnim_03.jpg" rel="noopener">foto</a>, Hadi Abyar, <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener">CC BY 4.0</a></li><li>Franck Ribéry: <a href="https://commons.wikimedia.org/wiki/File:Franck_Ribery_2019_(cropped).jpg" rel="noopener">foto</a>, Sven Mandel, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Samuel Eto’o: <a href="https://commons.wikimedia.org/wiki/File:Sammuel_Eto%27o_Fils_02.jpg" rel="noopener">foto</a>, BACHELOR45, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Didier Drogba: <a href="https://commons.wikimedia.org/wiki/File:Didier_Drogba_(2019)_(cropped).jpg" rel="noopener">foto</a>, Y.Leclercq©, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Mauro Icardi: <a href="https://commons.wikimedia.org/wiki/File:Mauro_Icardi_en_2025.jpg" rel="noopener">foto</a>, Telefe, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Victor Osimhen: <a href="https://commons.wikimedia.org/wiki/File:Victor-osimhen-nigeria-2024-3-4.jpg" rel="noopener">foto</a>, Fédération Guinéenne Football, Public domain</li><li>Alex: <a href="https://commons.wikimedia.org/wiki/File:Alexsandro_de_Souza.jpg" rel="noopener">foto</a>, Serkan YAKIN - antu.com, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Wesley Sneijder: <a href="https://commons.wikimedia.org/wiki/File:Wesley_Sneijder_at_Sports_Festival_2025.jpg" rel="noopener">foto</a>, Nuță Lucian, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Fernando Muslera: <a href="https://commons.wikimedia.org/wiki/File:Fernando_Muslera_in_2021.jpg" rel="noopener">foto</a>, Анна Нэсси, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Mario Gómez: <a href="https://commons.wikimedia.org/wiki/File:Mario_gomez.jpg" rel="noopener">foto</a>, Jeollo von VfB-exklusiv.de, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Edin Džeko: <a href="https://commons.wikimedia.org/wiki/File:20150331_2026_AUT_BIH_2177_Edin_D%C5%BEeko_(cropped).jpg" rel="noopener">foto</a>, Ailura, <a href="https://creativecommons.org/licenses/by-sa/3.0/at/deed.en" rel="license noopener">CC BY-SA 3.0 at</a></li><li>Arda Güler: <a href="https://commons.wikimedia.org/wiki/File:Derbide_Fenerbah%C3%A7e_Yedek_Oyuncu_Arda_G%C3%BCler_(2021-22_S%C3%BCper_Lig_-_Cropped).jpg" rel="noopener">foto</a>, beIN SPORTS Türkiye, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Kylian Mbappé: <a href="https://commons.wikimedia.org/wiki/File:Kylian_Mbappe_France_v_Senegal_16_June_2026-391_(cropped).jpg" rel="noopener">foto</a>, Bryan Berlin, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Lionel Messi: <a href="https://commons.wikimedia.org/wiki/File:Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg" rel="noopener">foto</a>, Bryan Berlin, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Rafael Leão: <a href="https://commons.wikimedia.org/wiki/File:RafaelLe%C3%A3oPortugal23.jpg" rel="noopener">foto</a>, Agência Lusa, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Kaká: <a href="https://commons.wikimedia.org/wiki/File:Ricardo_Izecson_dos_Santos_Leite_(Kak%C3%A1)_01.jpg" rel="noopener">foto</a>, José Cruz/ABr (cropped by tales.ebner ), <a href="https://creativecommons.org/licenses/by/3.0/br/deed.en" rel="license noopener">CC BY 3.0 br</a></li><li>Mario Balotelli: <a href="https://commons.wikimedia.org/wiki/File:Mario-Balotelli-Al-Ittifaq-2026.jpg" rel="noopener">foto</a>, Amirhosseinnakhaeii, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Olivier Giroud: <a href="https://commons.wikimedia.org/wiki/File:Olivier_Giroud_2018.jpg" rel="noopener">foto</a>, Антон Зайцев, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Eden Hazard: <a href="https://commons.wikimedia.org/wiki/File:Eden_Hazard_at_Baku_before_2019_UEFA_Europe_League_Final.jpg" rel="noopener">foto</a>, Amir Hosseini, <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener">CC BY 4.0</a></li><li>Jay-Jay Okocha: <a href="https://commons.wikimedia.org/wiki/File:Match_legends_2017_CC_(5).jpg" rel="noopener">foto</a>, Кирилл Венедиктов, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Milan Škriniar: <a href="https://commons.wikimedia.org/wiki/File:Milan_%C5%A0kriniar_37_Fenerbah%C3%A7e_20260805_(3).JPG" rel="noopener">foto</a>, User:Zafer, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Emmanuel Emenike: <a href="https://commons.wikimedia.org/wiki/File:Emmanuel_Emenike_2011.jpg" rel="noopener">foto</a>, Майоров Владимир, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Fred: <a href="https://commons.wikimedia.org/wiki/File:Fred_(footballer,_born_1993)_7_Fenerbah%C3%A7e_20260805_(3)_(cropped).JPG" rel="noopener">foto</a>, User:Zafer, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Gheorghe Hagi: <a href="https://commons.wikimedia.org/wiki/File:Lansarea_candidaturii_Gabrielei_Szabo_pentru_Camera_Deputatilor,_Voluntari_-_04.05_(48)_(14270956179)_(cropped).jpg" rel="noopener">foto</a>, Partidul Social Democrat from Romania, <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener">CC BY 2.0</a></li><li>Ümit Akdağ: <a href="https://commons.wikimedia.org/wiki/File:Akda%C4%9F_asse_tfc_2425.png" rel="noopener">foto</a>, Paté kroute, <a href="http://creativecommons.org/publicdomain/zero/1.0/deed.en" rel="license noopener">CC0</a></li><li>Dries Mertens: <a href="https://commons.wikimedia.org/wiki/File:FC_Salzburg_gegen_SSC_Napoli_(Championsleague_3._Runde_23._Oktober_2019)_41.jpg" rel="noopener">foto</a>, Werner100359, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Sergio Ramos: <a href="https://commons.wikimedia.org/wiki/File:Sergio_Ramos_Interview_2021_(cropped).jpg" rel="noopener">foto</a>, Real Madrid, <a href="https://creativecommons.org/licenses/by/3.0" rel="license noopener">CC BY 3.0</a></li><li>Álvaro Morata: <a href="https://commons.wikimedia.org/wiki/File:%C3%81lvaro_Morata.jpg" rel="noopener">foto</a>, Кирилл Венедиктов, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Antoine Griezmann: <a href="https://commons.wikimedia.org/wiki/File:Antoine_Griezmann_(51100409504)_(cropped).jpg" rel="noopener">foto</a>, Biser Todorov ( User:Biso ) from Sofia, Bulgaria, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Pierre-Emerick Aubameyang: <a href="https://commons.wikimedia.org/wiki/File:1_Pierre-Emerick_Aubameyang_(cropped).jpg" rel="noopener">foto</a>, Chensiyuan, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Alexander Isak: <a href="https://commons.wikimedia.org/wiki/File:Alexander_Isak_France_v_Sweden_6.30.26-043.jpg" rel="noopener">foto</a>, Bryan Berlin, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Robert Lewandowski: <a href="https://commons.wikimedia.org/wiki/File:2019147194857_2019-05-27_Fussball_1.FC_Kaiserslautern_vs_FC_Bayern_M%C3%BCnchen_-_Sven_-_1D_X_MK_II_-_0727_-_AK8I2340_(cropped).jpg" rel="noopener">foto</a>, Sven Mandel, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Fernando Torres: <a href="https://commons.wikimedia.org/wiki/File:Fernando_Torres_2017.jpg" rel="noopener">foto</a>, cristina cifuentes, <a href="https://creativecommons.org/licenses/by/2.0" rel="license noopener">CC BY 2.0</a></li><li>Xabi Alonso: <a href="https://commons.wikimedia.org/wiki/File:Los_Caminos_del_f%C3%BAtbol._Xabi_Alonso_(39666778464)_(cropped).jpg" rel="noopener">foto</a>, DONOSTIA KULTURA, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Thiago Alcántara: <a href="https://commons.wikimedia.org/wiki/File:UEFA_EURO_qualifiers_Sweden_vs_Spain_20191015_Thiago_Alcantara_13_(cropped).jpg" rel="noopener">foto</a>, Rolandhino1, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Alessandro Bastoni: <a href="https://commons.wikimedia.org/wiki/File:Norway_Italy_-_June_2025_A_36_(cropped).jpg" rel="noopener">foto</a>, MichaelEmilio, <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener">CC BY 4.0</a></li><li>Federico Dimarco: <a href="https://commons.wikimedia.org/wiki/File:Norway_Italy_-_June_2025_A_26_(cropped).jpg" rel="noopener">foto</a>, MichaelEmilio, <a href="https://creativecommons.org/licenses/by/4.0" rel="license noopener">CC BY 4.0</a></li><li>Hernán Crespo: <a href="https://commons.wikimedia.org/wiki/File:Chelsea_Legends_1_Inter_Forever_4_(27457022797).jpg" rel="noopener">foto</a>, @cfcunofficial (Chelsea Debs) London from London, UK, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Alberto Gilardino: <a href="https://commons.wikimedia.org/wiki/File:Alberto_Gilardino.jpg" rel="noopener">foto</a>, Christophe95, <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li><li>Adrian Mutu: <a href="https://commons.wikimedia.org/wiki/File:Adrian_Mutu_at_Sports_Festival_2025.jpg" rel="noopener">foto</a>, Nuță Lucian, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Antonio Cassano: <a href="https://commons.wikimedia.org/wiki/File:Antonio_Cassano_Milan.jpg" rel="noopener">foto</a>, goatling, <a href="https://creativecommons.org/licenses/by-sa/2.0" rel="license noopener">CC BY-SA 2.0</a></li><li>Joshua Zirkzee: <a href="https://commons.wikimedia.org/wiki/File:Joshua_Zirkzee_2019.jpg" rel="noopener">foto</a>, Sven Mandel, <a href="https://creativecommons.org/licenses/by-sa/4.0" rel="license noopener">CC BY-SA 4.0</a></li><li>Philippe Coutinho: <a href="https://commons.wikimedia.org/wiki/File:Coutinho_2018.jpg" rel="noopener">foto</a>, Oleg Bkhambri (Voltmetro), <a href="https://creativecommons.org/licenses/by-sa/3.0" rel="license noopener">CC BY-SA 3.0</a></li></ul>
+          </details>
+        </figure>
+      </section>
+
       <section class="wrap" id="features" aria-labelledby="features-title">
         <div class="heading">
           <h2 id="features-title">Siempre hay partido</h2>
@@ -177,10 +208,7 @@
         <div class="questions">
           <details>
             <summary>¿ChallengeGoal es gratis?</summary>
-            <p>
-              Sí, la app es gratuita. Los goles, que gastas en comodines durante los partidos, se consiguen jugando, con la recompensa diaria o
-              viendo un anuncio; también puedes comprarlos si quieres.
-            </p>
+            <p>Sí, la app es gratuita. Los goles, que gastas en comodines durante los partidos, se consiguen jugando, con la recompensa diaria o viendo un anuncio; también puedes comprarlos si quieres.</p>
           </details>
           <details>
             <summary>¿En qué móviles funciona?</summary>
@@ -196,17 +224,11 @@
           </details>
           <details>
             <summary>¿Por qué no hay escudos oficiales de los clubes?</summary>
-            <p>
-              ChallengeGoal no está afiliado a ningún club, liga ni federación, así que no usamos escudos ni equipaciones oficiales. Las
-              imágenes de los futbolistas son ilustraciones generadas con IA, no fotografías reales.
-            </p>
+            <p>ChallengeGoal no está afiliado a ningún club, liga ni federación, así que no usamos escudos ni equipaciones oficiales. Las imágenes de los futbolistas son ilustraciones generadas con IA, no fotografías reales.</p>
           </details>
           <details>
             <summary>¿Cómo elimino mi cuenta?</summary>
-            <p>
-              Usa «Eliminar cuenta» en la pantalla de cuenta de la app, o sigue los pasos de la
-              <a href="/es/delete-account">página de eliminación de cuenta</a>. Tus datos se eliminan junto con tu cuenta.
-            </p>
+            <p>Usa «Eliminar cuenta» en la pantalla de cuenta de la app, o sigue los pasos de la <a href="/es/delete-account">página de eliminación de cuenta</a>. Tus datos se eliminan junto con tu cuenta.</p>
           </details>
         </div>
       </section>
@@ -227,10 +249,13 @@
         <a href="/es/delete-account">Eliminación de cuenta</a>
         <a href="mailto:destek@challengegoal.app">Contacto</a>
       </nav>
-      <p>
-        © 2026 ChallengeGoal. ChallengeGoal no está afiliado a ningún club, liga, federación ni futbolista; los nombres aparecen
-        únicamente con fines informativos.
-      </p>
+      <p>© 2026 ChallengeGoal. ChallengeGoal no está afiliado a ningún club, liga, federación ni futbolista; los nombres aparecen únicamente con fines informativos.</p>
     </footer>
+
+    <button class="motion" type="button" hidden aria-label="Pausar movimiento" data-pause="Pausar movimiento" data-play="Reanudar movimiento">
+      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path class="pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="play" d="M8 5l11 7-11 7z"/></svg>
+    </button>
+    <script type="application/json" id="scene-data">{"screens": "en", "scene": "/scene.js?v=01b1f291dc", "cards": [{"slug": "turan", "name": "Arda Turan", "position": "FW"}, {"slug": "taffarel", "name": "Cláudio Taffarel", "position": "GK"}, {"slug": "carlos", "name": "Roberto Carlos", "position": "DF"}, {"slug": "zidane", "name": "Zinédine Zidane", "position": "MF"}, {"slug": "ribery", "name": "Franck Ribéry", "position": "FW"}, {"slug": "etoo", "name": "Samuel Eto’o", "position": "FW"}, {"slug": "drogba", "name": "Didier Drogba", "position": "FW"}, {"slug": "icardi", "name": "Mauro Icardi", "position": "FW"}, {"slug": "osimhen", "name": "Victor Osimhen", "position": "FW"}, {"slug": "alex", "name": "Alex", "position": "MF"}, {"slug": "sneijder", "name": "Wesley Sneijder", "position": "MF"}, {"slug": "muslera", "name": "Fernando Muslera", "position": "GK"}, {"slug": "gomez", "name": "Mario Gómez", "position": "FW"}, {"slug": "dzeko", "name": "Edin Džeko", "position": "FW"}, {"slug": "guler", "name": "Arda Güler", "position": "MF"}, {"slug": "mbappe", "name": "Kylian Mbappé", "position": "FW"}, {"slug": "messi", "name": "Lionel Messi", "position": "FW"}], "roles": {"FW": "DL", "MF": "MC", "DF": "DF", "GK": "PT"}}</script>
+    <script type="module" src="/site.js?v=01b1f291dc"></script>
   </body>
 </html>

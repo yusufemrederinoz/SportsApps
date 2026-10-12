@@ -1,0 +1,87 @@
+[
+  {
+    "slug": "turan",
+    "name": "Arda Turan",
+    "position": "FW"
+  },
+  {
+    "slug": "taffarel",
+    "name": "Cláudio Taffarel",
+    "position": "GK"
+  },
+  {
+    "slug": "carlos",
+    "name": "Roberto Carlos",
+    "position": "DF"
+  },
+  {
+    "slug": "zidane",
+    "name": "Zinédine Zidane",
+    "position": "MF"
+  },
+  {
+    "slug": "ribery",
+    "name": "Franck Ribéry",
+    "position": "FW"
+  },
+  {
+    "slug": "etoo",
+    "name": "Samuel Eto’o",
+    "position": "FW"
+  },
+  {
+    "slug": "drogba",
+    "name": "Didier Drogba",
+    "position": "FW"
+  },
+  {
+    "slug": "icardi",
+    "name": "Mauro Icardi",
+    "position": "FW"
+  },
+  {
+    "slug": "osimhen",
+    "name": "Victor Osimhen",
+    "position": "FW"
+  },
+  {
+    "slug": "alex",
+    "name": "Alex",
+    "position": "MF"
+  },
+  {
+    "slug": "sneijder",
+    "name": "Wesley Sneijder",
+    "position": "MF"
+  },
+  {
+    "slug": "muslera",
+    "name": "Fernando Muslera",
+    "position": "GK"
+  },
+  {
+    "slug": "gomez",
+    "name": "Mario Gómez",
+    "position": "FW"
+  },
+  {
+    "slug": "dzeko",
+    "name": "Edin Džeko",
+    "position": "FW"
+  },
+  {
+    "slug": "guler",
+    "name": "Arda Güler",
+    "position": "MF"
+  },
+  {
+    "slug": "mbappe",
+    "name": "Kylian Mbappé",
+    "position": "FW"
+  },
+  {
+    "slug": "messi",
+    "name": "Lionel Messi",
+    "position": "FW"
+  }
+]

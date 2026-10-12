@@ -272,16 +272,6 @@ h3 {
   padding-bottom: 72px;
 }
 
-.eyebrow {
-  margin: 0 0 14px;
-  font-family: var(--display);
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 2.4px;
-  text-transform: uppercase;
-  color: var(--volt);
-}
-
 .hero h1 {
   font-size: clamp(46px, 8.4vw, 104px);
   font-weight: 800;
@@ -919,5 +909,325 @@ footer p {
 
   .modes li:hover {
     transform: none;
+  }
+}
+
+#stage {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.no-scene #stage {
+  display: none;
+}
+
+.home .hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 24px;
+  min-height: min(78vh, 720px);
+  padding-bottom: 48px;
+}
+
+.hero-copy {
+  position: relative;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 7px 16px 7px 12px;
+  border: 1.5px solid var(--volt);
+  border-radius: 999px;
+  background: rgba(200, 255, 46, 0.1);
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+
+.badge::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--volt);
+  box-shadow: 0 0 14px var(--volt);
+}
+
+.hero-stage {
+  position: relative;
+  align-self: stretch;
+  min-height: 420px;
+}
+
+.hero-stage .fallback {
+  position: absolute;
+  inset: 0;
+  width: min(72%, 380px);
+  height: auto;
+  margin: auto;
+  filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+}
+
+.has-scene .hero-stage .fallback,
+.has-scene .phone .fallback {
+  visibility: hidden;
+}
+
+.promise {
+  position: relative;
+  margin-top: 72px;
+  padding: 44px 40px;
+  overflow: hidden;
+  border: 1.5px solid var(--volt);
+  border-radius: 22px;
+  background:
+    radial-gradient(520px 260px at 88% 0%, rgba(200, 255, 46, 0.18), transparent 70%),
+    linear-gradient(150deg, rgba(27, 36, 48, 0.92), rgba(5, 7, 10, 0.92));
+}
+
+.promise h2 {
+  font-size: clamp(44px, 7.2vw, 88px);
+  font-weight: 800;
+  font-style: italic;
+  line-height: 0.95;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+
+.promise p {
+  max-width: 34em;
+  margin: 16px 0 0;
+  font-size: 21px;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.showcase-body {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 40px;
+}
+
+.phone {
+  position: relative;
+  height: min(76vh, 640px);
+  min-height: 460px;
+}
+
+.phone .fallback {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: 100%;
+  margin: 0 auto;
+  border: 6px solid var(--panel-raised);
+  border-radius: 34px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.screen-note {
+  display: none;
+  margin: 0;
+  min-height: 3em;
+  font-size: 17px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted);
+}
+
+.screens {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.screens button {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-height: 64px;
+  padding: 16px 20px;
+  border: 1.5px solid var(--stroke);
+  border-radius: var(--radius);
+  background: rgba(18, 24, 33, 0.82);
+  color: var(--body);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.screens button:hover {
+  border-color: var(--stroke-bright);
+}
+
+.screens button:focus-visible {
+  outline: 3px solid var(--volt);
+  outline-offset: 3px;
+}
+
+.screens button[aria-pressed="true"] {
+  border-color: var(--volt);
+  background: rgba(200, 255, 46, 0.09);
+}
+
+.screens strong {
+  font-family: var(--display);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.screens button[aria-pressed="true"] strong {
+  color: var(--volt);
+}
+
+.screens span {
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.how .board {
+  max-width: 520px;
+  margin: 0 auto;
+  transform: none;
+}
+
+.motion {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid var(--stroke-bright);
+  border-radius: 50%;
+  background: rgba(10, 13, 18, 0.88);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.motion[hidden] {
+  display: none;
+}
+
+.motion svg {
+  fill: currentColor;
+}
+
+.motion .play,
+.motion[data-state="paused"] .pause {
+  display: none;
+}
+
+.motion[data-state="paused"] .play {
+  display: inline;
+}
+
+.motion:hover {
+  border-color: var(--volt);
+}
+
+.motion:focus-visible {
+  outline: 3px solid var(--volt);
+  outline-offset: 3px;
+}
+
+@media (max-width: 960px) {
+  .home .hero {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    min-height: 0;
+  }
+
+  .hero-stage {
+    order: -1;
+    min-height: 0;
+    height: min(44vh, 75vw);
+    max-height: 420px;
+  }
+
+  .showcase-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+
+  .phone {
+    height: 56vh;
+    min-height: 400px;
+  }
+
+  .screen-note {
+    display: block;
+  }
+
+  .screens {
+    order: -1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .screens button {
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 16px;
+  }
+
+  .screens strong {
+    font-size: 20px;
+  }
+
+  .screens span {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .promise {
+    margin-top: 56px;
+    padding: 32px 22px;
+  }
+
+  .promise p {
+    font-size: 18px;
+  }
+
+  .badge {
+    font-size: 16px;
+  }
+
+  .screens strong {
+    font-size: 19px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .screens button {
+    transition: none;
   }
 }

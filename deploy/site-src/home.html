@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="{{language}}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}" />
+    <meta name="theme-color" content="#0a0d12" />
+    <link rel="canonical" href="{{origin}}{{homeHref}}" />
+    <link rel="icon" type="image/png" href="/img/favicon.png" />
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{origin}}{{homeHref}}" />
+    <meta property="og:title" content="{{title}}" />
+    <meta property="og:description" content="{{shareDescription}}" />
+    <meta property="og:image" content="https://challengegoal.app/img/share.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/BarlowCondensed_800ExtraBold_Italic.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="stylesheet" href="/site.css?v={{version}}" />
+  </head>
+  <body class="home">
+    <a class="skip" href="#content">{{skip}}</a>
+    <canvas id="stage" aria-hidden="true"></canvas>
+    <header class="bar">
+      <a class="brand" href="{{homeHref}}"><picture><source srcset="/img/flame.webp" type="image/webp" media="(prefers-reduced-motion: no-preference)" /><img src="/img/flame.png" alt="" width="74" height="44" /></picture>CHALLENGE<span>GOAL</span></a>
+      <nav class="links" aria-label="{{navLabel}}">
+        <a href="#{{idGames}}">{{navGames}}</a>
+        <a href="#{{idFeatures}}">{{navFeatures}}</a>
+        <a href="#{{idQuestions}}">{{navQuestions}}</a>
+      </nav>
+    </header>
+
+    <main id="content">
+      <div class="wrap hero">
+        <div class="hero-copy">
+          <p class="badge">{{noAdsTitle}}</p>
+          <h1>{{heroStart}} <em>{{heroAccent}}</em></h1>
+          <p class="lead">{{lead}}</p>
+          <ul class="stores" aria-label="{{storesLabel}}">
+            <li><small>{{soon}}</small><strong>Google Play</strong></li>
+            <li><small>{{soon}}</small><strong>App Store</strong></li>
+          </ul>
+        </div>
+        <div class="hero-stage" data-anchor="ball" aria-hidden="true">
+          <img class="fallback" src="/img/mark.png" alt="" width="512" height="512" />
+        </div>
+      </div>
+
+      <div class="wrap">
+        <dl class="numbers">
+          <div>
+            <dt>8</dt>
+            <dd>{{numberGames}}</dd>
+          </div>
+          <div>
+            <dt>{{numberPlayersValue}}</dt>
+            <dd>{{numberPlayers}}</dd>
+          </div>
+          <div>
+            <dt>{{numberMatchValue}}</dt>
+            <dd>{{numberMatch}}</dd>
+          </div>
+          <div>
+            <dt>{{numberDailyValue}}</dt>
+            <dd>{{numberDaily}}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="wrap">
+        <section class="promise" aria-labelledby="promise-title">
+          <h2 id="promise-title">{{noAdsTitle}}</h2>
+          <p>{{noAdsBody}}</p>
+        </section>
+      </div>
+
+      <section class="wrap showcase" aria-labelledby="showcase-title">
+        <div class="heading">
+          <h2 id="showcase-title">{{showcaseTitle}}</h2>
+          <p>{{showcaseIntro}}</p>
+        </div>
+        <div class="showcase-body">
+          <div class="phone" data-anchor="phone" data-label="{{phoneLabel}}" role="img" aria-label="{{phoneLabel}}: {{screenHome}}">
+            <img class="fallback" src="/img/screens/{{screens}}/home.webp" alt="" width="540" height="1103" />
+          </div>
+          <p class="screen-note">{{gamesIntro}}</p>
+          <ul class="screens">
+            <li><button type="button" data-screen="home" aria-pressed="true"><strong>{{screenHome}}</strong><span>{{gamesIntro}}</span></button></li>
+            <li><button type="button" data-screen="puzzle" aria-pressed="false"><strong>{{featureDailyName}}</strong><span>{{featureDailyBody}}</span></button></li>
+            <li><button type="button" data-screen="duel" aria-pressed="false"><strong>{{gameDuelName}}</strong><span>{{gameDuelBody}}</span></button></li>
+            <li><button type="button" data-screen="chain" aria-pressed="false"><strong>{{gameChainName}}</strong><span>{{gameChainBody}}</span></button></li>
+            <li><button type="button" data-screen="auction" aria-pressed="false"><strong>{{gameAuctionName}}</strong><span>{{gameAuctionBody}}</span></button></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="wrap" id="{{idGames}}" aria-labelledby="{{idGames}}-title">
+        <div class="heading">
+          <h2 id="{{idGames}}-title">{{gamesTitle}}</h2>
+          <p>{{gamesIntro}}</p>
+        </div>
+        <ol class="modes">
+          <li>
+            <h3>XOX</h3>
+            <p>{{gameGridBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameDuelName}}</h3>
+            <p>{{gameDuelBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameDraftName}}</h3>
+            <p>{{gameDraftBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameHigherName}}</h3>
+            <p>{{gameHigherBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameChainName}}</h3>
+            <p>{{gameChainBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameAuctionName}}</h3>
+            <p>{{gameAuctionBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameTopTenName}}</h3>
+            <p>{{gameTopTenBody}}</p>
+          </li>
+          <li>
+            <h3>{{gameCareerName}}</h3>
+            <p>{{gameCareerBody}}</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="wrap how" aria-labelledby="how-title">
+        <div class="heading">
+          <h2 id="how-title">{{howTitle}}</h2>
+          <p>{{gameGridBody}}</p>
+        </div>
+        <figure class="board">
+          <div class="grid" role="img" aria-label="{{boardLabel}}">
+            <span class="corner"></span>
+            <span class="rule top">{{countryTurkey}}</span>
+            <span class="rule top">{{countryBrazil}}</span>
+            <span class="rule top">{{countryFrance}}</span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-gs"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-gs)"><rect x="0" y="0" width="100" height="112" fill="#FDB912"/><rect x="50" y="0" width="50" height="112" fill="#A90432"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#A90432" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">GS</text></svg><span>Galatasaray</span></span>
+            <span class="cell x card"><b>{{roleFW}}</b><img src="/img/players/arda-turan.webp" alt="" width="88" height="88" loading="lazy" /><span>Arda Turan</span></span>
+            <span class="cell o card"><b>{{roleGK}}</b><img src="/img/players/taffarel.webp" alt="" width="88" height="88" loading="lazy" /><span>Cláudio Taffarel</span></span>
+            <span class="cell"></span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-rma"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-rma)"><rect x="0" y="0" width="100" height="112" fill="#FFFFFF"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#FEBE10" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">RMA</text></svg><span>Real Madrid</span></span>
+            <span class="cell"></span>
+            <span class="cell x card"><b>{{roleDF}}</b><img src="/img/players/roberto-carlos.webp" alt="" width="88" height="88" loading="lazy" /><span>Roberto Carlos</span></span>
+            <span class="cell o card"><b>{{roleMF}}</b><img src="/img/players/zidane.webp" alt="" width="88" height="88" loading="lazy" /><span>Zinédine Zidane</span></span>
+            <span class="rule"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-fcb"><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z"/></clipPath></defs><g clip-path="url(#shield-fcb)"><rect x="0" y="0" width="100" height="112" fill="#DC052D"/></g><path d="M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z" fill="none" stroke="#0066B2" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed','Arial Narrow',sans-serif" font-size="18" font-weight="700" fill="#05070A">FCB</text></svg><span>{{clubBayern}}</span></span>
+            <span class="cell next"></span>
+            <span class="cell"></span>
+            <span class="cell o card"><b>{{roleFW}}</b><img src="/img/players/ribery.webp" alt="" width="88" height="88" loading="lazy" /><span>Franck Ribéry</span></span>
+          </div>
+          <figcaption>{{boardCaption}}</figcaption>
+          <details class="credits">
+            <summary>{{creditsTitle}}</summary>
+            <p>{{creditsIntro}}</p>
+            <ul>{{credits}}</ul>
+          </details>
+        </figure>
+      </section>
+
+      <section class="wrap" id="{{idFeatures}}" aria-labelledby="{{idFeatures}}-title">
+        <div class="heading">
+          <h2 id="{{idFeatures}}-title">{{featuresTitle}}</h2>
+          <p>{{featuresIntro}}</p>
+        </div>
+        <div class="features">
+          <article>
+            <h3>{{featureOnlineName}}</h3>
+            <p>{{featureOnlineBody}}</p>
+          </article>
+          <article>
+            <h3>{{featureFriendName}}</h3>
+            <p>{{featureFriendBody}}</p>
+          </article>
+          <article>
+            <h3>{{featureDailyName}}</h3>
+            <p>{{featureDailyBody}}</p>
+          </article>
+          <article>
+            <h3>{{featureLevelsName}}</h3>
+            <p>{{featureLevelsBody}}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="wrap" id="{{idQuestions}}" aria-labelledby="{{idQuestions}}-title">
+        <div class="heading">
+          <h2 id="{{idQuestions}}-title">{{questionsTitle}}</h2>
+        </div>
+        <div class="questions">
+          <details>
+            <summary>{{question1}}</summary>
+            <p>{{answer1}}</p>
+          </details>
+          <details>
+            <summary>{{question2}}</summary>
+            <p>{{answer2}}</p>
+          </details>
+          <details>
+            <summary>{{question3}}</summary>
+            <p>{{answer3}}</p>
+          </details>
+          <details>
+            <summary>{{question4}}</summary>
+            <p>{{answer4}}</p>
+          </details>
+          <details>
+            <summary>{{question5}}</summary>
+            <p>{{answer5}}</p>
+          </details>
+          <details>
+            <summary>{{question6}}</summary>
+            <p>{{answer6Start}} <a href="{{deleteHref}}">{{answer6Link}}</a>{{answer6End}}</p>
+          </details>
+        </div>
+      </section>
+
+      <div class="wrap">
+        <aside class="contact" aria-labelledby="contact-title">
+          <h2 id="contact-title">{{contactTitle}}</h2>
+          <p>{{contactBody}}</p>
+          <a href="mailto:destek@challengegoal.app">destek@challengegoal.app</a>
+        </aside>
+      </div>
+    </main>
+
+    <footer>
+      <nav aria-label="{{legalLabel}}">
+        <a href="{{privacyHref}}">{{privacyLabel}}</a>
+        <a href="{{termsHref}}">{{termsLabel}}</a>
+        <a href="{{deleteHref}}">{{deleteLabel}}</a>
+        <a href="mailto:destek@challengegoal.app">{{contactLabel}}</a>
+      </nav>
+      <p>{{footerNote}}</p>
+    </footer>
+
+    <button class="motion" type="button" hidden aria-label="{{motionPause}}" data-pause="{{motionPause}}" data-play="{{motionPlay}}">
+      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><path class="pause" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="play" d="M8 5l11 7-11 7z"/></svg>
+    </button>
+    <script type="application/json" id="scene-data">{{sceneData}}</script>
+    <script type="module" src="/site.js?v={{version}}"></script>
+  </body>
+</html>
