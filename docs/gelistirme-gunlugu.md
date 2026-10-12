@@ -994,6 +994,15 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Sunucu dağıtımı.** Canlı veritabanı yedeklendi, o sırada maç yoktu. Sunucu yeni kodla dağıtıldı; veri dosyası veri birimine eski sürümüyle (`20261009123459`) taşındı, depo artık yeni veriyi içerse de canlı sunucu eskisini sunuyor. `/v1/version` şema sürümünü ve boyutu veriyor, `/v1/data/20261009123459.db` 200 dönüyor (sıkıştırılmış 9 MB), başka sürüm 404.
 - **Sırada.** Yeni derlemeler kullanıcının onayıyla alınacak; veri (`sh deploy/deploy.sh data`, önce `portraits`) yeni derlemeler mağazalarda olunca yayımlanacak.
 
+### iOS yapı 8 ve Android sürüm kodu 15 (12 Ekim 2026)
+
+- Kullanıcı iki derlemeyi onayladı. İkisi de indirme özelliğini ve yaz transferlerini içeren veriyi (`20261012143758`) taşıyor; uygulama sürümü hâlâ 1.0.0.
+- **iOS yapı 8** derlendi, App Store Connect'e yüklendi ve Apple tarafından işlendi (VALID). TestFlight'ta denenebilir. iOS'ta indirme yolu henüz görülmedi.
+- **Android sürüm kodu 15** derlendi ve emülatörde canlı sunucuya karşı denendi (sunucu o sırada eski veriyi sunuyordu):
+  - Sürüm kodu 14'ün üzerine kurulunca uygulama, eski sürümden kalan `football-20261009123459.db` dosyasını buldu ve indirme yapmadan ona geçti.
+  - Uygulama verisi silinip sıfırdan açılınca "Veriler güncelleniyor" ekranı yaklaşık iki saniye göründü; 19.357.696 baytlık dosya canlı sunucudan indi, seçim kaydedildi ve uygulama tanıtım ekranına geçti. Misafir hesapla ana ekrana kadar gidildi (canlıda `guest613105` adlı bir deneme hesabı oluştu).
+- **Dikkat.** iOS yapı 8 de 1.0.0. Apple yapı 7'yi onaylarsa aynı sürüme yeni yapı eklenemez; düzeltme için 1.0.1 numaralı yeni bir derleme gerekir. Yapı 8 ancak onaydan önce başvurudaki yapının yerine konursa kullanılabilir.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
