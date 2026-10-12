@@ -1022,6 +1022,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Deneme.** Paket emülatöre kuruldu (kullanıcının ekran ölçüsü, canlı sunucu): Kadro Kur ve Zincir'de düğmeler tamamen görünüyor, bot maçları açılıyor.
 - **Yerler.** Paket `data/build/store/submission/google-play/challengegoal-1.0.0-16.aab`. Anahtar dosyaları depo dışındaki gizli klasöre taşındı (`android-credentials.json`, `android-upload-keystore.jks`). Aynı işi tek komutla yapan betik: `python deploy/android_local_build.py <sürüm kodu>`.
 
+### Yeni verinin yayımlanması ve mağaza durumu (12 Ekim 2026, akşam)
+
+- **App Store.** Kullanıcı başvuruyu geri çekip yapı 9 ile yeniden gönderdi. İlk gönderimde dört gol paketi başvuruya girmemişti (App Store Connect API'sinde paketler "Ready to Submit", başvuru 1 öğe); ilk paketler sürümle birlikte incelenmek zorunda olduğu için kullanıcı yeniden çekip paketleri ekledi. Son durum API'den doğrulandı: 5 öğe, yapı 9 ve dört paket "Waiting for Review", yayın şekli elle.
+- **Veri yayını.** Canlı veritabanı yedeklendi, o an maç yoktu, yeni verideki 7.030 portrenin hepsinin sunucuda olduğu kontrol edildi. `sh deploy/deploy.sh data` ile veri sürümü `20261012143758` yayımlandı. `/v1/version` yeni sürümü veriyor, yeni dosya indirilebiliyor (sıkıştırılmış 9,1 MB), eski dosya 404, günün bulmacası cevap veriyor, günlükte hata yok.
+- **Etkisi.** iOS yapı 9 ve Android sürüm kodu 16 kendi içlerindeki veriyle açılır, indirme gerekmez. İndirme özelliği olan ama eski veriyle kurulmuş bir derleme yok. İndirme özelliği olmayan eski deneme kurulumları (iOS yapı 7 ve öncesi, Android 14 ve öncesi) zorunlu güncelleme ekranını görür.
+- **Görülmeyen.** Veri indirme iPhone'da hiç çalışmadı. Sunucu kayıtlarında yapı 9'un bağlantısı yoktu; yapı 8'le yapılan kurulumda eski veri dosyası telefonda kaldığı için indirme tetiklenmedi. Kullanıcıya şimdi denemesi önerildi; denemeden yayımlamayı seçti. iPhone'da indirme ilk kez bir sonraki veri güncellemesinde çalışacak; ondan önce bir iPhone'da denenmeli (sunucu bir süreliğine farklı bir veri sürümüne alınarak ya da ayrı bir deneme sunucusuyla).
+- **Play.** Onaylanmış sürüm kodu 12 yayınlanmadı; yerine yerel derlenen 16 yüklenecek (`data/build/store/submission/google-play/challengegoal-1.0.0-16.aab`). Betikle ikinci kez derlenen paket ilkiyle bayt bayt aynı içerikte çıktı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
@@ -1265,3 +1273,5 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 | `d9e413f` | 12 Ekim | Futbol veritabanının sunucudan indirilebilmesi ve imajın dışına alınması |
 | `d2df962` | 12 Ekim | Açılışta veri farkının mağaza güncellemesi yerine indirmeyle çözülmesi |
 | `2e17a05` | 12 Ekim | Yaz transfer dönemini içeren uygulama veritabanı |
+| `4d44089` | 12 Ekim | Kadro Kur ve Zincir ekranlarının kısa telefonlara sığdırılması |
+| `3db874c` | 12 Ekim | Yerel Android derleme betiği |
