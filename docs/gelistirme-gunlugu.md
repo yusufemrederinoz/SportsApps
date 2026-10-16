@@ -1041,6 +1041,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Görsel kaynakları.** Liste 17 fotoğraftan 46'ya çıktı: 3B kartlardaki ve ekran görüntülerinde yüzü görünen futbolcuların hepsi sayılıyor. Çizimi olmayan iki futbolcu (Tarık Hodžić, Matteo Darmian) ekran görüntüsünde yüzsüz göründüğü için listede yok.
 - **Görülmeyen.** Sahne gerçek telefonda denenmedi. Dört yeni dilin sayfasında telefon İngilizce ekranları gösteriyor.
 
+### App Store'un ikinci reddi: izleme izni ve kulüp çağrışımı (16 Ekim 2026)
+
+- Apple yapı 9'u iki gerekçeyle geri çevirdi. **2.1:** İnceleyen kişi iOS 27'de izleme izni penceresini görememiş; pencere açılışta değil Gol mağazası ilk açıldığında çıkıyor (Google'ın rıza aracı gösteriyor). Apple ya pencerenin çıktığını gösteren gerçek cihaz kaydı ya da gizlilik beyanından izlemenin kaldırılmasını istedi. **4.1(a):** Mağaza bilgileri izinsiz olarak gerçek takımları ya da ligleri andırıyor.
+- **Karar.** Kullanıcı yeni derleme çıkarmadan çözmeyi seçti. AdMob'daki IDFA mesajı yayımlı ve iOS uygulamasına bağlı. Kullanıcı iPhone'da yapı 9 ile sıfırdan kurulumdan başlayan bir kayıt aldı: misafir girişi, Gol mağazası, Google'ın rıza formu, iOS izleme penceresi, ardından "reklam yok (no-fill)". Kayıt kare kare incelendi; Apple'ın istediği üç şey de görünüyor. Kaydın orijinal kalitede yüklenmesi önerildi (WhatsApp kopyası 384×848).
+- **4.1(a) için.** Kullanıcı yalnızca App Store sayfasının değişmesini seçti; Google Play'deki onaylı sayfa aynı kaldı. App Store açıklamasından "Süper Lig ve Avrupa'nın beş büyük ligi" cümlesi ve "kulüp armaları özgün çizimlerdir" ifadesi çıkarıldı (altı dil); anahtar kelimelerden "süper lig", "serie a" ve "ligue 1" çıktı. Beş görselden üçü (Günün Bulmacası: AC Milan, Bayern, Dortmund ve armaları; Zincir: Liverpool; Açık Artırma: Olympique Lyonnais) kulüpsüz ekranlarla değiştirildi: Hangisi Yüksek, tanıtımın "8 oyun" sayfası, arkadaş odası. Yeni görüntüler yerel derlenen sürüm kodu 16 ile emülatörde, canlı sunucuya bağlı ekran hesabıyla alındı. İlk 10 denendi ama gelen iki liste de kulüp listesiydi.
+- **İnceleme notu.** İzleme penceresinin nerede çıktığını anlatan satır genişletildi (3.929 karakter, sınır 4.000).
+- **Dikkat.** Emülatörde giriş formuna yazarken klavye açılınca alanlar yukarı kaydı; ikinci alana eski koordinatla dokunulunca şifre e-posta alanına yazıldı ve arayüz dökümüyle bu çalışmanın çıktısına düştü. Ekran hesabının (`ekran@challengegoal.app`) şifresinin değiştirilmesi önerildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -269,6 +269,8 @@ Dil desteği (9 Ekim 2026): uygulama, posta, bildirimler, site, yasal sayfalar v
 
 Mağaza durumu (12 Ekim 2026 akşamı): App Store'da 1.0.0 (yapı 9) dört gol paketiyle birlikte incelemede; yayın elle yapılacak. Google Play'de onaylanan sürüm kodu 12 yayınlanmadı; yerine bu bilgisayarda derlenen sürüm kodu 16 yüklenecek. Sunucu yaz transferlerini içeren veriyi (`20261012143758`) sunuyor; bundan sonraki veri güncellemeleri mağaza sürümü gerektirmiyor (`sh deploy/deploy.sh data`).
 
+App Store (16 Ekim 2026): yapı 9 izleme izni penceresi (2.1) ve mağaza sayfasındaki kulüp ve lig çağrışımı (4.1(a)) yüzünden geri döndü. Yeni derleme gerekmedi: iPhone'da izin penceresinin kaydı alındı, App Store açıklaması, anahtar kelimeler ve üç görsel kulüpsüz hale getirildi; yeniden gönderim kullanıcıda.
+
 Açık noktalar: veri indirme iPhone'da hiç denenmedi (bir sonraki veri güncellemesinden önce denenmeli); Expo'nun ücretsiz Android derleme hakkı 1 Kasım'a kadar dolu (yerel derleme betiği var).
 
 Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.
