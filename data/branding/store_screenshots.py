@@ -10,7 +10,10 @@ FONTS = ROOT / "deploy" / "site" / "fonts"
 RAW = ROOT / "data" / "build" / "store" / "raw"
 OUT = ROOT / "data" / "build" / "store" / "screenshots"
 CAPTIONS = json.loads((HERE / "store_captions.json").read_text(encoding="utf-8"))
-ORDER = ("home", "puzzle", "duel", "auction", "chain")
+ORDERS = {
+    "play": ("home", "puzzle", "duel", "auction", "chain"),
+    "appstore": ("home", "higher", "duel", "games", "friend"),
+}
 SCREEN_CROP = (0, 124, 1080, 2330)
 LAYOUTS = {
     "play": {"size": (1080, 1920), "title": 112, "subtitle": 40, "top": 92, "screen_top": 350, "bottom": 46},
@@ -110,7 +113,7 @@ def main():
         for store in LAYOUTS:
             folder = OUT / language / store
             folder.mkdir(parents=True, exist_ok=True)
-            for index, key in enumerate(ORDER, start=1):
+            for index, key in enumerate(ORDERS[store], start=1):
                 path = folder / f"{index:02d}-{key}.png"
                 compose(language, key, store).save(path, optimize=True)
                 print(path.relative_to(ROOT))

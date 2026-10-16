@@ -4,13 +4,19 @@
     "puzzle": ["HER GÜN YENİ BULMACA", "Satıra ve sütuna uyan futbolcuyu yaz"],
     "duel": ["KART DÜELLOSU", "7 kartını seç; sorular gizli"],
     "auction": ["AÇIK ARTIRMA", "Artır ya da \"Say bakalım\" de"],
-    "chain": ["ZİNCİR", "Aynı kulüpte oynamış birini söyle"]
+    "chain": ["ZİNCİR", "Aynı kulüpte oynamış birini söyle"],
+    "higher": ["HANGİSİ YÜKSEK", "İki futbolcu, bir soru. Hangisi önde?"],
+    "games": ["SEKİZ OYUN", "Online, arkadaşınla ya da bota karşı oyna"],
+    "friend": ["ARKADAŞINLA OYNA", "Oda kur, kodu paylaş"]
   },
   "en": {
     "home": ["NO FORCED ADS", "8 football trivia games in one app"],
     "puzzle": ["A NEW PUZZLE EVERY DAY", "Name a footballer who fits the row and the column"],
     "duel": ["CARD DUEL", "Pick 7 cards. The questions are hidden"],
     "auction": ["ANSWER AUCTION", "Raise, or say \"Prove it\""],
-    "chain": ["CLUB CHAIN", "Name someone who played at the same club"]
+    "chain": ["CLUB CHAIN", "Name someone who played at the same club"],
+    "higher": ["HIGHER OR LOWER", "Two footballers, one question. Who's ahead?"],
+    "games": ["EIGHT GAMES", "Play online, with a friend or against the bot"],
+    "friend": ["PLAY A FRIEND", "Open a room and share the code"]
   }
 }
