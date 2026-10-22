@@ -721,7 +721,7 @@ Reklam başına 2 gol, oyuncu başına günde en çok 5 reklam (`packages/protoc
 - Reklam, oyuncunun kimliği `user_id` olarak verilerek yüklenir. Oyuncu ödülü hak edip reklamı kapatınca uygulama `GET /ads` ucunu 1,5 saniye arayla en çok 8 kez sorar; kalan hak azaldıysa bakiyeyi günceller, azalmadıysa "ödülün birazdan eklenecek" der. Gol her durumda sunucudaki bildirimle yazılır.
 - Satırın durumları: hazır, hazırlanıyor, bugünlük bitti, şu an reklam yok (dokununca yeniden dener).
 - Rıza seçeneği gereken oyuncuya hesap ekranında "Reklam tercihleri" bağlantısı gösterilir (`features/account/ad-privacy-link.tsx`).
-- iOS'ta izleme izni metni ayarda hazırdır; izin penceresi AdMob'da IDFA açıklama mesajı yayınlanınca çıkar.
+- iOS'ta izleme izni penceresini uygulama kendisi, ilk ekran açılınca ister (`ads/use-tracking-request.ts`, `expo-tracking-transparency`); izin daha önce sorulduysa bir şey göstermez. Reklam aracı (`mobileAds().initialize()`) yalnızca Gol mağazasında ya da puan korumada, Google'ın rıza akışından sonra başlar; yani izin cevabından önce izleme verisi toplanmaz. Yapı 9'a kadar pencereyi AdMob'un IDFA mesajı gösteriyordu ve yalnızca Gol mağazası açılınca çıkıyordu; Apple iki incelemede de bulamadı (bkz. günlük, 16 ve 22 Ekim 2026).
 
 ## Kulüp armaları
 
@@ -785,6 +785,7 @@ Mağazalar ekran görüntülerinin uygulamanın gerçek ekranları olmasını is
 - **Konum.** Ham görüntüler `data/build/store/raw/<dil>/`, görseller `data/build/store/screenshots/<dil>/<mağaza>/`, teslim klasörü `data/build/store/submission/` (simge ve tanıtım görseliyle birlikte). Hiçbiri depoya girmez.
 - **Tablet.** `supportsTablet` kapalı olduğu için iPad görüntüsü gerekmez.
 - **iOS imza profili.** Uygulamaya yeni bir yetki (bildirim gibi) eklendiğinde etkileşimsiz EAS derlemesi eski profili yeniden kullanır ve Xcode "profile doesn't include the … capability" hatası verir. Yetki Apple tarafında uygulama kimliğine eklenince eski profil geçersiz olur; `EXPO_ASC_*` değişkenleriyle çalıştırılan sonraki derleme yenisini üretir.
+- **EAS arşivi.** EAS CLI yüklenecek dosyaları depo kökündeki `.easignore` ile seçer; bu dosya varken `.gitignore` dosyalarına bakmaz. Dosya, Windows'ta alt klasör `.gitignore` kurallarının uygulanmaması yüzünden eklendi (yerel `app/android` 3,3 GB arşive giriyordu). Yeni bir ignore kuralı gerekirse oraya da yazılmalı. Arşiv yaklaşık 30 MB olmalı; büyük çıkarsa yükleme durdurulup nedenine bakılmalı, çünkü kesilen her deneme uzak yapı numarasını ilerletir.
 - **App Store'a yükleme.** `app/eas.json` içindeki `submit.production.ios` App Store Connect uygulama numarasını ve API anahtarının yolunu taşır; `eas submit --platform ios --id <derleme> --non-interactive` yeterlidir.
 
 ## Site
@@ -934,7 +935,7 @@ App Store inceleme yönergeleri 9 Ekim 2026'da okundu ve uygulama onlara göre t
 | 4.8 Giriş servisleri | Var | Google ile girişin yanında Apple ile giriş, Apple'ın kendi düğmesiyle |
 | 5.1.1 (i) Gizlilik politikası | Var | Karşılama ve hesap ekranlarında gizlilik politikası ve kullanım koşulları bağlantıları, uygulamanın diline göre (`legal/links.ts`) |
 | 5.1.1 (v) Hesap | Var | Misafir olarak oynanır; hesap uygulama içinden silinir, Apple jetonu iptal edilir |
-| 5.1.2 İzleme izni | Kullanıcıda | Reklam izni metni altı dilde tanımlı; izin penceresi AdMob'da "IDFA mesajı" yayımlanınca çıkar |
+| 5.1.2 İzleme izni | Uygulamada (yapı 10'dan beri) | Reklam izni metni altı dilde tanımlı; pencere iOS'ta ilk açılışta uygulamanın kendisi tarafından istenir |
 | 5.2.1 Fikrî haklar | Risk | Gerçek kulüp logosu yok, armalar özgün, portreler serbest lisanslı fotoğraflardan çizim ve kaynakları listeli. Futbolcu ve kulüp adları için lisans yok; Apple hak belgesi isterse kodla giderilemez |
 
 Google Play'in kullanıcı verisi politikası da gizlilik politikasının uygulama içinden açılabilmesini ister; aynı bağlantılar onu da karşılar.
@@ -965,7 +966,7 @@ Gizlilik beyanı (App Privacy). İlk beş satır kendi sunucumuzun tuttuğu veri
 | Diagnostics → Performance Data (AdMob) | Analytics, Third-Party Advertising | Evet | Hayır |
 | Diagnostics → Crash Data (AdMob) | Analytics, Third-Party Advertising | Hayır | Hayır |
 
-İzleme beyan edildiği için izleme izni penceresinin gerçekten çıkması gerekir; pencere AdMob'daki IDFA mesajına bağlıdır. Mesaj yayımlanmadan incelemeye gönderilirse beyanla uygulama çelişir (5.1.2).
+İzleme beyan edildiği için izleme izni penceresinin gerçekten çıkması gerekir. Yapı 10'dan beri pencereyi uygulama ilk açılışta kendisi ister; AdMob'daki IDFA mesajına bağlı değildir. İnceleyici pencereyi göremezse, cihazda Ayarlar → Gizlilik ve Güvenlik → İzleme → "Uygulamaların İzleme İsteğinde Bulunmasına İzin Ver" kapalı olabilir; kapalıyken iOS pencereyi hiç göstermez.
 
 ## Testler
 

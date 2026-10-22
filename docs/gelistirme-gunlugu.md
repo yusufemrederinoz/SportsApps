@@ -1049,6 +1049,15 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İnceleme notu.** İzleme penceresinin nerede çıktığını anlatan satır genişletildi (3.929 karakter, sınır 4.000).
 - **Dikkat.** Emülatörde giriş formuna yazarken klavye açılınca alanlar yukarı kaydı; ikinci alana eski koordinatla dokunulunca şifre e-posta alanına yazıldı ve arayüz dökümüyle bu çalışmanın çıktısına düştü. Ekran hesabının (`ekran@challengegoal.app`) şifresinin değiştirilmesi önerildi.
 
+### App Store'un üçüncü dönüşü: iPad'de izleme izni (22 Ekim 2026)
+
+- 16 Ekim'deki başvuru yalnızca 2.1 ile döndü: inceleyici iPadOS 27'de izleme izni penceresini bulamadı. 4.1(a) tekrar edilmedi; kulüpsüz görseller ve metin yetti.
+- **Neden.** Pencereyi Google'ın rıza aracı (UMP) gösteriyordu ve yalnızca Gol mağazası ilk açıldığında çıkıyordu. Kullanıcının Türkiye'de aldığı kayıtta önce Google'ın rıza formu, ardından pencere çıkmıştı; inceleyicinin bulunduğu bölgede (büyük olasılıkla ABD) rıza formu yok ve pencere tamamen AdMob'un IDFA mesajına bağlı. Bunun orada çalıştığı hiç doğrulanmadı. İki inceleyici de pencereyi açılışta aradı.
+- **Karar.** Kullanıcı yeni yapıyı seçti. Uygulama artık izni iOS'ta ilk ekran açılınca kendisi istiyor (`expo-tracking-transparency`, `ads/use-tracking-request.ts`); izin daha önce sorulduysa bir şey göstermiyor. Uygulama etkin değilken sorulursa iOS pencereyi göstermediği için uygulamanın etkin olması bekleniyor. Reklam aracı hâlâ yalnızca Gol mağazasında ve puan korumada, rıza akışından sonra başlıyor. Android'de değişiklik yok.
+- **Denetim.** Tip denetimi, lint, 155 uygulama testi ve iOS paketlemesi geçti; `expo config` izin metninin değişmediğini gösterdi (paketin kendi eklentisi eklenmedi, yoksa varsayılan İngilizce metin bizimkinin yerine geçerdi). Pencerenin kendisi ancak iPhone'da TestFlight ile görülebilir.
+- **İnceleme notu.** İzleme satırı "ilk açılışta, reklam aracı başlamadan önce" olarak değiştirildi.
+- **Yapı 12.** İlk iki derleme denemesi yükleme sırasında kesildi: arşiv 1,1 GB çıkıyordu. EAS CLI Windows'ta alt klasörlerdeki `.gitignore` kurallarını uygulamıyor; `app/.gitignore` içindeki `/android` atlandığı için 12 Ekim'deki yerel Android derlemesinin 3,3 GB'lık klasörü arşive giriyordu. Depo kökündeki `.easignore` bütün kuralları kökten yazıyor; arşiv 30,6 MB'a indi. Kesilen denemeler EAS'ın uzak sayacını ilerlettiği için yapı numarası 12 oldu (10 ve 11 kullanılmadı). Yapı derlendi ve App Store Connect'e gönderildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

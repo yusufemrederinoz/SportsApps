@@ -660,7 +660,7 @@ ChallengeGoal is a football (soccer) trivia game for fans aged 13 and over. It o
 - Home screen: pick a game and a difficulty, then "Online match", "Versus bot" or "Play a friend" (a private room with a code).
 - Online match pairs you with another player. If nobody is waiting, a computer-controlled opponent joins after a short wait, so a match always starts.
 - "Daily puzzle" and "Leaderboard" are on the home screen. The account screen (top right) has sign-out, the notification switch, "Report a problem or a player", the privacy policy, the terms and "Delete account".
-- The App Tracking Transparency prompt appears the first time the Goal Store is opened (tap the goal balance at the top of the home screen): Google's consent form first, then the system prompt, before any ad is requested. A recording is attached.
+- The App Tracking Transparency prompt appears on first launch, over the first screen, before the ads SDK is started or any ad is requested. A recording is attached.
 - On first launch the app may show "Updating data" for a few seconds while it downloads the current football database (about 9 MB) from our server.
 
 4. EXTERNAL SERVICES
