@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { useTrackingRequest } from '@/ads/use-tracking-request';
 import { AuthProvider } from '@/auth/auth-provider';
 import { OfflineBanner } from '@/components/offline-banner';
 import { Colors } from '@/constants/theme';
@@ -42,6 +43,7 @@ export default function RootLayout() {
   });
   const ready = loaded || error !== null;
   const sync = useDataSync();
+  useTrackingRequest(ready);
 
   useEffect(() => {
     if (ready) {
