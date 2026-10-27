@@ -13,3 +13,5 @@ challengegoal.app {
 www.challengegoal.app {
 	redir https://challengegoal.app{uri} permanent
 }
+
+import /etc/caddy/sites/*.caddy

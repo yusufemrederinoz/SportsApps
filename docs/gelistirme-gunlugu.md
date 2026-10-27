@@ -1058,6 +1058,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İnceleme notu.** İzleme satırı "ilk açılışta, reklam aracı başlamadan önce" olarak değiştirildi.
 - **Yapı 12.** İlk iki derleme denemesi yükleme sırasında kesildi: arşiv 1,1 GB çıkıyordu. EAS CLI Windows'ta alt klasörlerdeki `.gitignore` kurallarını uygulamıyor; `app/.gitignore` içindeki `/android` atlandığı için 12 Ekim'deki yerel Android derlemesinin 3,3 GB'lık klasörü arşive giriyordu. Depo kökündeki `.easignore` bütün kuralları kökten yazıyor; arşiv 30,6 MB'a indi. Kesilen denemeler EAS'ın uzak sayacını ilerlettiği için yapı numarası 12 oldu (10 ve 11 kullanılmadı). Yapı derlendi ve App Store Connect'e gönderildi.
 
+### Paylaşımlı Caddy: diğer projelerin site blokları ayrı dosyalarda (27 Ekim 2026)
+
+- **Sorun.** `deploy/deploy.sh` her dağıtımda sunucudaki `Caddyfile`'ı depodaki kopyayla eziyordu. Aynı Caddy, Derin & Deniz sitesini (12 Ekim'den beri) ve BikeApp API'sini (27 Ekim'den beri) de sunuyor; iki projenin blokları depoda olmadığı için bir sonraki ChallengeGoal dağıtımı ikisini de yayından düşürecekti. BikeApp kurulurken fark edildi.
+- **Çözüm.** `Caddyfile` sonuna `import /etc/caddy/sites/*.caddy` eklendi; `compose.yaml` `./sites` klasörünü Caddy'ye salt okunur bağlıyor, `deploy.sh` klasörü oluşturuyor. Diğer projeler kendi dosyalarını bu klasöre yazıp Caddy'yi yeniliyor. Yapılandırma klasör boşken de geçerli (Caddy yalnızca "No files matching import glob pattern" uyarısı veriyor); iki durum da tek kullanımlık bir Caddy kapsayıcısında doğrulandı.
+- **Geçiş.** Tam dağıtım çalıştırılmadı, çünkü API'yi de yeniden derlerdi. Sunucuya yalnızca yeni `Caddyfile` ve `compose.yaml` kopyalandı (ikisi de geçişten önce depodakiyle aynıydı) ve `docker compose up -d caddy` ile yalnız Caddy yeniden oluşturuldu. Kesinti 4 saniye sürdü; sertifikalar `caddy-data` biriminde durduğu için yeniden alınmadı. Eski dosyaların yedekleri `/opt/challengegoal/*.yedek-20261027130956`.
+- **Çıkmaz.** İlk denemede hazır olma kontrolü Caddy'nin yönetim adresine (`:2019`) `Host: api.challengegoal.app` başlığıyla gitti. Yönetim adresi yalnızca `localhost` kabul ettiği için 403 döndü, betik Caddy'yi hazır değil sanıp eski ayarlara geri döndü (iki kısa yeniden başlatma). Kontrol, sitelere sunucunun kendisinden `curl --resolve` ile HTTPS isteği atacak şekilde değiştirildi.
+- **Tek dosya bağlama tuzağı.** `Caddyfile` kapsayıcıya tek dosya olarak bağlı. Dosyayı yeni bir dosyayla değiştiren araçlar (ör. `sed -i`) kapsayıcının gördüğü kopyayı güncellemez; elle düzenlemede `cat yeni > Caddyfile` kullanılmalı. `sites/` klasör olarak bağlı olduğu için orada bu sorun yok.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

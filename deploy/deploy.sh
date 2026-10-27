@@ -15,7 +15,7 @@ if [ "${1:-}" = "data" ]; then
   exit 0
 fi
 
-$REMOTE "mkdir -p $ROOT/data/portraits $DATA $ROOT/backups $ROOT/site $ROOT/secrets && if [ ! -f $DATA/football.db ] && [ -f $ROOT/source/$BUNDLED/football.db ]; then cp $ROOT/source/$BUNDLED/football.db $ROOT/source/$BUNDLED/version.json $DATA/; fi && rm -rf $ROOT/source && mkdir -p $ROOT/source && chown -R 1000:1000 $ROOT/data"
+$REMOTE "mkdir -p $ROOT/data/portraits $DATA $ROOT/backups $ROOT/site $ROOT/sites $ROOT/secrets &&if [ ! -f $DATA/football.db ] && [ -f $ROOT/source/$BUNDLED/football.db ]; then cp $ROOT/source/$BUNDLED/football.db $ROOT/source/$BUNDLED/version.json $DATA/; fi && rm -rf $ROOT/source && mkdir -p $ROOT/source && chown -R 1000:1000 $ROOT/data"
 git -C "$REPO" -c core.autocrlf=false archive HEAD | $REMOTE "tar -x -C $ROOT/source"
 tar -C "$REPO/deploy" -c compose.yaml Caddyfile backup.sh site | $REMOTE "tar -x -C $ROOT && chmod +x $ROOT/backup.sh"
 if [ "${1:-}" = "portraits" ]; then
