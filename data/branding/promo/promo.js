@@ -581,7 +581,7 @@ function qhigher(texts, start) {
   return `${titleLines(q.hook, start)}
     ${layers.join('')}
     <div class="layer state" style="--start: ${result}; --end: ${NEVER}">
-      <div class="display centered in slam" style="--t: ${result}; top: 800px; font-size: 190px; color: var(--volt)">${q.result}</div>
+      <div class="display centered in slam" style="--t: ${result}; top: 800px; font-size: 140px; color: var(--volt)">${q.result}</div>
       <p class="q-line in rise" style="--t: ${at(result, 0.6)}; top: 1080px">${texts.quiz.more}</p>
       <p class="q-line send in rise" style="--t: ${at(result, 1.3)}; top: 1180px">${texts.quiz.send}</p>
     </div>
