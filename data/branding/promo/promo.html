@@ -1686,6 +1686,326 @@
           transform: rotate(var(--to));
         }
       }
+
+      .q-title {
+        position: absolute;
+        top: 150px;
+        left: 70px;
+        width: 940px;
+        font-size: 150px;
+        color: var(--text);
+      }
+
+      .q-title span,
+      .q-title em {
+        display: block;
+        transform-origin: left center;
+      }
+
+      .q-title em {
+        font-style: inherit;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
+      }
+
+      .q-clues {
+        position: absolute;
+        top: 700px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        align-items: center;
+        gap: 22px;
+      }
+
+      .q-clue {
+        flex: 1;
+        height: 132px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        border: 2px solid var(--stroke);
+        border-radius: 22px;
+        background: linear-gradient(180deg, var(--panel-raised), #0c1017);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 58px;
+        white-space: nowrap;
+      }
+
+      .q-clue svg {
+        height: 96px;
+        width: auto;
+      }
+
+      .q-times {
+        font-size: 74px;
+        color: var(--volt);
+      }
+
+      .q-slot,
+      .q-answer {
+        position: absolute;
+        top: 900px;
+        left: 360px;
+        width: 360px;
+        height: 360px;
+      }
+
+      .q-answer {
+        --u: 1.667;
+      }
+
+      .q-slot {
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--volt);
+        border-radius: 37px;
+        background: repeating-linear-gradient(135deg, #131c2b 0 30px, #1a2740 30px 60px);
+        color: var(--volt);
+        font-size: 250px;
+        box-shadow: 0 0 70px rgba(200, 255, 46, 0.3);
+        animation: breathe 1.2s ease-in-out infinite;
+      }
+
+      .q-clock {
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: conic-gradient(var(--volt) calc(var(--p, 1) * 360deg), var(--stroke) 0);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 150px;
+        color: var(--volt);
+      }
+
+      .q-clock::before {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border-radius: 50%;
+        background: var(--ink);
+      }
+
+      .q-clock::after {
+        content: attr(data-n);
+        position: relative;
+        padding-right: 8px;
+      }
+
+      .q-clock[data-state="urgent"] {
+        background: conic-gradient(#ff4d6d calc(var(--p, 1) * 360deg), var(--stroke) 0);
+        color: #ff4d6d;
+      }
+
+      .q-clock.mini {
+        width: 150px;
+        height: 150px;
+        font-size: 90px;
+      }
+
+      .q-clock.mini::before {
+        inset: 11px;
+      }
+
+      .q-seconds {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 54px;
+        letter-spacing: 0.08em;
+        color: var(--body);
+      }
+
+      .q-line {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 56px;
+        line-height: 1.1;
+        color: var(--text);
+      }
+
+      .q-line.send {
+        color: var(--volt);
+      }
+
+      .q-note {
+        position: absolute;
+        left: 70px;
+        bottom: 56px;
+        width: 940px;
+        text-align: center;
+        font-size: 26px;
+        color: var(--muted);
+      }
+
+      .q-step {
+        top: 540px;
+        right: auto;
+        left: 70px;
+      }
+
+      .q-versus {
+        top: 920px;
+      }
+
+      .q-versus .q-clock {
+        top: 75px;
+        left: 395px;
+      }
+
+      .q-versus .vs {
+        opacity: 0;
+        animation: fade 0.3s ease-out calc(var(--t) * 1s) forwards;
+      }
+
+      .q-list {
+        position: absolute;
+        top: 600px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .q-row {
+        height: 84px;
+        display: grid;
+        grid-template-columns: 82px 1fr 200px;
+        align-items: center;
+        border: 2px solid var(--stroke);
+        border-radius: 16px;
+        background: linear-gradient(180deg, var(--panel-raised), #0c1017);
+        font-family: var(--display);
+        font-style: italic;
+        font-weight: 800;
+        overflow: hidden;
+      }
+
+      .q-row b {
+        text-align: center;
+        font-size: 50px;
+        color: var(--volt);
+      }
+
+      .q-row .q-cell {
+        position: relative;
+        height: 100%;
+      }
+
+      .q-row .q-hide,
+      .q-row .q-show {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        font-size: 52px;
+        white-space: nowrap;
+      }
+
+      .q-row .q-hide {
+        color: var(--stroke-bright);
+        letter-spacing: 0.18em;
+      }
+
+      .q-row .q-show {
+        background: var(--panel-raised);
+      }
+
+      .q-row .q-val {
+        justify-content: flex-end;
+        padding-right: 24px;
+        color: var(--gold);
+      }
+
+      .q-row .q-val small {
+        margin-left: 10px;
+        font-size: 26px;
+        font-style: normal;
+        letter-spacing: 0.1em;
+        color: var(--muted);
+      }
+
+      .q-row.first {
+        border-color: var(--volt);
+        box-shadow: 0 0 40px rgba(200, 255, 46, 0.35);
+      }
+
+      .q-eyebrow {
+        top: 330px;
+      }
+
+      .q-friend-title {
+        top: 410px;
+      }
+
+      .q-code-label {
+        position: absolute;
+        top: 1010px;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 40px;
+        letter-spacing: 0.2em;
+        color: var(--muted);
+      }
+
+      .q-code {
+        position: absolute;
+        top: 1080px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+      }
+
+      .q-code span {
+        width: 150px;
+        height: 190px;
+        display: grid;
+        place-items: center;
+        border: 4px solid var(--volt);
+        border-radius: 26px;
+        background: var(--ink);
+        color: var(--volt);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 128px;
+        box-shadow: 0 0 40px rgba(200, 255, 46, 0.25);
+      }
+
+      .q-clock.hide {
+        animation: gone 0.2s ease-in calc(var(--t) * 1s) forwards;
+      }
+
+      @keyframes gone {
+        to {
+          opacity: 0;
+        }
+      }
+
+      @keyframes breathe {
+        50% {
+          transform: scale(1.05);
+        }
+      }
     </style>
   </head>
   <body>

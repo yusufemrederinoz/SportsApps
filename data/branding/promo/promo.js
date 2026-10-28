@@ -15,6 +15,21 @@ const CUTS = {
     ['games', 4.5],
     ['finale', 7],
   ],
+  'quiz-grid': [
+    ['qgrid', 14],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
+  'quiz-higher': [
+    ['qhigher', 17.2],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
+  'quiz-top': [
+    ['qtop', 16],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -46,6 +61,39 @@ const FOOTBALLERS = {
   guler: { id: 108159340, name: 'Arda Güler', short: 'Güler', position: 'MF' },
   mbappe: { id: 21621995, name: 'Kylian Mbappé', short: 'Mbappé', position: 'FW' },
   messi: { id: 615, name: 'Lionel Messi', short: 'Messi', position: 'FW' },
+  sukur: { id: 192974, name: 'Hakan Şükür', short: 'Şükür', position: 'FW' },
+  burak: { id: 18765, name: 'Burak Yılmaz', short: 'Burak', position: 'FW' },
+};
+const QUIZ = {
+  grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
+  higher: {
+    first: 1.7,
+    ask: 3,
+    reveal: 1.3,
+    rounds: [
+      { left: 'burak', right: 'sukur', values: ['278', '327'], winner: 'right', suffix: '' },
+      { left: 'osimhen', right: 'icardi', values: ['120', '100'], winner: 'left', suffix: ' mn €' },
+      { left: 'drogba', right: 'dzeko', values: ['302', '370'], winner: 'right', suffix: '' },
+    ],
+  },
+  top: {
+    ask: 2.2,
+    seconds: 6,
+    gap: 0.55,
+    entries: [
+      ['Karim Benzema', 461],
+      ['Thierry Henry', 360],
+      ['André-Pierre Gignac', 358],
+      ['Kylian Mbappé', 337],
+      ['Jérémy Perbet', 298],
+      ['Olivier Giroud', 293],
+      ['Antoine Griezmann', 285],
+      ['Alexandre Lacazette', 278],
+      ['Bafétimbi Gomis', 273],
+      ['David Trézéguet', 273],
+    ],
+  },
+  friend: { code: 'K7R4X' },
 };
 const GRID = {
   moves: [
@@ -448,7 +496,147 @@ function finale(texts, start) {
     <p class="notice in rise" style="--t: ${at(start, 2.45)}">${texts.end.notice}</p>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale };
+function ticks(first, seconds) {
+  for (let index = 0; index < seconds; index += 1) {
+    cue(at(first, index + 0.02), 'tick', 0.55, 0.9 + (index / seconds) * 0.55);
+  }
+}
+
+function countdown(from, start, classes = '', style = '') {
+  return `<div class="q-clock ${classes}" ${style} data-n="${from}" ${scripted('countdown', { from, start })}></div>`;
+}
+
+function titleLines(lines, start, classes = '') {
+  const last = lines.length - 1;
+  const spans = lines.map((line, index) => {
+    const tag = index === last && lines.length > 1 ? 'em' : 'span';
+    return `<${tag} class="in slam" style="--t: ${at(start, 0.35 + index * 0.35)}">${line}</${tag}>`;
+  });
+  return `<h1 class="q-title display ${classes}" data-fit>${spans.join('')}</h1>`;
+}
+
+function qgrid(texts, start) {
+  const q = texts.quiz.grid;
+  const { ask: askOffset, seconds, answer, club } = QUIZ.grid;
+  const ask = at(start, askOffset);
+  const reveal = at(ask, seconds);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7, 1.05].forEach((offset, index) => cue(at(start, offset), 'impact', index === 2 ? 1 : 0.6));
+  ticks(ask, seconds);
+  cue(reveal, 'whoosh', 0.7);
+  cue(at(reveal, 0.3), 'correct', 1);
+  cue(at(reveal, 0.5), 'win', 0.8);
+  return `${titleLines(q.hook, start)}
+    <div class="q-clues in rise" style="--t: ${at(start, 1.3)}">
+      <div class="q-clue">${crest(club)}<span>${q.club}</span></div>
+      <span class="display q-times">×</span>
+      <div class="q-clue"><span>${q.country}</span></div>
+    </div>
+    <div class="layer state" style="--start: ${at(start, 1.4)}; --end: ${reveal}"><div class="q-slot display">?</div></div>
+    <div class="layer state" style="--start: ${ask}; --end: ${reveal}">
+      ${countdown(seconds, ask, '', 'style="top: 1360px; left: 415px"')}
+      <p class="q-seconds" style="top: 1640px">${q.seconds}</p>
+    </div>
+    <div class="q-answer">${card(texts, answer, 'x', 'flip shiny', reveal)}</div>
+    <div class="display centered verdict in slam" style="--t: ${at(reveal, 0.35)}; top: 1340px">${q.answer}</div>
+    <p class="q-line in rise" style="--t: ${at(reveal, 1.1)}; top: 1500px">${q.others} ${texts.quiz.more}</p>
+    <p class="q-line send in rise" style="--t: ${at(reveal, 2)}; top: 1610px">${texts.quiz.send}</p>`;
+}
+
+function qhigher(texts, start) {
+  const q = texts.quiz.higher;
+  const { first, ask, reveal, rounds } = QUIZ.higher;
+  const period = at(ask, reveal);
+  const opens = rounds.map((_, index) => at(start, first + index * period));
+  const result = at(opens[rounds.length - 1], period);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset) => cue(at(start, offset), 'impact', 0.7));
+  const layers = rounds.map((round, index) => {
+    const open = opens[index];
+    const turn = at(open, ask);
+    const end = index + 1 < rounds.length ? opens[index + 1] : result;
+    const leftWon = round.winner === 'left';
+    const [leftValue, rightValue] = round.values;
+    ticks(open, ask);
+    cue(open, 'whoosh', 0.45);
+    cue(turn, 'impact', 0.5);
+    cue(at(turn, 0.25), 'correct', 1);
+    const value = (side, amount, won) =>
+      `<div class="display value ${side === 'left' ? 'mine' : 'theirs'} in pop" style="--t: ${turn}; top: 1250px; ${round.suffix ? 'font-size: 66px' : ''}">${amount}${round.suffix}${won ? '<em>+1</em>' : ''}<small>${q.metrics[index]}</small></div>`;
+    return `<div class="layer state" style="--start: ${open}; --end: ${end}">
+      <div class="chip q-step">${fill(q.step, { n: index + 1 })}</div>
+      <div class="panel question" style="top: 650px"><strong data-fit>${q.questions[index]}</strong></div>
+      <div class="versus q-versus">
+        <div class="mine ${leftWon ? '' : 'lost'}" style="--t: ${turn}">${card(texts, round.left, 'x', 'flip shiny', at(open, 0.15))}</div>
+        <div class="display vs" style="--t: ${turn}">VS</div>
+        <div class="theirs ${leftWon ? 'lost' : ''}" style="--t: ${turn}">${card(texts, round.right, 'o', 'flip shiny', at(open, 0.3))}</div>
+        ${countdown(ask, open, 'mini hide', `style="--t: ${turn}"`)}
+      </div>
+      ${value('left', leftValue, leftWon)}${value('right', rightValue, !leftWon)}
+      <div class="display centered verdict in slam" style="--t: ${at(turn, 0.25)}; top: 1420px">${q.correct}</div>
+    </div>`;
+  });
+  cue(result, 'impact', 1);
+  cue(at(result, 0.3), 'win', 0.8);
+  return `${titleLines(q.hook, start)}
+    ${layers.join('')}
+    <div class="layer state" style="--start: ${result}; --end: ${NEVER}">
+      <div class="display centered in slam" style="--t: ${result}; top: 800px; font-size: 190px; color: var(--volt)">${q.result}</div>
+      <p class="q-line in rise" style="--t: ${at(result, 0.6)}; top: 1080px">${texts.quiz.more}</p>
+      <p class="q-line send in rise" style="--t: ${at(result, 1.3)}; top: 1180px">${texts.quiz.send}</p>
+    </div>
+    <p class="q-note">${texts.quiz.note}</p>`;
+}
+
+function qtop(texts, start) {
+  const q = texts.quiz.top;
+  const { ask: askOffset, seconds, gap, entries } = QUIZ.top;
+  const ask = at(start, askOffset);
+  const reveal = at(ask, seconds);
+  const total = entries.length;
+  const timeOf = (rank) => at(reveal, (total - rank) * gap);
+  const done = at(timeOf(1), 0.6);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7, 1.05].forEach((offset, index) => cue(at(start, offset), 'impact', index === 2 ? 1 : 0.6));
+  ticks(ask, seconds);
+  entries.forEach((_, index) => cue(timeOf(index + 1), 'correct', index === 0 ? 1 : 0.5, 0.9 + ((total - index) / total) * 0.4));
+  cue(done, 'win', 0.9);
+  const rows = entries.map(([name, goals], index) => {
+    const rank = index + 1;
+    const time = timeOf(rank);
+    return `<div class="q-row ${rank === 1 ? 'first' : ''}">
+      <b>${rank}</b>
+      <div class="q-cell"><span class="q-hide">${q.hidden}</span><span class="q-show in rise" style="--t: ${time}">${name}</span></div>
+      <div class="q-cell"><span class="q-show q-val in rise" style="--t: ${time}">${goals}<small>${q.goals}</small></span></div>
+    </div>`;
+  });
+  return `${titleLines(q.hook, start)}
+    <div class="q-list in rise" style="--t: ${at(start, 1.4)}">${rows.join('')}</div>
+    <div class="layer state" style="--start: ${ask}; --end: ${reveal}">
+      ${countdown(seconds, ask, 'mini', 'style="top: 1590px; left: 465px"')}
+      <p class="q-seconds" style="top: 1750px">${q.seconds}</p>
+    </div>
+    <div class="display centered in slam" style="--t: ${done}; top: 1590px; font-size: 100px; color: var(--volt)">${q.done}</div>
+    <p class="q-line in rise" style="--t: ${at(done, 0.6)}; top: 1710px">${texts.quiz.more} ${texts.quiz.send}</p>
+    <p class="q-note">${q.note}</p>`;
+}
+
+function friend(texts, start) {
+  const f = texts.quiz.friend;
+  const letters = QUIZ.friend.code.split('');
+  cue(at(start, 0.05), 'whoosh', 0.7);
+  [0.35, 0.65, 0.95].forEach((offset) => cue(at(start, offset), 'impact', 0.6));
+  letters.forEach((_, index) => cue(at(start, 1.2 + index * 0.12), 'tick', 0.6, 0.9 + index * 0.06));
+  cue(at(start, 2.3), 'correct', 0.9);
+  const tiles = letters.map((letter, index) => `<span class="in pop" style="--t: ${at(start, 1.2 + index * 0.12)}">${letter}</span>`);
+  return `<p class="eyebrow centered q-eyebrow in rise" style="--t: ${at(start, 0.15)}">${f.eyebrow}</p>
+    ${titleLines(f.lines, start, 'q-friend-title')}
+    <p class="q-code-label in rise" style="--t: ${at(start, 1.1)}">${f.codeLabel}</p>
+    <div class="q-code">${tiles.join('')}</div>
+    <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
+}
+
+const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, friend };
 
 function video(texts) {
   let start = 0;
@@ -526,6 +714,14 @@ const APPLY = {
     const text = String(Math.max(0, TURN_SECONDS - elapsed));
     if (element.textContent !== text) element.textContent = text;
     if (current) element.dataset.state = current[1];
+  },
+  countdown(element, { from, start }, seconds) {
+    const left = Math.min(from, Math.max(0, from - (seconds - start)));
+    const shown = String(Math.ceil(left - 1e-6));
+    const urgent = Math.ceil(left - 1e-6) <= Math.min(3, Math.ceil(from / 3));
+    if (element.dataset.n !== shown) element.dataset.n = shown;
+    element.dataset.state = urgent ? 'urgent' : 'calm';
+    element.style.setProperty('--p', (left / from).toFixed(3));
   },
   typing(element, { entries, placeholder }, seconds) {
     const entry = entries.find((candidate) => seconds >= candidate.from && seconds < candidate.release);

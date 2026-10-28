@@ -1073,6 +1073,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - Sitedeki "Yakında" düğmeleri altı dilde "Ücretsiz indir" bağlantılarına, SSS'deki "yakında olacak" cevabı indirme cümlesine çevrildi; iPhone'da Safari uygulama şeridi eklendi. Site yayımlandı, altı sayfada bağlantılar doğrulandı.
 - Tanıtım videoları ve görseli (`data/build/promo/`) iki mağazayı da gösterdiği için değişmeden kullanılabiliyor.
 
+### Soru-cevap tanıtım videoları (28 Ekim 2026)
+
+- Kullanıcı sosyal medyada paylaşılmaya ve kaydırılmadan izlenmeye uygun videolar istedi ve çerçeveyi gösterdi: S.T.O.P. (Sürpriz, Gerilim, Sonuç, Paylaşım). Soru-cevap setini ve her videoda "bütün oyunları arkadaşınla da oynayabilirsin" mesajını seçti.
+- Mevcut tanıtım üretecine üç kurgu ve bir ortak arkadaş sahnesi eklendi (XOX, Hangisi Yüksek, İlk 10). Yeni stiller `promo.html` sonunda `.q-*` sınıflarında; sahneler `promo.js` içinde `qgrid`, `qhigher`, `qtop`, `friend`.
+- Veri `football.db`'den çekildi ve tek tek kontrol edildi. İlk 10 için Türkiye listesi denendi ama içinde tanınmayan eski amatör golcüler vardı (örneğin Resul Yörük 382 gol); güvenilir görünen Fransa listesi seçildi.
+- Görerek bulunan hatalar: geri sayım 8 saniyeyken yazı "10 SANİYEN VAR" diyordu (düzeltildi); uzun başlık satırı bütün başlığı küçültüyordu (satırlar kısaltıldı); Hangisi Yüksek'te adım etiketi başlıkla üst üste biniyordu ve içerik üst yarıda kalmıştı (aşağı alındı).
+- Üretim sırasında Bash heredoc'u ters tırnaklı JavaScript'i ayrıştıramadı; yamalar dosyaya yazılıp çalıştırıldı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

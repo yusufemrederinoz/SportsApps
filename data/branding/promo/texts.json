@@ -91,6 +91,41 @@
       "site": "challengegoal.app",
       "notice": "Futbolcu görselleri yapay zekâ ile çizilmiştir; kaynaklar challengegoal.app adresinde. ChallengeGoal hiçbir kulüp, lig, federasyon ya da futbolcuyla bağlantılı değildir."
     },
+    "quiz": {
+      "note": "Değerler uygulamanın verisine göredir.",
+      "send": "Bilemeyecek arkadaşına gönder.",
+      "more": "Yoruma yaz.",
+      "grid": {
+        "hook": ["FRANSIZ,", "REAL MADRID'DE", "OYNADI. KİM?"],
+        "club": "REAL MADRID",
+        "country": "FRANSA",
+        "seconds": "8 SANİYEN VAR",
+        "answer": "BİR CEVAP: ZİDANE",
+        "others": "Başka kim var?"
+      },
+      "higher": {
+        "hook": ["3 SORU,", "3'ER SANİYE"],
+        "step": "SORU {{n}}/3",
+        "result": "KAÇ DOĞRU?",
+        "correct": "DOĞRU!",
+        "questions": ["KARİYERİNDE KİM DAHA ÇOK GOL ATTI?", "KİMİN EN YÜKSEK PİYASA DEĞERİ DAHA BÜYÜK?", "KARİYERİNDE KİM DAHA ÇOK GOL ATTI?"],
+        "metrics": ["GOL", "PİYASA DEĞERİ", "GOL"]
+      },
+      "top": {
+        "hook": ["EN ÇOK GOL ATAN", "10 FRANSIZ FUTBOLCU", "KAÇINI BİLİRSİN?"],
+        "seconds": "6 SANİYEN VAR",
+        "hidden": "? ? ? ? ?",
+        "goals": "GOL",
+        "done": "KAÇINI BİLDİN?",
+        "note": "Sıralama uygulamanın verisine göredir."
+      },
+      "friend": {
+        "eyebrow": "ARKADAŞINLA DA OYNA",
+        "lines": ["8 OYUNUN HEPSİNİ", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],
+        "codeLabel": "ODA KODU",
+        "button": "ODA KUR, KODU PAYLAŞ"
+      }
+    },
     "poster": {
       "noAds": ["ZORUNLU", "REKLAM YOK"],
       "call": { "both": "GOOGLE PLAY VE APP STORE'DA ÜCRETSİZ", "play": "GOOGLE PLAY'DE ÜCRETSİZ", "apple": "APP STORE'DA ÜCRETSİZ" }
