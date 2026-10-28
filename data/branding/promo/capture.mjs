@@ -10,6 +10,7 @@ import { loadSounds, mix, writeWave } from './sound.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..', '..', '..');
 const BUILD = join(ROOT, 'data', 'build', 'promo');
+const WORK = join(BUILD, '.work');
 const CHROME = process.env.CHROME_PATH ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const FFMPEG = process.env.FFMPEG_PATH ?? 'ffmpeg';
 const SOUNDS = join(ROOT, 'app', 'assets', 'sounds');
@@ -39,6 +40,13 @@ const options = Object.fromEntries(extras.map((extra) => extra.split('=')));
 const cut = options.cut ?? 'short';
 const stores = options.stores ?? 'both';
 const name = ['challengegoal', language, cut === 'short' ? null : cut, stores === 'both' ? null : stores].filter(Boolean).join('-');
+const series = cut.startsWith('quiz') ? 'quiz' : 'showcase';
+const folders = {
+  videos: join(BUILD, 'videos', series),
+  posts: join(BUILD, 'posts'),
+  sound: join(BUILD, 'sound'),
+  previews: join(BUILD, 'previews'),
+};
 const page = mode === 'poster' ? 'poster' : 'video';
 const [width, height] = SIZES[page];
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
@@ -120,7 +128,7 @@ function run(command, parameters) {
 }
 
 function soundtrack(cues, duration) {
-  const path = join(BUILD, `${name}-sfx.wav`);
+  const path = join(folders.sound, `${name}-sfx.wav`);
   writeWave(path, mix(cues, duration, loadSounds(SOUNDS)));
   return path;
 }
@@ -166,7 +174,7 @@ function encode(frames, audio, output) {
   ]);
 }
 
-mkdirSync(BUILD, { recursive: true });
+[WORK, ...Object.values(folders)].forEach((folder) => mkdirSync(folder, { recursive: true }));
 await new Promise((listening) => server.listen(PORT, '127.0.0.1', listening));
 const chrome = spawn(
   CHROME,
@@ -179,7 +187,7 @@ const chrome = spawn(
     '--remote-allow-origins=*',
     `--remote-debugging-port=${DEBUG_PORT}`,
     `--window-size=${width},${height}`,
-    `--user-data-dir=${join(BUILD, 'browser')}`,
+    `--user-data-dir=${join(WORK, 'browser')}`,
     'about:blank',
   ],
   { stdio: 'ignore' },
@@ -199,24 +207,24 @@ try {
   if (duration === undefined) throw new Error('page never became ready');
 
   if (mode === 'sound') {
-    const output = join(BUILD, `${name}.mp4`);
-    const dubbed = join(BUILD, `${name}-dubbed.mp4`);
+    const output = join(folders.videos, `${name}.mp4`);
+    const dubbed = join(folders.videos, `${name}-dubbed.mp4`);
     await dub(output, soundtrack(await evaluate(send, 'window.cues'), duration), dubbed);
     renameSync(dubbed, output);
     console.log(output);
   } else if (mode === 'poster') {
-    const output = join(BUILD, `${name}-post.png`);
+    const output = join(folders.posts, `${name}-post.png`);
     await screenshot(send, output);
     console.log(output);
   } else if (options.at !== undefined) {
     for (const moment of options.at.split(',')) {
-      const output = join(BUILD, `preview-${name}-${moment}.png`);
+      const output = join(folders.previews, `${name}-${moment}.png`);
       await evaluate(send, `window.seek(${Number(moment)})`);
       await screenshot(send, output);
       console.log(output);
     }
   } else {
-    const frames = join(BUILD, `frames-${name}`);
+    const frames = join(WORK, `frames-${name}`);
     rmSync(frames, { recursive: true, force: true });
     mkdirSync(frames, { recursive: true });
     const total = Math.round(duration * FPS);
@@ -226,7 +234,7 @@ try {
       await screenshot(send, join(frames, `${String(index).padStart(4, '0')}.png`));
       if (index % 60 === 59) console.log(`${index + 1}/${total} frames, ${Math.round((Date.now() - started) / 1000)} s`);
     }
-    const output = join(BUILD, `${name}.mp4`);
+    const output = join(folders.videos, `${name}.mp4`);
     await encode(frames, soundtrack(await evaluate(send, 'window.cues'), duration), output);
     if (!options.keep) rmSync(frames, { recursive: true, force: true });
     console.log(output);

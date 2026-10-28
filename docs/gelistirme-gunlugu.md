@@ -1081,6 +1081,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - Görerek bulunan hatalar: geri sayım 8 saniyeyken yazı "10 SANİYEN VAR" diyordu (düzeltildi); uzun başlık satırı bütün başlığı küçültüyordu (satırlar kısaltıldı); Hangisi Yüksek'te adım etiketi başlıkla üst üste biniyordu ve içerik üst yarıda kalmıştı (aşağı alındı).
 - Üretim sırasında Bash heredoc'u ters tırnaklı JavaScript'i ayrıştıramadı; yamalar dosyaya yazılıp çalıştırıldı.
 
+### Soru-cevap videolarının düzeltilmesi (29 Ekim 2026)
+
+- Kullanıcı Hangisi Yüksek videosunda Hakan Şükür'ün geçmesini istemedi (bir terör örgütüne üyelikten ülke dışına çıkarılmış biri). Soru Cenk Tosun–Burak Yılmaz çiftiyle değiştirildi. Tanıtım üreteci yalnızca bu soruda adı kullanıyordu; oyunun verisi ve eski belgeler (veri ve portre notları) aynen duruyor.
+- Metinler humanizer kurallarına göre sadeleştirildi (blader/humanizer ve Türkçe sinyal tablosu; skill başka bir projede kurulu, bu projede listede yoktu, kurallar elle uygulandı). Değişenler: iki nokta ile kurulan etiketler ("BİR CEVAP: ZİDANE" yerine "ZİDANE DA OLUR"), sahne açan ya da hazır kalıp cümleler ("KAÇ DOĞRU?" yerine "KAÇ TANE BİLDİN?", "Bilemeyecek arkadaşına gönder." yerine "Arkadaşına at, bakalım bilecek mi."), "8 oyunun hepsini" yerine "Her oyunu". Açıklamalar baştan, kısa cümlelerle yazıldı: iki nokta üstüste, "ve 7 oyun daha" listesi ve çoklu emoji kalktı, "ücretsiz" yerine "indirmesi ücretsiz" denildi (uygulama içi satın alma var).
+- `data/build/promo/` türe göre klasörlere ayrıldı ve üreteç artık oraya yazıyor.
+- Üç video yeniden üretildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

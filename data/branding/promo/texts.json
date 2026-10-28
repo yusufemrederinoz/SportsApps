@@ -93,20 +93,20 @@
     },
     "quiz": {
       "note": "Değerler uygulamanın verisine göredir.",
-      "send": "Bilemeyecek arkadaşına gönder.",
+      "send": "Arkadaşına at, bakalım bilecek mi.",
       "more": "Yoruma yaz.",
       "grid": {
         "hook": ["FRANSIZ,", "REAL MADRID'DE", "OYNADI. KİM?"],
         "club": "REAL MADRID",
         "country": "FRANSA",
         "seconds": "8 SANİYEN VAR",
-        "answer": "BİR CEVAP: ZİDANE",
-        "others": "Başka kim var?"
+        "answer": "ZİDANE DA OLUR",
+        "others": "Sen kimi yazdın?"
       },
       "higher": {
         "hook": ["3 SORU,", "3'ER SANİYE"],
         "step": "SORU {{n}}/3",
-        "result": "KAÇ DOĞRU?",
+        "result": "KAÇ TANE BİLDİN?",
         "correct": "DOĞRU!",
         "questions": ["KARİYERİNDE KİM DAHA ÇOK GOL ATTI?", "KİMİN EN YÜKSEK PİYASA DEĞERİ DAHA BÜYÜK?", "KARİYERİNDE KİM DAHA ÇOK GOL ATTI?"],
         "metrics": ["GOL", "PİYASA DEĞERİ", "GOL"]
@@ -121,7 +121,7 @@
       },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
-        "lines": ["8 OYUNUN HEPSİNİ", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],
+        "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],
         "codeLabel": "ODA KODU",
         "button": "ODA KUR, KODU PAYLAŞ"
       }

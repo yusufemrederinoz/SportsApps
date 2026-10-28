@@ -61,7 +61,7 @@ const FOOTBALLERS = {
   guler: { id: 108159340, name: 'Arda Güler', short: 'Güler', position: 'MF' },
   mbappe: { id: 21621995, name: 'Kylian Mbappé', short: 'Mbappé', position: 'FW' },
   messi: { id: 615, name: 'Lionel Messi', short: 'Messi', position: 'FW' },
-  sukur: { id: 192974, name: 'Hakan Şükür', short: 'Şükür', position: 'FW' },
+  tosun: { id: 377432, name: 'Cenk Tosun', short: 'Tosun', position: 'FW' },
   burak: { id: 18765, name: 'Burak Yılmaz', short: 'Burak', position: 'FW' },
 };
 const QUIZ = {
@@ -71,7 +71,7 @@ const QUIZ = {
     ask: 3,
     reveal: 1.3,
     rounds: [
-      { left: 'burak', right: 'sukur', values: ['278', '327'], winner: 'right', suffix: '' },
+      { left: 'tosun', right: 'burak', values: ['198', '278'], winner: 'right', suffix: '' },
       { left: 'osimhen', right: 'icardi', values: ['120', '100'], winner: 'left', suffix: ' mn €' },
       { left: 'drogba', right: 'dzeko', values: ['302', '370'], winner: 'right', suffix: '' },
     ],
