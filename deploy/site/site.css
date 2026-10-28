@@ -303,7 +303,7 @@ h3 {
   list-style: none;
 }
 
-.stores li {
+.stores a {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -313,6 +313,17 @@ h3 {
   border-radius: 12px;
   background: var(--panel);
   line-height: 1.15;
+  text-decoration: none;
+  transition: border-color 0.18s ease;
+}
+
+.stores a:hover {
+  border-color: var(--volt);
+}
+
+.stores a:focus-visible {
+  outline: 3px solid var(--volt);
+  outline-offset: 3px;
 }
 
 .stores small {

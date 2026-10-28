@@ -271,6 +271,8 @@ Mağaza durumu (12 Ekim 2026 akşamı): App Store'da 1.0.0 (yapı 9) dört gol p
 
 App Store (16 Ekim 2026): yapı 9 izleme izni penceresi (2.1) ve mağaza sayfasındaki kulüp ve lig çağrışımı (4.1(a)) yüzünden geri döndü. Yeni derleme gerekmedi: iPhone'da izin penceresinin kaydı alındı, App Store açıklaması, anahtar kelimeler ve üç görsel kulüpsüz hale getirildi. 22 Ekim 2026'da yalnızca izleme izni yüzünden (iPad'de bulunamadı) yeniden döndü; uygulama artık izni ilk açılışta kendisi istiyor; bu değişiklikle iOS yapı 12 derlenip App Store Connect'e yüklendi. Yeni kayıt ve yeniden gönderim kullanıcıda.
 
+Yayın (28 Ekim 2026): App Store'da 1.0.0 (yapı 12) onaylandı ve 175 bölgede satışa açıldı; Google Play'de uygulama yayında. Sitedeki "Yakında" düğmeleri mağaza bağlantılarına çevrildi.
+
 Açık noktalar: veri indirme iPhone'da hiç denenmedi (bir sonraki veri güncellemesinden önce denenmeli); Expo'nun ücretsiz Android derleme hakkı 1 Kasım'a kadar dolu (yerel derleme betiği var).
 
 Kalanlar: App Store Connect formları ve gol paketlerinin inceleme görseli, AdMob IDFA mesajı, çevirilerin o dili bilen biri tarafından okunması, iOS'ta deneme satın alması, AdMob rıza mesajlarının yayımlanması, mağaza sayfalarının doldurulması (metinler `docs/magaza-metinleri.md` dosyasında hazır), ekran görüntüleri ve formlar, yasal metinlerin onayı, yeni portrelerin üretimi ve uygulamaya alınması.

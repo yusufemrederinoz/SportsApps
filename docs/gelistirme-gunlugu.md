@@ -1066,6 +1066,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Çıkmaz.** İlk denemede hazır olma kontrolü Caddy'nin yönetim adresine (`:2019`) `Host: api.challengegoal.app` başlığıyla gitti. Yönetim adresi yalnızca `localhost` kabul ettiği için 403 döndü, betik Caddy'yi hazır değil sanıp eski ayarlara geri döndü (iki kısa yeniden başlatma). Kontrol, sitelere sunucunun kendisinden `curl --resolve` ile HTTPS isteği atacak şekilde değiştirildi.
 - **Tek dosya bağlama tuzağı.** `Caddyfile` kapsayıcıya tek dosya olarak bağlı. Dosyayı yeni bir dosyayla değiştiren araçlar (ör. `sed -i`) kapsayıcının gördüğü kopyayı güncellemez; elle düzenlemede `cat yeni > Caddyfile` kullanılmalı. `sites/` klasör olarak bağlı olduğu için orada bu sorun yok.
 
+### Yayın ve sitedeki mağaza bağlantıları (28 Ekim 2026)
+
+- App Store Connect API'sine göre 1.0.0 (yapı 12) "Ready for Sale"; 175 bölgede bugün satışa açıldı (biri işleniyor). Apple'ın katalog araması uygulamayı ilk saatlerde göstermedi; bu yayından sonraki olağan gecikme.
+- Google Play sayfası yayında. İlk kontrolde 404 görüldü, ama sebep tarayıcı kimliği olmayan istekti; tarayıcı kimliğiyle 200 dönüyor.
+- Sitedeki "Yakında" düğmeleri altı dilde "Ücretsiz indir" bağlantılarına, SSS'deki "yakında olacak" cevabı indirme cümlesine çevrildi; iPhone'da Safari uygulama şeridi eklendi. Site yayımlandı, altı sayfada bağlantılar doğrulandı.
+- Tanıtım videoları ve görseli (`data/build/promo/`) iki mağazayı da gösterdiği için değişmeden kullanılabiliyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
