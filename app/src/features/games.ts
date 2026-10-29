@@ -1,5 +1,6 @@
 import { ACTIVE_GAME_IDS, type GameId, type GameView, type PlayResult } from '@sportapps/protocol';
 
+import { AccentFinishes, Finishes, type Finish } from '@/constants/theme';
 import { auctionCardIds, finishAuctionView } from '@/features/auction/online';
 import { careerCardIds, finishCareerView } from '@/features/career/online';
 import { chainCardIds, finishChainView } from '@/features/chain/online';
@@ -23,17 +24,17 @@ export const GAME_LABELS = {
   career: 'games.career',
 } as const satisfies Record<GameId, string>;
 
-export const GAME_ACCENTS = {
-  grid: 'home.titleAccent',
-  duel: 'home.titleAccentDuel',
-  draft: 'home.titleAccentDraft',
-  higher: 'home.titleAccentHigher',
-  chain: 'home.titleAccentChain',
-  rare: 'home.titleAccentRare',
-  auction: 'home.titleAccentAuction',
-  'top-ten': 'home.titleAccentTopTen',
-  career: 'home.titleAccentCareer',
-} as const satisfies Record<GameId, string>;
+export const GAME_FINISHES = {
+  grid: AccentFinishes.volt,
+  duel: Finishes.x,
+  draft: AccentFinishes.steel,
+  higher: Finishes.o,
+  chain: AccentFinishes.volt,
+  rare: Finishes.o,
+  auction: Finishes.x,
+  'top-ten': Finishes.o,
+  career: AccentFinishes.steel,
+} as const satisfies Record<GameId, Finish>;
 
 export const GAME_SUBTITLES = {
   grid: 'home.subtitle',
