@@ -1995,6 +1995,60 @@
         animation: gone 0.2s ease-in calc(var(--t) * 1s) forwards;
       }
 
+      .q-dare-title .q-lead {
+        font-size: 0.6em;
+        color: var(--body);
+      }
+
+      .q-dare {
+        position: absolute;
+        top: 470px;
+        left: 70px;
+        transform: rotate(-4deg);
+        transform-origin: left center;
+      }
+
+      .q-dare strong {
+        display: inline-block;
+        padding: 18px 40px 10px;
+        border-radius: 18px;
+        background: var(--blue);
+        color: var(--ink);
+        font-size: 124px;
+        box-shadow: 0 0 90px rgba(91, 155, 255, 0.6);
+      }
+
+      .q-names {
+        top: 700px;
+        gap: 10px;
+      }
+
+      .q-names .q-row {
+        height: 104px;
+        grid-template-columns: 82px 1fr;
+      }
+
+      .q-names .q-show {
+        gap: 22px;
+        padding-left: 6px;
+        font-size: 58px;
+      }
+
+      .q-names .q-show i {
+        flex: none;
+        width: 84px;
+        height: 84px;
+        overflow: hidden;
+        border: 3px solid var(--positive);
+        border-radius: 50%;
+        background: var(--panel);
+      }
+
+      .q-names .q-show img {
+        width: 132%;
+        margin: 2% 0 0 -16%;
+      }
+
       @keyframes gone {
         to {
           opacity: 0;

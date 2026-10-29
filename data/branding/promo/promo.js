@@ -30,6 +30,11 @@ const CUTS = {
     ['friend', 3.6],
     ['finale', 5.1],
   ],
+  'quiz-auction': [
+    ['qauction', 11.3],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -91,6 +96,18 @@ const QUIZ = {
       ['Alexandre Lacazette', 278],
       ['Bafétimbi Gomis', 273],
       ['David Trézéguet', 273],
+    ],
+  },
+  auction: {
+    ask: 1.7,
+    seconds: 5,
+    gap: 0.32,
+    answers: [
+      { id: 39444, name: 'Ronaldinho' },
+      { id: 142794, name: 'Neymar' },
+      { id: 529207, name: 'Ronaldo Nazário' },
+      { id: 483577, name: 'Rivaldo' },
+      { id: 172720, name: 'Dani Alves' },
     ],
   },
   friend: { code: 'K7R4X' },
@@ -621,6 +638,37 @@ function qtop(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function qauction(texts, start) {
+  const q = texts.quiz.auction;
+  const { ask: askOffset, seconds, gap, answers } = QUIZ.auction;
+  const ask = at(start, askOffset);
+  const reveal = at(ask, seconds);
+  const timeOf = (index) => at(reveal, index * gap);
+  const done = at(timeOf(answers.length - 1), 0.45);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7, 1.05].forEach((offset, index) => cue(at(start, offset), 'impact', index === 2 ? 1 : 0.6));
+  ticks(ask, seconds);
+  answers.forEach((_, index) => cue(timeOf(index), 'correct', 0.6, 1 + index * 0.06));
+  cue(done, 'win', 0.9);
+  const rows = answers.map(
+    ({ id, name }, index) => `<div class="q-row">
+      <b>${index + 1}</b>
+      <div class="q-cell"><span class="q-hide">${q.hidden}</span><span class="q-show in rise" style="--t: ${timeOf(index)}"><i><img src="/portraits/${id}.webp" alt="" /></i>${name}</span></div>
+    </div>`,
+  );
+  return `<h1 class="q-title display q-dare-title" data-fit><span class="q-lead in slam" style="--t: ${at(start, 0.35)}">${q.hook[0]}</span><em class="in slam" style="--t: ${at(start, 0.7)}">${q.hook[1]}</em></h1>
+    <div class="q-dare"><strong class="display in slam" style="--t: ${at(start, 1.05)}">${q.dare}</strong></div>
+    <div class="q-list q-names in rise" style="--t: ${at(start, 1.3)}">${rows.join('')}</div>
+    <div class="layer state" style="--start: ${ask}; --end: ${reveal}">
+      ${countdown(seconds, ask, 'mini', 'style="top: 1310px; left: 465px"')}
+      <p class="q-seconds" style="top: 1480px">${q.seconds}</p>
+    </div>
+    <div class="display centered in slam" style="--t: ${done}; top: 1310px; font-size: 100px; color: var(--volt)">${q.done}</div>
+    <p class="q-line in rise" style="--t: ${at(done, 0.5)}; top: 1440px">${q.others}</p>
+    <p class="q-line send in rise" style="--t: ${at(done, 1.1)}; top: 1530px">${texts.quiz.more} ${q.send}</p>
+    <p class="q-note">${q.note}</p>`;
+}
+
 function friend(texts, start) {
   const f = texts.quiz.friend;
   const letters = QUIZ.friend.code.split('');
@@ -636,7 +684,7 @@ function friend(texts, start) {
     <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, friend };
+const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, friend };
 
 function video(texts) {
   let start = 0;

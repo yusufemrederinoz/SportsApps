@@ -119,6 +119,16 @@
         "done": "KAÇINI BİLDİN?",
         "note": "Sıralama uygulamanın verisine göredir."
       },
+      "auction": {
+        "hook": ["BARCELONA'DA OYNAMIŞ", "5 BREZİLYALI"],
+        "dare": "SAY BAKALIM!",
+        "seconds": "5 SANİYEN VAR",
+        "hidden": "? ? ? ? ?",
+        "done": "KAÇ TANE SAYDIN?",
+        "others": "Romário, Coutinho, Raphinha da olur.",
+        "send": "Arkadaşına at, o da saysın bakalım.",
+        "note": "Cevaplar uygulamanın verisine göredir."
+      },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
         "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],

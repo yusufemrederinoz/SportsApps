@@ -1088,6 +1088,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - `data/build/promo/` türe göre klasörlere ayrıldı ve üreteç artık oraya yazıyor.
 - Üç video yeniden üretildi.
 
+### "Say bakalım" soru-cevap videosu (29 Ekim 2026)
+
+- Kullanıcı Açık Artırma için 20 saniyelik bir video istedi. Dördüncü kurgu `quiz-auction` eklendi: "Barcelona'da oynamış 5 Brezilyalı" sorusu, oyundaki mavi "SAY BAKALIM!" etiketi, 5 gizli satır ve 5 saniyelik geri sayım; sonra cevaplar portreleriyle tek tek açılır (Ronaldinho, Neymar, Ronaldo Nazário, Rivaldo, Dani Alves) ve "Romário, Coutinho, Raphinha da olur" satırı yoruma yönlendirir. Ardından ortak `friend` ve `finale` sahneleri; toplam 20 saniye.
+- Ölçüt, oyundaki hücre biçimine uygun seçildi (kulüp × ülke). Türk kulüpleri yerine Barcelona seçildi: taraftar çekişmesine girmiyor, cevaplar çok bilinen isimler ve uzun tanıtım videosundaki Real Madrid × Brezilya hücresini tekrar etmiyor. Sekiz ismin hepsi `football.db`'de Barcelona × Brezilya olarak duruyor ve portreleri var. Veride hatalı görünen kayıtlar da fark edildi (örneğin Barcelona'da Gabriel Jesus); videoda yalnızca kesin cevaplar kullanıldı.
+- Ronaldo, Cristiano ile karışmasın diye ekranda "Ronaldo Nazário" yazıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
