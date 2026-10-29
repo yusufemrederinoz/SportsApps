@@ -31,7 +31,7 @@ const CUTS = {
     ['finale', 5.1],
   ],
   'quiz-auction': [
-    ['qauction', 11.3],
+    ['qauction', 15.5],
     ['friend', 3.6],
     ['finale', 5.1],
   ],
@@ -99,16 +99,36 @@ const QUIZ = {
     ],
   },
   auction: {
-    ask: 1.7,
-    seconds: 5,
-    gap: 0.32,
-    answers: [
-      { id: 39444, name: 'Ronaldinho' },
-      { id: 142794, name: 'Neymar' },
-      { id: 529207, name: 'Ronaldo Nazário' },
-      { id: 483577, name: 'Rivaldo' },
-      { id: 172720, name: 'Dani Alves' },
+    rival: 'kerem1907',
+    phones: 0.9,
+    bids: [
+      { at: 1.6, side: 'you', amount: 4 },
+      { at: 2.8, side: 'rival', amount: 5 },
+      { at: 4, side: 'you', amount: 6 },
     ],
+    armed: 4.5,
+    dare: 5.2,
+    proof: 6,
+    proofSeconds: 52,
+    timeUp: 12.2,
+    names: [
+      { text: 'Alex', typed: [6.3, 6.6], at: 6.75, correct: true },
+      { text: 'Roberto Carlos', typed: [7, 7.6], at: 7.75, correct: true },
+      { text: 'Talisca', typed: [8, 8.35], at: 8.5, correct: true },
+      { text: 'Zico', typed: [8.85, 9.1], at: 9.25, correct: false },
+      { text: 'Fred', typed: [9.75, 10], at: 10.15, correct: true },
+      { text: 'Ederson', typed: [10.6, 11], at: 11.15, correct: true },
+    ],
+    stuck: { text: 'Luiz Gu', typed: [11.6, 12.15] },
+    bubbles: [
+      { side: 'you', from: 1.5, until: 2.75 },
+      { side: 'rival', from: 2.7, until: 3.95 },
+      { side: 'you', from: 3.9, until: 5.15 },
+      { side: 'rival', from: 5.2, until: 6.7 },
+      { side: 'rival', from: 9.35, until: 10.8 },
+    ],
+    caught: 12.6,
+    call: 13.2,
   },
   friend: { code: 'K7R4X' },
 };
@@ -519,8 +539,8 @@ function ticks(first, seconds) {
   }
 }
 
-function countdown(from, start, classes = '', style = '') {
-  return `<div class="q-clock ${classes}" ${style} data-n="${from}" ${scripted('countdown', { from, start })}></div>`;
+function countdown(from, start, classes = '', style = '', pace = {}) {
+  return `<div class="q-clock ${classes}" ${style} data-n="${from}" ${scripted('countdown', { from, start, ...pace })}></div>`;
 }
 
 function titleLines(lines, start, classes = '') {
@@ -638,34 +658,114 @@ function qtop(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function phone(side, name, criteria, time, content) {
+  return `<div class="q-phone ${side} in ${side === 'you' ? 'from-left' : 'from-right'}" style="--t: ${time}">
+    <i class="q-notch"></i>
+    <div class="q-player"><i>${name.charAt(0).toUpperCase()}</i><span>${name}</span></div>
+    <div class="q-criteria">${criteria}</div>
+    ${content}
+  </div>`;
+}
+
+function stamp(kind, text, time) {
+  return `<div class="q-stamp ${kind}"><strong class="display in slam" style="--t: ${time}">${text}</strong></div>`;
+}
+
 function qauction(texts, start) {
   const q = texts.quiz.auction;
-  const { ask: askOffset, seconds, gap, answers } = QUIZ.auction;
-  const ask = at(start, askOffset);
-  const reveal = at(ask, seconds);
-  const timeOf = (index) => at(reveal, index * gap);
-  const done = at(timeOf(answers.length - 1), 0.45);
-  cue(at(start, 0.05), 'whoosh', 0.8);
-  [0.35, 0.7, 1.05].forEach((offset, index) => cue(at(start, offset), 'impact', index === 2 ? 1 : 0.6));
-  ticks(ask, seconds);
-  answers.forEach((_, index) => cue(timeOf(index), 'correct', 0.6, 1 + index * 0.06));
-  cue(done, 'win', 0.9);
-  const rows = answers.map(
-    ({ id, name }, index) => `<div class="q-row">
-      <b>${index + 1}</b>
-      <div class="q-cell"><span class="q-hide">${q.hidden}</span><span class="q-show in rise" style="--t: ${timeOf(index)}"><i><img src="/portraits/${id}.webp" alt="" /></i>${name}</span></div>
+  const plan = QUIZ.auction;
+  const time = (offset) => at(start, offset);
+  const bids = plan.bids.map((bid) => ({ ...bid, at: time(bid.at) }));
+  const [, rivalBid, bluff] = bids;
+  const dare = time(plan.dare);
+  const proof = time(plan.proof);
+  const timeUp = time(plan.timeUp);
+  const caught = time(plan.caught);
+  const call = time(plan.call);
+  const goal = bluff.amount;
+  const names = plan.names.map((name) => ({
+    ...name,
+    from: time(name.typed[0]),
+    until: time(name.typed[1]),
+    release: time(name.at + 0.1),
+    at: time(name.at),
+  }));
+  const stuck = { text: plan.stuck.text, from: time(plan.stuck.typed[0]), until: time(plan.stuck.typed[1]), release: timeUp };
+  let named = 0;
+  const counted = [[proof, 0]].concat(names.filter((name) => name.correct).map((name) => [name.at, (named += 1)]));
+
+  cue(time(0.05), 'whoosh', 0.8);
+  cue(time(0.3), 'impact', 0.6);
+  cue(time(0.6), 'impact', 1);
+  cue(time(plan.phones), 'whoosh', 0.5);
+  bids.forEach((bid) => cue(bid.at, bid.side === 'you' ? 'tick' : 'impact', bid.side === 'you' ? 0.8 : 0.5));
+  cue(at(dare, -0.05), 'whoosh', 0.6);
+  cue(dare, 'impact', 1);
+  cue(proof, 'whistle', 0.35);
+  names.forEach((name, index) => cue(name.at, name.correct ? 'correct' : 'wrong', name.correct ? 0.6 : 0.8, 1 + index * 0.05));
+  [1, 0.75, 0.5, 0.25].forEach((left, index) => cue(at(timeUp, -left), 'tick', 0.5, 1.2 + index * 0.1));
+  cue(timeUp, 'whistle', 0.8);
+  cue(caught, 'impact', 1);
+  cue(at(caught, 0.15), 'win', 0.8);
+  cue(call, 'impact', 0.6);
+
+  const criteria = q.criteria;
+  const yourPhone = phone(
+    'you',
+    texts.sides.you,
+    criteria,
+    time(plan.phones),
+    `<div class="layer state" style="--start: ${start}; --end: ${proof}">
+      <p class="q-label">${q.bid}</p>
+      <div class="display q-bid" ${scripted('steps', [[start, '–']].concat(bids.filter((bid) => bid.side === 'you').map((bid) => [bid.at, String(bid.amount)])))}>–</div>
+      <div class="q-btn press-twice" style="--t: ${at(bids[0].at, -0.25)}; --again: ${at(bluff.at, -0.25)}" ${scripted('steps', [
+        [start, fill(texts.auction.raise, { amount: bids[0].amount })],
+        [rivalBid.at, fill(texts.auction.raise, { amount: bluff.amount })],
+      ])}>${fill(texts.auction.raise, { amount: bids[0].amount })}</div>
+    </div>
+    <div class="layer state" style="--start: ${proof}; --end: ${NEVER}">
+      ${countdown(plan.proofSeconds, proof, 'mini', 'style="top: 228px; left: 151px"', { rate: plan.proofSeconds / (plan.timeUp - plan.proof), urgent: 10 })}
+      <p class="q-progress" ${scripted('steps', counted.map(([moment, count]) => [moment, fill(texts.auction.progress, { named: count, bid: goal })]))}>${fill(texts.auction.progress, { named: 0, bid: goal })}</p>
+      ${typing(names.concat(stuck), texts.auction.search, '', proof)}
+      <div class="q-said">${names.map((name) => `<div class="${name.correct ? 'good' : 'bad'} in pop" style="--t: ${name.at}"><span>${name.text}</span><b>${name.correct ? '✓' : '✗'}</b></div>`).join('')}</div>
+      ${stamp('lose', q.timeUp, timeUp)}
     </div>`,
   );
-  return `<h1 class="q-title display q-dare-title" data-fit><span class="q-lead in slam" style="--t: ${at(start, 0.35)}">${q.hook[0]}</span><em class="in slam" style="--t: ${at(start, 0.7)}">${q.hook[1]}</em></h1>
-    <div class="q-dare"><strong class="display in slam" style="--t: ${at(start, 1.05)}">${q.dare}</strong></div>
-    <div class="q-list q-names in rise" style="--t: ${at(start, 1.3)}">${rows.join('')}</div>
-    <div class="layer state" style="--start: ${ask}; --end: ${reveal}">
-      ${countdown(seconds, ask, 'mini', 'style="top: 1310px; left: 465px"')}
-      <p class="q-seconds" style="top: 1480px">${q.seconds}</p>
+  const rivalPhone = phone(
+    'rival',
+    plan.rival,
+    criteria,
+    time(plan.phones + 0.1),
+    `<div class="layer state" style="--start: ${start}; --end: ${proof}">
+      <p class="q-label">${q.bid}</p>
+      <div class="display q-bid" ${scripted('steps', [[start, '–'], [rivalBid.at, String(rivalBid.amount)]])}>–</div>
+      <div class="q-btn press-twice" style="--t: ${at(rivalBid.at, -0.25)}; --again: ${at(dare, -0.25)}" ${scripted('steps', [
+        [start, fill(texts.auction.raise, { amount: rivalBid.amount }), 'raise'],
+        [time(plan.armed), texts.auction.challenged, 'dare'],
+      ])}>${fill(texts.auction.raise, { amount: rivalBid.amount })}</div>
     </div>
-    <div class="display centered in slam" style="--t: ${done}; top: 1310px; font-size: 100px; color: var(--volt)">${q.done}</div>
-    <p class="q-line in rise" style="--t: ${at(done, 0.5)}; top: 1440px">${q.others}</p>
-    <p class="q-line send in rise" style="--t: ${at(done, 1.1)}; top: 1530px">${texts.quiz.more} ${q.send}</p>
+    <div class="layer state" style="--start: ${proof}; --end: ${NEVER}">
+      <p class="q-label">${q.counted}</p>
+      <div class="display q-bid small" ${scripted('steps', counted.map(([moment, count]) => [moment, `${count}/${goal}`]))}>0/${goal}</div>
+      ${stamp('win', q.won, caught)}
+    </div>`,
+  );
+  const bubbles = plan.bubbles.map(
+    ({ side, from, until }, index) =>
+      `<div class="q-bubble ${side} state" style="--start: ${time(from)}; --end: ${time(until)}">${q.bubbles[index]}</div>`,
+  );
+  return `<div class="display centered q-lead in slam" style="--t: ${time(0.3)}" data-fit>${q.lead}</div>
+    <div class="display centered q-ask in slam" style="--t: ${time(0.6)}" data-fit>${q.ask}</div>
+    ${bubbles.join('')}
+    ${yourPhone}
+    ${rivalPhone}
+    <div class="layer state" style="--start: ${dare}; --end: ${proof}"><div class="q-shout dare"><strong class="display in slam" style="--t: ${dare}">${texts.auction.challenged}</strong></div></div>
+    <div class="layer state" style="--start: ${caught}; --end: ${NEVER}">
+      <div class="q-shout caught"><strong class="display in slam" style="--t: ${caught}">${q.caught}</strong></div>
+      <p class="q-winner in rise" style="--t: ${at(caught, 0.4)}"><span>${fill(q.winner, { name: plan.rival })}</span></p>
+    </div>
+    <div class="display centered q-call in slam" style="--t: ${call}">${q.call}</div>
+    <p class="q-line in rise" style="--t: ${at(call, 0.5)}; top: 1545px">${q.send}</p>
     <p class="q-note">${q.note}</p>`;
 }
 
@@ -763,10 +863,10 @@ const APPLY = {
     if (element.textContent !== text) element.textContent = text;
     if (current) element.dataset.state = current[1];
   },
-  countdown(element, { from, start }, seconds) {
-    const left = Math.min(from, Math.max(0, from - (seconds - start)));
+  countdown(element, { from, start, rate = 1, urgent: threshold = Math.min(3, Math.ceil(from / 3)) }, seconds) {
+    const left = Math.min(from, Math.max(0, from - (seconds - start) * rate));
     const shown = String(Math.ceil(left - 1e-6));
-    const urgent = Math.ceil(left - 1e-6) <= Math.min(3, Math.ceil(from / 3));
+    const urgent = Math.ceil(left - 1e-6) <= threshold;
     if (element.dataset.n !== shown) element.dataset.n = shown;
     element.dataset.state = urgent ? 'urgent' : 'calm';
     element.style.setProperty('--p', (left / from).toFixed(3));

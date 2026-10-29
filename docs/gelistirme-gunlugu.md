@@ -1090,9 +1090,11 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 
 ### "Say bakalım" soru-cevap videosu (29 Ekim 2026)
 
-- Kullanıcı Açık Artırma için 20 saniyelik bir video istedi. Dördüncü kurgu `quiz-auction` eklendi: "Barcelona'da oynamış 5 Brezilyalı" sorusu, oyundaki mavi "SAY BAKALIM!" etiketi, 5 gizli satır ve 5 saniyelik geri sayım; sonra cevaplar portreleriyle tek tek açılır (Ronaldinho, Neymar, Ronaldo Nazário, Rivaldo, Dani Alves) ve "Romário, Coutinho, Raphinha da olur" satırı yoruma yönlendirir. Ardından ortak `friend` ve `finale` sahneleri; toplam 20 saniye.
-- Ölçüt, oyundaki hücre biçimine uygun seçildi (kulüp × ülke). Türk kulüpleri yerine Barcelona seçildi: taraftar çekişmesine girmiyor, cevaplar çok bilinen isimler ve uzun tanıtım videosundaki Real Madrid × Brezilya hücresini tekrar etmiyor. Sekiz ismin hepsi `football.db`'de Barcelona × Brezilya olarak duruyor ve portreleri var. Veride hatalı görünen kayıtlar da fark edildi (örneğin Barcelona'da Gabriel Jesus); videoda yalnızca kesin cevaplar kullanıldı.
-- Ronaldo, Cristiano ile karışmasın diye ekranda "Ronaldo Nazário" yazıyor.
+- Kullanıcı Açık Artırma için 20 saniyelik bir video istedi. İlk sürüm düz bir soruydu ("Barcelona'da oynamış 5 Brezilyalı say", 5 saniye, sonra cevaplar). Kullanıcı beğenmedi: 5 saniyede 5 isim saymak gerçekçi değil (oyunda sayma süresi 10 saniye artı isim başına 7 saniye) ve videoda arkadaşla ya da online rakiple rekabet görünmüyordu.
+- Kullanıcıya üretimden önce seçenekli sorular soruldu, senaryo onaylandı. Seçimler: iki telefon karşı karşıya, maç online rakiple geçer ve sonda arkadaş sahnesi gelir, blöfü SEN yaparsın ve rakip yakalar, ölçüt Fenerbahçe × Brezilya, rakip uygulamadaki gibi bir kullanıcı adıyla görünür (kerem1907, "gerçek oyuncu" denmez), hafif atışma balonları, 20–25 saniye.
+- Sahne (`qauction`, 15,5 sn): SEN 4, kerem1907 5, SEN 6 ("6 sayarım 😎"); kerem "SAY BAKALIM!" der. SEN'in saati 52'den (10 + 7 × 6) hızlandırılmış akar; Alex, Roberto Carlos, Talisca doğru, Zico yanlış (kerem: "Zico hocaydı 😂"; Zico Fenerbahçe'de teknik direktördü, veride oyuncu olarak geçmez), Fred ve Ederson doğru; "Luiz Gu…" yazarken süre biter. 5/6, "BLÖF YAKALANDI!", sonra "6. İSMİ SEN YAZ 👇". Ardından `friend` ve `finale`; toplam 24,2 sn.
+- İsimler `football.db`'de Fenerbahçe × Brezilya kayıtlarından ve yıllarıyla kontrol edildi. Çift vatandaşlığı tartışma çıkarabilecek isimler (Mehmet Aurélio, Mert Nobre) kullanılmadı. Veride şüpheli kayıtlar da var (örneğin Fenerbahçe × Brezilya'da Şilili Claudio Maldonado, Barcelona'da Gabriel Jesus).
+- Geri sayım yardımcısı hız (`rate`) ve kırmızıya dönme eşiği (`urgent`) aldı; `--negative` renk değişkeni eklendi.
 
 ## Commit listesi
 

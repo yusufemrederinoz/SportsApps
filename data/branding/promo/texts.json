@@ -120,13 +120,18 @@
         "note": "Sıralama uygulamanın verisine göredir."
       },
       "auction": {
-        "hook": ["BARCELONA'DA OYNAMIŞ", "5 BREZİLYALI"],
-        "dare": "SAY BAKALIM!",
-        "seconds": "5 SANİYEN VAR",
-        "hidden": "? ? ? ? ?",
-        "done": "KAÇ TANE SAYDIN?",
-        "others": "Romário, Coutinho, Raphinha da olur.",
-        "send": "Arkadaşına at, o da saysın bakalım.",
+        "lead": "FENERBAHÇE'DE OYNAMIŞ BREZİLYALI",
+        "ask": "KAÇ TANE SAYARSIN?",
+        "criteria": "FENERBAHÇE × BREZİLYA",
+        "bid": "TEKLİF",
+        "counted": "SAYILAN",
+        "bubbles": ["4 sayarım", "5", "6 sayarım 😎", "Say bakalım 😏", "Zico hocaydı 😂"],
+        "timeUp": "SÜRE BİTTİ",
+        "won": "KAZANDIN!",
+        "caught": "BLÖF YAKALANDI!",
+        "winner": "{{name}} kazandı",
+        "call": "6. İSMİ SEN YAZ 👇",
+        "send": "Arkadaşına at, o sayar mı bakalım.",
         "note": "Cevaplar uygulamanın verisine göredir."
       },
       "friend": {

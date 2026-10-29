@@ -42,6 +42,7 @@
         --blue: #5b9bff;
         --blue-deep: #1d3faf;
         --positive: #3fe08f;
+        --negative: #ff4d6d;
         --display: "Barlow Condensed", sans-serif;
         --sans: "Barlow", sans-serif;
         --cell: 216px;
@@ -1995,58 +1996,340 @@
         animation: gone 0.2s ease-in calc(var(--t) * 1s) forwards;
       }
 
-      .q-dare-title .q-lead {
-        font-size: 0.6em;
+      .q-lead {
+        top: 96px;
+        font-size: 54px;
         color: var(--body);
       }
 
-      .q-dare {
-        position: absolute;
-        top: 470px;
-        left: 70px;
-        transform: rotate(-4deg);
-        transform-origin: left center;
-      }
-
-      .q-dare strong {
-        display: inline-block;
-        padding: 18px 40px 10px;
-        border-radius: 18px;
-        background: var(--blue);
-        color: var(--ink);
+      .q-ask {
+        top: 166px;
         font-size: 124px;
-        box-shadow: 0 0 90px rgba(91, 155, 255, 0.6);
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
       }
 
-      .q-names {
-        top: 700px;
-        gap: 10px;
+      .q-bubble {
+        position: absolute;
+        top: 318px;
+        padding: 16px 32px 14px;
+        border-radius: 32px;
+        font-family: var(--sans);
+        font-weight: 700;
+        font-size: 48px;
+        line-height: 1.1;
+        color: var(--ink);
+        white-space: nowrap;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
       }
 
-      .q-names .q-row {
-        height: 104px;
-        grid-template-columns: 82px 1fr;
+      .q-bubble.you {
+        left: 70px;
+        border-bottom-left-radius: 6px;
+        background: var(--gold);
       }
 
-      .q-names .q-show {
-        gap: 22px;
-        padding-left: 6px;
-        font-size: 58px;
+      .q-bubble.rival {
+        right: 70px;
+        border-bottom-right-radius: 6px;
+        background: var(--blue);
       }
 
-      .q-names .q-show i {
-        flex: none;
-        width: 84px;
-        height: 84px;
+      .q-phone {
+        position: absolute;
+        top: 450px;
+        width: 465px;
+        height: 930px;
         overflow: hidden;
-        border: 3px solid var(--positive);
-        border-radius: 50%;
-        background: var(--panel);
+        border: 6px solid var(--tone);
+        border-radius: 58px;
+        background: linear-gradient(180deg, #111823, #070a0f);
+        box-shadow:
+          0 0 60px color-mix(in srgb, var(--tone) 35%, transparent),
+          0 30px 80px rgba(0, 0, 0, 0.55);
       }
 
-      .q-names .q-show img {
-        width: 132%;
-        margin: 2% 0 0 -16%;
+      .q-phone.you {
+        left: 60px;
+        --tone: var(--gold);
+      }
+
+      .q-phone.rival {
+        left: 555px;
+        --tone: var(--blue);
+      }
+
+      .q-notch {
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        width: 120px;
+        height: 28px;
+        margin-left: -60px;
+        border-radius: 14px;
+        background: #000;
+      }
+
+      .q-player {
+        position: absolute;
+        top: 62px;
+        left: 28px;
+        right: 28px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 46px;
+        white-space: nowrap;
+      }
+
+      .q-player i {
+        flex: none;
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--tone);
+        color: var(--ink);
+        font-size: 38px;
+      }
+
+      .q-criteria {
+        position: absolute;
+        top: 150px;
+        left: 24px;
+        right: 24px;
+        padding: 12px 0 9px;
+        border: 2px solid var(--stroke);
+        border-radius: 16px;
+        background: var(--panel);
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 34px;
+        white-space: nowrap;
+      }
+
+      .q-label {
+        position: absolute;
+        top: 268px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+
+      .q-bid {
+        position: absolute;
+        top: 310px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 280px;
+        line-height: 1;
+        color: var(--tone);
+      }
+
+      .q-bid.small {
+        top: 340px;
+        font-size: 200px;
+      }
+
+      .q-btn {
+        position: absolute;
+        top: 770px;
+        left: 24px;
+        right: 24px;
+        height: 104px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background: var(--volt);
+        color: var(--ink);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 44px;
+        white-space: nowrap;
+        box-shadow: 0 0 36px rgba(200, 255, 46, 0.3);
+      }
+
+      .q-btn[data-state="dare"] {
+        background: var(--blue);
+        box-shadow: 0 0 50px rgba(91, 155, 255, 0.6);
+      }
+
+      .q-progress {
+        position: absolute;
+        top: 392px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 38px;
+        color: var(--gold);
+      }
+
+      .q-phone .search {
+        top: 448px;
+        left: 24px;
+        width: auto;
+        right: 24px;
+        height: 76px;
+        padding: 0 22px;
+        border-radius: 18px;
+        font-size: 34px;
+      }
+
+      .q-phone .search.live::after {
+        height: 40px;
+      }
+
+      .q-said {
+        position: absolute;
+        top: 540px;
+        left: 24px;
+        right: 24px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .q-said div {
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 18px;
+        border: 2px solid var(--positive);
+        border-radius: 12px;
+        background: rgba(63, 224, 143, 0.1);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 34px;
+      }
+
+      .q-said b {
+        color: var(--positive);
+      }
+
+      .q-said .bad {
+        border-color: var(--negative);
+        background: rgba(255, 77, 109, 0.12);
+      }
+
+      .q-said .bad span {
+        text-decoration: line-through;
+        color: var(--muted);
+      }
+
+      .q-said .bad b {
+        color: var(--negative);
+      }
+
+      .q-stamp {
+        position: absolute;
+        top: 610px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        transform: rotate(-6deg);
+      }
+
+      .q-stamp strong {
+        display: inline-block;
+        padding: 14px 28px 8px;
+        border-radius: 16px;
+        color: var(--ink);
+        font-size: 76px;
+      }
+
+      .q-stamp.lose strong {
+        background: var(--negative);
+        box-shadow: 0 0 60px rgba(255, 77, 109, 0.6);
+      }
+
+      .q-stamp.win strong {
+        background: var(--positive);
+        box-shadow: 0 0 60px rgba(63, 224, 143, 0.6);
+      }
+
+      .q-shout {
+        position: absolute;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        transform: rotate(-4deg);
+        z-index: 4;
+      }
+
+      .q-shout strong {
+        display: inline-block;
+        padding: 22px 50px 12px;
+        border-radius: 22px;
+        color: var(--ink);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      .q-shout.dare {
+        top: 780px;
+      }
+
+      .q-shout.dare strong {
+        background: var(--blue);
+        font-size: 140px;
+        box-shadow:
+          0 0 120px rgba(91, 155, 255, 0.7),
+          0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      .q-shout.caught {
+        top: 720px;
+      }
+
+      .q-shout.caught strong {
+        background: var(--negative);
+        font-size: 118px;
+        box-shadow:
+          0 0 120px rgba(255, 77, 109, 0.7),
+          0 20px 60px rgba(0, 0, 0, 0.6);
+      }
+
+      .q-winner {
+        position: absolute;
+        top: 890px;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        z-index: 4;
+      }
+
+      .q-winner span {
+        display: inline-block;
+        padding: 12px 34px 10px;
+        border: 2px solid var(--blue);
+        border-radius: 40px;
+        background: rgba(5, 7, 10, 0.88);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 52px;
+        color: var(--text);
+      }
+
+      .q-call {
+        top: 1428px;
+        font-size: 96px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
       }
 
       @keyframes gone {
