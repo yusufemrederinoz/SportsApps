@@ -300,3 +300,17 @@ Bitti sayılır: Uygulama iki mağazada yayındadır.
 - Veri hattı haftalık çalışır; yeni veritabanı uygulamaya güncelleme olarak iner.
 - Yeni modlar Adım 7B'ye alındı; yayından sonra kullanıcı ilgisine göre yenileri eklenir.
 - Yorumlar ve eşleşme süreleri izlenir.
+
+## Adım 11 — Faz 2: tek ekranlık ana ekran ve sade metinler
+
+Kullanıcının 29 Ekim 2026 kararları (seçenekleri telefon maketleriyle gösteren bir karar sayfasından):
+
+- Ana ekran: tam ekran oyun sahneleri, sağa sola kaydırılır, altında sayfa noktaları. Kaydırma yok, her şey tek ekranda.
+- Teknoloji: Skia ve Reanimated. Three.js kullanılmayacak (açılış, pil, ucuz telefonda akıcılık, altı dilde yazı ve ekran okuyucu yüzünden).
+- Maç seçimi: tek OYNA düğmesi; zorluk ve maç türü alttan açılan pencerede.
+- Metinler: Türkçe ve İngilizce, bütün metinler humanizer kurallarıyla. Diğer dört dil sonra, o dili konuşan birinin kontrolüyle.
+- İlk adım: prototip yerine doğrudan uygulama.
+
+Durum: ana ekran, maç penceresi ve sekiz sahne emülatörde denendi. Metinler elden geçti (Türkçede 23, İngilizcede 20 metin). Işımalar iOS gölgesinden Skia'ya taşındı.
+
+Bitti sayılır: iki mağazada yeni sürüm yayındadır. Kalanlar: iPhone'da ve gerçek Android telefonda inceleme, mağaza görsellerinin yeni ana ekranla yenilenmesi, diğer dört dilin metinleri.

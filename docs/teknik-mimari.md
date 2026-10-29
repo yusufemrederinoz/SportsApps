@@ -365,7 +365,11 @@ Expo SDK 57, React Native 0.86, React 19, TypeScript 6, Expo Router.
 | Konum | İçerik |
 |---|---|
 | `src/app/_layout.tsx` | Kök yerleşim: çeviri altyapısı, tema, veritabanı sağlayıcısı |
-| `src/app/index.tsx` | Ana ekran: oyun ve zorluk seçimi; online, arkadaş odası ve bota karşı girişleri |
+| `src/app/index.tsx` | Ana ekran (tek ekran, kaydırma yok): üst satır, bulmaca ve lider tablosu kutucukları, oyun şeridi, OYNA düğmesi; maç penceresi ekranın üst katmanında (`Screen` `overlay`) açılır |
+| `src/features/home/game-carousel.tsx` | Oyun şeridi: yatay sayfalı kaydırma, sayfa noktaları. Sayfa ve nokta animasyonları kaydırma olayında hesaplanan tek bir sayfa konumu (`place`) değerinden okunur |
+| `src/features/home/game-scene.tsx` | Her oyunun Skia sahnesi; görünen sayfada 4,8 saniyelik döngü, diğerlerinde durağan son kare |
+| `src/features/home/play-button.tsx` | OYNA düğmesi |
+| `src/features/home/play-sheet.tsx` | Alttan açılan maç penceresi: zorluk, online, arkadaş odası, bota karşı. Modal değildir; Android'de kenardan kenara düzende Modal penceresi alttan kısa kalıyordu |
 | `src/app/match.tsx` | Maç ekranı: skor, ızgara, süre, sonuç |
 | `src/features/match/session.ts` | Maç oturumu: kural motorunu geri bildirim ve süreyle sarar |
 | `src/features/match/use-match.ts` | Izgarayı yükler, süreyi işletir, bot hamlelerini oynatır |
@@ -657,7 +661,7 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/features/auction/*` | Açık Artırma: görünüm (teklif sayacı, ispat listesi), sesler ve titreşim |
 | `src/features/top-ten/*` | İlk 10: görünüm (canlar, 10 satırlık liste), sesler ve titreşim |
 | `src/features/career/*` | Kariyer Yolu: görünüm (yıllarıyla kulüp listesi, cevap kartı), sesler ve titreşim |
-| `src/features/games.ts` | Oyun listesi, adları ve ana ekran metinleri; mod görünümlerinin ortak yardımcıları |
+| `src/features/games.ts` | Oyun listesi, adları, ana ekran kural metinleri ve her oyunun kaplaması (`GAME_FINISHES`); mod görünümlerinin ortak yardımcıları |
 | `src/features/match/online-lobby.tsx` | Rakip arama, oda kodu ve hata ekranları |
 | `src/features/match/match-view.tsx` | Yerel ve online maçın ortak görünümü |
 | `src/app/friend.tsx` | Oda kurma ve kodla katılma ekranı |

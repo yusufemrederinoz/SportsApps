@@ -1096,6 +1096,16 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - İsimler `football.db`'de Fenerbahçe × Brezilya kayıtlarından ve yıllarıyla kontrol edildi. Çift vatandaşlığı tartışma çıkarabilecek isimler (Mehmet Aurélio, Mert Nobre) kullanılmadı. Veride şüpheli kayıtlar da var (örneğin Fenerbahçe × Brezilya'da Şilili Claudio Maldonado, Barcelona'da Gabriel Jesus).
 - Geri sayım yardımcısı hız (`rate`) ve kırmızıya dönme eşiği (`urgent`) aldı; `--negative` renk değişkeni eklendi.
 
+### Faz 2: tek ekranlık ana ekran ve sade metinler (29 Ekim 2026)
+
+- **Karar.** Kullanıcı ana ekranda oyunların yeterince öne çıkmadığını ve kaydırmanın kafa karıştırdığını söyledi, Three.js'i sordu. Bütün sorular seçenekleriyle ve telefon maketleriyle bir karar sayfasında gösterildi (Skia kartı, Three.js ile gerçek 3B top ve 3B lobi demoları dahil). Seçimler `is-plani.md` Adım 11'de.
+- **Ana ekran.** Eski düzen (büyük başlık, yana kayan küçük oyun düğmeleri, zorluk satırı, üç büyük mod kartı) kalktı. Yerine üst satır, kutucuklar, sekiz oyunun tam ekran sayfaları (Skia sahnesi, ad, kural, puan), sayfa noktaları ve tek OYNA düğmesi geldi. OYNA alttan bir maç penceresi açar: zorluk ve üç maç türü. Kullanılmayan `titleLead`, `titleAccent*` ve `home.game` anahtarları altı dilden silindi; `play`, `matchType`, `swipeHint`, `close` eklendi.
+- **Sahneler.** Her oyuna metin içermeyen, kendi döngüsünü oynayan bir Skia sahnesi çizildi (ayrıntı `tasarim-dili.md`). Yalnızca görünen sayfanın sahnesi döner; "hareketi azalt" açıksa hiçbiri dönmez.
+- **iOS gölgesi.** Kullanıcı iOS'taki gölge sorununu hatırlattı. Mod kartı, OYNA düğmesi, skor paneli ve oyuncu kartı katman gölgesini arka planı olmayan görünümlerde kullanıyordu; iOS gölgeyi yazı ve portre şekillerinden de hesaplıyor, kazanan kartın nabzında her karede yeniden çiziyordu. Işımalar Skia'ya taşındı (`MetalPlate` `glow`, kartta ayrı ışıma tuvali). Android'de bu ışımalar artık ilk kez görünüyor.
+- **Metinler.** Türkçe ve İngilizce metinler humanizer kurallarıyla iki ayrı ajana verildi; anahtar, sıra ve yer tutucuları koruyan, noktalı virgül ve uzun tireyi yasaklayan, uzamayı sınırlayan bir denetim betiğiyle doğrulandı. Türkçede 23 metin değişti: 14 noktalı virgülün hepsi, oyun kurallarındaki "siz" hitabı, iki noktayla sahne kurma, slogan üçlemesi, iki dil bilgisi hatası (`chain.scope`, `rare.rule`). İngilizcede 20 metin. "Say bakalım", "Prove it", mod adları ve yasal metinlerin içeriği değişmedi.
+- **Emülatörde bulunanlar.** Maç penceresi Modal olarak açılınca Android'de alttan yaklaşık 78 dp kısa kalıyordu; pencere ekranın üst katmanına taşındı, kapanış animasyonu da böylece çalıştı. Pencere açılıp kapanınca sayfa noktalarının vurgusu kayboluyordu (animasyon eski sayfa genişliğiyle hesaplanıyordu); noktalar ve sayfalar kaydırma olayında hesaplanan sayfa konumuna bağlandı.
+- **Ortam.** `sportapps` emülatörü kullanıcının başka bir uygulaması için açıktı; ChallengeGoal için ayrı bir sanal cihaz (`challengegoal`, 5560 kapısı) kuruldu. Expo Go yerel ağ adresinden paketi indirirken takıldı; `adb reverse` ile 8082 ve 4000 kapıları yönlendirilip `exp://127.0.0.1:8082` açılınca düzeldi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
