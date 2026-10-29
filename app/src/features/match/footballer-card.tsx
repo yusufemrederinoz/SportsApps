@@ -1,5 +1,5 @@
 import type { Side } from '@sportapps/game-core';
-import { Canvas, Group, LinearGradient, Path, Rect, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Group, LinearGradient, Path, Rect, vec } from '@shopify/react-native-skia';
 import { Image } from 'expo-image';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +35,9 @@ const BANNER = 'rgba(0, 0, 0, 0.42)';
 const PORTRAIT_SCALE = 0.66;
 const PORTRAIT_LEFT = 0.3;
 const PORTRAIT_TOP = -0.02;
+const GLOW = 12;
+const GLOW_BLEED = GLOW * 2;
+const GLOW_OPACITY = 0.8;
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 
 const WALKOUT = new Keyframe({
@@ -83,7 +86,14 @@ export function FootballerCard({ footballer, side, size, emphasis, watermark = t
 
   return (
     <Animated.View entering={WALKOUT} style={{ width: size, height: size }}>
-      <Animated.View style={[styles.fill, { shadowColor: finish.base }, styles.glow, emphasisStyle]}>
+      <Animated.View style={[styles.fill, emphasisStyle]}>
+        <Canvas style={styles.glow} pointerEvents="none">
+          <Group transform={[{ translateX: GLOW_BLEED }, { translateY: GLOW_BLEED }]}>
+            <Path path={path} color={finish.base} opacity={GLOW_OPACITY}>
+              <BlurMask blur={GLOW} style="normal" />
+            </Path>
+          </Group>
+        </Canvas>
         <Canvas style={styles.fill} pointerEvents="none">
           <Group clip={path}>
             <Rect x={0} y={0} width={size} height={size}>
@@ -159,9 +169,11 @@ const styles = StyleSheet.create({
     left: 0,
   },
   glow: {
-    shadowOpacity: 0.85,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 0 },
+    position: 'absolute',
+    top: -GLOW_BLEED,
+    right: -GLOW_BLEED,
+    bottom: -GLOW_BLEED,
+    left: -GLOW_BLEED,
   },
   content: {
     overflow: 'hidden',

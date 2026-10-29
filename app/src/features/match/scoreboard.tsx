@@ -10,6 +10,8 @@ import { useUppercase } from '@/i18n/uppercase';
 
 import { ownSideFirst } from './sides';
 
+const GLOW = 12;
+
 interface ScoreboardProps {
   side: Side;
   names: Record<Side, string>;
@@ -42,10 +44,7 @@ function SidePanel({ side, edge, name, score, active, compact }: SidePanelProps)
   }, [bump, score]);
 
   return (
-    <MetalPlate
-      finish={active ? finish : null}
-      cut={edge}
-      style={[styles.panel, active && { shadowColor: finish.base }, active && styles.glow]}>
+    <MetalPlate finish={active ? finish : null} cut={edge} glow={active ? GLOW : 0} style={styles.panel}>
       <View
         accessible
         accessibilityLabel={`${name}: ${score}`}
@@ -86,11 +85,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 64,
     justifyContent: 'center',
-  },
-  glow: {
-    shadowOpacity: 0.8,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 0 },
   },
   panelContent: {
     flexDirection: 'row',

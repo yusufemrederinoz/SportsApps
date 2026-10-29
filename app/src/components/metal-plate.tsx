@@ -1,4 +1,4 @@
-import { Canvas, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
+import { BlurMask, Canvas, Group, LinearGradient, Path, Skia, vec } from '@shopify/react-native-skia';
 import { useState, type PropsWithChildren } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent, type StyleProp, type ViewStyle } from 'react-native';
 
@@ -14,8 +14,11 @@ type MetalPlateProps = PropsWithChildren<{
   cut?: PlateCut;
   cutSize?: number;
   radius?: number;
+  glow?: number;
   style?: StyleProp<ViewStyle>;
 }>;
+
+const GLOW_OPACITY = 0.6;
 
 export function platePath(width: number, height: number, radius: number, cut: PlateCut, cutSize: number) {
   const path = Skia.PathBuilder.Make();
@@ -42,7 +45,7 @@ export function platePath(width: number, height: number, radius: number, cut: Pl
   return path.build();
 }
 
-export function MetalPlate({ finish, cut = 'none', cutSize = 14, radius = 10, style, children }: MetalPlateProps) {
+export function MetalPlate({ finish, cut = 'none', cutSize = 14, radius = 10, glow = 0, style, children }: MetalPlateProps) {
   const [size, setSize] = useState({ width: 0, height: 0 });
   const onLayout = (event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -52,18 +55,26 @@ export function MetalPlate({ finish, cut = 'none', cutSize = 14, radius = 10, st
   const path = width > 0 && height > 0 ? platePath(width, height, radius, cut, cutSize) : null;
   const fill = finish ? [finish.light, finish.base, finish.deep] : [Colors.panelRaised, Colors.panel, Colors.ink];
   const edge = finish ? finish.light : Colors.strokeBright;
+  const bleed = glow * 2;
 
   return (
     <View style={style} onLayout={onLayout}>
       {path ? (
-        <Canvas style={StyleSheet.absoluteFill} pointerEvents="none">
-          <Path path={path}>
-            <LinearGradient start={vec(0, 0)} end={vec(width * 0.35, height)} colors={fill} positions={[0, 0.45, 1]} />
-          </Path>
-          <Path path={path}>
-            <LinearGradient start={vec(0, 0)} end={vec(0, height * 0.55)} colors={[SHEEN, SHEEN_FADE]} />
-          </Path>
-          <Path path={path} style="stroke" strokeWidth={1.5} color={edge} opacity={finish ? 0.9 : 0.45} />
+        <Canvas style={[StyleSheet.absoluteFill, { top: -bleed, right: -bleed, bottom: -bleed, left: -bleed }]} pointerEvents="none">
+          <Group transform={[{ translateX: bleed }, { translateY: bleed }]}>
+            {glow > 0 && finish ? (
+              <Path path={path} color={finish.base} opacity={GLOW_OPACITY}>
+                <BlurMask blur={glow} style="normal" />
+              </Path>
+            ) : null}
+            <Path path={path}>
+              <LinearGradient start={vec(0, 0)} end={vec(width * 0.35, height)} colors={fill} positions={[0, 0.45, 1]} />
+            </Path>
+            <Path path={path}>
+              <LinearGradient start={vec(0, 0)} end={vec(0, height * 0.55)} colors={[SHEEN, SHEEN_FADE]} />
+            </Path>
+            <Path path={path} style="stroke" strokeWidth={1.5} color={edge} opacity={finish ? 0.9 : 0.45} />
+          </Group>
         </Canvas>
       ) : null}
       {children}
