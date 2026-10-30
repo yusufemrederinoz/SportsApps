@@ -1,6 +1,6 @@
 import { normalizeRoomCode, type GameId } from '@sportapps/protocol';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 
@@ -24,6 +24,7 @@ import { JokerContext, type MatchJokers } from '@/features/jokers/joker-context'
 import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty';
 import { useLeaveGuard } from '@/features/match/leave-guard';
 import { MatchRewardContext, ProtectedMatchContext } from '@/features/match/match-reward';
+import { RematchContext, type RematchControl } from '@/features/match/rematch';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
 import { resultDetailKey } from '@/features/match/result-detail';
@@ -103,7 +104,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   const running =
     online.phase === 'playing' &&
     (live ? live.view.result === null : session !== null && session.match.result === null);
-  const leaveDialog = useLeaveGuard(running, entry.kind === 'queue');
+  const leaveDialog = useLeaveGuard(running, entry.kind !== 'bot');
   const notice = online.reconnecting
     ? t('online.reconnecting')
     : online.opponentConnected
@@ -115,6 +116,12 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
       ? online.playAgain
       : () => router.replace({ pathname: '/friend', params: { difficulty: String(difficulty), game } });
   const quit = () => router.dismissTo('/');
+  const usernames = live?.usernames ?? setup?.usernames ?? null;
+  const rival = jokerSide === 'x' ? 'o' : 'x';
+  const rematch: RematchControl | null =
+    usernames && entry.kind !== 'bot'
+      ? { status: online.rematch, rivalName: usernames[rival], onAsk: online.askRematch }
+      : null;
   const shared = {
     secondsLeft: online.liveSecondsLeft,
     canAct: online.canAct,
@@ -186,9 +193,10 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
         resultDetail={resultDetail}
         playAgainLabel={playAgainLabel}
         notice={notice}
-        searchFooter={(cell) => (
+        searchToolbar={(cell) => (
           <JokerBar
             scope={match.turnNumber}
+            secondsLeft={online.secondsLeft}
             available={() => match.turn === setup.side && result === null}
             target={(joker) => (joker === 'hint' ? { cell: { row: cell.row, column: cell.column } } : {})}
           />
@@ -201,11 +209,13 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
   };
 
   return (
-    <MatchRewardContext value={entry.kind === 'queue' ? online.reward : 'unranked'}>
-      <ProtectedMatchContext value={entry.kind === 'queue' ? online.rewardMatchId : null}>
+    <MatchRewardContext value={entry.kind === 'bot' ? 'unranked' : online.rewardMatchId ? (online.reward ?? 'unranked') : null}>
+      <ProtectedMatchContext value={entry.kind !== 'bot' && online.reward ? online.rewardMatchId : null}>
         <JokerContext value={jokers}>
-          {content()}
-          {leaveDialog}
+          <RematchContext value={rematch}>
+            <Fragment key={live?.matchId ?? setup?.matchId ?? 'lobby'}>{content()}</Fragment>
+            {leaveDialog}
+          </RematchContext>
         </JokerContext>
       </ProtectedMatchContext>
     </MatchRewardContext>

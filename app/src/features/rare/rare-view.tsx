@@ -229,6 +229,8 @@ export function RareMatchView({
   };
   const current = status();
 
+  const jokerBar = <JokerBar scope={view.round} available={() => answering && !view.answered[side]} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       scroll
@@ -281,7 +283,7 @@ export function RareMatchView({
         />
       </Animated.View>
 
-      <JokerBar scope={view.round} available={() => answering && !view.answered[side]} />
+      {jokerBar}
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
@@ -363,6 +365,7 @@ export function RareMatchView({
           title={title}
           market={rare.market.code}
           secondsLeft={secondsLeft}
+          toolbar={jokerBar}
           excludedIds={[]}
           onSelect={(footballer) => {
             setSearching(null);

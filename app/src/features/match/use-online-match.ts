@@ -1,5 +1,5 @@
 import type { CellPosition, Side } from '@sportapps/game-core';
-import { EXTRA_TIME_SECONDS } from '@sportapps/protocol';
+import { EXTRA_TIME_SECONDS, REACTION_COOLDOWN_MILLISECONDS, REMATCH_WINDOW_MILLISECONDS } from '@sportapps/protocol';
 import type {
   AuctionView,
   CareerView,
@@ -17,6 +17,8 @@ import type {
   JokerUse,
   PlayErrorCode,
   PointsChange,
+  ReactionId,
+  RematchState,
   ServerMessage,
 } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
@@ -73,6 +75,19 @@ export type OnlineAuction = OnlineSessionBase & { game: 'auction'; view: Auction
 export type OnlineTopTen = OnlineSessionBase & { game: 'top-ten'; view: TopTenView };
 export type OnlineCareer = OnlineSessionBase & { game: 'career'; view: CareerView };
 
+export interface ReactionEvent {
+  key: number;
+  side: Side;
+  reaction: ReactionId;
+}
+
+export interface RematchStatus {
+  state: 'none' | 'open' | 'asking' | RematchState;
+  endsAt: number | null;
+}
+
+const NO_REMATCH: RematchStatus = { state: 'none', endsAt: null };
+const VISIBLE_REACTIONS = 4;
 const TICK_MILLISECONDS = 250;
 const BLOCKING_ERRORS: readonly PlayErrorCode[] = [
   'unauthorized',
@@ -108,8 +123,18 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const [goals, setGoals] = useState<number | null>(null);
   const [jokerPending, setJokerPending] = useState<JokerId | null>(null);
   const [jokerError, setJokerError] = useState<PlayErrorCode | null>(null);
+  const [rematch, setRematch] = useState<RematchStatus>(NO_REMATCH);
+  const [reactions, setReactions] = useState<ReactionEvent[]>([]);
   const client = useRef<PlayClient | null>(null);
   const jokerWaiting = useRef(false);
+  const reactionKey = useRef(0);
+  const lastReactionAt = useRef(0);
+
+  const pushReaction = (side: Side, reaction: ReactionId) => {
+    reactionKey.current += 1;
+    const key = reactionKey.current;
+    setReactions((current) => [...current.slice(1 - VISIBLE_REACTIONS), { key, side, reaction }]);
+  };
 
   useEffect(() => {
     if (!token || !apiUrl) {
@@ -155,6 +180,17 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     const fail = (reason: OnlineFailure) => {
       setFailure(reason);
       setPhase('failed');
+    };
+
+    const beginMatch = () => {
+      setJokerUses([]);
+      setJokerPending(null);
+      setJokerError(null);
+      jokerWaiting.current = false;
+      setReward(null);
+      setRewardMatchId(null);
+      setRematch(NO_REMATCH);
+      setReactions([]);
     };
 
     const sendEntry = () => {
@@ -205,7 +241,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             return;
           }
           matchId = snapshot.matchId;
-          setJokerUses([]);
+          beginMatch();
           playing = snapshot.result === null;
           finished = snapshot.result !== null;
           setSetup({
@@ -251,7 +287,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             return;
           }
           matchId = snapshot.matchId;
-          setJokerUses([]);
+          beginMatch();
           playing = snapshot.view.result === null;
           finished = snapshot.view.result !== null;
           setLive({
@@ -310,6 +346,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
             finished = true;
             setReward(message.points ?? null);
             setRewardMatchId(message.matchId);
+            setRematch(message.rematch ? { state: 'open', endsAt: receivedAt + REMATCH_WINDOW_MILLISECONDS } : NO_REMATCH);
             setSession((current) => current && finishSession(current, message.result));
             setLive((current) => current && ({ ...current, ...finishGameView(current, message.result) } as OnlineGame));
           }
@@ -317,6 +354,16 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
         case 'opponent':
           if (message.matchId === matchId) {
             setOpponentConnected(message.connected);
+          }
+          return;
+        case 'rematch':
+          if (message.matchId === matchId) {
+            setRematch({ state: message.state, endsAt: message.endsIn > 0 ? receivedAt + message.endsIn : null });
+          }
+          return;
+        case 'reaction':
+          if (message.matchId === matchId) {
+            pushReaction(message.side, message.reaction);
           }
           return;
         case 'error':
@@ -443,6 +490,31 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     }
   };
 
+  const sendReaction = (reaction: ReactionId): boolean => {
+    const matchId = live?.matchId ?? setup?.matchId ?? null;
+    const side = live?.side ?? setup?.side ?? null;
+    const time = Date.now();
+    if (!matchId || !side || time - lastReactionAt.current < REACTION_COOLDOWN_MILLISECONDS) {
+      return false;
+    }
+    if (!client.current?.send({ type: 'react', matchId, reaction })) {
+      return false;
+    }
+    lastReactionAt.current = time;
+    pushReaction(side, reaction);
+    return true;
+  };
+
+  const askRematch = () => {
+    const matchId = live?.matchId ?? setup?.matchId ?? null;
+    if (!matchId || (rematch.state !== 'open' && rematch.state !== 'offered')) {
+      return;
+    }
+    if (client.current?.send({ type: 'rematch', matchId })) {
+      setRematch((current) => ({ ...current, state: 'asking' }));
+    }
+  };
+
   const playAgain = () => {
     setJokerUses([]);
     setJokerPending(null);
@@ -459,6 +531,8 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     setOpponentConnected(true);
     setReward(null);
     setRewardMatchId(null);
+    setRematch(NO_REMATCH);
+    setReactions([]);
     setPhase('connecting');
     setRound((current) => current + 1);
   };
@@ -475,6 +549,10 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
     reward,
     rewardMatchId,
     jokers: { uses: jokerUses, goals, pending: jokerPending, error: jokerError, use: useJoker },
+    rematch,
+    askRematch,
+    reactions,
+    sendReaction,
     secondsLeft: session ? secondsLeft(session, now) : 0,
     liveSecondsLeft: live ? Math.max(0, Math.ceil((live.deadlineAt - now) / 1000)) : 0,
     canPlay,

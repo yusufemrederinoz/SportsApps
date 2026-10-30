@@ -191,6 +191,8 @@ export function AuctionMatchView({
   };
   const current = status();
 
+  const jokerBar = <JokerBar scope={view.round} available={(joker) => (joker === 'extra-time' ? proving && view.bidder === side : running)} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       scroll
@@ -243,7 +245,7 @@ export function AuctionMatchView({
         />
       </Animated.View>
 
-      <JokerBar scope={view.round} available={(joker) => (joker === 'extra-time' ? proving && view.bidder === side : running)} />
+      {jokerBar}
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
@@ -337,6 +339,7 @@ export function AuctionMatchView({
           title={title}
           market={auction.market.code}
           secondsLeft={secondsLeft}
+          toolbar={jokerBar}
           excludedIds={[...view.named, ...view.missed]}
           closeLabel={t('auction.searchDone', { named: view.named.length, bid: view.bid })}
           footer={chips}

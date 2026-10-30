@@ -34,7 +34,7 @@ interface MatchViewProps {
   resultDetail: string;
   playAgainLabel: string;
   notice?: string | null;
-  searchFooter?: (cell: CellPosition) => ReactNode;
+  searchToolbar?: (cell: CellPosition) => ReactNode;
   onAnswer: (position: CellPosition, footballer: FootballerSummary) => void;
   onPlayAgain: () => void;
   onQuit: () => void;
@@ -54,7 +54,7 @@ export function MatchView({
   resultDetail,
   playAgainLabel,
   notice = null,
-  searchFooter,
+  searchToolbar,
   onAnswer,
   onPlayAgain,
   onQuit,
@@ -169,7 +169,7 @@ export function MatchView({
           market={marketCode}
           secondsLeft={secondsLeft}
           excludedIds={usedFootballerIds(match)}
-          footer={searchFooter ? searchFooter(selected) : undefined}
+          toolbar={searchToolbar ? searchToolbar(selected) : undefined}
           onClose={() => setSelection(null)}
           onSelect={(footballer) => {
             setSelection(null);

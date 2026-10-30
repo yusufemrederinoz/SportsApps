@@ -177,6 +177,8 @@ export function TopTenMatchView({
   };
   const current = status();
 
+  const jokerBar = <JokerBar scope={view.round} available={(joker) => view.phase === 'playing' && (joker !== 'extra-life' || view.lives[side] > 0)} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       contentStyle={styles.content}
@@ -233,7 +235,7 @@ export function TopTenMatchView({
         />
       </Animated.View>
 
-      <JokerBar scope={view.round} available={(joker) => view.phase === 'playing' && (joker !== 'extra-life' || view.lives[side] > 0)} />
+      {jokerBar}
 
       <View style={styles.lives}>
         {ownSideFirst(side).map((lifeSide) => (
@@ -314,6 +316,7 @@ export function TopTenMatchView({
           title={title}
           market={topTen.market.code}
           secondsLeft={secondsLeft}
+          toolbar={jokerBar}
           excludedIds={view.entries.flatMap((entry) => (entry.footballerId === null ? [] : [entry.footballerId]))}
           onSelect={(footballer) => {
             setSearching(null);

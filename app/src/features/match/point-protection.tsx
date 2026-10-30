@@ -1,12 +1,15 @@
-import { POINT_PROTECTION_PREFIX } from '@sportapps/protocol';
+import { POINT_PROTECTION_PREFIX, POINT_PROTECTION_PRICE } from '@sportapps/protocol';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 
 import type { LoadedRewardedAd } from '@/ads/mobile-ads';
 import { api } from '@/api';
+import { ApiRequestError } from '@/api/client';
 import { useAuth } from '@/auth/auth-provider';
+import { ERROR_KEYS } from '@/auth/error-messages';
+import { GoalIcon } from '@/components/goal-icon';
 import { ThemedText } from '@/components/themed-text';
 import { adsBuiltIn, rewardedAdUnit } from '@/constants/ads';
 import { Colors, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
@@ -15,23 +18,35 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { useUppercase } from '@/i18n/uppercase';
 
-const OFFER_SECONDS = 10;
-const COUNTDOWN_SIZE = 40;
+import { signed } from './match-reward';
 
-type Phase = 'loading' | 'ready' | 'working' | 'done' | 'pending' | 'gone';
+const OFFER_SECONDS = 15;
+const COUNTDOWN_SIZE = 44;
+
+type AdState = 'loading' | 'ready' | 'gone';
+type Phase = 'offer' | 'working' | 'done' | 'pending' | 'closed';
 
 const wait = (milliseconds: number) => new Promise<void>((resolve) => setTimeout(resolve, milliseconds));
 
-export function PointProtection({ matchId, lost }: { matchId: string; lost: number }) {
+interface PointProtectionProps {
+  matchId: string;
+  lost: number;
+  goals: number;
+}
+
+export function PointProtection({ matchId, lost, goals }: PointProtectionProps) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const { state } = useAuth();
   const token = state.status === 'signed-in' ? state.token : null;
   const userId = state.status === 'signed-in' ? state.account.id : null;
-  const [phase, setPhase] = useState<Phase>('loading');
+  const [phase, setPhase] = useState<Phase>('offer');
+  const [adState, setAdState] = useState<AdState>(adsBuiltIn && rewardedAdUnit ? 'loading' : 'gone');
   const [seconds, setSeconds] = useState(OFFER_SECONDS);
   const [restored, setRestored] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   const ad = useRef<LoadedRewardedAd | null>(null);
+  const affordable = goals >= POINT_PROTECTION_PRICE;
 
   useEffect(() => {
     if (!token || !userId || !adsBuiltIn || !rewardedAdUnit) {
@@ -63,15 +78,15 @@ export function PointProtection({ matchId, lost }: { matchId: string; lost: numb
         return;
       }
       if (refusal) {
-        setPhase('gone');
+        setAdState('gone');
         return;
       }
       loaded = ads.loadRewardedAd(
         unitId,
         userId,
         {
-          onLoaded: () => active && setPhase((current) => (current === 'loading' ? 'ready' : current)),
-          onError: () => active && setPhase((current) => (current === 'loading' || current === 'ready' ? 'gone' : current)),
+          onLoaded: () => active && setAdState('ready'),
+          onError: () => active && setAdState('gone'),
           onClosed: (earned) => {
             if (!active) {
               return;
@@ -79,7 +94,8 @@ export function PointProtection({ matchId, lost }: { matchId: string; lost: numb
             if (earned) {
               void confirm();
             } else {
-              setPhase('gone');
+              setAdState('gone');
+              setPhase('offer');
             }
           },
         },
@@ -96,14 +112,39 @@ export function PointProtection({ matchId, lost }: { matchId: string; lost: numb
   }, [token, userId, matchId]);
 
   useEffect(() => {
-    if (phase !== 'ready') {
+    if (phase !== 'offer') {
       return undefined;
     }
     const timer = setInterval(() => setSeconds((current) => current - 1), 1000);
     return () => clearInterval(timer);
   }, [phase]);
 
-  if (phase === 'loading' || phase === 'gone' || (phase === 'ready' && seconds <= 0)) {
+  const payWithGoals = async () => {
+    if (!token) {
+      return;
+    }
+    haptics.select();
+    setError(null);
+    setPhase('working');
+    try {
+      const purchase = await api.buyPointProtection(token, matchId);
+      setRestored(purchase.points);
+      setPhase('done');
+      playSound('correct');
+      haptics.success();
+    } catch (failure) {
+      const code = failure instanceof ApiRequestError ? failure.code : 'internal';
+      if (code === 'protection-unavailable') {
+        setPhase('closed');
+        return;
+      }
+      setError(t(ERROR_KEYS[code]));
+      setPhase('offer');
+    }
+  };
+
+  const nothingToOffer = adState === 'gone' && !affordable;
+  if (phase === 'closed' || (phase === 'offer' && (seconds <= 0 || nothingToOffer))) {
     return null;
   }
 
@@ -122,7 +163,7 @@ export function PointProtection({ matchId, lost }: { matchId: string; lost: numb
   if (phase === 'working') {
     return (
       <View style={styles.working}>
-        <ActivityIndicator color={Colors.blue} />
+        <ActivityIndicator color={Colors.gold} />
         <ThemedText type="small" themeColor="textSecondary">
           {t('reward.protecting')}
         </ThemedText>
@@ -131,56 +172,91 @@ export function PointProtection({ matchId, lost }: { matchId: string; lost: numb
   }
 
   return (
-    <Animated.View entering={FadeInDown.duration(Motion.base)}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${t('reward.protect')}. ${t('reward.protectHint', { points: lost })}`}
-        onPress={() => {
-          haptics.select();
-          setPhase('working');
-          ad.current?.show();
-        }}
-        style={({ pressed }) => [styles.offer, pressed && styles.offerPressed]}>
+    <Animated.View entering={ZoomIn.duration(Motion.slow)} style={styles.card}>
+      <View style={styles.top}>
         <View style={styles.text}>
           <ThemedText style={styles.title}>{uppercase(t('reward.protect'))}</ThemedText>
-          <ThemedText type="small" style={styles.hint}>
+          <ThemedText type="small" themeColor="textSecondary">
             {t('reward.protectHint', { points: lost })}
           </ThemedText>
         </View>
+        <ThemedText style={styles.lost}>{signed(-lost)}</ThemedText>
         <View style={styles.countdown}>
           <ThemedText style={styles.countdownText}>{seconds}</ThemedText>
         </View>
-      </Pressable>
+      </View>
+      <View style={styles.actions}>
+        {adState !== 'gone' ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`${t('reward.protectAd')}. ${t('reward.protectHint', { points: lost })}`}
+            accessibilityState={{ disabled: adState !== 'ready', busy: adState === 'loading' }}
+            disabled={adState !== 'ready'}
+            onPress={() => {
+              haptics.select();
+              setPhase('working');
+              ad.current?.show();
+            }}
+            style={({ pressed }) => [styles.action, styles.adAction, pressed && styles.pressed]}>
+            {adState === 'loading' ? <ActivityIndicator color={Colors.onAccent} /> : null}
+            <ThemedText style={styles.adLabel}>{uppercase(t('reward.protectAd'))}</ThemedText>
+          </Pressable>
+        ) : null}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${t('reward.protectGoals', { price: POINT_PROTECTION_PRICE })}. ${t('reward.protectHint', { points: lost })}`}
+          accessibilityState={{ disabled: !affordable }}
+          disabled={!affordable}
+          onPress={() => void payWithGoals()}
+          style={({ pressed }) => [styles.action, styles.goalAction, !affordable && styles.disabled, pressed && styles.pressed]}>
+          <GoalIcon size={22} />
+          <ThemedText style={styles.goalLabel}>{uppercase(t('reward.protectGoals', { price: POINT_PROTECTION_PRICE }))}</ThemedText>
+        </Pressable>
+      </View>
+      {!affordable ? (
+        <ThemedText type="small" themeColor="textSecondary" style={styles.centered}>
+          {t('reward.protectNeedGoals', { price: POINT_PROTECTION_PRICE, goals })}
+        </ThemedText>
+      ) : null}
+      {error ? (
+        <ThemedText type="small" themeColor="negative" style={styles.centered}>
+          {error}
+        </ThemedText>
+      ) : null}
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  offer: {
+  card: {
+    alignSelf: 'stretch',
+    gap: Spacing.three,
+    padding: Spacing.three,
+    borderRadius: Radius.large,
+    borderWidth: 2,
+    borderColor: Colors.negative,
+    backgroundColor: Colors.panel,
+  },
+  top: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.three,
-    minHeight: MinimumTouchSize + Spacing.three,
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.two,
-    borderRadius: Radius.medium,
-    backgroundColor: Colors.blue,
-  },
-  offerPressed: {
-    opacity: 0.85,
   },
   text: {
     flex: 1,
     gap: Spacing.half,
   },
   title: {
-    fontFamily: Fonts.heading,
-    fontSize: 22,
-    lineHeight: 26,
-    color: Colors.onAccent,
+    fontFamily: Fonts.display,
+    fontSize: 26,
+    lineHeight: 28,
+    color: Colors.text,
   },
-  hint: {
-    color: Colors.onAccent,
+  lost: {
+    fontFamily: Fonts.display,
+    fontSize: 40,
+    lineHeight: 42,
+    color: Colors.negative,
   },
   countdown: {
     width: COUNTDOWN_SIZE,
@@ -188,13 +264,54 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: COUNTDOWN_SIZE / 2,
-    backgroundColor: Colors.onAccent,
+    borderWidth: 2,
+    borderColor: Colors.negative,
   },
   countdownText: {
     fontFamily: Fonts.heading,
     fontSize: 20,
     lineHeight: 24,
     color: Colors.text,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: Spacing.two,
+  },
+  action: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    minHeight: MinimumTouchSize + Spacing.one,
+    paddingHorizontal: Spacing.two,
+    borderRadius: Radius.medium,
+  },
+  adAction: {
+    backgroundColor: Colors.blue,
+  },
+  goalAction: {
+    borderWidth: 2,
+    borderColor: Colors.gold,
+    backgroundColor: Colors.ink,
+  },
+  disabled: {
+    opacity: 0.45,
+  },
+  pressed: {
+    opacity: 0.85,
+  },
+  adLabel: {
+    fontFamily: Fonts.heading,
+    fontSize: 18,
+    lineHeight: 22,
+    color: Colors.onAccent,
+  },
+  goalLabel: {
+    fontFamily: Fonts.heading,
+    fontSize: 18,
+    lineHeight: 22,
+    color: Colors.gold,
   },
   working: {
     flexDirection: 'row',

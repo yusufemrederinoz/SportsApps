@@ -147,6 +147,8 @@ export function DraftMatchView({
   };
   const current = status();
 
+  const jokerBar = <JokerBar scope={view.round} available={() => running && !view.picked[side]} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       scroll
@@ -205,7 +207,7 @@ export function DraftMatchView({
           />
         </Animated.View>
 
-        <JokerBar scope={view.round} available={() => running && !view.picked[side]} />
+        {jokerBar}
 
         <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
           <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
@@ -270,6 +272,7 @@ export function DraftMatchView({
           title={clubTitle}
           market={draft.market.code}
           secondsLeft={secondsLeft}
+          toolbar={jokerBar}
           excludedIds={draftCardIds(view)}
           filter={{
             kind: 'draft',

@@ -222,6 +222,8 @@ export function ChainMatchView({
   };
   const statusLine = status();
 
+  const jokerBar = <JokerBar scope={`${view.round}-${view.chain.length}`} available={() => myTurn} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       scroll
@@ -278,7 +280,7 @@ export function ChainMatchView({
           />
         </Animated.View>
 
-        <JokerBar scope={`${view.round}-${view.chain.length}`} available={() => myTurn} />
+        {jokerBar}
 
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
           <ThemedText style={styles.rule}>{uppercase(t('chain.rule'))}</ThemedText>
@@ -352,6 +354,7 @@ export function ChainMatchView({
             title={currentFootballer ? t('chain.searchTitle', { name: currentFootballer.name }) : ''}
             market={chain.market.code}
             secondsLeft={secondsLeft}
+            toolbar={jokerBar}
             excludedIds={chainCardIds(view)}
             onSelect={(footballer) => {
               setSearching(null);

@@ -44,6 +44,7 @@ interface FootballerSearchProps {
   filter?: SearchFilter | null;
   emptyLabel?: string;
   closeLabel?: string;
+  toolbar?: ReactNode;
   footer?: ReactNode;
   showAssists?: boolean;
   onSelect: (footballer: FootballerSummary) => void;
@@ -58,6 +59,7 @@ export function FootballerSearch({
   filter = null,
   emptyLabel,
   closeLabel,
+  toolbar,
   footer,
   showAssists = false,
   onSelect,
@@ -142,6 +144,7 @@ export function FootballerSearch({
               </View>
             ) : null}
           </View>
+          {toolbar ? <View style={styles.toolbar}>{toolbar}</View> : null}
           <TextInput
             ref={input}
             autoFocus={Platform.OS === 'ios'}
@@ -250,6 +253,9 @@ const styles = StyleSheet.create({
   clockText: {
     fontSize: 32,
     lineHeight: 34,
+  },
+  toolbar: {
+    marginTop: -Spacing.one,
   },
   input: {
     minHeight: MinimumTouchSize + Spacing.two,

@@ -21,6 +21,7 @@ import { useUppercase } from '@/i18n/uppercase';
 
 import { MatchRewardContext, ProtectedMatchContext, signed } from './match-reward';
 import { PointProtection } from './point-protection';
+import { RematchContext, RematchPanel } from './rematch';
 import { ResultScene } from './result-scene';
 import { WinBurst } from './win-burst';
 
@@ -84,6 +85,8 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
   const color = TONE_COLORS[tone];
   const outcome = use(MatchRewardContext);
   const protectedMatchId = use(ProtectedMatchContext);
+  const rematch = use(RematchContext);
+  const rematchOpen = rematch !== null && rematch.status.state !== 'none';
   const reward = outcome === 'unranked' ? null : outcome;
   const levelUp = reward !== null && reward.level > reward.previousLevel;
 
@@ -138,7 +141,7 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
           </Animated.View>
         ) : null}
         {reward && reward.change < 0 && protectedMatchId ? (
-          <PointProtection key={protectedMatchId} matchId={protectedMatchId} lost={-reward.change} />
+          <PointProtection key={protectedMatchId} matchId={protectedMatchId} lost={-reward.change} goals={reward.goals} />
         ) : null}
         {outcome === 'unranked' ? (
           <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)} style={styles.unranked}>
@@ -151,7 +154,8 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
           </Animated.View>
         ) : null}
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.cinematic)} style={styles.actions}>
-          <ActionButton label={playAgainLabel} onPress={onPlayAgain} />
+          {rematch && rematchOpen ? <RematchPanel control={rematch} /> : null}
+          <ActionButton label={playAgainLabel} onPress={onPlayAgain} variant={rematchOpen ? 'secondary' : 'primary'} />
           <ActionButton label={homeLabel} onPress={onHome} variant="secondary" />
         </Animated.View>
       </View>

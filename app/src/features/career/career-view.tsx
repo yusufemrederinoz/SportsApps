@@ -154,6 +154,8 @@ export function CareerMatchView({
   };
   const current = status();
 
+  const jokerBar = <JokerBar scope={view.round} available={() => view.phase === 'playing'} secondsLeft={secondsLeft} />;
+
   return (
     <Screen
       scroll
@@ -210,7 +212,7 @@ export function CareerMatchView({
         />
       </Animated.View>
 
-      <JokerBar scope={view.round} available={() => view.phase === 'playing'} />
+      {jokerBar}
 
       <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
         <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
@@ -276,6 +278,7 @@ export function CareerMatchView({
           title={t('career.question')}
           market={career.market.code}
           secondsLeft={secondsLeft}
+          toolbar={jokerBar}
           excludedIds={[]}
           onSelect={(footballer) => {
             setSearching(null);

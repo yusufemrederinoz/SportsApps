@@ -1,5 +1,6 @@
 import {
   API_PREFIX,
+  PLAY_FEATURES,
   PLAY_PATH,
   PLAY_PROTOCOL_VERSION,
   type ClientMessage,
@@ -112,6 +113,7 @@ export function createPlayClient(options: PlayClientOptions) {
           token: options.token,
           protocol: PLAY_PROTOCOL_VERSION,
           dataVersion: options.dataVersion,
+          features: [...PLAY_FEATURES],
         } satisfies ClientMessage),
       );
     };

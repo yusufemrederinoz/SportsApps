@@ -1,4 +1,5 @@
 import {
+  EXTRA_TIME_SECONDS,
   GAME_JOKERS,
   JOKERS_PER_MATCH,
   JOKER_PRICE,
@@ -8,21 +9,32 @@ import {
   type JokerTarget,
   type PlayErrorCode,
 } from '@sportapps/protocol';
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated, {
+  FadeInDown,
+  ZoomIn,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
 
 import { GoalIcon } from '@/components/goal-icon';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, Motion, Radius, Spacing } from '@/constants/theme';
 import { haptics } from '@/feedback/haptics';
+import { URGENT_SECONDS } from '@/features/match/use-match-effects';
 import { useUppercase } from '@/i18n/uppercase';
 
 import { JokerContext } from './joker-context';
 import { useRevealText } from './reveal-text';
 
 const VISIBLE_REVEALS = 2;
+const PULSE_MILLISECONDS = 360;
 
 function errorKey(error: PlayErrorCode) {
   if (error === 'joker-limit') {
@@ -62,14 +74,56 @@ function RevealLine({ reveal, market, metric }: { reveal: JokerReveal; market: s
   ) : null;
 }
 
+function HurryButton({ seconds, pending, onPress }: { seconds: number; pending: boolean; onPress: () => void }) {
+  const { t } = useTranslation();
+  const uppercase = useUppercase();
+  const reducedMotion = useReducedMotion();
+  const pulse = useSharedValue(1);
+  const pulseStyle = useAnimatedStyle(() => ({ transform: [{ scale: pulse.get() }] }));
+
+  useEffect(() => {
+    if (reducedMotion) {
+      return;
+    }
+    pulse.set(
+      withRepeat(withSequence(withTiming(1.05, { duration: PULSE_MILLISECONDS }), withTiming(1, { duration: PULSE_MILLISECONDS })), -1),
+    );
+  }, [pulse, reducedMotion]);
+
+  return (
+    <Animated.View entering={ZoomIn.duration(Motion.base)} style={pulseStyle}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={t('jokers.use', { name: t('jokers.extra-time'), price: JOKER_PRICE })}
+        accessibilityState={{ busy: pending }}
+        disabled={pending}
+        onPress={() => {
+          haptics.select();
+          onPress();
+        }}
+        style={({ pressed }) => [styles.hurry, pressed && styles.hurryPressed]}>
+        <View style={styles.hurryText}>
+          <ThemedText style={styles.hurryLabel}>{uppercase(t('jokers.hurry'))}</ThemedText>
+          <ThemedText style={styles.hurryTime}>{uppercase(t('jokers.addTime', { seconds }))}</ThemedText>
+        </View>
+        <View style={styles.hurryPrice}>
+          <GoalIcon size={20} />
+          <ThemedText style={styles.hurryPriceText}>{JOKER_PRICE}</ThemedText>
+        </View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 interface JokerBarProps {
   scope: string | number;
   available: (joker: JokerId) => boolean;
   target?: (joker: JokerId) => JokerTarget | null;
   metric?: DuelMetric | null;
+  secondsLeft?: number | null;
 }
 
-export function JokerBar({ scope, available, target, metric = null }: JokerBarProps) {
+export function JokerBar({ scope, available, target, metric = null, secondsLeft = null }: JokerBarProps) {
   const jokers = use(JokerContext);
   const { t } = useTranslation();
   const uppercase = useUppercase();
@@ -87,9 +141,20 @@ export function JokerBar({ scope, available, target, metric = null }: JokerBarPr
   const affordable = jokers.goals === null || jokers.goals >= JOKER_PRICE;
   const rivalLast = recent.filter((entry) => entry.side !== jokers.side).at(-1) ?? null;
   const reveals = recent.filter((entry) => entry.side === jokers.side && entry.reveal !== null).slice(-VISIBLE_REVEALS);
+  const extraSeconds = EXTRA_TIME_SECONDS[jokers.game] ?? 0;
+  const hurry =
+    GAME_JOKERS[jokers.game].includes('extra-time') &&
+    secondsLeft !== null &&
+    secondsLeft > 0 &&
+    secondsLeft <= URGENT_SECONDS &&
+    left > 0 &&
+    affordable &&
+    (jokers.pending === null || jokers.pending === 'extra-time') &&
+    available('extra-time');
 
   return (
     <View style={styles.container}>
+      {hurry ? <HurryButton seconds={extraSeconds} pending={jokers.pending !== null} onPress={() => jokers.use('extra-time', {})} /> : null}
       <View style={styles.row}>
         <View style={styles.counter} accessible accessibilityLabel={t('jokers.left', { uses: left })}>
           <ThemedText type="label" themeColor="textSecondary">
@@ -224,6 +289,51 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.heading,
     fontSize: 15,
     lineHeight: 18,
+    color: Colors.gold,
+  },
+  hurry: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.three,
+    minHeight: 60,
+    paddingHorizontal: Spacing.three,
+    borderRadius: Radius.medium,
+    borderWidth: 2,
+    borderColor: Colors.volt,
+    backgroundColor: Colors.negative,
+  },
+  hurryPressed: {
+    opacity: 0.85,
+  },
+  hurryText: {
+    flex: 1,
+  },
+  hurryLabel: {
+    fontFamily: Fonts.heading,
+    fontSize: 14,
+    lineHeight: 16,
+    letterSpacing: 1,
+    color: Colors.text,
+  },
+  hurryTime: {
+    fontFamily: Fonts.display,
+    fontSize: 30,
+    lineHeight: 32,
+    color: Colors.text,
+  },
+  hurryPrice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.one,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.one,
+    borderRadius: 999,
+    backgroundColor: Colors.ink,
+  },
+  hurryPriceText: {
+    fontFamily: Fonts.display,
+    fontSize: 22,
+    lineHeight: 24,
     color: Colors.gold,
   },
 });
