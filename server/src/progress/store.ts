@@ -1,6 +1,7 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
 import {
   ACTIVE_GAME_IDS,
+  POINT_PROTECTION_PRICE,
   WELCOME_GOALS,
   WIN_GOALS,
   dailyGoals,
@@ -15,6 +16,7 @@ import {
   type PlayerProgress,
   type PlayRecord,
   type PlayResult,
+  type PointProtectionPurchase,
   type PointsChange,
   type WalletResponse,
 } from '@sportapps/protocol';
@@ -74,6 +76,12 @@ interface MatchSidesRow {
   x_points_change: number | null;
   o_points_change: number | null;
   finished_at: number;
+}
+
+interface ProtectableLoss {
+  side: Side;
+  game: GameId;
+  lost: number;
 }
 
 export function outcomeFor(side: Side, winner: string | null): MatchOutcome {
@@ -138,6 +146,25 @@ export function createProgress(database: Database, options: ProgressOptions = {}
     selectStanding.get(userId, game) as { points: number; rating: number } | undefined;
   const pointsOf = (userId: string, game: GameId): number => standingOf(userId, game)?.points ?? 0;
   const ratingOf = (userId: string, game: GameId): number => standingOf(userId, game)?.rating ?? START_RATING;
+
+  const protectableLoss = (userId: string, matchId: string): ProtectableLoss | null => {
+    const match = selectMatchSides.get(matchId) as MatchSidesRow | undefined;
+    const side = match?.x_user_id === userId ? 'x' : match?.o_user_id === userId ? 'o' : null;
+    const expired = !match || now() - match.finished_at > POINT_PROTECTION_WINDOW;
+    if (!match || !side || expired || selectProtection.get(matchId, userId)) {
+      return null;
+    }
+    const lost = -((side === 'x' ? match.x_points_change : match.o_points_change) ?? 0);
+    return lost > 0 ? { side, game: match.game, lost } : null;
+  };
+
+  const protect = (userId: string, matchId: string, { side, game, lost }: ProtectableLoss): number => {
+    const time = now();
+    insertProtection.run(matchId, userId, game, lost, time);
+    restorePoints.run(lost, lost, time, userId, game);
+    clearPointsChange[side].run(matchId);
+    return lost;
+  };
 
   const ratingsOf = (userId: string) => selectRatings.all(userId) as unknown as RatingRow[];
   const dailyOf = (userId: string) => selectDaily.get(userId) as DailyRow | undefined;
@@ -228,20 +255,22 @@ export function createProgress(database: Database, options: ProgressOptions = {}
 
     protectPoints(userId: string, matchId: string): number {
       return transaction(database, () => {
-        const match = selectMatchSides.get(matchId) as MatchSidesRow | undefined;
-        const side = match?.x_user_id === userId ? 'x' : match?.o_user_id === userId ? 'o' : null;
-        if (!match || !side || now() - match.finished_at > POINT_PROTECTION_WINDOW) {
-          return 0;
+        const loss = protectableLoss(userId, matchId);
+        return loss ? protect(userId, matchId, loss) : 0;
+      });
+    },
+
+    buyProtection(userId: string, matchId: string): PointProtectionPurchase | 'unavailable' | 'not-enough-goals' {
+      return transaction(database, () => {
+        const loss = protectableLoss(userId, matchId);
+        if (!loss) {
+          return 'unavailable';
         }
-        const lost = -((side === 'x' ? match.x_points_change : match.o_points_change) ?? 0);
-        if (lost <= 0) {
-          return 0;
+        if (wallet.balance(userId) < POINT_PROTECTION_PRICE) {
+          return 'not-enough-goals';
         }
-        const time = now();
-        insertProtection.run(matchId, userId, match.game, lost, time);
-        restorePoints.run(lost, lost, time, userId, match.game);
-        clearPointsChange[side].run(matchId);
-        return lost;
+        const goals = wallet.credit(userId, -POINT_PROTECTION_PRICE, 'protection', matchId);
+        return { points: protect(userId, matchId, loss), goals };
       });
     },
 

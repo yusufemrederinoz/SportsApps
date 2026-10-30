@@ -26,5 +26,7 @@ export const ERROR_KEYS = {
   'purchase-used': 'errors.purchaseUsed',
   'guest-purchase': 'errors.guestPurchase',
   'store-unavailable': 'errors.storeUnavailable',
+  'not-enough-goals': 'errors.notEnoughGoals',
+  'protection-unavailable': 'errors.protectionUnavailable',
   internal: 'errors.internal',
 } as const satisfies Record<RequestErrorCode, string>;

@@ -29,6 +29,7 @@ import {
   type LeaderboardResponse,
   type LoginRequest,
   type MatchHistoryResponse,
+  type PointProtectionPurchase,
   type PointProtectionResponse,
   type ProgressResponse,
   type PurchaseRequest,
@@ -330,6 +331,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
       now,
       isUsernameTaken: accounts.isUsernameTaken,
       roster: createBotRoster(database, { now }),
+      rankedRooms: config.rankedRooms ?? true,
       onError: (error) => app.log.error(error),
       ...lobbyOptions,
       games: Object.fromEntries(ACTIVE_GAME_IDS.map((game) => [game, factories[game]])),
@@ -598,6 +600,20 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     (request): PointProtectionResponse => ({
       points: progress.protectionOf(requireSession(request).user.id, request.params.matchId),
     }),
+  );
+
+  app.post<{ Params: { matchId: string } }>(
+    `${API_PREFIX}/matches/:matchId/protection`,
+    (request): PointProtectionPurchase => {
+      const outcome = progress.buyProtection(requireSession(request).user.id, request.params.matchId);
+      if (outcome === 'unavailable') {
+        throw new ApiError('protection-unavailable');
+      }
+      if (outcome === 'not-enough-goals') {
+        throw new ApiError('not-enough-goals');
+      }
+      return outcome;
+    },
   );
 
   app.get(`${API_PREFIX}/ads/reward`, async (request, reply) => {

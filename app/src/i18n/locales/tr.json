@@ -8,7 +8,7 @@
     "pointsTitle": "Puan topla",
     "pointsBody": "Online maçta kazandıkça her oyunda puan toplarsın. Toplam puanın seviyeni belirler ve ulaştığın seviye hiç düşmez. Haftalık lider tablosunda yerini al.",
     "goalsTitle": "Golle joker al",
-    "goalsBody": "Hoş geldin hediyen {{goals}} gol. Golü maçta joker almak için harcarsın. Günlük ödül, günün bulmacası ve online galibiyetler gol kazandırır."
+    "goalsBody": "Hoş geldin hediyen {{goals}} gol. Golü maçta joker almak ya da kaybettiğin puanı korumak için harcarsın. Günlük ödül, günün bulmacası ve online galibiyetler gol kazandırır."
   },
   "welcome": {
     "guest": "Misafir olarak devam et",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "Satın alma doğrulanamadı.",
     "purchaseUsed": "Bu satın alma başka bir hesaba işlenmiş.",
     "guestPurchase": "Gol satın almak için üye hesabı gerekir.",
-    "storeUnavailable": "Mağaza şu an doğrulama yapamıyor. Biraz sonra tekrar dene."
+    "storeUnavailable": "Mağaza şu an doğrulama yapamıyor. Biraz sonra tekrar dene.",
+    "notEnoughGoals": "Yeterli golün yok.",
+    "protectionUnavailable": "Bu maçın puanı artık korunamaz."
   },
   "online": {
     "connecting": "Bağlanıyor",
@@ -461,12 +463,15 @@
     "gamePoints": "Bu oyundaki puanın: {{points}}",
     "levelUp": "Yeni seviye: {{level}}",
     "unranked": "Puansız maç",
-    "unrankedHint": "Puan ve gol yalnızca \"Online maç\" eşleşmelerinde kazanılır.",
+    "unrankedHint": "Puan ve gol online maçlarda ve arkadaş maçlarında kazanılır.",
     "protect": "Puanını koru",
-    "protectHint": "Reklam izle, kaybettiğin {{points}} puanı geri al.",
+    "protectHint": "Kaybettiğin {{points}} puanı geri al.",
     "protecting": "Puanın geri yazılıyor…",
     "protected": "Puanın korundu: +{{points}}",
-    "protectPending": "Puanın birazdan geri eklenecek."
+    "protectPending": "Puanın birazdan geri eklenecek.",
+    "protectAd": "Reklam izle",
+    "protectGoals": "{{price}} gol öde",
+    "protectNeedGoals": "Golle korumak {{price}} gol, sende {{goals}} gol var."
   },
   "progress": {
     "level": "Seviye {{level}}",
@@ -482,7 +487,7 @@
     "title": "Gol mağazası",
     "back": "Geri",
     "balance": "Gol bakiyen",
-    "hint": "Golü maç içinde joker almak için harcarsın.",
+    "hint": "Golü maçta joker almak ya da kaybedince puanını korumak için harcarsın.",
     "buy": "{{goals}} gol satın al, {{price}}",
     "connecting": "Mağazaya bağlanıyor…",
     "loading": "Paketler yükleniyor…",
@@ -514,7 +519,7 @@
     "collect": "Topla",
     "day": "{{day}}. gün: {{goals}} gol",
     "welcome": "Hoş geldin hediyesi: +{{goals}} gol",
-    "welcomeHint": "Golü maç içinde joker almak için harcarsın."
+    "welcomeHint": "Golü maçta joker almak ya da kaybedince puanını korumak için harcarsın."
   },
   "history": {
     "title": "Geçmiş",
@@ -548,7 +553,8 @@
     "reasonAd": "Reklam ödülü",
     "offline": "Geçmiş yüklenemedi. Bağlantını kontrol et.",
     "reasonJoker": "Joker",
-    "reasonPuzzle": "Günün bulmacası"
+    "reasonPuzzle": "Günün bulmacası",
+    "reasonProtection": "Puan koruma"
   },
   "jokers": {
     "extra-time": "Ek süre",
@@ -592,7 +598,9 @@
     "roleGK": "Kaleci",
     "roleDF": "Defans",
     "roleMF": "Orta saha",
-    "roleFW": "Forvet"
+    "roleFW": "Forvet",
+    "hurry": "Süre bitiyor!",
+    "addTime": "+{{seconds}} sn"
   },
   "leaderboard": {
     "title": "Lider tablosu",
@@ -627,5 +635,32 @@
     "cellShare": "Aynı cevabı verenler: {{share}}",
     "tomorrow": "Yeni bulmaca yarın 00.00'da",
     "unavailable": "Bulmaca şu an yüklenemedi."
+  },
+  "rematch": {
+    "ask": "Rövanş",
+    "waiting": "Rakibin cevabı bekleniyor… {{seconds}}",
+    "offered": "{{name}} rövanş istiyor!",
+    "accept": "Rövanşı kabul et",
+    "declined": "Rakip rövanşa gelmedi.",
+    "expired": "Rövanş süresi doldu."
+  },
+  "reactions": {
+    "open": "Emoji gönder",
+    "close": "Kapat",
+    "mute": "Rakibin emojilerini kapat",
+    "unmute": "Rakibin emojilerini aç",
+    "from": "{{name}}: {{reaction}}",
+    "laugh": "Kahkaha",
+    "tease": "Nanik",
+    "cool": "Havalı",
+    "shock": "Şok",
+    "sweat": "Ter döktüm",
+    "cry": "Ağlıyorum",
+    "angry": "Sinirlendim",
+    "clap": "Alkış",
+    "red-card": "Kırmızı kart",
+    "var": "VAR",
+    "offside": "Ofsayt",
+    "save": "Kurtarış"
   }
 }

@@ -18,6 +18,8 @@ const STATUS_CODES: Record<ApiErrorCode, number> = {
   'username-taken': 409,
   'username-locked': 409,
   'puzzle-finished': 409,
+  'not-enough-goals': 409,
+  'protection-unavailable': 409,
   'cell-taken': 409,
   'rate-limited': 429,
   internal: 500,

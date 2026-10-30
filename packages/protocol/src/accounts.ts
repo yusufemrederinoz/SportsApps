@@ -97,6 +97,8 @@ export type ApiErrorCode =
   | 'purchase-used'
   | 'guest-purchase'
   | 'store-unavailable'
+  | 'not-enough-goals'
+  | 'protection-unavailable'
   | 'internal';
 
 export interface ApiErrorResponse {

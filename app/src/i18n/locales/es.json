@@ -8,7 +8,7 @@
     "pointsTitle": "Suma puntos",
     "pointsBody": "Gana partidos online y suma puntos en cada juego; tu total marca tu nivel, y un nivel alcanzado nunca baja. Hazte un hueco en la clasificación semanal.",
     "goalsTitle": "Goles por comodines",
-    "goalsBody": "Empiezas con {{goals}} goles. Gástalos en comodines durante los partidos; consigues más con la recompensa diaria, el reto diario y las victorias online."
+    "goalsBody": "Empiezas con {{goals}} goles. Gástalos en comodines durante los partidos o para proteger tus puntos tras una derrota. Consigues más con la recompensa diaria, el reto diario y las victorias online."
   },
   "welcome": {
     "guest": "Entrar como invitado",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "No se ha podido verificar la compra.",
     "purchaseUsed": "Esta compra ya se añadió a otra cuenta.",
     "guestPurchase": "Necesitas una cuenta registrada para comprar goles.",
-    "storeUnavailable": "La tienda no puede verificar compras ahora mismo. Inténtalo dentro de un momento."
+    "storeUnavailable": "La tienda no puede verificar compras ahora mismo. Inténtalo dentro de un momento.",
+    "notEnoughGoals": "No tienes suficientes goles.",
+    "protectionUnavailable": "Ya no puedes proteger estos puntos."
   },
   "online": {
     "connecting": "Conectando",
@@ -461,12 +463,15 @@
     "gamePoints": "Tus puntos en este juego: {{points}}",
     "levelUp": "Nuevo nivel: {{level}}",
     "unranked": "Partido amistoso",
-    "unrankedHint": "Solo se ganan puntos y goles en los partidos de «Partido online».",
+    "unrankedHint": "Los puntos y los goles se ganan en los partidos online y contra amigos.",
     "protect": "Protege tus puntos",
-    "protectHint": "Mira un anuncio y recupera los {{points}} puntos que has perdido.",
+    "protectHint": "Recupera los {{points}} puntos que has perdido.",
     "protecting": "Devolviéndote los puntos…",
     "protected": "Puntos protegidos: +{{points}}",
-    "protectPending": "Tus puntos volverán en un momento."
+    "protectPending": "Tus puntos volverán en un momento.",
+    "protectAd": "Ver un anuncio",
+    "protectGoals": "Pagar {{price}} goles",
+    "protectNeedGoals": "Con goles cuesta {{price}}. Tienes {{goals}}."
   },
   "progress": {
     "level": "Nivel {{level}}",
@@ -482,7 +487,7 @@
     "title": "Tienda de goles",
     "back": "Atrás",
     "balance": "Tus goles",
-    "hint": "Gasta goles en comodines durante los partidos.",
+    "hint": "Gasta goles en comodines durante los partidos o para proteger tus puntos tras una derrota.",
     "buy": "Comprar {{goals}} goles, {{price}}",
     "connecting": "Conectando con la tienda…",
     "loading": "Cargando packs…",
@@ -514,7 +519,7 @@
     "collect": "Recoger",
     "day": "Día {{day}}: {{goals}} goles",
     "welcome": "Regalo de bienvenida: +{{goals}} goles",
-    "welcomeHint": "Gasta goles en comodines durante los partidos."
+    "welcomeHint": "Gasta goles en comodines durante los partidos o para proteger tus puntos tras una derrota."
   },
   "history": {
     "title": "Historial",
@@ -548,7 +553,8 @@
     "reasonAd": "Anuncio",
     "offline": "No se ha podido cargar el historial. Revisa tu conexión.",
     "reasonJoker": "Comodín",
-    "reasonPuzzle": "Reto diario"
+    "reasonPuzzle": "Reto diario",
+    "reasonProtection": "Protección de puntos"
   },
   "jokers": {
     "extra-time": "Prórroga",
@@ -592,7 +598,9 @@
     "roleGK": "Portero",
     "roleDF": "Defensa",
     "roleMF": "Centrocampista",
-    "roleFW": "Delantero"
+    "roleFW": "Delantero",
+    "hurry": "¡Se acaba el tiempo!",
+    "addTime": "+{{seconds}} s"
   },
   "leaderboard": {
     "title": "Clasificación",
@@ -627,5 +635,32 @@
     "cellShare": "Misma respuesta: {{share}}",
     "tomorrow": "Nuevo reto a medianoche",
     "unavailable": "No se ha podido cargar el reto."
+  },
+  "rematch": {
+    "ask": "Revancha",
+    "waiting": "Esperando a tu rival… {{seconds}}",
+    "offered": "¡{{name}} quiere la revancha!",
+    "accept": "Aceptar la revancha",
+    "declined": "Tu rival no quiso la revancha.",
+    "expired": "La revancha ha caducado."
+  },
+  "reactions": {
+    "open": "Enviar una reacción",
+    "close": "Cerrar",
+    "mute": "Ocultar las reacciones del rival",
+    "unmute": "Mostrar las reacciones del rival",
+    "from": "{{name}}: {{reaction}}",
+    "laugh": "Carcajada",
+    "tease": "Burla",
+    "cool": "Chulo",
+    "shock": "Sorpresa",
+    "sweat": "Sudando",
+    "cry": "Llorando",
+    "angry": "Enfadado",
+    "clap": "Aplausos",
+    "red-card": "Tarjeta roja",
+    "var": "VAR",
+    "offside": "Fuera de juego",
+    "save": "Paradón"
   }
 }

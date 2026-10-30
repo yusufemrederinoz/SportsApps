@@ -8,7 +8,7 @@
     "pointsTitle": "Grimpe au classement",
     "pointsBody": "Gagne des matchs en ligne pour marquer des points dans chaque jeu ; ton total fixe ton niveau, et un niveau atteint ne baisse jamais. Prends ta place au classement de la semaine.",
     "goalsTitle": "Paie tes jokers en buts",
-    "goalsBody": "Tu démarres avec {{goals}} buts. Dépense-les en jokers pendant les matchs ; la récompense quotidienne, le défi du jour et les victoires en ligne t'en rapportent d'autres."
+    "goalsBody": "Tu démarres avec {{goals}} buts. Dépense-les en jokers pendant les matchs ou pour protéger tes points après une défaite. La récompense quotidienne, le défi du jour et les victoires en ligne t'en rapportent d'autres."
   },
   "welcome": {
     "guest": "Continuer en invité",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "L'achat n'a pas pu être vérifié.",
     "purchaseUsed": "Cet achat a déjà été crédité sur un autre compte.",
     "guestPurchase": "Il faut un compte membre pour acheter des buts.",
-    "storeUnavailable": "La vérification des achats est indisponible pour le moment. Réessaie dans un instant."
+    "storeUnavailable": "La vérification des achats est indisponible pour le moment. Réessaie dans un instant.",
+    "notEnoughGoals": "Tu n'as pas assez de buts.",
+    "protectionUnavailable": "Ces points ne peuvent plus être protégés."
   },
   "online": {
     "connecting": "Connexion",
@@ -461,12 +463,15 @@
     "gamePoints": "Tes points dans ce jeu : {{points}}",
     "levelUp": "Nouveau niveau : {{level}}",
     "unranked": "Match non classé",
-    "unrankedHint": "Les points et les buts ne se gagnent qu'en « Match en ligne ».",
+    "unrankedHint": "Les points et les buts se gagnent en match en ligne et entre amis.",
     "protect": "Protège tes points",
-    "protectHint": "Regarde une pub et récupère les {{points}} points perdus.",
+    "protectHint": "Récupère les {{points}} points perdus.",
     "protecting": "On te rend tes points…",
     "protected": "Points protégés : +{{points}}",
-    "protectPending": "Tes points reviennent dans un instant."
+    "protectPending": "Tes points reviennent dans un instant.",
+    "protectAd": "Regarder une pub",
+    "protectGoals": "Payer {{price}} buts",
+    "protectNeedGoals": "Avec des buts, ça coûte {{price}}. Tu en as {{goals}}."
   },
   "progress": {
     "level": "Niveau {{level}}",
@@ -482,7 +487,7 @@
     "title": "Boutique de buts",
     "back": "Retour",
     "balance": "Tes buts",
-    "hint": "Dépense tes buts en jokers pendant les matchs.",
+    "hint": "Dépense tes buts en jokers pendant les matchs ou pour protéger tes points après une défaite.",
     "buy": "Acheter {{goals}} buts, {{price}}",
     "connecting": "Connexion à la boutique…",
     "loading": "Chargement des packs…",
@@ -514,7 +519,7 @@
     "collect": "Récupérer",
     "day": "Jour {{day}} : {{goals}} buts",
     "welcome": "Cadeau de bienvenue : +{{goals}} buts",
-    "welcomeHint": "Dépense tes buts en jokers pendant les matchs."
+    "welcomeHint": "Dépense tes buts en jokers pendant les matchs ou pour protéger tes points après une défaite."
   },
   "history": {
     "title": "Historique",
@@ -548,7 +553,8 @@
     "reasonAd": "Récompense pub",
     "offline": "Impossible de charger l'historique. Vérifie ta connexion.",
     "reasonJoker": "Joker",
-    "reasonPuzzle": "Défi du jour"
+    "reasonPuzzle": "Défi du jour",
+    "reasonProtection": "Points protégés"
   },
   "jokers": {
     "extra-time": "Prolongation",
@@ -592,7 +598,9 @@
     "roleGK": "Gardien",
     "roleDF": "Défenseur",
     "roleMF": "Milieu",
-    "roleFW": "Attaquant"
+    "roleFW": "Attaquant",
+    "hurry": "Le temps presse !",
+    "addTime": "+{{seconds}} s"
   },
   "leaderboard": {
     "title": "Classement",
@@ -627,5 +635,32 @@
     "cellShare": "Même réponse : {{share}}",
     "tomorrow": "Nouveau défi à minuit",
     "unavailable": "Impossible de charger le défi."
+  },
+  "rematch": {
+    "ask": "Revanche",
+    "waiting": "En attente de ton adversaire… {{seconds}}",
+    "offered": "{{name}} veut sa revanche !",
+    "accept": "Accepter la revanche",
+    "declined": "Ton adversaire a refusé la revanche.",
+    "expired": "La revanche a expiré."
+  },
+  "reactions": {
+    "open": "Envoyer une réaction",
+    "close": "Fermer",
+    "mute": "Masquer les réactions de l'adversaire",
+    "unmute": "Afficher les réactions de l'adversaire",
+    "from": "{{name}} : {{reaction}}",
+    "laugh": "Fou rire",
+    "tease": "Nananère",
+    "cool": "Trop cool",
+    "shock": "Choqué",
+    "sweat": "En sueur",
+    "cry": "En larmes",
+    "angry": "Énervé",
+    "clap": "Bravo",
+    "red-card": "Carton rouge",
+    "var": "VAR",
+    "offside": "Hors-jeu",
+    "save": "Arrêt décisif"
   }
 }

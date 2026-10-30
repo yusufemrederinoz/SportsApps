@@ -1,12 +1,15 @@
 import {
   GAME_IDS,
   JOKER_IDS,
+  PLAY_FEATURES,
+  isReactionId,
   type ClientMessage,
   type GameAction,
   type GameId,
   type JokerId,
   type JokerTarget,
   type PlayDifficulty,
+  type PlayFeature,
 } from '@sportapps/protocol';
 
 const TOKEN_MAX_LENGTH = 512;
@@ -64,6 +67,13 @@ function jokerTarget(value: unknown): JokerTarget | null {
   };
 }
 
+function features(value: unknown): PlayFeature[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return PLAY_FEATURES.filter((feature) => value.includes(feature));
+}
+
 function action(value: unknown): GameAction | null {
   if (typeof value !== 'object' || value === null) {
     return null;
@@ -117,7 +127,13 @@ export function parseClientMessage(raw: string): ClientMessage | null {
       return text(fields.token, TOKEN_MAX_LENGTH) &&
         integer(fields.protocol) &&
         text(fields.dataVersion, SHORT_TEXT_MAX_LENGTH)
-        ? { type: 'hello', token: fields.token, protocol: fields.protocol, dataVersion: fields.dataVersion }
+        ? {
+            type: 'hello',
+            token: fields.token,
+            protocol: fields.protocol,
+            dataVersion: fields.dataVersion,
+            features: features(fields.features),
+          }
         : null;
     case 'queue':
     case 'play-bot':
@@ -158,6 +174,12 @@ export function parseClientMessage(raw: string): ClientMessage | null {
     }
     case 'leave':
       return text(fields.matchId, SHORT_TEXT_MAX_LENGTH) ? { type: 'leave', matchId: fields.matchId } : null;
+    case 'react':
+      return text(fields.matchId, SHORT_TEXT_MAX_LENGTH) && isReactionId(fields.reaction)
+        ? { type: 'react', matchId: fields.matchId, reaction: fields.reaction }
+        : null;
+    case 'rematch':
+      return text(fields.matchId, SHORT_TEXT_MAX_LENGTH) ? { type: 'rematch', matchId: fields.matchId } : null;
     default:
       return null;
   }

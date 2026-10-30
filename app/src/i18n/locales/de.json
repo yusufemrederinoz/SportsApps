@@ -8,7 +8,7 @@
     "pointsTitle": "Punkte holen, aufsteigen",
     "pointsBody": "Mit jedem Online-Sieg holst du Punkte im jeweiligen Spiel. Deine Gesamtpunkte bestimmen dein Level, und ein erreichtes Level verlierst du nie. Sichere dir deinen Platz in der Wochenrangliste.",
     "goalsTitle": "Mit Toren Joker holen",
-    "goalsBody": "Du startest mit {{goals}} Toren. Im Match gibst du sie für Joker aus; neue Tore bringen dir der Tagesbonus, das Tagesrätsel und Online-Siege."
+    "goalsBody": "Du startest mit {{goals}} Toren. Du gibst sie im Match für Joker aus oder rettest damit nach einer Niederlage deine Punkte. Neue Tore bringen dir der Tagesbonus, das Tagesrätsel und Online-Siege."
   },
   "welcome": {
     "guest": "Als Gast spielen",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "Der Kauf konnte nicht bestätigt werden.",
     "purchaseUsed": "Dieser Kauf wurde schon einem anderen Konto gutgeschrieben.",
     "guestPurchase": "Um Tore zu kaufen, brauchst du ein Mitgliedskonto.",
-    "storeUnavailable": "Der Store kann Käufe gerade nicht bestätigen. Versuch es gleich noch mal."
+    "storeUnavailable": "Der Store kann Käufe gerade nicht bestätigen. Versuch es gleich noch mal.",
+    "notEnoughGoals": "Du hast nicht genug Tore.",
+    "protectionUnavailable": "Diese Punkte können nicht mehr gerettet werden."
   },
   "online": {
     "connecting": "Verbinde",
@@ -461,12 +463,15 @@
     "gamePoints": "Deine Punkte in diesem Spiel: {{points}}",
     "levelUp": "Neues Level: {{level}}",
     "unranked": "Match ohne Wertung",
-    "unrankedHint": "Punkte und Tore gibt es nur im Modus „Online-Match“.",
+    "unrankedHint": "Punkte und Tore gibt es in Online-Matches und in Matches gegen Freunde.",
     "protect": "Punkte retten",
-    "protectHint": "Schau eine Werbung und hol dir die {{points}} verlorenen Punkte zurück.",
+    "protectHint": "Hol dir die {{points}} verlorenen Punkte zurück.",
     "protecting": "Deine Punkte werden gutgeschrieben…",
     "protected": "Punkte gerettet: +{{points}}",
-    "protectPending": "Deine Punkte sind gleich wieder da."
+    "protectPending": "Deine Punkte sind gleich wieder da.",
+    "protectAd": "Werbung ansehen",
+    "protectGoals": "{{price}} Tore zahlen",
+    "protectNeedGoals": "Mit Toren kostet es {{price}}. Du hast {{goals}}."
   },
   "progress": {
     "level": "Level {{level}}",
@@ -482,7 +487,7 @@
     "title": "Tor-Shop",
     "back": "Zurück",
     "balance": "Deine Tore",
-    "hint": "Tore gibst du im Match für Joker aus.",
+    "hint": "Tore gibst du im Match für Joker aus oder rettest damit nach einer Niederlage deine Punkte.",
     "buy": "{{goals}} Tore kaufen, {{price}}",
     "connecting": "Verbinde mit dem Store…",
     "loading": "Pakete werden geladen…",
@@ -514,7 +519,7 @@
     "collect": "Abholen",
     "day": "Tag {{day}}: {{goals}} Tore",
     "welcome": "Willkommensbonus: +{{goals}} Tore",
-    "welcomeHint": "Tore gibst du im Match für Joker aus."
+    "welcomeHint": "Tore gibst du im Match für Joker aus oder rettest damit nach einer Niederlage deine Punkte."
   },
   "history": {
     "title": "Verlauf",
@@ -548,7 +553,8 @@
     "reasonAd": "Werbebonus",
     "offline": "Der Verlauf konnte nicht geladen werden. Prüf deine Verbindung.",
     "reasonJoker": "Joker",
-    "reasonPuzzle": "Tagesrätsel"
+    "reasonPuzzle": "Tagesrätsel",
+    "reasonProtection": "Punkte gerettet"
   },
   "jokers": {
     "extra-time": "Nachspielzeit",
@@ -592,7 +598,9 @@
     "roleGK": "Torwart",
     "roleDF": "Abwehr",
     "roleMF": "Mittelfeld",
-    "roleFW": "Sturm"
+    "roleFW": "Sturm",
+    "hurry": "Die Zeit läuft ab!",
+    "addTime": "+{{seconds}} s"
   },
   "leaderboard": {
     "title": "Rangliste",
@@ -627,5 +635,32 @@
     "cellShare": "Gleiche Antwort: {{share}}",
     "tomorrow": "Um Mitternacht kommt ein neues Rätsel",
     "unavailable": "Das Rätsel konnte nicht geladen werden."
+  },
+  "rematch": {
+    "ask": "Revanche",
+    "waiting": "Warte auf deinen Gegner… {{seconds}}",
+    "offered": "{{name}} will eine Revanche!",
+    "accept": "Revanche annehmen",
+    "declined": "Dein Gegner will keine Revanche.",
+    "expired": "Die Revanche ist abgelaufen."
+  },
+  "reactions": {
+    "open": "Reaktion senden",
+    "close": "Schließen",
+    "mute": "Reaktionen des Gegners ausblenden",
+    "unmute": "Reaktionen des Gegners zeigen",
+    "from": "{{name}}: {{reaction}}",
+    "laugh": "Lachen",
+    "tease": "Ätsch",
+    "cool": "Lässig",
+    "shock": "Schock",
+    "sweat": "Schweißgebadet",
+    "cry": "Weinen",
+    "angry": "Wütend",
+    "clap": "Applaus",
+    "red-card": "Rote Karte",
+    "var": "VAR",
+    "offside": "Abseits",
+    "save": "Glanzparade"
   }
 }

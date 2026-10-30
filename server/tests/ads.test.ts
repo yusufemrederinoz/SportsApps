@@ -3,10 +3,13 @@ import { createSign, generateKeyPairSync } from 'node:crypto';
 import {
   AD_REWARD_GOALS,
   DAILY_AD_LIMIT,
+  POINT_PROTECTION_PRICE,
   WELCOME_GOALS,
   type AccountResponse,
   type AdStatusResponse,
+  type ApiErrorResponse,
   type AuthResponse,
+  type PointProtectionPurchase,
 } from '@sportapps/protocol';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -185,6 +188,57 @@ describe('rewarded ads', () => {
     expect(await status(player.token)).toMatchObject({ goals: WELCOME_GOALS, remaining: DAILY_AD_LIMIT });
   });
 
+  it('sells the protection for goals once, only to the loser who can pay', async () => {
+    const player = await guest();
+    const rival = await guest();
+    const poor = await guest();
+    const finishedAt = time - 60 * 1000;
+    const insertMatch = database.prepare(
+      `INSERT INTO matches (id, kind, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username, winner, reason,
+         x_cells, o_cells, move_count, started_at, finished_at, game, x_points_change, o_points_change)
+       VALUES (?, 'room', 'tr', 2, 1, ?, ?, 'a', 'b', 'o', 'line', 1, 3, 4, ?, ?, 'grid', -12, 25)`,
+    );
+    insertMatch.run('match-1', player.id, rival.id, finishedAt, finishedAt);
+    insertMatch.run('match-2', poor.id, rival.id, finishedAt, finishedAt);
+    database
+      .prepare(
+        'INSERT INTO ratings (user_id, game, points, best_points, rating, matches, updated_at) VALUES (?, ?, 88, 100, 990, 4, ?)',
+      )
+      .run(player.id, 'grid', finishedAt);
+    await status(poor.token);
+    database.prepare('UPDATE wallets SET goals = ? WHERE user_id = ?').run(POINT_PROTECTION_PRICE - 1, poor.id);
+    const buy = (token: string, match = 'match-1') =>
+      call<PointProtectionPurchase | ApiErrorResponse>('POST', `/matches/${match}/protection`, token);
+
+    expect(await buy(rival.token)).toMatchObject({ status: 409, body: { error: { code: 'protection-unavailable' } } });
+    expect(await buy(poor.token, 'match-2')).toMatchObject({
+      status: 409,
+      body: { error: { code: 'not-enough-goals' } },
+    });
+    expect(await buy(player.token)).toEqual({
+      status: 200,
+      body: { points: 12, goals: WELCOME_GOALS - POINT_PROTECTION_PRICE },
+    });
+    expect(await buy(player.token)).toMatchObject({ status: 409, body: { error: { code: 'protection-unavailable' } } });
+    expect(
+      (
+        await call(
+          'GET',
+          `/ads/reward?${callback({ ad_unit: AD_UNIT, user_id: player.id, transaction_id: 'ad-1', custom_data: 'protect:match-1' })}`,
+        )
+      ).status,
+    ).toBe(200);
+
+    expect(
+      (
+        database.prepare("SELECT points FROM ratings WHERE user_id = ? AND game = 'grid'").get(player.id) as {
+          points: number;
+        }
+      ).points,
+    ).toBe(100);
+    expect(await status(player.token)).toMatchObject({ goals: WELCOME_GOALS - POINT_PROTECTION_PRICE });
+    expect(await status(poor.token)).toMatchObject({ goals: POINT_PROTECTION_PRICE - 1 });
+  });
   it('does not protect points long after the match', async () => {
     const player = await guest();
     const finishedAt = time - 16 * 60 * 1000;

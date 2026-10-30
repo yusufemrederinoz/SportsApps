@@ -88,7 +88,7 @@ function attach(socket: WebSocket, options: GatewayOptions): void {
       return;
     }
     clearTimeout(helloTimer);
-    player = { id: session.user.id, username: session.user.username };
+    player = { id: session.user.id, username: session.user.username, features: message.features ?? [] };
     lobby.connect(player, connection);
   });
 

@@ -5,6 +5,9 @@ import {
   GAME_JOKERS,
   JOKERS_PER_MATCH,
   JOKER_PRICE,
+  REACTIONS_PER_MATCH,
+  REACTION_COOLDOWN_MILLISECONDS,
+  REMATCH_WINDOW_MILLISECONDS,
   ROOM_CODE_ALPHABET,
   ROOM_CODE_LENGTH,
   isRoomCode,
@@ -12,10 +15,14 @@ import {
   type ClientMessage,
   type GameId,
   type JokerUse,
+  type MatchOutcome,
   type PlayDifficulty,
   type PlayErrorCode,
+  type PlayFeature,
   type PlayResult,
   type PointsChange,
+  type ReactionId,
+  type RematchState,
   type ServerMessage,
 } from '@sportapps/protocol';
 
@@ -24,7 +31,15 @@ import { START_RATING } from '../progress/points';
 import type { Progress } from '../progress/store';
 import { BOT_TARGET_WIN_RATES, RANKED_TARGET_WIN_RATE, botLevelFor, createBotName } from './bot';
 import type { MatchHistory } from './history';
-import { SIDES, type LiveRoom, type MatchKind, type RoomFactory, type Seat, type WaitRange } from './live-room';
+import {
+  SIDES,
+  seatSide,
+  type LiveRoom,
+  type MatchKind,
+  type RoomFactory,
+  type Seat,
+  type WaitRange,
+} from './live-room';
 import type { BotRoster } from './roster';
 
 const ADAPTATION_MATCHES = 5;
@@ -36,6 +51,33 @@ const MATCH_WINDOW_BASE = 150;
 const MATCH_WINDOW_PER_SECOND = 75;
 const NEIGHBOR_WAIT_MILLISECONDS = 3000;
 const SECOND = 1000;
+const REACTION_COOLDOWN_SLACK = 500;
+const BOT_REMATCH_ACCEPT = 0.7;
+const BOT_REMATCH_OFFER = 0.5;
+const BOT_REACTION_REPLY = 0.35;
+const BOT_REACTION_AFTER_JOKER = 0.25;
+const BOT_REACTION_AT_END = 0.5;
+const BOT_REACTIONS_PER_MATCH = 5;
+const BOT_JOKER_REACTIONS: readonly ReactionId[] = ['sweat', 'shock', 'var'];
+const BOT_ENDINGS: Readonly<Record<MatchOutcome, readonly ReactionId[]>> = {
+  win: ['cool', 'tease', 'laugh'],
+  loss: ['cry', 'clap', 'angry', 'sweat'],
+  draw: ['shock', 'clap'],
+};
+const BOT_REPLIES: Readonly<Record<ReactionId, readonly ReactionId[]>> = {
+  laugh: ['cool', 'tease', 'laugh'],
+  tease: ['angry', 'laugh', 'tease'],
+  cool: ['laugh', 'tease', 'shock'],
+  shock: ['laugh', 'cool'],
+  sweat: ['laugh', 'tease', 'cool'],
+  cry: ['laugh', 'clap', 'tease'],
+  angry: ['laugh', 'cool', 'tease'],
+  clap: ['clap', 'cool'],
+  'red-card': ['shock', 'var', 'angry'],
+  var: ['offside', 'red-card', 'shock'],
+  offside: ['var', 'angry', 'shock'],
+  save: ['shock', 'clap', 'sweat'],
+};
 
 export interface Connection {
   send(message: ServerMessage): void;
@@ -45,6 +87,7 @@ export interface Connection {
 export interface Player {
   id: string;
   username: string;
+  features?: readonly PlayFeature[];
 }
 
 export interface LobbyOptions {
@@ -60,6 +103,9 @@ export interface LobbyOptions {
   neighborWaitMilliseconds?: number;
   disconnectGraceMilliseconds?: number;
   roomLifetimeMilliseconds?: number;
+  rematchWindowMilliseconds?: number;
+  botThinkMilliseconds?: WaitRange;
+  rankedRooms?: boolean;
   onError?: (error: unknown) => void;
 }
 
@@ -73,6 +119,8 @@ interface Member {
   player: Player;
   connection: Connection | null;
   status: Status;
+  reactions: { matchId: string; count: number; lastAt: number } | null;
+  botReactions: { matchId: string; count: number } | null;
 }
 
 interface QueueEntry {
@@ -94,9 +142,23 @@ interface HostedRoom {
 
 interface ActiveMatch {
   room: LiveRoom;
+  ranked: boolean;
   botLevel: BotLevel | null;
   forfeits: Map<string, ReturnType<typeof setTimeout>>;
   jokers: JokerUse[];
+}
+
+interface Rematch {
+  matchId: string;
+  kind: MatchKind;
+  game: GameId;
+  market: string;
+  difficulty: PlayDifficulty;
+  seats: Record<Side, Seat>;
+  wants: Set<Side>;
+  botAnswered: boolean;
+  endsAt: number;
+  timers: ReturnType<typeof setTimeout>[];
 }
 
 const IDLE: Status = { kind: 'idle' };
@@ -112,12 +174,17 @@ export function createLobby(options: LobbyOptions) {
   const neighborWait = options.neighborWaitMilliseconds ?? NEIGHBOR_WAIT_MILLISECONDS;
   const disconnectGrace = options.disconnectGraceMilliseconds ?? 30000;
   const roomLifetime = options.roomLifetimeMilliseconds ?? 10 * 60 * 1000;
+  const rematchWindow = options.rematchWindowMilliseconds ?? REMATCH_WINDOW_MILLISECONDS;
+  const botThink = options.botThinkMilliseconds ?? { minimum: 1200, maximum: 3500 };
+  const rankedRooms = options.rankedRooms ?? true;
   const reportError = options.onError ?? (() => undefined);
 
   const members = new Map<string, Member>();
   const queues = new Map<string, QueueEntry[]>();
   const hosted = new Map<string, HostedRoom>();
   const matches = new Map<string, ActiveMatch>();
+  const rematches = new Map<string, Rematch>();
+  const pending = new Set<ReturnType<typeof setTimeout>>();
 
   const send = (userId: string | null, message: ServerMessage) => {
     if (userId) {
@@ -128,6 +195,21 @@ export function createLobby(options: LobbyOptions) {
   const fail = (userId: string, code: PlayErrorCode) => send(userId, { type: 'error', code });
 
   const isConnected = (userId: string | null) => userId === null || Boolean(members.get(userId)?.connection);
+
+  const supports = (userId: string | null, feature: PlayFeature) =>
+    userId !== null && (members.get(userId)?.player.features?.includes(feature) ?? false);
+
+  const pick = <T>(items: readonly T[]): T => items[Math.floor(random() * items.length)] ?? (items[0] as T);
+
+  const between = (range: WaitRange) => range.minimum + random() * Math.max(0, range.maximum - range.minimum);
+
+  const later = (task: () => void, delay: number) => {
+    const timer = setTimeout(() => {
+      pending.delete(timer);
+      task();
+    }, delay);
+    pending.add(timer);
+  };
 
   const settle = (userId: string) => {
     const member = members.get(userId);
@@ -180,8 +262,8 @@ export function createLobby(options: LobbyOptions) {
     }
   };
 
-  const settlePoints = (room: LiveRoom, result: PlayResult): Record<Side, PointsChange | null> => {
-    if (room.kind !== 'queue' || !progress) {
+  const settlePoints = (room: LiveRoom, ranked: boolean, result: PlayResult): Record<Side, PointsChange | null> => {
+    if (!ranked || !progress) {
       return { x: null, o: null };
     }
     try {
@@ -195,10 +277,17 @@ export function createLobby(options: LobbyOptions) {
 
   const onFinished = (room: LiveRoom, result: PlayResult) => {
     const active = matches.get(room.id);
-    const changes = settlePoints(room, result);
+    const changes = settlePoints(room, active?.ranked ?? false, result);
+    const rematch = openRematch(room, result);
     SIDES.forEach((side) => {
       const points = changes[side];
-      send(room.seats[side].userId, { type: 'finished', matchId: room.id, result, ...(points ? { points } : {}) });
+      send(room.seats[side].userId, {
+        type: 'finished',
+        matchId: room.id,
+        result,
+        ...(points ? { points } : {}),
+        ...(rematch ? { rematch: true } : {}),
+      });
     });
     try {
       history.record(
@@ -223,6 +312,158 @@ export function createLobby(options: LobbyOptions) {
         busyBots.delete(botId);
       }
     });
+    SIDES.forEach((side) => {
+      const rival = room.seats[opponentOf(side)].userId;
+      if (room.seats[side].userId === null && rival) {
+        botReact(room.id, side, rival, BOT_ENDINGS[outcomeOf(side, result)], BOT_REACTION_AT_END);
+      }
+    });
+  };
+
+  const outcomeOf = (side: Side, result: PlayResult): MatchOutcome =>
+    result.winner === null ? 'draw' : result.winner === side ? 'win' : 'loss';
+
+  const reactionTarget = (member: Member, matchId: string): { seats: Record<Side, Seat>; side: Side } | null => {
+    const found = activeFor(member, matchId);
+    if (found) {
+      return { seats: found.active.room.seats, side: found.side };
+    }
+    const rematch = rematches.get(matchId);
+    const side = rematch ? seatSide(rematch.seats, member.player.id) : null;
+    return rematch && side ? { seats: rematch.seats, side } : null;
+  };
+
+  const botReact = (matchId: string, botSide: Side, userId: string, choices: readonly ReactionId[], chance: number) => {
+    const member = members.get(userId);
+    if (!member || !supports(userId, 'reactions') || random() >= chance) {
+      return;
+    }
+    const used = member.botReactions?.matchId === matchId ? member.botReactions.count : 0;
+    if (used >= BOT_REACTIONS_PER_MATCH) {
+      return;
+    }
+    member.botReactions = { matchId, count: used + 1 };
+    later(() => {
+      const target = reactionTarget(member, matchId);
+      if (target && target.seats[botSide].userId === null) {
+        send(userId, { type: 'reaction', matchId, side: botSide, reaction: pick(choices) });
+      }
+    }, between(botThink));
+  };
+
+  const react = (member: Member, message: Extract<ClientMessage, { type: 'react' }>) => {
+    const target = reactionTarget(member, message.matchId);
+    if (!target) {
+      return;
+    }
+    const time = now();
+    const log = member.reactions?.matchId === message.matchId ? member.reactions : null;
+    const count = log?.count ?? 0;
+    const cooling = log !== null && time - log.lastAt < REACTION_COOLDOWN_MILLISECONDS - REACTION_COOLDOWN_SLACK;
+    if (count >= REACTIONS_PER_MATCH || cooling) {
+      return;
+    }
+    member.reactions = { matchId: message.matchId, count: count + 1, lastAt: time };
+    const rivalSide = opponentOf(target.side);
+    const rival = target.seats[rivalSide].userId;
+    if (rival === null) {
+      botReact(message.matchId, rivalSide, member.player.id, BOT_REPLIES[message.reaction], BOT_REACTION_REPLY);
+    } else if (supports(rival, 'reactions')) {
+      send(rival, { type: 'reaction', matchId: message.matchId, side: target.side, reaction: message.reaction });
+    }
+  };
+
+  const closeRematch = (rematch: Rematch, state: RematchState | null, skip: string | null = null) => {
+    if (rematches.get(rematch.matchId) !== rematch) {
+      return;
+    }
+    rematch.timers.forEach((timer) => clearTimeout(timer));
+    rematches.delete(rematch.matchId);
+    if (state) {
+      SIDES.forEach((side) => {
+        const userId = rematch.seats[side].userId;
+        if (userId !== skip) {
+          send(userId, { type: 'rematch', matchId: rematch.matchId, state, endsIn: 0 });
+        }
+      });
+    }
+  };
+
+  const withdrawRematch = (userId: string) => {
+    const rematch = [...rematches.values()].find((entry) => seatSide(entry.seats, userId) !== null);
+    if (rematch) {
+      closeRematch(rematch, 'declined', userId);
+    }
+  };
+
+  const beginRematch = (rematch: Rematch) => {
+    closeRematch(rematch, null);
+    const humans = SIDES.flatMap((side) => {
+      const userId = rematch.seats[side].userId;
+      return userId ? [members.get(userId)] : [];
+    });
+    const bot = SIDES.map((side) => rematch.seats[side]).find((seat) => seat.userId === null) ?? null;
+    const ready = humans.every((member) => member?.connection && member.status.kind === 'idle');
+    const [first, second] = humans;
+    if (!ready || !first || (bot?.botId && busyBots.has(bot.botId))) {
+      humans.forEach((member) => {
+        if (member) {
+          send(member.player.id, { type: 'rematch', matchId: rematch.matchId, state: 'declined', endsIn: 0 });
+        }
+      });
+      return;
+    }
+    const { kind, game, market, difficulty } = rematch;
+    startMatch(kind, game, market, difficulty, first.player, second?.player ?? null, bot);
+  };
+
+  const wantRematch = (rematch: Rematch, side: Side) => {
+    if (rematches.get(rematch.matchId) !== rematch) {
+      return;
+    }
+    rematch.wants.add(side);
+    const rivalSide = opponentOf(side);
+    if (rematch.wants.has(rivalSide)) {
+      beginRematch(rematch);
+      return;
+    }
+    const endsIn = Math.max(0, rematch.endsAt - now());
+    send(rematch.seats[side].userId, { type: 'rematch', matchId: rematch.matchId, state: 'waiting', endsIn });
+    send(rematch.seats[rivalSide].userId, { type: 'rematch', matchId: rematch.matchId, state: 'offered', endsIn });
+    if (rematch.seats[rivalSide].userId === null && !rematch.botAnswered) {
+      rematch.botAnswered = true;
+      const accept = random() < BOT_REMATCH_ACCEPT;
+      const answer = () => (accept ? wantRematch(rematch, rivalSide) : closeRematch(rematch, 'declined'));
+      rematch.timers.push(setTimeout(answer, between(botThink)));
+    }
+  };
+
+  const openRematch = (room: LiveRoom, result: PlayResult): boolean => {
+    const humans = SIDES.flatMap((side) => (room.seats[side].userId ? [room.seats[side].userId] : []));
+    if (room.kind === 'bot' || !humans.every((userId) => supports(userId, 'rematch') && isConnected(userId))) {
+      return false;
+    }
+    const { market, difficulty } = room.record();
+    const rematch: Rematch = {
+      matchId: room.id,
+      kind: room.kind,
+      game: room.game,
+      market,
+      difficulty,
+      seats: room.seats,
+      wants: new Set(),
+      botAnswered: false,
+      endsAt: now() + rematchWindow,
+      timers: [],
+    };
+    rematch.timers.push(setTimeout(() => closeRematch(rematch, 'expired'), rematchWindow));
+    rematches.set(room.id, rematch);
+    const bot = SIDES.find((side) => room.seats[side].userId === null);
+    if (bot && result.winner !== null && result.winner !== bot && random() < BOT_REMATCH_OFFER) {
+      rematch.botAnswered = true;
+      rematch.timers.push(setTimeout(() => wantRematch(rematch, bot), between(botThink)));
+    }
+    return true;
   };
 
   const startMatch = (
@@ -232,12 +473,14 @@ export function createLobby(options: LobbyOptions) {
     difficulty: PlayDifficulty,
     first: Player,
     second: Player | null,
+    previousBot: Seat | null = null,
   ) => {
     const humans = second ? [first, second] : [first];
     const firstSide: Side = random() < 0.5 ? 'x' : 'o';
     const taken = (username: string) =>
       username.toLowerCase() === first.username.toLowerCase() || isUsernameTaken(username);
-    const ranked = kind === 'queue' && progress !== undefined;
+    const scoredRoom = kind === 'room' && rankedRooms && humans.every((player) => player.features?.includes('ranked-rooms'));
+    const ranked = progress !== undefined && (kind === 'queue' || scoredRoom);
     const ratingOf = (player: Player) => (ranked ? progress.ratingOf(player.id, game) : START_RATING);
     const firstRating = ratingOf(first);
     const botLevel = second
@@ -249,10 +492,13 @@ export function createLobby(options: LobbyOptions) {
         );
     const botRating = () =>
       ranked ? Math.max(0, Math.round(firstRating + (random() * 2 - 1) * BOT_RATING_SPREAD)) : START_RATING;
-    const listed = !second && kind === 'queue' ? (roster?.pick(market, first.id, busyBots) ?? null) : null;
+    const listed =
+      !second && !previousBot && kind === 'queue' ? (roster?.pick(market, first.id, busyBots) ?? null) : null;
     const rival: Seat = second
       ? { userId: second.id, username: second.username, rating: ratingOf(second) }
-      : {
+      : previousBot
+        ? { ...previousBot, rating: botRating() }
+        : {
           userId: null,
           ...(listed ? { botId: listed.id } : {}),
           username: kind === 'bot' ? CHOSEN_BOT_NAME : (listed?.username ?? createBotName(market, taken, random)),
@@ -283,9 +529,9 @@ export function createLobby(options: LobbyOptions) {
       });
       return;
     }
-    matches.set(room.id, { room, botLevel, forfeits: new Map(), jokers: [] });
-    if (listed) {
-      busyBots.add(listed.id);
+    matches.set(room.id, { room, ranked, botLevel, forfeits: new Map(), jokers: [] });
+    if (rival.botId) {
+      busyBots.add(rival.botId);
     }
     humans.forEach((player) => {
       const member = members.get(player.id);
@@ -453,6 +699,9 @@ export function createLobby(options: LobbyOptions) {
     send(userId, { ...jokerMessage(active, use, side), goals });
     const rival = opponentOf(side);
     send(active.room.seats[rival].userId, jokerMessage(active, use, rival));
+    if (active.room.seats[rival].userId === null) {
+      botReact(active.room.id, rival, userId, BOT_JOKER_REACTIONS, BOT_REACTION_AFTER_JOKER);
+    }
   };
 
   const activeFor = (member: Member, matchId: string): { active: ActiveMatch; side: Side } | null => {
@@ -471,7 +720,7 @@ export function createLobby(options: LobbyOptions) {
         existing.connection.send({ type: 'error', code: 'replaced' });
         existing.connection.close();
       }
-      const member: Member = existing ?? { player, connection, status: IDLE };
+      const member: Member = existing ?? { player, connection, status: IDLE, reactions: null, botReactions: null };
       member.player = player;
       member.connection = connection;
       members.set(player.id, member);
@@ -502,6 +751,7 @@ export function createLobby(options: LobbyOptions) {
       member.connection = null;
       if (member.status.kind !== 'playing') {
         release(member);
+        withdrawRematch(userId);
         members.delete(userId);
         return;
       }
@@ -537,6 +787,7 @@ export function createLobby(options: LobbyOptions) {
         }
       } else {
         release(member);
+        withdrawRematch(userId);
       }
       member.connection?.close();
       members.delete(userId);
@@ -565,6 +816,7 @@ export function createLobby(options: LobbyOptions) {
             fail(userId, 'invalid-message');
             return;
           }
+          withdrawRematch(userId);
           if (message.type === 'queue') {
             enqueue(member, game, message.market, message.difficulty);
           } else if (message.type === 'play-bot') {
@@ -579,6 +831,7 @@ export function createLobby(options: LobbyOptions) {
             fail(userId, 'busy');
             return;
           }
+          withdrawRematch(userId);
           join(member, message.code);
           return;
         case 'cancel':
@@ -587,6 +840,7 @@ export function createLobby(options: LobbyOptions) {
             return;
           }
           release(member);
+          withdrawRematch(userId);
           member.status = IDLE;
           send(userId, { type: 'idle' });
           return;
@@ -606,6 +860,19 @@ export function createLobby(options: LobbyOptions) {
         case 'joker':
           useJoker(member, message);
           return;
+        case 'react':
+          react(member, message);
+          return;
+        case 'rematch': {
+          const rematch = rematches.get(message.matchId);
+          const side = rematch ? seatSide(rematch.seats, userId) : null;
+          if (!rematch || !side || member.status.kind !== 'idle') {
+            send(userId, { type: 'rematch', matchId: message.matchId, state: 'declined', endsIn: 0 });
+            return;
+          }
+          wantRematch(rematch, side);
+          return;
+        }
         case 'leave': {
           const found = activeFor(member, message.matchId);
           if (!found) {
@@ -647,6 +914,10 @@ export function createLobby(options: LobbyOptions) {
       queues.clear();
       hosted.forEach((room) => clearTimeout(room.expiry));
       hosted.clear();
+      rematches.forEach((rematch) => rematch.timers.forEach((timer) => clearTimeout(timer)));
+      rematches.clear();
+      pending.forEach((timer) => clearTimeout(timer));
+      pending.clear();
       matches.forEach((active) => {
         active.forfeits.forEach((timer) => clearTimeout(timer));
         active.room.dispose();

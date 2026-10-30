@@ -14,6 +14,7 @@ export interface ServerConfig {
   timeZone: string;
   trustProxy: boolean;
   notifications: boolean;
+  rankedRooms?: boolean;
 }
 
 const DEFAULT_DATABASE_PATH = fileURLToPath(new URL('../data/sportapps.sqlite', import.meta.url));
@@ -45,5 +46,6 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env): Server
     timeZone: environment.TIME_ZONE ?? DEFAULT_TIME_ZONE,
     trustProxy: environment.TRUST_PROXY === '1',
     notifications: environment.NOTIFICATIONS === '1',
+    rankedRooms: environment.RANKED_ROOMS !== '0',
   };
 }

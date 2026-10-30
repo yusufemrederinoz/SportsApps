@@ -8,7 +8,7 @@
     "pointsTitle": "Climb the ranks",
     "pointsBody": "Win online matches to earn points in each game. Your total sets your level, and a level you reach never drops. Points also count toward the weekly leaderboard.",
     "goalsTitle": "Goals buy jokers",
-    "goalsBody": "You start with {{goals}} goals. Spend them on jokers in matches. The daily reward, the daily puzzle and online wins earn you more."
+    "goalsBody": "You start with {{goals}} goals. Spend them on jokers in matches or to protect your points after a loss. The daily reward, the daily puzzle and online wins earn you more."
   },
   "welcome": {
     "guest": "Continue as guest",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "The purchase could not be verified.",
     "purchaseUsed": "This purchase was already added to another account.",
     "guestPurchase": "You need a member account to buy goals.",
-    "storeUnavailable": "The store cannot verify purchases right now. Try again in a moment."
+    "storeUnavailable": "The store cannot verify purchases right now. Try again in a moment.",
+    "notEnoughGoals": "You don't have enough goals.",
+    "protectionUnavailable": "These points can no longer be protected."
   },
   "online": {
     "connecting": "Connecting",
@@ -461,12 +463,15 @@
     "gamePoints": "Your points in this game: {{points}}",
     "levelUp": "New level: {{level}}",
     "unranked": "Unranked match",
-    "unrankedHint": "Points and goals are earned only in \"Online match\" games.",
+    "unrankedHint": "Points and goals are earned in online and friend matches.",
     "protect": "Protect your points",
-    "protectHint": "Watch an ad and get back the {{points}} points you lost.",
+    "protectHint": "Get back the {{points}} points you lost.",
     "protecting": "Giving your points back…",
     "protected": "Points protected: +{{points}}",
-    "protectPending": "Your points will be back in a moment."
+    "protectPending": "Your points will be back in a moment.",
+    "protectAd": "Watch an ad",
+    "protectGoals": "Pay {{price}} goals",
+    "protectNeedGoals": "Protecting with goals costs {{price}}. You have {{goals}}."
   },
   "progress": {
     "level": "Level {{level}}",
@@ -482,7 +487,7 @@
     "title": "Goal store",
     "back": "Back",
     "balance": "Your goals",
-    "hint": "Spend goals on jokers during matches.",
+    "hint": "Spend goals on jokers during matches or to protect your points after a loss.",
     "buy": "Buy {{goals}} goals, {{price}}",
     "connecting": "Connecting to the store…",
     "loading": "Loading packs…",
@@ -514,7 +519,7 @@
     "collect": "Collect",
     "day": "Day {{day}}: {{goals}} goals",
     "welcome": "Welcome gift: +{{goals}} goals",
-    "welcomeHint": "Spend goals on jokers during matches."
+    "welcomeHint": "Spend goals on jokers during matches or to protect your points after a loss."
   },
   "history": {
     "title": "History",
@@ -548,7 +553,8 @@
     "reasonAd": "Ad reward",
     "offline": "History could not be loaded. Check your connection.",
     "reasonJoker": "Joker",
-    "reasonPuzzle": "Daily puzzle"
+    "reasonPuzzle": "Daily puzzle",
+    "reasonProtection": "Point protection"
   },
   "jokers": {
     "extra-time": "Extra time",
@@ -592,7 +598,9 @@
     "roleGK": "Goalkeeper",
     "roleDF": "Defender",
     "roleMF": "Midfielder",
-    "roleFW": "Forward"
+    "roleFW": "Forward",
+    "hurry": "Time's running out!",
+    "addTime": "+{{seconds}} s"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -627,5 +635,32 @@
     "cellShare": "Same answer: {{share}}",
     "tomorrow": "A new puzzle comes at midnight",
     "unavailable": "The puzzle could not be loaded."
+  },
+  "rematch": {
+    "ask": "Rematch",
+    "waiting": "Waiting for your rival… {{seconds}}",
+    "offered": "{{name}} wants a rematch!",
+    "accept": "Accept rematch",
+    "declined": "Your rival passed on the rematch.",
+    "expired": "The rematch offer ran out."
+  },
+  "reactions": {
+    "open": "Send a reaction",
+    "close": "Close",
+    "mute": "Mute your rival's reactions",
+    "unmute": "Show your rival's reactions",
+    "from": "{{name}}: {{reaction}}",
+    "laugh": "Laughing",
+    "tease": "Teasing",
+    "cool": "Cool",
+    "shock": "Shocked",
+    "sweat": "Sweating",
+    "cry": "Crying",
+    "angry": "Angry",
+    "clap": "Applause",
+    "red-card": "Red card",
+    "var": "VAR",
+    "offside": "Offside",
+    "save": "Great save"
   }
 }

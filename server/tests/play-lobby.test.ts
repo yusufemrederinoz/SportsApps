@@ -1,5 +1,5 @@
 import type { Grid, Header } from '@sportapps/game-core';
-import type { MatchSnapshot, ServerMessage } from '@sportapps/protocol';
+import { PLAY_FEATURES, type MatchSnapshot, type PlayFeature, type ServerMessage } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -80,11 +80,11 @@ function random(): number {
   return seed / 2147483648;
 }
 
-function join(username?: string): Client {
+function join(username?: string, features: readonly PlayFeature[] = []): Client {
   const accounts = createAccountService(database, { sessionDays: 90 });
   const { account } = accounts.createGuest();
   const client: Client = {
-    player: { id: account.id, username: username ?? account.username },
+    player: { id: account.id, username: username ?? account.username, features },
     received: [],
     closed: false,
     send(message) {
@@ -553,5 +553,172 @@ describe('friend rooms', () => {
     expect(lobby.counts().hosted).toBe(0);
     queue(host);
     expect(host.of('queued')).toHaveLength(1);
+  });
+});
+
+describe('rematches and reactions', () => {
+  const THINK = 1000;
+  const WINDOW = 20000;
+  let forced: number | null;
+
+  const withFeatures = (rankedRooms = true) => {
+    lobby.shutdown();
+    forced = null;
+    lobby = createLobby({
+      games: { grid: capturing(createGridRoomFactory(library), rooms) },
+      hasMarket: library.hasMarket,
+      history,
+      progress: createProgress(database, { now: () => Date.now() }),
+      random: () => forced ?? random(),
+      now: () => Date.now(),
+      botWaitMilliseconds: BOT_WAIT,
+      disconnectGraceMilliseconds: GRACE,
+      roomLifetimeMilliseconds: 60000,
+      rematchWindowMilliseconds: WINDOW,
+      botThinkMilliseconds: { minimum: THINK, maximum: THINK },
+      rankedRooms,
+    });
+  };
+
+  const friends = (features: readonly PlayFeature[] = PLAY_FEATURES) => {
+    const host = join(undefined, features);
+    const friend = join(undefined, features);
+    lobby.handle(host.player.id, { type: 'create-room', market: 'tr', difficulty: 1 });
+    lobby.handle(friend.player.id, { type: 'join-room', code: host.of('room')[0]?.code ?? '' });
+    return { host, friend, matchId: host.match().matchId };
+  };
+
+  const againstBot = () => {
+    const human = join(undefined, PLAY_FEATURES);
+    queue(human);
+    vi.advanceTimersByTime(BOT_WAIT.maximum);
+    const match = human.match();
+    return { human, matchId: match.matchId, rival: match.usernames[match.side === 'x' ? 'o' : 'x'] };
+  };
+
+  const rematchStates = (client: Client) => client.of('rematch').map((message) => message.state);
+
+  it('scores friend rooms and starts a scored rematch once both players ask', () => {
+    withFeatures();
+    const { host, friend, matchId } = friends();
+    lobby.handle(host.player.id, { type: 'leave', matchId });
+
+    expect(host.of('finished')[0]).toMatchObject({ rematch: true, points: { change: expect.any(Number) } });
+    expect(friend.of('finished')[0]?.points?.goalsEarned).toBe(1);
+
+    lobby.handle(host.player.id, { type: 'rematch', matchId });
+    expect(host.of('rematch')).toEqual([{ type: 'rematch', matchId, state: 'waiting', endsIn: WINDOW }]);
+    expect(friend.of('rematch')).toEqual([{ type: 'rematch', matchId, state: 'offered', endsIn: WINDOW }]);
+
+    lobby.handle(friend.player.id, { type: 'rematch', matchId });
+    const next = host.match().matchId;
+    expect(next).not.toBe(matchId);
+    expect(friend.match().matchId).toBe(next);
+    lobby.handle(friend.player.id, { type: 'leave', matchId: next });
+    expect(history.list(host.player.id).map((match) => match.kind)).toEqual(['room', 'room']);
+    expect(history.list(host.player.id)[0]?.pointsChange).not.toBeNull();
+  });
+
+  it('keeps friend rooms unscored for older apps and when the setting is off', () => {
+    withFeatures();
+    const older = friends(['reactions', 'rematch']);
+    lobby.handle(older.host.player.id, { type: 'leave', matchId: older.matchId });
+    expect(older.friend.of('finished')[0]?.points).toBeUndefined();
+
+    withFeatures(false);
+    const current = friends();
+    lobby.handle(current.host.player.id, { type: 'leave', matchId: current.matchId });
+    expect(current.friend.of('finished')[0]?.points).toBeUndefined();
+    expect(current.friend.of('finished')[0]?.rematch).toBe(true);
+  });
+
+  it('tells the other player when a rematch offer is withdrawn or runs out', () => {
+    withFeatures();
+    const first = friends();
+    lobby.handle(first.host.player.id, { type: 'leave', matchId: first.matchId });
+    lobby.handle(first.host.player.id, { type: 'rematch', matchId: first.matchId });
+    queue(first.friend);
+    expect(rematchStates(first.host)).toEqual(['waiting', 'declined']);
+    lobby.handle(first.host.player.id, { type: 'rematch', matchId: first.matchId });
+    expect(rematchStates(first.host)).toEqual(['waiting', 'declined', 'declined']);
+
+    const second = friends();
+    lobby.handle(second.host.player.id, { type: 'leave', matchId: second.matchId });
+    lobby.handle(second.friend.player.id, { type: 'rematch', matchId: second.matchId });
+    vi.advanceTimersByTime(WINDOW);
+    expect(rematchStates(second.host)).toEqual(['offered', 'expired']);
+    expect(rematchStates(second.friend)).toEqual(['waiting', 'expired']);
+  });
+
+  it('offers no rematch when a player runs an older app', () => {
+    withFeatures();
+    const { host, friend, matchId } = friends([]);
+    lobby.handle(host.player.id, { type: 'leave', matchId });
+    expect(friend.of('finished')[0]?.rematch).toBeUndefined();
+    lobby.handle(friend.player.id, { type: 'rematch', matchId });
+    expect(rematchStates(friend)).toEqual(['declined']);
+  });
+
+  it('lets a hidden bot accept or turn down a rematch under the same name', () => {
+    withFeatures();
+    const accepted = againstBot();
+    lobby.handle(accepted.human.player.id, { type: 'leave', matchId: accepted.matchId });
+    forced = 0;
+    lobby.handle(accepted.human.player.id, { type: 'rematch', matchId: accepted.matchId });
+    forced = null;
+    expect(rematchStates(accepted.human)).toEqual(['waiting']);
+    vi.advanceTimersByTime(THINK);
+    const next = accepted.human.match();
+    expect(next.matchId).not.toBe(accepted.matchId);
+    expect(next.usernames[next.side === 'x' ? 'o' : 'x']).toBe(accepted.rival);
+    lobby.handle(accepted.human.player.id, { type: 'leave', matchId: next.matchId });
+
+    const refused = againstBot();
+    lobby.handle(refused.human.player.id, { type: 'leave', matchId: refused.matchId });
+    forced = 0.99;
+    lobby.handle(refused.human.player.id, { type: 'rematch', matchId: refused.matchId });
+    forced = null;
+    vi.advanceTimersByTime(THINK);
+    expect(rematchStates(refused.human)).toEqual(['waiting', 'declined']);
+    expect(refused.human.of('match')).toHaveLength(1);
+  });
+
+  it('relays reactions with a cooldown, also on the result screen, and never to older apps', () => {
+    withFeatures();
+    const { host, friend, matchId } = friends();
+    const react = (client: Client, reaction: 'laugh' | 'cry') =>
+      lobby.handle(client.player.id, { type: 'react', matchId, reaction });
+    const hostSide = host.match().side;
+
+    react(host, 'laugh');
+    react(host, 'cry');
+    expect(friend.of('reaction')).toEqual([{ type: 'reaction', matchId, side: hostSide, reaction: 'laugh' }]);
+    vi.advanceTimersByTime(2500);
+    react(host, 'cry');
+    lobby.handle(host.player.id, { type: 'leave', matchId });
+    vi.advanceTimersByTime(2500);
+    react(host, 'laugh');
+    expect(friend.of('reaction').map((message) => message.reaction)).toEqual(['laugh', 'cry', 'laugh']);
+    expect(host.of('reaction')).toEqual([]);
+
+    const older = join(undefined, ['rematch']);
+    const current = join(undefined, PLAY_FEATURES);
+    lobby.handle(current.player.id, { type: 'create-room', market: 'tr', difficulty: 1 });
+    lobby.handle(older.player.id, { type: 'join-room', code: current.of('room')[0]?.code ?? '' });
+    lobby.handle(current.player.id, { type: 'react', matchId: current.match().matchId, reaction: 'tease' });
+    expect(older.of('reaction')).toEqual([]);
+  });
+
+  it('lets a bot answer a reaction now and then', () => {
+    withFeatures();
+    const { human, matchId } = againstBot();
+    const botSide = human.match().side === 'x' ? 'o' : 'x';
+    forced = 0;
+    lobby.handle(human.player.id, { type: 'react', matchId, reaction: 'tease' });
+    forced = null;
+    vi.advanceTimersByTime(THINK);
+    const [answer] = human.of('reaction');
+    expect(answer).toMatchObject({ matchId, side: botSide });
+    expect(['angry', 'laugh', 'tease']).toContain(answer?.reaction);
   });
 });

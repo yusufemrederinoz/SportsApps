@@ -11,5 +11,6 @@ export * from './play';
 export * from './progress';
 export * from './rankings';
 export * from './rare';
+export * from './reactions';
 export * from './store';
 export * from './top-ten';

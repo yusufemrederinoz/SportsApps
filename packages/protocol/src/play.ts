@@ -7,12 +7,17 @@ import type { HigherAction, HigherView } from './higher';
 import type { RareAction, RareView } from './rare';
 import type { JokerId, JokerTarget, JokerUse } from './jokers';
 import type { PointsChange } from './progress';
+import type { ReactionId } from './reactions';
 import type { TopTenView } from './top-ten';
 
 export const PLAY_PATH = '/play';
 export const PLAY_PROTOCOL_VERSION = 1;
 export const ROOM_CODE_LENGTH = 5;
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+export const PLAY_FEATURES = ['reactions', 'rematch', 'ranked-rooms'] as const;
+export type PlayFeature = (typeof PLAY_FEATURES)[number];
+export const REMATCH_WINDOW_MILLISECONDS = 20000;
+export type RematchState = 'waiting' | 'offered' | 'declined' | 'expired';
 
 export interface VersionResponse {
   protocol: number;
@@ -111,7 +116,7 @@ export type PlayErrorCode =
   | 'not-enough-goals';
 
 export type ClientMessage =
-  | { type: 'hello'; token: string; protocol: number; dataVersion: string }
+  | { type: 'hello'; token: string; protocol: number; dataVersion: string; features?: PlayFeature[] }
   | { type: 'queue'; market: string; difficulty: PlayDifficulty; game?: GameId }
   | { type: 'play-bot'; market: string; difficulty: PlayDifficulty; game?: GameId }
   | { type: 'create-room'; market: string; difficulty: PlayDifficulty; game?: GameId }
@@ -121,6 +126,8 @@ export type ClientMessage =
   | { type: 'act'; matchId: string; action: GameAction }
   | { type: 'joker'; matchId: string; joker: JokerId; target?: JokerTarget }
   | { type: 'leave'; matchId: string }
+  | { type: 'react'; matchId: string; reaction: ReactionId }
+  | { type: 'rematch'; matchId: string }
   | { type: 'ping' };
 
 export type ServerMessage =
@@ -132,9 +139,11 @@ export type ServerMessage =
   | { type: 'session'; session: SessionSnapshot }
   | ({ type: 'view'; matchId: string } & GameView)
   | { type: 'move'; matchId: string; move: PlayMove; turnEndsIn: number }
-  | { type: 'finished'; matchId: string; result: PlayResult; points?: PointsChange }
+  | { type: 'finished'; matchId: string; result: PlayResult; points?: PointsChange; rematch?: boolean }
   | { type: 'opponent'; matchId: string; connected: boolean }
   | ({ type: 'joker'; matchId: string; used: number; goals?: number; replay?: boolean } & JokerUse)
+  | { type: 'reaction'; matchId: string; side: PlaySide; reaction: ReactionId }
+  | { type: 'rematch'; matchId: string; state: RematchState; endsIn: number }
   | { type: 'error'; code: PlayErrorCode }
   | { type: 'pong' };
 

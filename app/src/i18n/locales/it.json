@@ -8,7 +8,7 @@
     "pointsTitle": "Scala la classifica",
     "pointsBody": "Vinci le partite online per fare punti in ogni gioco; il totale decide il tuo livello, e un livello raggiunto non si perde più. Conquista il tuo posto nella classifica settimanale.",
     "goalsTitle": "Con i gol prendi i jolly",
-    "goalsBody": "Parti con {{goals}} gol. Spendili in partita per i jolly; ne guadagni altri con il premio giornaliero, la sfida del giorno e le vittorie online."
+    "goalsBody": "Parti con {{goals}} gol. Spendili in partita per i jolly o per proteggere i tuoi punti dopo una sconfitta. Ne guadagni altri con il premio giornaliero, la sfida del giorno e le vittorie online."
   },
   "welcome": {
     "guest": "Continua come ospite",
@@ -211,7 +211,9 @@
     "purchaseInvalid": "Impossibile verificare l'acquisto.",
     "purchaseUsed": "Questo acquisto è già stato accreditato su un altro account.",
     "guestPurchase": "Per comprare gol serve un account registrato.",
-    "storeUnavailable": "Lo store non riesce a verificare gli acquisti al momento. Riprova tra poco."
+    "storeUnavailable": "Lo store non riesce a verificare gli acquisti al momento. Riprova tra poco.",
+    "notEnoughGoals": "Non hai abbastanza gol.",
+    "protectionUnavailable": "Questi punti non si possono più proteggere."
   },
   "online": {
     "connecting": "Connessione",
@@ -461,12 +463,15 @@
     "gamePoints": "I tuoi punti in questo gioco: {{points}}",
     "levelUp": "Nuovo livello: {{level}}",
     "unranked": "Amichevole",
-    "unrankedHint": "Punti e gol si guadagnano solo in modalità \"Partita online\".",
+    "unrankedHint": "Punti e gol si guadagnano nelle partite online e con gli amici.",
     "protect": "Proteggi i tuoi punti",
-    "protectHint": "Guarda uno spot e riprenditi i {{points}} punti persi.",
+    "protectHint": "Riprenditi i {{points}} punti persi.",
     "protecting": "Ti restituiamo i punti…",
     "protected": "Punti protetti: +{{points}}",
-    "protectPending": "I tuoi punti tornano tra un attimo."
+    "protectPending": "I tuoi punti tornano tra un attimo.",
+    "protectAd": "Guarda uno spot",
+    "protectGoals": "Paga {{price}} gol",
+    "protectNeedGoals": "Con i gol costa {{price}}. Ne hai {{goals}}."
   },
   "progress": {
     "level": "Livello {{level}}",
@@ -482,7 +487,7 @@
     "title": "Negozio dei gol",
     "back": "Indietro",
     "balance": "I tuoi gol",
-    "hint": "Spendi i gol in partita per usare i jolly.",
+    "hint": "Spendi i gol in partita per i jolly o per proteggere i punti dopo una sconfitta.",
     "buy": "Compra {{goals}} gol, {{price}}",
     "connecting": "Connessione al negozio…",
     "loading": "Carico i pacchetti…",
@@ -514,7 +519,7 @@
     "collect": "Ritira",
     "day": "Giorno {{day}}: {{goals}} gol",
     "welcome": "Regalo di benvenuto: +{{goals}} gol",
-    "welcomeHint": "Spendi i gol in partita per usare i jolly."
+    "welcomeHint": "Spendi i gol in partita per i jolly o per proteggere i punti dopo una sconfitta."
   },
   "history": {
     "title": "Cronologia",
@@ -548,7 +553,8 @@
     "reasonAd": "Premio spot",
     "offline": "Impossibile caricare la cronologia. Controlla la connessione.",
     "reasonJoker": "Jolly",
-    "reasonPuzzle": "Sfida del giorno"
+    "reasonPuzzle": "Sfida del giorno",
+    "reasonProtection": "Punti protetti"
   },
   "jokers": {
     "extra-time": "Recupero",
@@ -592,7 +598,9 @@
     "roleGK": "Portiere",
     "roleDF": "Difensore",
     "roleMF": "Centrocampista",
-    "roleFW": "Attaccante"
+    "roleFW": "Attaccante",
+    "hurry": "Il tempo sta finendo!",
+    "addTime": "+{{seconds}} s"
   },
   "leaderboard": {
     "title": "Classifica",
@@ -627,5 +635,32 @@
     "cellShare": "Stessa risposta: {{share}}",
     "tomorrow": "Nuova sfida a mezzanotte",
     "unavailable": "Impossibile caricare la sfida."
+  },
+  "rematch": {
+    "ask": "Rivincita",
+    "waiting": "In attesa dell'avversario… {{seconds}}",
+    "offered": "{{name}} vuole la rivincita!",
+    "accept": "Accetta la rivincita",
+    "declined": "L'avversario non vuole la rivincita.",
+    "expired": "La rivincita è scaduta."
+  },
+  "reactions": {
+    "open": "Invia una reazione",
+    "close": "Chiudi",
+    "mute": "Nascondi le reazioni dell'avversario",
+    "unmute": "Mostra le reazioni dell'avversario",
+    "from": "{{name}}: {{reaction}}",
+    "laugh": "Risata",
+    "tease": "Marameo",
+    "cool": "Figo",
+    "shock": "Sconvolto",
+    "sweat": "Sudato",
+    "cry": "In lacrime",
+    "angry": "Arrabbiato",
+    "clap": "Applausi",
+    "red-card": "Cartellino rosso",
+    "var": "VAR",
+    "offside": "Fuorigioco",
+    "save": "Paratona"
   }
 }

@@ -32,6 +32,7 @@ const REASON_KEYS = {
   puzzle: 'history.reasonPuzzle',
   purchase: 'history.reasonPurchase',
   ad: 'history.reasonAd',
+  protection: 'history.reasonProtection',
 } as const satisfies Record<GoalReason, string>;
 
 interface MatchPage {

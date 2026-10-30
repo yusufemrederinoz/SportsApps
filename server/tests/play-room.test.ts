@@ -212,6 +212,17 @@ describe('client message parsing', () => {
       target: {},
     });
     expect(parseClientMessage('{"type":"joker","matchId":"m","joker":"steal"}')).toBeNull();
+    expect(parseClientMessage('{"type":"react","matchId":"m","reaction":"red-card"}')).toEqual({
+      type: 'react',
+      matchId: 'm',
+      reaction: 'red-card',
+    });
+    expect(parseClientMessage('{"type":"react","matchId":"m","reaction":"middle-finger"}')).toBeNull();
+    expect(parseClientMessage('{"type":"rematch","matchId":"m"}')).toEqual({ type: 'rematch', matchId: 'm' });
+    expect(
+      parseClientMessage('{"type":"hello","token":"t","protocol":1,"dataVersion":"d","features":["rematch","teleport",7]}'),
+    ).toEqual({ type: 'hello', token: 't', protocol: 1, dataVersion: 'd', features: ['rematch'] });
+    expect(parseClientMessage('{"type":"hello","token":"t","protocol":1,"dataVersion":"d"}')).toMatchObject({ features: [] });
     expect(parseClientMessage('{"type":"create-room","market":"tr","difficulty":1,"game":"duel"}')).toEqual({
       type: 'create-room',
       market: 'tr',
