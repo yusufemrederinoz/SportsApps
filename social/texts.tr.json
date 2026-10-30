@@ -1,0 +1,31 @@
+{
+  "welcome": "Merhaba! Ben ChallengeGoal asistanıyım.\n\nX'te yanıt yazmak istediğin bir paylaşımın bağlantısını gönder (X'te Paylaş → Telegram ya da bağlantıyı kopyala). Ekran görüntüsü de olur, altına not da yazabilirsin. Sana 3 yanıt taslağı hazırlarım, düğmeye dokununca X yanıt yazılmış açılır.\n\nHer sabah 10:00'da paylaşmaya hazır bilgi soruları, akşam 20:00'de cevapları gelir.\n\n/soru bugünün sorularını şimdi getirir.",
+  "notOwner": "Bu asistan yalnızca ChallengeGoal hesabı için çalışıyor.",
+  "writing": "Yazıyorum…",
+  "readFailed": "Bu paylaşımı okuyamadım. Metnini kopyalayıp gönderebilir ya da ekran görüntüsü atabilirsin.",
+  "draftsFailed": "Taslak yazarken bir sorun çıktı, bir daha dener misin?",
+  "skipped": "Bu paylaşıma yanıt önermiyorum: {reason}",
+  "noDrafts": "Bu paylaşım için iyi bir taslak çıkmadı. \"Yeniden yaz\" diyebilir ya da altına bir not ekleyip tekrar gönderebilirsin.",
+  "draftsHeader": "{author}: “{excerpt}”",
+  "reply": "{index}. Yanıtla",
+  "copy": "{index}. Kopyala",
+  "redo": "Yeniden yaz",
+  "share": "X'te paylaş",
+  "shareReply": "Altına yanıt olarak paylaş",
+  "copyOne": "Kopyala",
+  "swap": "Başka soru",
+  "morning": "Günün soruları hazır. Paylaştıktan sonra bağlantısını bana gönderirsen akşam cevabı o paylaşımın altına yanıt olarak hazırlarım.",
+  "evening": "Sabahki soruların cevapları:",
+  "quizLinked": "Bu sorunun paylaşımını kaydettim. Akşam cevabı bu paylaşımın altına yanıt olarak gelecek.",
+  "noQuiz": "Bugün için yeni soru bulamadım.",
+  "quiz": {
+    "career": "Bu kariyer kimin?\n\n{path}\n\nCevap akşam.",
+    "careerAnswer": "Sabahki sorunun cevabı {name}.",
+    "bridge": "Hem {first} hem {second} forması giymiş bir futbolcu söyle.\n\nBizim veritabanında {count} isim var. Kaçını bulabilirsin?",
+    "bridgeAnswer": "Hem {first} hem {second} forması giyenlerden bazıları: {names}.",
+    "bridgeMore": " Ve {count} isim daha.",
+    "higher": "Kulüp kariyerinde daha çok gol atan hangisi?\n\n{first} mi, {second} mi?",
+    "higherAnswer": "{winner} kulüp kariyerinde {winnerGoals} gol attı, {loser} {loserGoals}.",
+    "answerTail": "\n\nBöyle sorularla online rakiplerle kapışmak için ChallengeGoal'a göz at, bağlantı profilde."
+  }
+}
