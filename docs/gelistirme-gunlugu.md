@@ -1134,6 +1134,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Sonuç** (veri sürümü `20261030162029`). 344 yeni kulüp, 30.433 yeni oyuncu–kulüp kaydı. Izgaralar ve bilinirlik puanları bire bir aynı, eski kayıtların hiçbiri silinmedi. Uygulama veritabanında bir oyuncu daha var (Mohamed Guindo: ana lig kaydı söylenti diye atıldığı için daha önce yoktu, şimdi Belçika kayıtlarıyla geliyor). Kariyer Yolu'nun Türkiye pazarındaki aday havuzu (bilinirlik 40+, en az 3 kulüp) 831'den 1.007'ye çıktı. Uygulama veritabanı 19,6 MB'tan 21,2 MB'a büyüdü. Gerçek veriyle denendi: konu seçen sorguların hepsi yalnızca ana liglerden seçiyor, Talisca–Cristiano Ronaldo iki yönde de Al-Nassr ile bağlanıyor.
 - **Ortam.** QLever 502 verdi; hattın Wikidata adresi ortam değişkeniyle değiştirilebilir yapıldı ve derleme resmî servisle tamamlandı. Ana liglerin sorguları değişmediği için önbellekten okundu.
 - **Armalar.** 344 kulübün arması ayrı bir ajanla derlendi (kısaltma, desen, renkler).
+- **Canlıya alma.** Kullanıcının onayıyla, panelde süren bir Kadro Kur maçının bitmesi beklendi; önce sunucu kodu (`deploy.sh`), sonra veri (`deploy.sh data`) güncellendi. Kapsayıcı sağlıklı, `GET /v1/version` yeni sürümü veriyor, sunucudaki dosya yereldekiyle aynı.
 - **Eski uygulama.** Veri şeması değişmediği için mağazadaki uygulama yeni veriyi açılışta indirir ve Al-Nassr bağlantısını kabul eder. Yeni kulüplerin arması onda görünmez, Zincir ekranında da eski kural metni ("Süper Lig ya da beş büyük lig") kalır; yeni sürümde metin ligleri sayıyor.
 
 ## Commit listesi
