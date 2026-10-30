@@ -328,4 +328,15 @@ Kararlar (seçenekli sorularla):
 
 Benim karar verdiklerim: jokerler 9 oyunda arama penceresinin üstünde; son 5 saniyede ek süre büyük, tek dokunuşluk bir düğmeye dönüşür; emoji hazır setten (serbest yazı yok, içerik denetimi gerekmez), bekleme süresi ve susturma var; gizli botlar da emoji atar ve rövanşı kabul eder.
 
-Durum: sunucu, uygulama ve altı dilin metinleri hazır, emülatörde denendi. Sunucu 30 Ekim 2026'da canlıya alındı (eski uygulamalar etkilenmez, reklam ödülü herkes için 3 gol). Kalanlar: yeni derleme ve mağaza gönderimi, App Store'daki gol paketi inceleme notunun güncellenmesi, birkaç hafta sonra joker ve koruma kullanımının panelden yeniden ölçülmesi.
+Durum: sunucu, uygulama ve altı dilin metinleri hazır, emülatörde denendi. Sunucu 30 Ekim 2026'da canlıya alındı (eski uygulamalar etkilenmez, reklam ödülü herkes için 3 gol). Uygulama 1.1.0 olarak 31 Ekim 2026'da iki mağazaya da incelemeye gönderildi (iOS yapı 13, Android sürüm kodu 17). Kalanlar: App Store onayından sonra elle yayınlama, App Store'daki gol paketi inceleme notunun güncellenmesi, birkaç hafta sonra joker ve koruma kullanımının panelden yeniden ölçülmesi.
+
+## Adım 12 — 1.2.0 adayları
+
+Kullanıcının "1.2.0'da değerlendirelim" dediği özellikler. Her biri yeni derleme ister; derleme kullanıcının onayıyla yapılır.
+
+### Paylaşımda indirme bağlantısı (31 Ekim 2026)
+
+- **Sorun.** Uygulamanın iki paylaşım metninde indirme bağlantısı yok. Arkadaş odasının kodu (`online.roomShareText`, `features/match/online-lobby.tsx`) yalnızca "Odaya katıl bölümüne bu kodu yaz" diyor; uygulaması olmayan arkadaş nereden indireceğini bilmiyor. Günün bulmacası sonucu (`puzzle.shareText`, `app/puzzle.tsx`) da bağlantısız. Bu iki metin ağızdan ağıza yayılmanın en doğal yolu; yayının ikinci gününde 8 kullanıcı varken bu kayıp önemli.
+- **En küçük çözüm.** İki metnin sonuna sitenin adresi eklenir (`https://challengegoal.app`, dile göre sayfası). Site iki mağazanın düğmesini gösteriyor, iPhone'da Safari'nin uygulama şeridi de var. Altı dilin metni değişir, kod değişmez.
+- **Daha büyük seçenek.** Oda koduna özel bağlantı (`challengegoal.app/oda/KOD` gibi): uygulama yüklüyse doğrudan odaya katılır, değilse mağazaya gider. iOS'ta Universal Links, Android'de App Links, sitede yönlendirme sayfası ve uygulamada bağlantıyı karşılayan ekran gerekir.
+- **Karar bekleyen.** Hangi çözümün 1.2.0'a gireceği.
