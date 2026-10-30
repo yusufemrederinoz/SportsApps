@@ -328,4 +328,4 @@ Kararlar (seçenekli sorularla):
 
 Benim karar verdiklerim: jokerler 9 oyunda arama penceresinin üstünde; son 5 saniyede ek süre büyük, tek dokunuşluk bir düğmeye dönüşür; emoji hazır setten (serbest yazı yok, içerik denetimi gerekmez), bekleme süresi ve susturma var; gizli botlar da emoji atar ve rövanşı kabul eder.
 
-Durum: sunucu, uygulama ve altı dilin metinleri hazır, emülatörde denendi. Kalanlar: sunucunun canlıya alınması (yeni uygulamadan önce), yeni derleme ve mağaza gönderimi, App Store'daki gol paketi inceleme notunun güncellenmesi, birkaç hafta sonra joker ve koruma kullanımının panelden yeniden ölçülmesi.
+Durum: sunucu, uygulama ve altı dilin metinleri hazır, emülatörde denendi. Sunucu 30 Ekim 2026'da canlıya alındı (eski uygulamalar etkilenmez, reklam ödülü herkes için 3 gol). Kalanlar: yeni derleme ve mağaza gönderimi, App Store'daki gol paketi inceleme notunun güncellenmesi, birkaç hafta sonra joker ve koruma kullanımının panelden yeniden ölçülmesi.
