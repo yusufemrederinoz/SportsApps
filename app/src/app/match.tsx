@@ -25,6 +25,7 @@ import { DIFFICULTY_LABELS, parseDifficulty } from '@/features/match/difficulty'
 import { useLeaveGuard } from '@/features/match/leave-guard';
 import { MatchRewardContext, ProtectedMatchContext } from '@/features/match/match-reward';
 import { RematchContext, type RematchControl } from '@/features/match/rematch';
+import { ReactionLayer, ReactionProvider, type ReactionControl } from '@/features/reactions/reaction-layer';
 import { MatchView } from '@/features/match/match-view';
 import { OnlineLobby } from '@/features/match/online-lobby';
 import { resultDetailKey } from '@/features/match/result-detail';
@@ -122,6 +123,10 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     usernames && entry.kind !== 'bot'
       ? { status: online.rematch, rivalName: usernames[rival], onAsk: online.askRematch }
       : null;
+  const reactionControl: ReactionControl | null =
+    usernames && jokerSide && online.phase === 'playing'
+      ? { events: online.reactions, ownSide: jokerSide, rivalName: usernames[rival], send: online.sendReaction }
+      : null;
   const shared = {
     secondsLeft: online.liveSecondsLeft,
     canAct: online.canAct,
@@ -213,8 +218,11 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
       <ProtectedMatchContext value={entry.kind !== 'bot' && online.reward ? online.rewardMatchId : null}>
         <JokerContext value={jokers}>
           <RematchContext value={rematch}>
-            <Fragment key={live?.matchId ?? setup?.matchId ?? 'lobby'}>{content()}</Fragment>
-            {leaveDialog}
+            <ReactionProvider control={reactionControl}>
+              <Fragment key={live?.matchId ?? setup?.matchId ?? 'lobby'}>{content()}</Fragment>
+              <ReactionLayer />
+              {leaveDialog}
+            </ReactionProvider>
           </RematchContext>
         </JokerContext>
       </ProtectedMatchContext>

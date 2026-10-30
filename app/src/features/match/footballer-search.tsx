@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
 import { loadAssists, searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
+import { ReactionBursts } from '@/features/reactions/reaction-layer';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
 
@@ -204,6 +205,7 @@ export function FootballerSearch({
             </ThemedText>
           </Pressable>
         </SafeAreaView>
+        <ReactionBursts />
       </View>
     </Modal>
   );

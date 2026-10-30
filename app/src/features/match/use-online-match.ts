@@ -79,6 +79,7 @@ export interface ReactionEvent {
   key: number;
   side: Side;
   reaction: ReactionId;
+  at: number;
 }
 
 export interface RematchStatus {
@@ -133,7 +134,7 @@ export function useOnlineMatch(entry: OnlineEntry, difficulty: Difficulty, game:
   const pushReaction = (side: Side, reaction: ReactionId) => {
     reactionKey.current += 1;
     const key = reactionKey.current;
-    setReactions((current) => [...current.slice(1 - VISIBLE_REACTIONS), { key, side, reaction }]);
+    setReactions((current) => [...current.slice(1 - VISIBLE_REACTIONS), { key, side, reaction, at: Date.now() }]);
   };
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { Canvas, Circle, Group, SweepGradient, vec } from '@shopify/react-native-skia';
-import { use, useEffect } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -87,7 +87,9 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
   const protectedMatchId = use(ProtectedMatchContext);
   const rematch = use(RematchContext);
   const rematchOpen = rematch !== null && rematch.status.state !== 'none';
+  const rematchLive = rematchOpen && rematch.status.state !== 'declined' && rematch.status.state !== 'expired';
   const reward = outcome === 'unranked' ? null : outcome;
+  const [restored, setRestored] = useState(0);
   const levelUp = reward !== null && reward.level > reward.previousLevel;
 
   return (
@@ -131,7 +133,7 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
               ) : null}
             </View>
             <ThemedText type="label" themeColor="textSecondary">
-              {uppercase(t('reward.gamePoints', { points: reward.points }))}
+              {uppercase(t('reward.gamePoints', { points: reward.points + restored }))}
             </ThemedText>
             {levelUp ? (
               <Animated.View entering={LEVEL_UP_SLAM} style={styles.levelUp}>
@@ -141,7 +143,13 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
           </Animated.View>
         ) : null}
         {reward && reward.change < 0 && protectedMatchId ? (
-          <PointProtection key={protectedMatchId} matchId={protectedMatchId} lost={-reward.change} goals={reward.goals} />
+          <PointProtection
+            key={protectedMatchId}
+            matchId={protectedMatchId}
+            lost={-reward.change}
+            goals={reward.goals}
+            onProtected={setRestored}
+          />
         ) : null}
         {outcome === 'unranked' ? (
           <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.slow)} style={styles.unranked}>
@@ -155,7 +163,7 @@ export function ResultOverlay({ title, detail, score, tone, playAgainLabel, home
         ) : null}
         <Animated.View entering={FadeInDown.duration(Motion.slow).delay(Motion.cinematic)} style={styles.actions}>
           {rematch && rematchOpen ? <RematchPanel control={rematch} /> : null}
-          <ActionButton label={playAgainLabel} onPress={onPlayAgain} variant={rematchOpen ? 'secondary' : 'primary'} />
+          <ActionButton label={playAgainLabel} onPress={onPlayAgain} variant={rematchLive ? 'secondary' : 'primary'} />
           <ActionButton label={homeLabel} onPress={onHome} variant="secondary" />
         </Animated.View>
       </View>

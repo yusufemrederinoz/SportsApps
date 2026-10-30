@@ -32,9 +32,10 @@ interface PointProtectionProps {
   matchId: string;
   lost: number;
   goals: number;
+  onProtected: (points: number) => void;
 }
 
-export function PointProtection({ matchId, lost, goals }: PointProtectionProps) {
+export function PointProtection({ matchId, lost, goals, onProtected }: PointProtectionProps) {
   const { t } = useTranslation();
   const uppercase = useUppercase();
   const { state } = useAuth();
@@ -63,6 +64,7 @@ export function PointProtection({ matchId, lost, goals }: PointProtectionProps) 
       }
       if (points > 0) {
         setRestored(points);
+        onProtected(points);
         setPhase('done');
         playSound('correct');
         haptics.success();
@@ -109,15 +111,17 @@ export function PointProtection({ matchId, lost, goals }: PointProtectionProps) 
       loaded?.release();
       ad.current = null;
     };
-  }, [token, userId, matchId]);
+  }, [token, userId, matchId, onProtected]);
+
+  const counting = phase === 'offer' && seconds > 0;
 
   useEffect(() => {
-    if (phase !== 'offer') {
+    if (!counting) {
       return undefined;
     }
-    const timer = setInterval(() => setSeconds((current) => current - 1), 1000);
+    const timer = setInterval(() => setSeconds((current) => Math.max(0, current - 1)), 1000);
     return () => clearInterval(timer);
-  }, [phase]);
+  }, [counting]);
 
   const payWithGoals = async () => {
     if (!token) {
@@ -129,6 +133,7 @@ export function PointProtection({ matchId, lost, goals }: PointProtectionProps) 
     try {
       const purchase = await api.buyPointProtection(token, matchId);
       setRestored(purchase.points);
+      onProtected(purchase.points);
       setPhase('done');
       playSound('correct');
       haptics.success();

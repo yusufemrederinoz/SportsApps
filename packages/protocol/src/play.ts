@@ -16,7 +16,7 @@ export const ROOM_CODE_LENGTH = 5;
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 export const PLAY_FEATURES = ['reactions', 'rematch', 'ranked-rooms'] as const;
 export type PlayFeature = (typeof PLAY_FEATURES)[number];
-export const REMATCH_WINDOW_MILLISECONDS = 20000;
+export const REMATCH_WINDOW_MILLISECONDS = 30000;
 export type RematchState = 'waiting' | 'offered' | 'declined' | 'expired';
 
 export interface VersionResponse {

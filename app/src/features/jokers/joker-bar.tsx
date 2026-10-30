@@ -91,26 +91,28 @@ function HurryButton({ seconds, pending, onPress }: { seconds: number; pending: 
   }, [pulse, reducedMotion]);
 
   return (
-    <Animated.View entering={ZoomIn.duration(Motion.base)} style={pulseStyle}>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('jokers.use', { name: t('jokers.extra-time'), price: JOKER_PRICE })}
-        accessibilityState={{ busy: pending }}
-        disabled={pending}
-        onPress={() => {
-          haptics.select();
-          onPress();
-        }}
-        style={({ pressed }) => [styles.hurry, pressed && styles.hurryPressed]}>
-        <View style={styles.hurryText}>
-          <ThemedText style={styles.hurryLabel}>{uppercase(t('jokers.hurry'))}</ThemedText>
-          <ThemedText style={styles.hurryTime}>{uppercase(t('jokers.addTime', { seconds }))}</ThemedText>
-        </View>
-        <View style={styles.hurryPrice}>
-          <GoalIcon size={20} />
-          <ThemedText style={styles.hurryPriceText}>{JOKER_PRICE}</ThemedText>
-        </View>
-      </Pressable>
+    <Animated.View entering={ZoomIn.duration(Motion.base)}>
+      <Animated.View style={pulseStyle}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t('jokers.use', { name: t('jokers.extra-time'), price: JOKER_PRICE })}
+          accessibilityState={{ busy: pending }}
+          disabled={pending}
+          onPress={() => {
+            haptics.select();
+            onPress();
+          }}
+          style={({ pressed }) => [styles.hurry, pressed && styles.hurryPressed]}>
+          <View style={styles.hurryText}>
+            <ThemedText style={styles.hurryLabel}>{uppercase(t('jokers.hurry'))}</ThemedText>
+            <ThemedText style={styles.hurryTime}>{uppercase(t('jokers.addTime', { seconds }))}</ThemedText>
+          </View>
+          <View style={styles.hurryPrice}>
+            <GoalIcon size={20} />
+            <ThemedText style={styles.hurryPriceText}>{JOKER_PRICE}</ThemedText>
+          </View>
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 }
