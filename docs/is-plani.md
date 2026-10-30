@@ -314,3 +314,18 @@ Kullanıcının 29 Ekim 2026 kararları (seçenekleri telefon maketleriyle göst
 Durum: ana ekran, maç penceresi ve sekiz sahne emülatörde denendi. Metinler elden geçti (Türkçede 23, İngilizcede 20 metin). Işımalar iOS gölgesinden Skia'ya taşındı.
 
 Bitti sayılır: iki mağazada yeni sürüm yayındadır. Kalanlar: iPhone'da ve gerçek Android telefonda inceleme, mağaza görsellerinin yeni ana ekranla yenilenmesi, diğer dört dilin metinleri.
+
+### Gol kullanımı, emojiler ve rövanş (30 Ekim 2026)
+
+Kullanıcı gollerin az kullanıldığını, XOX'ta jokerin klavyenin altında kaldığını, puan korumanın göze çarpmadığını söyledi; maç içi emoji ve rövanş istedi. Canlı paneldeki sayılar: 339 maçta 45 joker (135 gol), cüzdanlarda 1.765 gol (kişi başı ~31). Sorun fiyat değil görünürlüktü: 9 oyunun 7'sinde joker, oyuncu isim yazarken ekranda değildi.
+
+Kararlar (seçenekli sorularla):
+
+- Ödüllü reklam 3 gol (bir reklam bir joker). Joker 3 gol ve paket fiyatları aynı kaldı.
+- Puan koruma reklamın yanında 5 golle de alınabilir. Gol artık jokerden başka bir şeye de harcanıyor.
+- Emojiler: kendi top maskotumuzun sekiz ifadesi ve dört futbol anı (kırmızı kart, VAR, ofsayt, kurtarış). Yazısız, animasyonlu, sesli. Gerçek futbolcu yüzü ve kulüp logosu yok.
+- Rövanş hep puanlı; arkadaş maçı da puanlı oldu. Kullanıcı artarsa arkadaş maçının puanı `RANKED_ROOMS=0` ile kapatılabilir.
+
+Benim karar verdiklerim: jokerler 9 oyunda arama penceresinin üstünde; son 5 saniyede ek süre büyük, tek dokunuşluk bir düğmeye dönüşür; emoji hazır setten (serbest yazı yok, içerik denetimi gerekmez), bekleme süresi ve susturma var; gizli botlar da emoji atar ve rövanşı kabul eder.
+
+Durum: sunucu, uygulama ve altı dilin metinleri hazır, emülatörde denendi. Kalanlar: sunucunun canlıya alınması (yeni uygulamadan önce), yeni derleme ve mağaza gönderimi, App Store'daki gol paketi inceleme notunun güncellenmesi, birkaç hafta sonra joker ve koruma kullanımının panelden yeniden ölçülmesi.

@@ -90,7 +90,12 @@ Kurallar:
 | Ana ekran kutucukları | Üst satırın altında iki yan yana kutucuk: "Günün bulmacası #7" (üstte altın çizgi, altında durum: "9 hak", "3/9 · 240 puan", "Bitti · 640 puan") ve "Lider tablosu" (neon çizgi) |
 | Lider tablosu satırı | Sıra dairesi (ilk üçte altın, gümüş, bronz), kullanıcı adı, koyu zeminde neon seviye etiketi ("SV 3"), sağda büyük puan. Oyuncunun kendi satırı neon çerçeveli; ilk 50'de değilse listenin altında "Senin sıran" başlığıyla durur |
 | Bulmaca ekranı | Başlık ve neon numara etiketi ("#7"), dokuz hak noktası (kalan haklar neon), altın puan; XOX tahtası; dolu kartın sağ üstünde aynı cevabı verenlerin oranı ("%33"). Bitince neon metal levhada büyük puan, "1/9 · Bugün 12 kişi oynadı", altın gol rozeti, "Sonucu paylaş" ve günün sıralaması |
-| Joker çubuğu | Skor tablosunun altında: solda "JOKER" ve kalan hak ("2 HAK", neon), yanında modun iki jokeri; her düğme altın çerçeveli, sağında küçük top ve fiyat ("3"). Kullanılamayan joker sönük; gol yetmiyorsa çubuğun altında top simgesiyle "Joker 3 gol, sende 2 gol var". Altında açılan bilgi neon ("Uyruk: İngiltere"), rakibin jokeri altın satır, hata kırmızı. XOX'ta arama penceresinin altında, Kart Düellosu'nda elin altında durur |
+| Joker çubuğu | Skor tablosunun altında: solda "JOKER" ve kalan hak ("2 HAK", neon), yanında modun iki jokeri; her düğme altın çerçeveli, sağında küçük top ve fiyat ("3"). Kullanılamayan joker sönük; gol yetmiyorsa çubuğun altında top simgesiyle "Joker 3 gol, sende 2 gol var". Altında açılan bilgi neon ("Uyruk: İngiltere"), rakibin jokeri altın satır, hata kırmızı. Arama penceresi olan yedi oyunda pencerenin üstünde, başlık ve sayacın hemen altında durur (klavye açıkken de görünür); Kart Düellosu'nda elin altında durur |
+| Ek süre düğmesi | Son 5 saniyede, ek süre jokeri kullanılabiliyorsa joker çubuğunun üstünde açılır: tam genişlik, kırmızı zemin, volt kenar, "SÜRE BİTİYOR!" ve büyük eğik "+15 SN", sağda koyu hapın içinde top ve "3". Nabız gibi atar (1,05 ölçek), tek dokunuşla kullanılır; "hareketi azalt" açıksa atmaz |
+| Puan koruma kartı | Sonuç ekranında, kayıptan sonra: kırmızı kenarlı panel, "PUANINI KORU", büyük kırmızı "-11", kırmızı halkada 15 saniyelik sayaç. Altında yan yana mavi "REKLAM İZLE" ve altın kenarlı "5 GOL ÖDE" (top simgesiyle); gol yetmiyorsa ikinci düğme sönük ve altında "Golle korumak 5 gol, sende 3 gol var". Korununca yeşil "Puanın korundu: +11" |
+| Rövanş paneli | Sonuç ekranındaki düğmelerin üstünde. Volt "RÖVANŞ" ana düğmedir, "Yeni rakip" ikincile döner. Rakip isteyince altın kenarlı şerit: "KEREM1907 RÖVANŞ İSTİYOR!" ve kalan saniye, altında "Rövanşı kabul et"; düdük ve titreşim. Beklerken dönen gösterge ve "Rakibin cevabı bekleniyor… 16"; bitince "Rakip rövanşa gelmedi." ya da "Rövanş süresi doldu." |
+| Emoji düğmesi ve tepsi | Maç başlığının ortasında 44 birimlik yuvarlak düğme, içinde gülen maskot, volt kenar. Dokununca altında 4×3 tepsi açılır, altında "Rakibin emojilerini kapat" ve "Kapat". Gönderince düğme 2,5 saniye sönük kalır |
+| Emoji çıkartması | 120 birimlik Skia çizimi, 1,8 saniyelik tek seferlik gösteri, 2,6 saniye ekranda. Gönderenin skor panelinin üstünde patlar: oyuncununki solda, rakibinki sağda ve altında altın kenarlı ad hapı. Arama penceresinde ve sonuç ekranında da görünür. Maskot ifadeleri: kahkaha, nanik, havalı, şok, ter, ağlama, sinir, alkış; futbol anları: kırmızı kart, VAR, ofsayt bayrağı, kurtarış |
 | Maç sonu ödülü | Sonuç ekranında skorun altında: yeşil ya da kırmızı "+25 PUAN", altın çerçeveli "+1" gol, "Bu oyundaki puanın"; seviye atlanınca eğik neon "Yeni seviye" damgası |
 | Zorluk seçici | Üç dilim; seçili olan volt dolgu ve ışıma |
 | Izgara zemini | Tek bir Skia tuvali: başlık plakaları, boş yuvalar ve köşedeki üç renkli marka işareti |
@@ -153,6 +158,8 @@ Plaka, kart ve düğme ışımaları Skia ile çizilir: aynı şeklin bulanık b
 | Yanlış cevap | Alçalan kalın ses |
 | Son 5 saniye | Tik |
 | Sonuç perdesi | Hışırtı; kazanınca yükselen dizi, diğer durumlarda düdük |
+| Rakip rövanş istiyor | Düdük |
+| Emoji | Her emojinin kendi sesi: kahkahada "boing", nanikte "pop", ağlamada inen "wah-wah", kartlarda ve VAR'da düdük, kurtarışta hışırtı. Rakibin emojileri susturulunca ses de çalmaz |
 
 Sesler `app/assets/sounds/` altındadır ve kodla üretilmiş yer tutuculardır. Telefon sessizdeyse ses çalmaz.
 

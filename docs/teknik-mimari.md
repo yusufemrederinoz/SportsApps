@@ -446,7 +446,8 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `GET /wallet` | Gol bakiyesi ve son 50 gol hareketi |
 | `POST /auth/password/forgot` | Şifre sıfırlama kodu ister: e-posta ve dil. Her durumda 204 |
 | `POST /auth/password/reset` | Kod ve yeni şifreyle şifreyi değiştirir; yeni oturum döner |
-| `GET /matches/<kimlik>/protection` | O maçta reklamla geri alınan puan (yoksa 0) |
+| `GET /matches/<kimlik>/protection` | O maçta geri alınan puan (yoksa 0) |
+| `POST /matches/<kimlik>/protection` | Kaybedilen puanı 5 golle geri alır; yeni bakiyeyi döner. Gol yetmezse `not-enough-goals`, maç uygun değilse ya da zaten korunduysa `protection-unavailable` |
 | `GET /admin/stats` | Yönetim panelinin sayıları; oturum değil yönetim anahtarı ister |
 | `POST /admin/notifications` | Bildirimi açık cihazlara elle duyuru gönderir; yönetim anahtarı ister |
 | `GET /ads` | Bakiye, bugün kalan reklam hakkı ve reklam başına ödül |
@@ -566,7 +567,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 
 | Uygulamadan sunucuya | Anlamı |
 |---|---|
-| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü |
+| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü ve uygulamanın desteklediği özellikler (`reactions`, `rematch`, `ranked-rooms`) |
 | `queue` | Rastgele rakip sırasına gir (mod, pazar, zorluk; mod verilmezse XOX) |
 | `play-bot` | Sıraya girmeden bota karşı maç aç (mod, pazar, zorluk) |
 | `create-room` | Arkadaş odası kur (mod, pazar, zorluk) |
@@ -576,6 +577,8 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | `act` | Yeni modların hamlesi: maç ve moda özgü eylem (düelloda el gönderme ya da kart oynama, Kadro Kur'da futbolcu seçme, Hangisi Yüksek'te kart seçme, Zincir'de futbolcu söyleme) |
 | `joker` | Joker kullan: maç, joker, gerekirse hedef (hücre ya da kart) |
 | `leave` | Maçtan ayrıl (hükmen kaybeder) |
+| `react` | Emoji gönder: maç ve emoji kimliği |
+| `rematch` | Biten maç için rövanş iste ya da rakibin teklifini kabul et |
 | `ping` | Bağlantıyı canlı tut |
 
 | Sunucudan uygulamaya | Anlamı |
@@ -586,7 +589,9 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 | `move` | Bir hamle: cevap (alındı, yanlış, daha önce kullanıldı) ya da süre dolması; yanında yeni sıranın kalan süresi |
 | `session` | Yeni modlarda maçın tam durumu: mod, taraflar, kullanıcı adları ve oyuncunun görünümü. Maç başında ve yeniden bağlanınca gelir |
 | `view` | Yeni modlarda her değişiklikten sonra oyuncunun görebildiği durum; mod alanıyla birlikte gelir. Gizli bilgi (rakibin eli, açılmamış soru, gelecek turların kulübü) içinde yoktur |
-| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, puan, hükmen). Puanlı maçta her oyuncuya kendi puan değişimi, yeni puanı, toplamı, seviyesi ve kazandığı gol de gelir |
+| `finished` | Sonuç: kazanan ve neden (üçlü, hücre sayısı, puan, hükmen). Puanlı maçta her oyuncuya kendi puan değişimi, yeni puanı, toplamı, seviyesi ve kazandığı gol de gelir. Rövanş mümkünse `rematch: true` |
+| `reaction` | Rakip emoji gönderdi: taraf ve emoji kimliği |
+| `rematch` | Rövanş durumu: `waiting` (sen istedin), `offered` (rakip istiyor), `declined` (rakip ayrıldı ya da istemedi), `expired`; açık durumlarda kalan süre |
 | `opponent` | Rakibin bağlantısı koptu ya da geri geldi |
 | `joker` | Bir joker kullanıldı: taraf, joker, o taraftaki kullanım sayısı; kullanana açılan bilgi ve yeni gol bakiyesi |
 | `error` | Hata kodu |
@@ -643,6 +648,11 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 - **Kopma.** Maçtaki oyuncunun bağlantısı koparsa rakibe bildirilir ve maç sürer. 30 saniye içinde dönerse maçın tam durumu gönderilir. Dönmezse hükmen kaybeder. Uygulama kopunca kendiliğinden yeniden bağlanmayı dener (artan aralıklarla, yaklaşık 20 saniye). Sunucuya hiç bağlanamamışsa iki kısa denemeden sonra vazgeçer; 8 saniyede hazır olmayan bağlantı kopmuş sayılır.
 - **Ayrılma.** Maç ekranından çıkan oyuncu hükmen kaybeder.
 - **Arkadaş odası.** Oda kuran oyuncuya beş karakterli bir kod verilir (karışabilecek 0, O, 1, I harfleri yoktur). Kod on dakika geçerlidir. Oda sahibi genel sırayla eşleşmez.
+- **Uygulama özellikleri (30 Ekim 2026).** Protokol sürümü 1'de kaldı; mağazadaki eski uygulamalar bağlanmaya devam eder. Yeni uygulama selamlamada desteklediği özellikleri bildirir ve sunucu yeni mesajları yalnızca onlara gönderir. Eski uygulamalı oyuncuya emoji gitmez, rövanş teklif edilmez, arkadaş odası puansız kalır.
+- **Rövanş.** Sıra ve arkadaş odası maçı bitince, iki taraf da rövanşı destekliyor ve bağlıysa `finished` içinde `rematch: true` gelir ve 30 saniyelik bir pencere açılır (`REMATCH_WINDOW_MILLISECONDS`). İki taraf da `rematch` gönderince aynı oyun, pazar, zorluk ve maç türüyle yeni maç başlar; sıra maçının rövanşı da puanlıdır (kullanıcının kararı, sınır yok). Pencere içinde başka bir şey yapan (sıraya giren, oda kuran, çıkan, bağlantısı kopan) teklifi geri çeker; rakibe `declined` gider. "Bota karşı" maçlarında rövanş yoktur, orada "Tekrar oyna" aynı işi görür.
+- **Gizli bot ve rövanş.** Bot, rövanş isteğini 1,2–3,5 saniye düşünüp %70 olasılıkla kabul eder, yoksa reddeder. Oyuncu kazandıysa bot %50 olasılıkla kendisi rövanş ister. Rövanşta aynı ad ve kadro kimliğiyle gelir; o arada başka maça girdiyse rövanş reddedilir.
+- **Emojiler.** Kimlikler `packages/protocol/src/reactions.ts` içinde (12 emoji). Maç sırasında ve maçtan sonraki rövanş penceresinde gönderilebilir. Sunucu oyuncu başına 2,5 saniye bekleme (0,5 saniye ağ payıyla) ve maç başına en çok 20 emoji uygular, fazlasını sessizce düşürür. Hazır setten seçilir, serbest yazı yoktur.
+- **Bot ve emoji.** Bot, oyuncunun emojisine %35 olasılıkla uygun bir emojiyle cevap verir, oyuncu joker kullanınca %25 olasılıkla (ter, şok, VAR), maç bitince %50 olasılıkla (kazandıysa havalı, nanik, kahkaha; kaybettiyse ağlama, alkış, sinir, ter) emoji atar; maç başına en çok 5. Cevaplar 1,2–3,5 saniye gecikmeyle gelir.
 - **Maç kaydı.** Her biten maç `matches` tablosuna yazılır (mod sütunuyla). Oyuncu kendi maçlarını `GET /matches` ile alır; rakibin bot olup olmadığı kayıtta da tutulmaz. Düelloda hücre sayısı sütunlarında puanlar durur.
 - **Kart Düellosu.** Kurallar ve süreler [oyun-modlari.md](oyun-modlari.md) belgesinde. Sunucu: el kilitlenene kadar rakibin yalnızca hazır olup olmadığı görünür; tur sırasında rakibin yalnızca kart oynayıp oynamadığı görünür, kart kimliği tur çözülünce gelir. Gönderilen el en çok 7 farklı kart içerebilir ve hepsi konsepte uymalıdır; eksik kalanı sunucu tamamlar. Maçın 7 sorusu hep farklıdır: önce iki elin bütün kartlarında değeri bilinen ölçütler (yeterliyse yalnızca bir yaş sorusuyla), eksik kalırsa en çok kartta bilinen ölçütler alınır ve sıra karıştırılır. Konsept üyeliği ve kart değerleri `packages/football-data/src/duel.ts` içindeki ortak ifadelerle hesaplanır; uygulama aynı ifadeyle konsepte göre arama yapar.
 
@@ -671,7 +681,10 @@ Sunucu ve uygulama aynı SQL ifadelerini kullanır; ifadeler `packages/football-
 | `src/features/progress/*` | İlerleme kancası (ana ekran her görünüşünde ve uygulama öne gelince günlük ödülü ister), ana ekran rozeti, günlük ödül penceresi |
 | `src/features/match/leave-guard.tsx` | Süren maçtan çıkışı yakalar (çık düğmesi ve Android geri tuşu) ve onay ister |
 | `src/features/match/match-reward.ts` | Maç sonu puan ve gol bilgisini sonuç ekranına taşıyan bağlam |
-| `src/features/jokers/*` | Joker bağlamı (kullanımlar, bakiye, bekleyen istek, hata), joker çubuğu, açılan bilginin metne çevrilmesi (yerel veritabanından ad, kulüp, ülke) |
+| `src/features/jokers/*` | Joker bağlamı (kullanımlar, bakiye, bekleyen istek, hata), joker çubuğu (son 5 saniyedeki büyük ek süre düğmesi dahil), açılan bilginin metne çevrilmesi (yerel veritabanından ad, kulüp, ülke) |
+| `src/features/reactions/*` | Emoji çizimleri ve sesleri (`reaction-art`), emoji sağlayıcısı, düğmesi, seçim tepsisi ve ekranda patlayan çıkartmalar (`reaction-layer`) |
+| `src/features/match/rematch.tsx` | Rövanş bağlamı ve sonuç ekranındaki rövanş paneli |
+| `src/features/match/point-protection.tsx` | Sonuç ekranındaki puan koruma kartı: reklam ya da 5 gol |
 
 Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ulaşılamıyorsa online kartlar açıklayıcı bir hata ekranı ve "Tekrar dene" düğmesi gösterir; XOX'un internetsiz bot maçı etkilenmez.
 
@@ -679,11 +692,11 @@ Online maç için hesaba bağlı olmak gerekir (misafir ya da üye). Sunucuya ul
 
 Kurallar (7 Ekim 2026):
 
-- **Hangi maçlar sayılır.** Yalnızca online sıra maçları (`kind = queue`), rakip çıkmayınca gelen gizli bot dahil. "Bota karşı" (`bot`) ve arkadaş odası (`room`) puan ve gol vermez. Gizli botun güç puanı oyuncununkinin ±60 yakınından seçilir.
+- **Hangi maçlar sayılır.** Online sıra maçları (`kind = queue`), rakip çıkmayınca gelen gizli bot dahil. 30 Ekim 2026'dan beri arkadaş odası (`room`) da puan ve gol verir; iki oyuncunun uygulaması da bunu desteklemeli. Kullanıcı ileride kapatmak isteyebilir: sunucu ayarında `RANKED_ROOMS=0` arkadaş odasını yeniden puansız yapar. "Bota karşı" (`bot`) puan ve gol vermez. Gizli botun güç puanı oyuncununkinin ±60 yakınından seçilir.
 - **İki sayı (8 Ekim 2026).** Her oyunda iki ayrı sayı tutulur. **Güç puanı** gizlidir, 1000'den başlar, klasik Elo ile iki yönde eşit değişir: beklenen sonuç `1 / (1 + 10^((rakip − sen) / 400))`, değişim `40 × (sonuç − beklenen)` (eşit güçte ±20). Eşleştirme ve gizli botun puanı buna göredir. **Görünen puan** 0'dan başlar; seviye ve lider tablosu bundan çıkar. Rakibin gücüne göre hesaplanır: galibiyet `40 × (1 − beklenen) + 5` (en az 10) ve zorluğa göre 1 / 1,2 / 1,4 ile çarpılır; mağlubiyet `40 × beklenen × 0,5`; beraberlik yalnızca güçsüz taraf için artı, diğerine 0. Eşit güçte kolayda galibiyet +25, mağlubiyet −10. Görünen puan sıfırın altına inmez ve kayıp, toplam puanı ulaşılan seviyenin eşiğinin altına indiremez; seviye hiç düşmez. Maçtan ayrılmak ya da kopup dönmemek mağlubiyettir.
 - **Toplam ve seviye.** Toplam puan dokuz oyunun puanlarının toplamıdır. Seviye `n`'nin alt sınırı `50 × n × (n − 1)`: 1. seviye 0, 2. seviye 100, 3. seviye 300, 4. seviye 600, 5. seviye 1.000.
 - **Gol.** Her hesabın cüzdanı ilk kez açıldığında 15 gol hediye yazılır (eski hesaplar dahil). Hesabın ilk günlük ödülü yanıtında `welcomeGoals` alanı gelir; uygulama hediyeyi o pencerede söyler. Puanlı galibiyet 1 gol. Günlük ödül art arda günlerde 1, 2, 2, 3, 3, 4, 5 gol; 7. günden sonra her gün 5. Bir gün kaçırılırsa seri 1'den başlar. Gün sınırı sunucunun `TIME_ZONE` ayarındaki saat dilimine göredir (varsayılan Europe/Istanbul).
-- **Kayıt defteri.** Bakiye yalnızca kayıt defterine yazılan hareketle değişir; aynı dayanakla ikinci kez gol yazılamaz. Satın alma `purchase` nedeniyle yazılır (bkz. Gol satın alma); reklam ödülü `ad` nedeniyle yazılır (bkz. Ödüllü reklam).
+- **Kayıt defteri.** Bakiye yalnızca kayıt defterine yazılan hareketle değişir; aynı dayanakla ikinci kez gol yazılamaz. Satın alma `purchase` nedeniyle yazılır (bkz. Gol satın alma); reklam ödülü `ad` nedeniyle yazılır (bkz. Ödüllü reklam); golle puan koruma `protection` nedeniyle, dayanağı maç kimliğidir.
 - **Jokerler.** Uygulama `joker` mesajı gönderir (maç, joker, gerekirse hedef: XOX'ta hücre, Kart Düellosu'nda kart). Lobi sırayla denetler: joker bu modun mu, oyuncu bu maçta 2 jokeri kullandı mı, bakiyede 3 gol var mı. Sonra odanın `useJoker` yöntemi jokerin şu an geçerli olup olmadığına bakar ve etkisini uygular (süre uzatma, can, pas, kart değişimi) ya da gizli bilgiyi döndürür. Ancak bundan sonra gol düşülür (neden `joker`, dayanak maç, taraf ve sıra). Kullanana bilgiyle birlikte, rakibe bilgisiz bir `joker` mesajı gider; yeniden bağlanan oyuncuya maçın jokerleri `replay` işaretiyle tekrar gönderilir. Ek süreler `EXTRA_TIME_SECONDS` tablosundadır; XOX'ta uygulama sayacı joker mesajıyla kendisi uzatır, diğer modlarda yeni süre görünümle gelir.
 
 Uygulamada: ana ekranın sol üstünde seviye, toplam puan ve gol; oyun seçiminin yanında seçili oyundaki puan. Ana ekran her görünüşünde ve uygulama arka plandan dönünce günlük ödülü ister; sunucu günde bir kez verir, ödül varsa pencere çıkar. Maç sonunda puan değişimi, kazanılan gol ve seviye atlama gösterilir. Geçmiş ekranı genel sayıları, oyun oyun puan ve sonuçları, oyuna göre süzülen maç listesini ve gol hareketlerini gösterir.
@@ -711,13 +724,13 @@ Kurallar:
 
 ## Ödüllü reklam
 
-Reklam başına 2 gol, oyuncu başına günde en çok 5 reklam (`packages/protocol/src/ads.ts`). Misafir de izleyebilir.
+Reklam başına 3 gol (30 Ekim 2026'ya kadar 2; bir reklam bir joker etsin diye artırıldı), oyuncu başına günde en çok 5 reklam (`packages/protocol/src/ads.ts`). Misafir de izleyebilir.
 
 - **Bildirim.** Ödülü Google bildirir: reklam bitince AdMob, `GET /ads/reward` adresini sorgu parametreleriyle çağırır (`ad_unit`, `user_id`, `transaction_id`, sonda `signature` ve `key_id`). Uygulama reklamı yüklerken `user_id` olarak oyuncunun kimliğini verir.
 - **İmza.** Sunucu (`server/src/ads`), sorgunun `&signature=` öncesindeki kısmını Google'ın açık anahtarıyla (ECDSA, SHA-256) doğrular. Anahtarlar `gstatic.com/admob/reward/verifier-keys.json` adresinden alınır, bir gün bellekte tutulur; bilinmeyen anahtar kimliğinde yeniden istenir.
 - **Kurallar.** Reklam birimi `ADMOB_AD_UNITS` içinde olmalı (yoksa başkasının AdMob hesabı bizim adresimize gol yazdırabilirdi), oyuncu var olmalı. Aynı `transaction_id` ikinci kez gol yazmaz (Google başarısız bildirimi yeniden dener). Günlük sınır `ad_rewards` tablosundaki o günün (sunucu saat dilimi) kayıtlarından sayılır.
 - **Cevaplar.** İmzasız istek (AdMob panelindeki adres yoklaması) ve işlenen ya da yok sayılan her imzalı istek 200; sahte imza 400. Anahtarlar alınamazsa 500 döner ve Google yeniden dener.
-- **Puan koruma (8 Ekim 2026).** Puanlı maçı kaybeden oyuncuya sonuç ekranında 10 saniyelik geri sayımla "Puanını koru" düğmesi çıkar. Reklam, `custom_data` alanında `protect:<maç kimliği>` ile yüklenir; bildirim gelince sunucu o maçta oyuncunun kaybettiği görünen puanı geri yazar, maçın puan değişimini sıfırlar (haftalık tablo da düzelir) ve `point_protections` tablosuna kaydeder. Gizli güç puanı değişmez. Maç başına bir kez, maçtan sonraki 15 dakika içinde geçerlidir; günlük sınırı yoktur ve gol reklamlarının günlük sınırına sayılmaz. Uygulama sonucu `GET /matches/<kimlik>/protection` ile sorar.
+- **Puan koruma (8 Ekim 2026, 30 Ekim'de genişletildi).** Puanlı maçı kaybeden oyuncuya sonuç ekranında kırmızı çerçeveli bir kart çıkar: kaybedilen puan büyük ve kırmızı, 15 saniyelik geri sayım, "Reklam izle" ve "5 gol öde" düğmeleri. Reklam yüklenemezse yalnızca gol seçeneği kalır; gol de yetmezse kart çıkmaz. Golle ödeme `POST /matches/<kimlik>/protection` ile yapılır; sunucu tek işlemde 5 golü düşer ve puanı geri yazar (`POINT_PROTECTION_PRICE`). Reklam, `custom_data` alanında `protect:<maç kimliği>` ile yüklenir; bildirim gelince sunucu o maçta oyuncunun kaybettiği görünen puanı geri yazar, maçın puan değişimini sıfırlar (haftalık tablo da düzelir) ve `point_protections` tablosuna kaydeder. Gizli güç puanı değişmez. Maç başına bir kez, maçtan sonraki 15 dakika içinde geçerlidir; günlük sınırı yoktur ve gol reklamlarının günlük sınırına sayılmaz. Uygulama sonucu `GET /matches/<kimlik>/protection` ile sorar.
 - **Durum.** `GET /ads` oyuncuya bakiyeyi, bugün kalan reklam hakkını ve ödülü verir; uygulama reklamdan sonra golün yazıldığını buradan görür.
 
 **Uygulama.** `react-native-google-mobile-ads` kullanılır; AdMob uygulama kimlikleri `app/app.json` içindeki eklenti ayarında, reklam birimi kimlikleri `app/src/constants/ads.ts` içindedir. Kütüphane yalnızca yerel modülü olan derlemede yüklenir (`adsBuiltIn`); Expo Go'da reklam satırı görünmez.

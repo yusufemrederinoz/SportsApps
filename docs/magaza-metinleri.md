@@ -679,7 +679,7 @@ The app works the same in every region. It is available in Turkish, English, Ger
 The app is not affiliated with or endorsed by any club, league, federation or footballer, and its terms say so. It uses no official logos, kits or league branding; club crests are our own original drawings. Footballer and club names and career facts are factual data from Wikidata, published under CC0. Portraits are illustrations derived from Wikimedia Commons photos under CC0, public domain, CC BY or CC BY-SA licences; the source, author and licence of each one is listed in the app under Account > Image sources.
 
 7. IN-APP PURCHASES
-Four consumable packs of "goals", the in-game currency: 30, 100, 250 and 600 goals (goals_cg_30, goals_cg_100, goals_cg_250, goals_cg_600). Goals are spent only on jokers during a match (hint, extra time and similar, 3 goals each). Goals are also earned for free: 15 welcome goals, a daily reward, winning matches, the daily puzzle and optional rewarded ads. Nothing is locked behind payment.
+Four consumable packs of "goals", the in-game currency: 30, 100, 250 and 600 goals (goals_cg_30, goals_cg_100, goals_cg_250, goals_cg_600). Goals are spent on jokers during a match (hint, extra time and similar, 3 goals each) and, after a lost ranked match, on getting the lost points back (5 goals). Goals are also earned for free: 15 welcome goals, a daily reward, winning matches, the daily puzzle and optional rewarded ads. Nothing is locked behind payment.
 To reach the purchase flow: sign in with the demo account (guests cannot buy), tap the goal balance at the top of the home screen to open the Goal Store and choose a pack.
 ```
 
