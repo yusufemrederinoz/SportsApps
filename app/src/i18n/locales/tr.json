@@ -361,7 +361,7 @@
   "chain": {
     "round": "Tur {{round}} · {{target}} tur alan kazanır",
     "rule": "Son futbolcuyla aynı kulüpte oynamış birini söyle",
-    "scope": "Ortak kulüp Süper Lig'den ya da Avrupa'nın beş büyük liginden olmalı. Aynı turda bir ad iki kez söylenemez.",
+    "scope": "Ortak kulüp şu liglerden birinde olmalı: Süper Lig, Avrupa'nın beş büyük ligi, Portekiz, Hollanda, Belçika, Yunanistan, İskoçya, İsviçre, Avusturya, Rusya, Ukrayna, Brezilya, Arjantin, Suudi Arabistan ve MLS. Aynı turda bir ad iki kez söylenemez.",
     "last": "Son halka",
     "via": "Bağlantı: {{club}}",
     "say": "Futbolcu söyle",

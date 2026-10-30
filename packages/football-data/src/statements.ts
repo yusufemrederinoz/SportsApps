@@ -7,6 +7,18 @@ export interface Statement {
   parameters: StatementParameter[];
 }
 
+export const CORE_LEAGUE_CODES: readonly string[] = ['TR1', 'GB1', 'ES1', 'IT1', 'L1', 'FR1'];
+
+const CORE_LEAGUES = `(${CORE_LEAGUE_CODES.map((code) => `'${code}'`).join(', ')})`;
+
+export function inCoreLeague(clubColumn: string): string {
+  return `EXISTS (SELECT 1 FROM clubs k WHERE k.id = ${clubColumn} AND k.league_code IN ${CORE_LEAGUES})`;
+}
+
+export function coreLeagueCodes(): string {
+  return CORE_LEAGUES;
+}
+
 export interface GridHeaderRow {
   axis: 'row' | 'column';
   position: number;

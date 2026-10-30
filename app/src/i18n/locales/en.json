@@ -361,7 +361,7 @@
   "chain": {
     "round": "Round {{round}} · first to {{target}}",
     "rule": "Name someone who played at the same club as the last footballer",
-    "scope": "The shared club must be in the Süper Lig or one of Europe's big five leagues. A name cannot be said twice in a round.",
+    "scope": "The shared club must play in one of these leagues: Süper Lig, Europe's big five, Portugal, Netherlands, Belgium, Greece, Scotland, Switzerland, Austria, Russia, Ukraine, Brazil, Argentina, Saudi Arabia or MLS. A name cannot be said twice in a round.",
     "last": "Last link",
     "via": "Linked through {{club}}",
     "say": "Name a footballer",

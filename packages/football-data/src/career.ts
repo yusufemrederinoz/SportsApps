@@ -1,4 +1,4 @@
-import type { Statement } from './statements';
+import { inCoreLeague, type Statement } from './statements';
 
 export interface FootballerFactsRow {
   countryId: number | null;
@@ -18,7 +18,7 @@ export function careerCandidatesStatement(market: string, minimumFame: number, m
           WHERE f.market = ? AND f.fame >= ?
             AND (SELECT COUNT(*) FROM player_club_years y WHERE y.player_id = f.player_id) >= ?
             AND NOT EXISTS (
-              SELECT 1 FROM player_clubs c WHERE c.player_id = f.player_id
+              SELECT 1 FROM player_clubs c WHERE c.player_id = f.player_id AND ${inCoreLeague('c.club_id')}
                 AND NOT EXISTS (SELECT 1 FROM player_club_years y WHERE y.player_id = c.player_id AND y.club_id = c.club_id)
             )
           ORDER BY f.fame DESC, f.player_id LIMIT ?`,

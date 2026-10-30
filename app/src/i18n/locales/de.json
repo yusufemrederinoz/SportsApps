@@ -361,7 +361,7 @@
   "chain": {
     "round": "Runde {{round}} · {{target}} Runden zum Sieg",
     "rule": "Nenn jemanden, der beim selben Verein gespielt hat wie der letzte Fußballer",
-    "scope": "Der gemeinsame Verein muss in der Süper Lig oder einer der fünf großen Ligen Europas spielen. Kein Name darf in einer Runde zweimal fallen.",
+    "scope": "Der gemeinsame Verein muss in einer dieser Ligen spielen: Süper Lig, Europas fünf große Ligen, Portugal, Niederlande, Belgien, Griechenland, Schottland, Schweiz, Österreich, Russland, Ukraine, Brasilien, Argentinien, Saudi-Arabien oder MLS. Kein Name darf in einer Runde zweimal fallen.",
     "last": "Letztes Glied",
     "via": "Über {{club}}",
     "say": "Fußballer nennen",

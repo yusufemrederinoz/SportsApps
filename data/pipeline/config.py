@@ -13,7 +13,7 @@ APP_DATABASE_PATH = APP_DATA_DIR / "football.db"
 APP_VERSION_PATH = APP_DATA_DIR / "version.json"
 
 TRANSFERMARKT_BASE_URL = "https://pub-e682421888d945d684bcae8890b0ec20.r2.dev/data"
-WIKIDATA_SPARQL_URL = "https://qlever.dev/api/wikidata"
+WIKIDATA_SPARQL_URL = os.environ.get("WIKIDATA_SPARQL_URL", "https://qlever.dev/api/wikidata")
 CONTACT = os.environ.get("PIPELINE_CONTACT", "https://github.com/yusufemrederinoz/SportsApps").strip()
 USER_AGENT = f"SportAppsDataPipeline/0.1 ({CONTACT or 'football trivia dataset build'})"
 

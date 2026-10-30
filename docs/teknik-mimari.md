@@ -93,7 +93,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 | Wikipedia | Oyuncu maddelerinin okunma sayısı | MediaWiki Action API (son 60 gün, istek başına 50 başlık) ya da aylık okunma dökümü |
 | Wikipedia (İngilizce) | Kulüplerin güncel kadroları | MediaWiki Action API ile kulüp maddesinin metni; kadro şablonlarındaki oyuncu bağlantıları Wikidata kimliğine çevrilir (`data/pipeline/squads.py`) |
 
-- Resmî Wikidata sorgu servisi kesinti sırasında dakikada bir isteğe düşüyor; bu yüzden QLever aynası kullanılır.
+- Resmî Wikidata sorgu servisi kesinti sırasında dakikada bir isteğe düşüyor; bu yüzden QLever aynası kullanılır. QLever çöktüğünde (30 Ekim 2026'da 502 verdi) `WIKIDATA_SPARQL_URL=https://query.wikidata.org/sparql` ile resmî servise geçilebilir; bağlantı liglerinin üyelik sorgusu 60 saniyelik sınıra takılmasın diye 40 kulüplük parçalara bölünür.
 - Wikimedia, iletişim bilgisi içermeyen istemcileri kısıtlar. İsteklerde kimlik olarak depo adresi gönderilir; `PIPELINE_CONTACT` ortam değişkeniyle değiştirilebilir.
 - İndirilen her şey `data/.cache/` altında saklanır. Okunma sayıları ay bazında önbelleğe alınır.
 - **Güncel kadrolar neden var.** transfermarkt-datasets kaynağı sezon ortasında güncelleniyor ama yaz transfer dönemini aylarca geriden getiriyor: 12 Ekim 2026'da kaynağın son güncellemesi 5 Eylül'dü ve içinde Ağustos 2026 için yalnızca 18 transfer vardı. Wikidata da oyuncu bazında gecikiyor. Kulüp maddelerindeki "Current squad" bölümleri transferden sonra saatler içinde güncellendiği için üçüncü kaynak olarak eklendi; 219 kulübün 212'sinde okunuyor (kalan 7'si kapanmış kulüp).
@@ -101,7 +101,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 
 ### Aşamalar
 
-1. **Kapsam.** Transfermarkt setindeki kulüplerden altı ligde yer alanlar seçilir: Süper Lig, Premier League, La Liga, Serie A, Bundesliga, Ligue 1. Toplam 219 kulüp.
+1. **Kapsam.** Ligler `data/overrides/leagues.csv` içinde, her birinin rolüyle. **Ana ligler** (`core`): Süper Lig, Premier League, La Liga, Serie A, Bundesliga, Ligue 1; 219 kulüp. Oyuncu evrenini bunlar belirler: veritabanındaki her oyuncu bu liglerden birinde oynamıştır. **Bağlantı ligleri** (`link`, 30 Ekim 2026): Portekiz, Hollanda, Belçika, Yunanistan, İskoçya, İsviçre, Avusturya, Rusya, Ukrayna, Brezilya, Arjantin, MLS ve Suudi Arabistan; 344 kulüp. Bunlardan yeni oyuncu alınmaz, yalnızca evrendeki oyuncuların bu kulüplerdeki kayıtları eklenir (Transfermarkt ve Wikidata; Vikipedi kadroları yalnızca ana liglerde okunur). Ana liglerin sorguları değişmediği için önbellekten okunur ve bu eklemeden etkilenmez.
 2. **Kulüp eşleştirme.** Wikidata'daki Transfermarkt takım kimliği (P7223) ile kulüpler bağlanır. Aynı kulübün birden fazla Wikidata kaydı varsa (çok branşlı kulüp kaydı gibi) en çok futbolcusu olan esas alınır, diğerleri ona bağlanır.
 3. **Oyuncu eşleştirme.** Wikidata'daki Transfermarkt oyuncu kimliği (P2446) ile bağlanır. Kimliği olmayan oyuncularda doğum tarihi ve isim kullanılır.
 4. **Kulüp kayıtlarını birleştirme.** Üç kaynaktaki (Transfermarkt, Wikidata, Vikipedi güncel kadroları) "şu oyuncu şu kulüpteydi" kayıtları tek satıra indirilir.
@@ -118,6 +118,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 | Söylenti kayıtları | Yalnızca Wikidata'dan gelen ve içinde bulunulan yıl başlayan kayıtlar atılır. Aynı kayıt kulübün Vikipedi'deki güncel kadrosunda da görülüyorsa doğrulanmış sayılır ve kalır |
 | Doğrulanmış kayıt | Transfermarkt'ta görülen ya da Wikidata'da yılı olan kayıt doğrulanmış sayılır. Tarihsiz Wikidata kayıtları cevap olarak kabul edilir ama ızgara kurarken sayılmaz |
 | Kadın oyuncular | Erkek takımına bağlanmış kadın futbolcular kapsam dışıdır |
+| Bağlantı ligleri | Bu liglerdeki kulüpler yalnızca "oynadı mı" sorusunda sayılır: Zincir'in ortak kulübü, XOX'ta cevap denetimi, Kariyer Yolu'nun kulüp dizisi, Kart Düellosu'nda "yurt dışında oynamış" konsepti. Konu olarak seçilmezler (XOX başlığı, Kadro Kur kulübü, Kart Düellosu kulüp ve lig konsepti, İlk 10 kulüp listesi), çünkü bu kulüplerin kadrosu veritabanında eksiktir. Sorgularda sınır `packages/football-data` içindeki `CORE_LEAGUE_CODES` ile, ızgara üretiminde `leagues.role` ile konur. Kariyer Yolu adayında yalnızca ana lig kulüplerinin yılı aranır; yılı bilinmeyen bağlantı kaydı dizide görünmez |
 | Tarihî ülkeler | Açık halefi olanlar bugünkü ülkeye bağlanır (Osmanlı İmparatorluğu → Türkiye). Sovyetler Birliği, Yugoslavya, Çekoslovakya ve Doğu Almanya ayrı ülke olarak durur |
 | Oyuncu kimliği | Kalıcı kayıttan gelir (aşağıda). Yeni oyuncuda: Wikidata kaydı varsa onun numarası, yoksa 1.000.000.000 + Transfermarkt numarası |
 
@@ -745,7 +746,7 @@ Reklam başına 3 gol (30 Ekim 2026'ya kadar 2; bir reklam bir joker etsin diye 
 
 Gerçek kulüp logoları kullanılmaz (tescilli marka). Onun yerine her kulübe aynı kalkan kalıbından, kendi renkleri, basit bir desen ve kısaltmasıyla üretilen bir arma çizilir (8 Ekim 2026; rakip uygulamalardaki yaklaşımın aynısı).
 
-- **Veri.** `app/assets/data/club-crests.json`: kulüp kimliği başına kısaltma (2-3 harf), desen (`plain`, `halves`, `diagonal`, `stripes`, `hoops`, `sash`, `band`, `pale`), iki renk ve isteğe bağlı kenar rengi. Veritabanındaki 219 kulübün hepsi elle derlendi; Wikidata'nın "resmî renk" verisi yalnızca 122 kulüpte vardı ve desen içermiyordu.
+- **Veri.** `app/assets/data/club-crests.json`: kulüp kimliği başına kısaltma (2-3 harf), desen (`plain`, `halves`, `diagonal`, `stripes`, `hoops`, `sash`, `band`, `pale`), iki renk ve isteğe bağlı kenar rengi. Ana liglerin 219 kulübü elle derlendi; Wikidata'nın "resmî renk" verisi yalnızca 122 kulüpte vardı ve desen içermiyordu. Bağlantı liglerinin 344 kulübü 30 Ekim 2026'da eklendi. Mağazadaki eski uygulamada bu kulüplerin arması yoktur; arma yerinde boşluk kalır, ad görünür.
 - **Çizim.** `features/clubs/crest-svg.ts` armayı SVG metni olarak üretir; `components/club-crest.tsx` bunu Skia ile çizer ve kısaltmayı şeridin üstüne yazar. Koyu kenar renkleri koyu zeminde kaybolmasın diye açık renkle değiştirilir.
 - **Kullanıldığı yerler.** XOX ızgarasının kulüp başlıkları, Kariyer Yolu adımları, Zincir'in bağlantı satırı, Kadro Kur'un tur kulübü.
 - Yeni kulüp eklenince dosyaya satırı da eklenmelidir; test, veritabanındaki her kulübün arması olduğunu denetler.

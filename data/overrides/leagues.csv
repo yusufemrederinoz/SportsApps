@@ -1,7 +1,20 @@
-code,name,country_wikidata_id
-TR1,Süper Lig,Q43
-GB1,Premier League,Q21
-ES1,La Liga,Q29
-IT1,Serie A,Q38
-L1,Bundesliga,Q183
-FR1,Ligue 1,Q142
+code,name,country_wikidata_id,role
+TR1,Süper Lig,Q43,core
+GB1,Premier League,Q21,core
+ES1,La Liga,Q29,core
+IT1,Serie A,Q38,core
+L1,Bundesliga,Q183,core
+FR1,Ligue 1,Q142,core
+PO1,Liga Portugal,Q45,link
+NL1,Eredivisie,Q55,link
+BE1,Jupiler Pro League,Q31,link
+GR1,Super League Greece,Q41,link
+SC1,Scottish Premiership,Q22,link
+C1,Swiss Super League,Q39,link
+A1,Austrian Bundesliga,Q40,link
+RU1,Russian Premier League,Q159,link
+UKR1,Ukrainian Premier League,Q212,link
+BRA1,Campeonato Brasileiro Série A,Q155,link
+ARG1,Liga Profesional de Fútbol,Q414,link
+MLS1,Major League Soccer,Q30,link
+SA1,Saudi Pro League,Q851,link

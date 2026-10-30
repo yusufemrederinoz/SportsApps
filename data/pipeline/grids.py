@@ -75,6 +75,7 @@ def load_answers(connection, market, level):
     club_rows = connection.execute(
         "SELECT c.id, c.league_code, pc.player_id FROM player_clubs pc "
         "JOIN player_fame f ON f.player_id = pc.player_id JOIN clubs c ON c.id = pc.club_id "
+        "JOIN leagues l ON l.code = c.league_code AND l.role = 'core' "
         "WHERE pc.is_confirmed = 1 AND f.market = ? AND f.fame >= ?",
         (market.code, level.fame),
     )

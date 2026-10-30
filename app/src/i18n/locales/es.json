@@ -361,7 +361,7 @@
   "chain": {
     "round": "Ronda {{round}} · {{target}} para ganar",
     "rule": "Di a alguien que haya jugado en el mismo club que el último futbolista",
-    "scope": "El club en común tiene que ser de la Süper Lig o de una de las cinco grandes ligas de Europa. No se puede repetir un nombre en la misma ronda.",
+    "scope": "El club en común tiene que ser de una de estas ligas: Süper Lig, las cinco grandes de Europa, Portugal, Países Bajos, Bélgica, Grecia, Escocia, Suiza, Austria, Rusia, Ucrania, Brasil, Argentina, Arabia Saudí o la MLS. No se puede repetir un nombre en la misma ronda.",
     "last": "Último eslabón",
     "via": "Club en común: {{club}}",
     "say": "Di un futbolista",

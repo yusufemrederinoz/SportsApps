@@ -11,6 +11,7 @@ from .text import normalize
 from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_id, entity_number
 
 CLUB_NAME_SLACK = 4
+LINK_BATCH_SIZE = 40
 NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *BASE_LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
 
 TODAY = datetime.date.today()
@@ -109,7 +110,7 @@ def display_name(variants):
     return name.title() if name == name.lower() else name
 
 
-def resolve_clubs(leagues, refresh):
+def resolve_clubs(leagues, refresh, batch_size=None):
     clubs = {}
     for row in transfermarkt.rows("clubs", refresh):
         if row["domestic_competition_id"] in leagues:
@@ -153,7 +154,7 @@ def resolve_clubs(leagues, refresh):
         for candidate in club["candidates"]:
             club_by_wikidata_id.setdefault(candidate, club["id"])
 
-    membership_rows = wikidata.memberships(set(club_by_wikidata_id), refresh) if club_by_wikidata_id else []
+    membership_rows = wikidata.memberships(set(club_by_wikidata_id), refresh, batch_size) if club_by_wikidata_id else []
     members = defaultdict(set)
     for row in membership_rows:
         members[entity_id(row["club"])].add(entity_id(row["player"]))
@@ -362,13 +363,18 @@ def resolve_countries(identifiers, countries, aliases):
 
 def build(refresh=False, registry=None, views_month=None):
     registry = registry or PlayerRegistry()
-    leagues ={row["code"]: row for row in read_override("leagues.csv")}
-    clubs, club_by_wikidata_id, membership_rows = resolve_clubs(leagues, refresh)
+    leagues = {row["code"]: row for row in read_override("leagues.csv")}
+    core_leagues = {code: row for code, row in leagues.items() if row["role"] == "core"}
+    link_leagues = {code: row for code, row in leagues.items() if row["role"] == "link"}
+    clubs, club_by_wikidata_id, membership_rows = resolve_clubs(core_leagues, refresh)
+    link_clubs, link_club_by_wikidata_id, link_membership_rows = resolve_clubs(link_leagues, refresh, LINK_BATCH_SIZE)
     countries, country_by_name, country_aliases = load_countries(refresh)
 
     transfermarkt_players = {int(row["player_id"]): row for row in transfermarkt.rows("players", refresh)}
     transfermarkt_spells = collect_transfermarkt_spells(clubs, transfermarkt_players, refresh)
     wikidata_spells = collect_wikidata_spells(membership_rows, club_by_wikidata_id)
+    link_transfermarkt_spells = collect_transfermarkt_spells(link_clubs, transfermarkt_players, refresh)
+    link_wikidata_spells = collect_wikidata_spells(link_membership_rows, link_club_by_wikidata_id)
     squad_members = squads.current(club_by_wikidata_id, refresh)
     squad_newcomers = add_squad_spells(wikidata_spells, squad_members, refresh)
     scope_ids = set(wikidata_spells)
@@ -410,6 +416,7 @@ def build(refresh=False, registry=None, views_month=None):
     unmapped_countries = Counter()
     rumors = 0
     squad_spells = 0
+    link_spells = 0
 
     named = []
     for transfermarkt_id, wikidata_id in entities:
@@ -468,7 +475,12 @@ def build(refresh=False, registry=None, views_month=None):
         )
 
         merged = {}
-        for spells in (transfermarkt_spells.get(transfermarkt_id, {}), wikidata_spells.get(wikidata_id, {})):
+        for spells in (
+            transfermarkt_spells.get(transfermarkt_id, {}),
+            wikidata_spells.get(wikidata_id, {}),
+            link_transfermarkt_spells.get(transfermarkt_id, {}),
+            link_wikidata_spells.get(wikidata_id, {}),
+        ):
             for club_id, spell in spells.items():
                 target = merged.setdefault(club_id, Spell())
                 target.starts += spell.starts
@@ -480,6 +492,7 @@ def build(refresh=False, registry=None, views_month=None):
                 rumors += 1
                 continue
             squad_spells += spell.sources == {"wp"}
+            link_spells += club_id in link_clubs
             player_clubs.append(
                 (
                     player_id,
@@ -538,6 +551,8 @@ def build(refresh=False, registry=None, views_month=None):
         "squad_clubs": len(squad_members),
         "squad_newcomers": len(squad_newcomers),
         "squad_spells_added": squad_spells,
+        "link_clubs": len(link_clubs),
+        "link_spells_added": link_spells,
         "unmapped_countries": unmapped_countries.most_common(),
     }
     return {
@@ -545,7 +560,7 @@ def build(refresh=False, registry=None, views_month=None):
         "player_fame": player_fame,
         "leagues": leagues,
         "countries": countries,
-        "clubs": clubs,
+        "clubs": {**clubs, **link_clubs},
         "players": players,
         "player_names": player_names,
         "player_countries": player_countries,

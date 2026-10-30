@@ -1125,6 +1125,17 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Canlıya alma.** Kullanıcı mağazadaki uygulamanın etkilenip etkilenmeyeceğini sordu; etkilenmediği koddan gösterildi (protokol sürümü aynı, yeni mesajlar yalnızca özelliği bildiren uygulamaya gider, eski uygulama reklam ödülünü sunucudan okur, şema değişmedi). Panelde süren maç yokken `deploy.sh` ile güncellendi; kapsayıcı sağlıklı, veri sürümü aynı, yeni uç yerinde.
 - **Ortam.** Prettier bu ayarlarla depodaki dosyaları baştan biçimlendiriyor (dosyalar tam biçimli değil); değişiklikler biçimlendirici çalıştırılmadan, çevredeki koda uyacak şekilde yazıldı.
 
+### Zincir'de lig dışı kulüpler: bağlantı ligleri (30 Ekim 2026)
+
+- **Şikâyet.** Bir oyuncu Zincir'de Talisca'dan sonra Ronaldo'yu yazdı, ikisi de Al-Nassr'da oynadığı hâlde kabul edilmedi.
+- **Neden.** Veri hattı yalnızca altı ligin 219 kulübünü alıyordu; Talisca'nın veritabanındaki kulüpleri Fenerbahçe ve Beşiktaş, Cristiano Ronaldo'nunkiler Real Madrid, Juventus ve Manchester United'dı. Ham Transfermarkt verisinde ikisinin de Al-Nassr transferi duruyordu. Aynı sorun Benfica, Porto, Ajax, Suudi ve Amerikan kulüpleri üzerinden kurulan her bağlantıda vardı.
+- **Karar.** Kullanıcı seçenekli soruda dünyadaki bütün kulüpler yerine "seçilmiş ek ligler"i seçti (arma çizilebilsin diye). Ligler, veritabanındaki oyuncularla bağlantı sayısına ve tanınmış oyuncu sayısına göre seçildi: Portekiz, Hollanda, Belçika, Yunanistan, Brezilya, İskoçya, İsviçre, MLS, Arjantin, Rusya, Suudi Arabistan, Ukrayna, Avusturya.
+- **Tasarım.** Bu ligleri ana listeye eklemek o liglerde oynamış binlerce yeni oyuncuyu da getirirdi. Onun yerine "bağlantı ligi" rolü eklendi: oyuncu evreni değişmez, yalnızca var olan oyuncuların bu kulüplerdeki kayıtları eklenir. Kulübü konu olarak seçen modlar (XOX başlıkları, Kadro Kur, Kart Düellosu konseptleri, İlk 10) ana liglerle sınırlandı; bu kulüplerin kadrosu veritabanında eksik olduğu için "Benfica'da en çok gol atan 10 futbolcu" gibi bir liste yanıltıcı olurdu. Kart Düellosu'nun "yurt dışında oynamış Türkler" konsepti bu eklemeyle daha doğru hâle geldi.
+- **Sonuç** (veri sürümü `20261030162029`). 344 yeni kulüp, 30.433 yeni oyuncu–kulüp kaydı. Izgaralar ve bilinirlik puanları bire bir aynı, eski kayıtların hiçbiri silinmedi. Uygulama veritabanında bir oyuncu daha var (Mohamed Guindo: ana lig kaydı söylenti diye atıldığı için daha önce yoktu, şimdi Belçika kayıtlarıyla geliyor). Kariyer Yolu'nun Türkiye pazarındaki aday havuzu (bilinirlik 40+, en az 3 kulüp) 831'den 1.007'ye çıktı. Uygulama veritabanı 19,6 MB'tan 21,2 MB'a büyüdü. Gerçek veriyle denendi: konu seçen sorguların hepsi yalnızca ana liglerden seçiyor, Talisca–Cristiano Ronaldo iki yönde de Al-Nassr ile bağlanıyor.
+- **Ortam.** QLever 502 verdi; hattın Wikidata adresi ortam değişkeniyle değiştirilebilir yapıldı ve derleme resmî servisle tamamlandı. Ana liglerin sorguları değişmediği için önbellekten okundu.
+- **Armalar.** 344 kulübün arması ayrı bir ajanla derlendi (kısaltma, desen, renkler).
+- **Eski uygulama.** Veri şeması değişmediği için mağazadaki uygulama yeni veriyi açılışta indirir ve Al-Nassr bağlantısını kabul eder. Yeni kulüplerin arması onda görünmez, Zincir ekranında da eski kural metni ("Süper Lig ya da beş büyük lig") kalır; yeni sürümde metin ligleri sayıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

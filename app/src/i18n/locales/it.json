@@ -361,7 +361,7 @@
   "chain": {
     "round": "Round {{round}} · si vince a {{target}}",
     "rule": "Scrivi qualcuno che ha giocato nello stesso club dell'ultimo calciatore",
-    "scope": "Il club in comune deve essere della Süper Lig o di uno dei cinque grandi campionati europei. In un round lo stesso nome non si può dire due volte.",
+    "scope": "Il club in comune deve giocare in uno di questi campionati: Süper Lig, i cinque grandi d'Europa, Portogallo, Paesi Bassi, Belgio, Grecia, Scozia, Svizzera, Austria, Russia, Ucraina, Brasile, Argentina, Arabia Saudita o MLS. In un round lo stesso nome non si può dire due volte.",
     "last": "Ultimo anello",
     "via": "In comune: {{club}}",
     "say": "Scrivi un calciatore",

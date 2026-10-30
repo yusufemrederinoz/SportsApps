@@ -111,14 +111,20 @@ def parents(club_ids, refresh=False):
     return select("club-parents", query, refresh)
 
 
-def memberships(club_ids, refresh=False):
-    query = (
-        "SELECT ?player ?club ?start ?end WHERE { VALUES ?club { %s } "
-        "?player wdt:P106 %s ; p:P54 ?statement . ?statement ps:P54 ?club . "
-        "MINUS { ?statement wikibase:rank wikibase:DeprecatedRank } "
-        "OPTIONAL { ?statement pq:P580 ?start } OPTIONAL { ?statement pq:P582 ?end } }" % (values(club_ids), FOOTBALLER)
-    )
-    return select("memberships", query, refresh)
+def memberships(club_ids, refresh=False, batch_size=None):
+    ordered = sorted(club_ids, key=entity_number)
+    size = batch_size or len(ordered) or 1
+    rows = []
+    for start in range(0, len(ordered), size):
+        query = (
+            "SELECT ?player ?club ?start ?end WHERE { VALUES ?club { %s } "
+            "?player wdt:P106 %s ; p:P54 ?statement . ?statement ps:P54 ?club . "
+            "MINUS { ?statement wikibase:rank wikibase:DeprecatedRank } "
+            "OPTIONAL { ?statement pq:P580 ?start } OPTIONAL { ?statement pq:P582 ?end } }"
+            % (values(ordered[start : start + size]), FOOTBALLER)
+        )
+        rows += select("memberships", query, refresh)
+    return rows
 
 
 def club_articles(club_ids, language, refresh=False):

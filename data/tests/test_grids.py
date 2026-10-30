@@ -46,6 +46,13 @@ class GridsTest(unittest.TestCase):
             self.assertEqual((len(grid["row"]), len(grid["column"])), (3, 3), grid_id)
             self.assertEqual(len(set(self.headers(grid_id))), 6, grid_id)
 
+    def test_headers_only_use_clubs_of_core_leagues(self):
+        core = {code for (code,) in self.connection.execute("SELECT code FROM leagues WHERE role = 'core'")}
+        for grid_id in self.grids:
+            for header in self.headers(grid_id):
+                if header[0] == "club":
+                    self.assertIn(self.club_leagues[header], core, (grid_id, header))
+
     def test_countries_share_one_axis(self):
         for grid_id, grid in self.grids.items():
             axes = {axis for axis in ("row", "column") if any(kind == "country" for kind, _ in grid[axis].values())}

@@ -1,4 +1,4 @@
-import type { Statement } from './statements';
+import { inCoreLeague, type Statement } from './statements';
 
 export interface DraftEntryRow {
   id: number;
@@ -30,6 +30,7 @@ export function draftClubsStatement(market: string, minimumFame: number, minimum
           JOIN players p ON p.id = pc.player_id
           JOIN player_stats s ON s.player_id = p.id AND s.assists IS NOT NULL
           JOIN player_fame f ON f.player_id = p.id AND f.market = ?
+          WHERE ${inCoreLeague('pc.club_id')}
           GROUP BY pc.club_id
           HAVING ${counts.join(' AND ')}
           ORDER BY SUM(f.fame >= ?) DESC, pc.club_id`,

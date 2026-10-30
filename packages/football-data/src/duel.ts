@@ -1,6 +1,6 @@
 import type { DuelConcept, DuelMetric } from '@sportapps/protocol';
 
-import type { Statement, StatementParameter } from './statements';
+import { coreLeagueCodes, inCoreLeague, type Statement, type StatementParameter } from './statements';
 
 export interface MetricRow {
   id: number;
@@ -128,7 +128,7 @@ export function clubConceptsStatement(market: string, minimumFame: number, minim
   return {
     sql: `SELECT pc.club_id AS id FROM player_clubs pc
           JOIN player_fame f ON f.player_id = pc.player_id AND f.market = ? AND f.fame >= ?
-          WHERE ${comparable('pc.player_id')}
+          WHERE ${comparable('pc.player_id')} AND ${inCoreLeague('pc.club_id')}
           GROUP BY pc.club_id HAVING COUNT(*) >= ? ORDER BY COUNT(*) DESC, pc.club_id`,
     parameters: [market, minimumFame, minimumPlayers],
   };
@@ -145,5 +145,8 @@ export function countryConceptsStatement(market: string, minimumFame: number, mi
 }
 
 export function leagueConceptsStatement(): Statement {
-  return { sql: 'SELECT DISTINCT league_code AS code FROM clubs ORDER BY league_code', parameters: [] };
+  return {
+    sql: `SELECT DISTINCT league_code AS code FROM clubs WHERE league_code IN ${coreLeagueCodes()} ORDER BY league_code`,
+    parameters: [],
+  };
 }

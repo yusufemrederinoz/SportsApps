@@ -19,7 +19,8 @@ CREATE TABLE country_names (
 CREATE TABLE leagues (
     code TEXT PRIMARY KEY,
     name TEXT NOT NULL,
-    country_id INTEGER REFERENCES countries (id)
+    country_id INTEGER REFERENCES countries (id),
+    role TEXT NOT NULL
 );
 CREATE TABLE markets (
     code TEXT PRIMARY KEY,
@@ -111,9 +112,9 @@ def write(dataset):
     )
     connection.executemany("INSERT INTO country_names VALUES (?, ?, ?)", name_rows(countries.values()))
     connection.executemany(
-        "INSERT INTO leagues VALUES (?, ?, ?)",
+        "INSERT INTO leagues VALUES (?, ?, ?, ?)",
         [
-            (league["code"], league["name"], countries.get(league["country_wikidata_id"], {}).get("id"))
+            (league["code"], league["name"], countries.get(league["country_wikidata_id"], {}).get("id"), league["role"])
             for league in dataset["leagues"].values()
         ],
     )

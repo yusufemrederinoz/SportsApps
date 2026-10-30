@@ -361,7 +361,7 @@
   "chain": {
     "round": "Manche {{round}} · {{target}} manches gagnantes",
     "rule": "Cite un footballeur passé par le même club que le dernier cité",
-    "scope": "Le club commun doit évoluer en Süper Lig ou dans l'un des cinq grands championnats européens. Un même nom ne peut pas être cité deux fois dans une manche.",
+    "scope": "Le club commun doit évoluer dans l'un de ces championnats : Süper Lig, les cinq grands européens, Portugal, Pays-Bas, Belgique, Grèce, Écosse, Suisse, Autriche, Russie, Ukraine, Brésil, Argentine, Arabie saoudite ou MLS. Un même nom ne peut pas être cité deux fois dans une manche.",
     "last": "Dernier maillon",
     "via": "Lien : {{club}}",
     "say": "Citer un footballeur",
