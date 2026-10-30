@@ -134,6 +134,26 @@
         "send": "Arkadaşına at, o sayar mı bakalım.",
         "note": "Cevaplar uygulamanın verisine göredir."
       },
+      "duel": {
+        "title": ["KART", "DÜELLOSU"],
+        "rule": "7 kart seç. Sorular gizli.",
+        "conceptLabel": "KONSEPT",
+        "concept": "SÜPER LİG TARİHİNDEKİ YABANCILAR",
+        "how": "Her turda bir soru açılır. O soruda değeri iyi olan kart turu alır.",
+        "round": "TUR {{n}}/7",
+        "lastRound": "SON TUR · 7/7",
+        "questionLabel": "{{n}}. SORU",
+        "questions": ["KARİYERİNDE DAHA ÇOK GOL ATAN KAZANIR", "YAŞI KÜÇÜK OLAN KAZANIR"],
+        "metrics": ["GOL", "DOĞUM YILI"],
+        "handLabel": "ELİNDE KALAN",
+        "lastCard": "ELİNDE SON KART",
+        "pick": "Soruya göre kartını seç.",
+        "waiting": "Elinde tek kart kaldı. Soru ne çıkacak?",
+        "roundWon": "TUR SENİN!",
+        "won": "KAZANDIN!",
+        "twist": "Gol sorusu gelseydi 368 golle Eto'o kazanırdı.",
+        "lesson": "Kartını doğru tura sakla."
+      },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
         "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],

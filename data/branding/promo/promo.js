@@ -35,6 +35,11 @@ const CUTS = {
     ['friend', 3.6],
     ['finale', 5.1],
   ],
+  'quiz-duel': [
+    ['qduel', 21],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -68,6 +73,8 @@ const FOOTBALLERS = {
   messi: { id: 615, name: 'Lionel Messi', short: 'Messi', position: 'FW' },
   tosun: { id: 377432, name: 'Cenk Tosun', short: 'Tosun', position: 'FW' },
   burak: { id: 18765, name: 'Burak Yılmaz', short: 'Burak', position: 'FW' },
+  hagi: { id: 189892, name: 'Gheorghe Hagi', short: 'Hagi', position: 'MF' },
+  quaresma: { id: 188241, name: 'Ricardo Quaresma', short: 'Quaresma', position: 'FW' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -129,6 +136,19 @@ const QUIZ = {
     ],
     caught: 12.6,
     call: 13.2,
+  },
+  duel: {
+    hand: ['drogba', 'osimhen', 'hagi', 'alex', 'icardi', 'quaresma', 'muslera'],
+    dealt: 1.8,
+    deal: 0.14,
+    intro: 6,
+    final: 12.3,
+    rounds: [
+      { number: 6, mine: 'drogba', theirs: 'sneijder', values: ['302', '117'], flip: 7, rival: 7.8, chosen: 8.4, played: 8.9, reveal: 9.7, verdict: 10.7 },
+      { number: 7, mine: 'osimhen', theirs: 'etoo', values: ['1998', '1981'], flip: 14.8, rival: 13.5, chosen: 13.2, played: 13.2, reveal: 15.9, verdict: 16.8 },
+    ],
+    twist: 17.9,
+    lesson: 18.8,
   },
   friend: { code: 'K7R4X' },
 };
@@ -240,14 +260,14 @@ function card(texts, key, side, classes = '', time = null) {
   return `<div class="card ${side} ${classes}"${style}><b>${texts.grid.positions[footballer.position]}</b><img src="/portraits/${footballer.id}.webp" alt="" /><span>${footballer.name}</span></div>`;
 }
 
-function scoreboard(texts, start, turns, scores) {
+function scoreboard(texts, start, turns, scores, top = null) {
   const plate = (side, label) => {
     const steps = turns.map(([time, active]) => [time, null, active === side ? 'active' : 'idle']);
     const score = `<strong ${scripted('steps', scores[side])}>0</strong>`;
     const name = `<span>${label}</span>`;
     return `<div class="plate ${side}" ${scripted('steps', steps)}>${side === 'you' ? name + score : score + name}</div>`;
   };
-  return `<div class="scoreboard in rise" style="--t: ${start}">${plate('you', texts.sides.you)}<div class="display clock" ${scripted('clock', turns)}>${TURN_SECONDS}</div>${plate('rival', texts.sides.rival)}</div>`;
+  return `<div class="scoreboard in rise" style="--t: ${start}${top === null ? '' : `; top: ${top}px`}">${plate('you', texts.sides.you)}<div class="display clock" ${scripted('clock', turns)}>${TURN_SECONDS}</div>${plate('rival', texts.sides.rival)}</div>`;
 }
 
 function typing(entries, placeholder, classes, time) {
@@ -769,6 +789,95 @@ function qauction(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function showdown(texts, q, round, index, from, until, time) {
+  const flip = time(round.flip);
+  const reveal = time(round.reveal);
+  const verdict = time(round.verdict);
+  const label = fill(q.questionLabel, { n: round.number });
+  const [mine, theirs] = round.values;
+  const finalRound = index === q.questions.length - 1;
+  return `<div class="layer state" style="--start: ${from}; --end: ${until}">
+    <div class="panel d-qback state" style="--start: ${from}; --end: ${flip}; top: 420px"><small>${label}</small><b class="display">?</b></div>
+    <div class="panel d-question flip" style="--t: ${flip}; top: 420px"><small>${label}</small><strong data-fit>${q.questions[index]}</strong></div>
+    <div class="versus d-table">
+      <div class="mine"><div class="slot">+</div>${card(texts, round.mine, 'x', 'flip shiny', time(round.played))}</div>
+      <div class="display vs">VS</div>
+      <div class="theirs">
+        <div class="display back" style="--t: ${time(round.rival)}; --turned: ${reveal}">?</div>
+        <div class="lost" style="--t: ${verdict}">${card(texts, round.theirs, 'o', 'flip shiny', at(reveal, 0.15))}</div>
+      </div>
+    </div>
+    <div class="display value mine in pop" style="--t: ${at(reveal, 0.45)}; top: 940px">${mine}<em>+1</em><small>${q.metrics[index]}</small></div>
+    <div class="display value theirs in pop" style="--t: ${at(reveal, 0.45)}; top: 940px">${theirs}<small>${q.metrics[index]}</small></div>
+    <div class="display centered verdict in slam ${finalRound ? 'd-won' : ''}" style="--t: ${verdict}; top: 1085px">${finalRound ? q.won : q.roundWon}</div>
+  </div>`;
+}
+
+function qduel(texts, start) {
+  const q = texts.quiz.duel;
+  const plan = QUIZ.duel;
+  const time = (offset) => at(start, offset);
+  const intro = time(plan.intro);
+  const final = time(plan.final);
+  const [sixth, last] = plan.rounds;
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset) => cue(time(offset), 'impact', 0.7));
+  plan.hand.forEach((_, index) => cue(time(plan.dealt + index * plan.deal), 'tick', 0.5, 0.9 + index * 0.05));
+  cue(intro, 'whoosh', 0.6);
+  plan.rounds.forEach((round) => {
+    cue(time(round.flip), 'whoosh', 0.6);
+    cue(time(round.rival), 'tick', 0.6);
+    cue(time(round.played), 'impact', 0.6);
+    cue(time(round.reveal), 'whoosh', 0.5);
+    cue(time(round.reveal + 0.15), 'impact', 0.7);
+    cue(time(round.verdict), 'correct', 1);
+  });
+  cue(time(last.verdict + 0.1), 'win', 1);
+  cue(time(plan.twist), 'impact', 0.5);
+  const turns = [
+    [intro, 'you'],
+    [final, 'you'],
+  ];
+  const scores = {
+    you: [
+      [intro, '2'],
+      [time(sixth.verdict + 0.1), '3'],
+      [time(last.verdict + 0.1), '4'],
+    ],
+    rival: [[intro, '3']],
+  };
+  const dealt = plan.hand.map((key, index) => card(texts, key, 'x', 'in pop', time(plan.dealt + index * plan.deal))).join('');
+  return `<div class="layer state" style="--start: ${start}; --end: ${intro}">
+      ${titleLines(q.title, start)}
+      <p class="q-line in rise" style="--t: ${time(1.1)}; top: 470px">${q.rule}</p>
+      <div class="panel in rise" style="--t: ${time(1.4)}; top: 570px"><small>${q.conceptLabel}</small><strong data-fit>${q.concept}</strong></div>
+      <div class="d-hand" style="top: 765px">${dealt}</div>
+      <p class="q-line in rise" style="--t: ${time(3)}; top: 1240px">${q.how}</p>
+    </div>
+    <div class="layer state" style="--start: ${intro}; --end: ${NEVER}">
+      ${scoreboard(texts, intro, turns, scores, 160)}
+      <div class="chip q-step" style="top: 345px" ${scripted('steps', [[intro, fill(q.round, { n: sixth.number })], [final, q.lastRound]])}>${fill(q.round, { n: sixth.number })}</div>
+      <p class="q-note">${texts.quiz.note}</p>
+    </div>
+    ${showdown(texts, q, sixth, 0, intro, final, time)}
+    <div class="layer state" style="--start: ${intro}; --end: ${final}">
+      <p class="d-label" style="top: 1228px">${q.handLabel}</p>
+      <div class="d-hand" style="top: 1278px">
+        <div class="d-slot chosen" style="--t: ${time(sixth.chosen)}">${card(texts, sixth.mine, 'x', 'spent', time(sixth.played))}</div>
+        <div class="d-slot">${card(texts, last.mine, 'x')}</div>
+      </div>
+      <p class="q-line state" style="--start: ${time(sixth.flip + 0.4)}; --end: ${time(sixth.verdict)}; top: 1540px">${q.pick}</p>
+    </div>
+    ${showdown(texts, q, last, 1, final, NEVER, time)}
+    <div class="layer state" style="--start: ${final}; --end: ${NEVER}">
+      <p class="d-label" style="top: 1228px">${q.lastCard}</p>
+      <div class="d-hand" style="top: 1278px">${card(texts, last.mine, 'x', 'spent', time(last.played))}</div>
+      <p class="q-line state" style="--start: ${time(plan.final + 0.2)}; --end: ${time(last.reveal)}; top: 1540px">${q.waiting}</p>
+      <p class="q-line send in rise" style="--t: ${time(plan.twist)}; top: 1540px">${q.twist}</p>
+      <p class="q-line in rise" style="--t: ${time(plan.lesson)}; top: 1640px">${q.lesson}</p>
+    </div>`;
+}
+
 function friend(texts, start) {
   const f = texts.quiz.friend;
   const letters = QUIZ.friend.code.split('');
@@ -784,7 +893,7 @@ function friend(texts, start) {
     <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, friend };
+const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, friend };
 
 function video(texts) {
   let start = 0;

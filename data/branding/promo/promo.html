@@ -2332,6 +2332,84 @@
         text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
       }
 
+      .d-hand {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        --u: 0.95;
+      }
+
+      .d-slot.chosen {
+        animation: lift 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--t) * 1s) both;
+      }
+
+      .d-label {
+        position: absolute;
+        left: 70px;
+        width: 940px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+
+      .d-qback,
+      .d-question {
+        text-align: center;
+        border-color: var(--volt);
+      }
+
+      .d-qback {
+        border-style: dashed;
+        background: repeating-linear-gradient(135deg, #131c2b 0 30px, #1a2740 30px 60px);
+      }
+
+      .d-qback b {
+        display: block;
+        font-size: 64px;
+        line-height: 1;
+        color: var(--volt);
+        animation: breathe 1s ease-in-out infinite;
+      }
+
+      .d-question {
+        box-shadow: 0 0 50px rgba(200, 255, 46, 0.25);
+      }
+
+      .d-question strong {
+        font-size: 54px;
+      }
+
+      .d-table {
+        top: 620px;
+      }
+
+      .d-table .mine .slot {
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+      }
+
+      .d-won {
+        font-size: 120px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.6);
+      }
+
+      @keyframes lift {
+        to {
+          transform: translateY(-28px) scale(1.06);
+          filter: drop-shadow(0 0 26px rgba(200, 255, 46, 0.85));
+        }
+      }
+
       @keyframes gone {
         to {
           opacity: 0;

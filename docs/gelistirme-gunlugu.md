@@ -1096,6 +1096,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - İsimler `football.db`'de Fenerbahçe × Brezilya kayıtlarından ve yıllarıyla kontrol edildi. Çift vatandaşlığı tartışma çıkarabilecek isimler (Mehmet Aurélio, Mert Nobre) kullanılmadı. Veride şüpheli kayıtlar da var (örneğin Fenerbahçe × Brezilya'da Şilili Claudio Maldonado, Barcelona'da Gabriel Jesus).
 - Geri sayım yardımcısı hız (`rate`) ve kırmızıya dönme eşiği (`urgent`) aldı; `--negative` renk değişkeni eklendi.
 
+### Kart Düellosu tanıtım videosu (30 Ekim 2026)
+
+- Kullanıcı Kart Düellosu için 20–30 saniyelik, sonuna kadar izlenecek bir video istedi. Seçenekli sorularla kurgu seçildi: son kartta ters köşe, "Süper Lig tarihindeki yabancılar" konsepti, galibiyet ve ardından arkadaş çağrısı. Kullanıcı süre için şunu ekledi: 30 saniyeyi geçmesin ama oyun net anlaşılsın, önceki videodaki gibi her şey hızla geçip gitmesin.
+- Önizlemede seçimin son turda gösterilmesi oyunun kuralına uymuyordu (7 kart, 7 tur; son turda elde tek kart kalır). Seçim 6. tura alındı: gol sorusunda Drogba oynanır, son tura genç Osimhen saklanmıştır ve soru yaş çıkar.
+- Değerler `football.db`'den: Drogba 302 gol, Sneijder 117, Eto'o 368 gol ve 1981, Osimhen 1998. Kartlardaki herkes Süper Lig'de oynamış yabancı ve portresi var. Soru metinleri uygulamadaki Kart Düellosu sorularıyla aynı.
+- İlk önizlemede kural cümlesi 1,6 saniye kalıyordu; giriş uzatıldı. Diğer videolardaki "Değerler uygulamanın verisine göredir" notu eklendi.
+
 ### Faz 2: tek ekranlık ana ekran ve sade metinler (29 Ekim 2026)
 
 - **Karar.** Kullanıcı ana ekranda oyunların yeterince öne çıkmadığını ve kaydırmanın kafa karıştırdığını söyledi, Three.js'i sordu. Bütün sorular seçenekleriyle ve telefon maketleriyle bir karar sayfasında gösterildi (Skia kartı, Three.js ile gerçek 3B top ve 3B lobi demoları dahil). Seçimler `is-plani.md` Adım 11'de.
