@@ -63,9 +63,12 @@ function save() {
   writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
 }
 
-function intent(text, replyTo) {
-  const reply = replyTo ? `in_reply_to=${replyTo}&` : '';
-  return `https://twitter.com/intent/tweet?${reply}text=${encodeURIComponent(text)}`;
+function intent(text) {
+  return `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+}
+
+function postUrl(tweetId) {
+  return `https://x.com/i/status/${tweetId}`;
 }
 
 function copyButton(label, text) {
@@ -156,8 +159,11 @@ async function sendEvening() {
   if (record.quizzes.length === 0) return;
   await send(texts.evening);
   for (const quiz of record.quizzes) {
-    const share = quiz.tweetId ? { text: texts.shareReply, url: intent(quiz.answer, quiz.tweetId) } : { text: texts.share, url: intent(quiz.answer) };
-    await send(quiz.answer, [[share], copyButton(texts.copyOne, quiz.answer)]);
+    if (quiz.tweetId) {
+      await send(`${quiz.answer}\n\n${texts.replySteps}`, [copyButton(texts.copyOne, quiz.answer), [{ text: texts.openQuizPost, url: postUrl(quiz.tweetId) }]]);
+    } else {
+      await send(quiz.answer, [[{ text: texts.share, url: intent(quiz.answer) }], copyButton(texts.copyOne, quiz.answer)]);
+    }
   }
   log('evening answers sent');
 }
@@ -200,9 +206,10 @@ async function draft(key) {
   const excerpt = source.text.length > 140 ? `${source.text.slice(0, 140)}…` : source.text;
   const header = source.author ? `${fill(texts.draftsHeader, { author: source.author, excerpt })}\n\n` : '';
   const body = result.drafts.map((text, index) => `${index + 1}. ${text}`).join('\n\n');
-  const replies = source.tweetId ? result.drafts.map((text, index) => ({ text: fill(texts.reply, { index: index + 1 }), url: intent(text, source.tweetId) })) : [];
   const copies = result.drafts.flatMap((text, index) => copyButton(fill(texts.copy, { index: index + 1 }), text));
-  await send(header + body, [replies, copies, redo]);
+  const open = source.tweetId ? [{ text: texts.openPost, url: postUrl(source.tweetId) }] : [];
+  const steps = source.tweetId ? `\n\n${texts.replySteps}` : '';
+  await send(header + body + steps, [copies, open, redo]);
 }
 
 async function handleMessage(message) {
