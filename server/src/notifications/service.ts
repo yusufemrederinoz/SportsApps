@@ -29,7 +29,9 @@ function fill(template: string, values: Record<string, number>): string {
 }
 
 export function notificationText(kind: NotificationKind, language: string, values: Record<string, number>) {
-  const text = messages[languageOf(language)][kind];
+  const texts = messages[languageOf(language)];
+  const invites = texts.invite;
+  const text = kind === 'invite' ? (invites[(values.variant ?? 0) % invites.length] ?? texts.comeback) : texts[kind];
   return { title: fill(text.title, values), body: fill(text.body, values) };
 }
 
@@ -65,7 +67,7 @@ export function createNotifications(database: Database, options: NotificationOpt
     if (planned.length === 0) {
       return 0;
     }
-    transaction(database, () => planned.forEach((entry) => logSent.run(entry.userId, entry.kind, entry.day, now())));
+    transaction(database, () => planned.forEach((entry) => logSent.run(entry.userId, entry.logKind, entry.day, now())));
     const rejected = await options.send(planned.flatMap(messagesFor));
     rejected.forEach((token) => deleteToken.run(token));
     return planned.length;

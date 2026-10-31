@@ -13,6 +13,10 @@ const WEDNESDAY_MORNING = Date.UTC(2026, 9, 7, 7, 30);
 const WEDNESDAY_AFTERNOON = Date.UTC(2026, 9, 7, 12, 0);
 const WEDNESDAY_EVENING = Date.UTC(2026, 9, 7, 16, 30);
 const MONDAY_MORNING = Date.UTC(2026, 9, 12, 7, 30);
+const WEDNESDAY_NOON = Date.UTC(2026, 9, 7, 9, 40);
+const WEDNESDAY_AFTER_WORK = Date.UTC(2026, 9, 7, 15, 10);
+const WEDNESDAY_NIGHT = Date.UTC(2026, 9, 7, 18, 5);
+const INVITE_TIMES = [WEDNESDAY_NOON, WEDNESDAY_AFTER_WORK, WEDNESDAY_NIGHT];
 
 let database: Database;
 let notifications: Notifications;
@@ -117,6 +121,53 @@ describe('notification schedule', () => {
     expect(kinds().sort()).toEqual(['token-a:weekly', 'token-b:weekly', 'token-c:puzzle']);
     expect(sent.find((message) => message.to === 'token-a')?.body).toContain('1');
     expect(sent.find((message) => message.to === 'token-b')?.body).toContain('2');
+  });
+
+  it('invites every reachable player at 12.30, 18.00 and 21.00, once per slot, even right after a game', async () => {
+    const fan = player('tr', 'token-a');
+    player('tr');
+    database
+      .prepare(
+        "INSERT INTO puzzle_plays (user_id, day, market, grid_id, guesses_left, created_at, updated_at) VALUES (?, '2026-10-07', 'tr', 1, 8, 0, 0)",
+      )
+      .run(fan);
+
+    for (const time of INVITE_TIMES) {
+      clock = time;
+      expect(await notifications.run()).toBe(1);
+      clock = time + 10 * 60 * 1000;
+      expect(await notifications.run()).toBe(0);
+    }
+    expect(kinds()).toEqual(['token-a:invite', 'token-a:invite', 'token-a:invite']);
+  });
+
+  it('changes the invite text between slots and from one day to the next', async () => {
+    player('tr', 'token-a');
+    for (const time of INVITE_TIMES) {
+      clock = time;
+      await notifications.run();
+    }
+    clock = WEDNESDAY_NOON + DAY;
+    await notifications.run();
+
+    const titles = sent.map((message) => message.title);
+    expect(new Set(titles.slice(0, 3)).size).toBe(3);
+    expect(titles[3]).not.toBe(titles[0]);
+  });
+
+  it('writes invites in the language of the device', async () => {
+    player('de', 'token-de');
+    clock = WEDNESDAY_NOON;
+    await notifications.run();
+    const german = Array.from({ length: 12 }, (_, variant) => notificationText('invite', 'de', { variant }).title);
+    expect(german).toContain(sent[0]?.title);
+  });
+
+  it('has the same number of invite texts in every language', () => {
+    const counts = ['tr', 'en', 'de', 'es', 'fr', 'it'].map(
+      (language) => new Set(Array.from({ length: 24 }, (_, variant) => notificationText('invite', language, { variant }).title)).size,
+    );
+    expect(counts).toEqual([12, 12, 12, 12, 12, 12]);
   });
 
   it('writes in the language of the device and forgets tokens the push service rejects', async () => {

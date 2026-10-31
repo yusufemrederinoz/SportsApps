@@ -851,8 +851,9 @@ Sunucu on dakikada bir bakar ve Expo'nun bildirim servisine gönderir (`src/noti
 | Haftalık sonuç | Pazartesi 10.00–12.00 | Geçen hafta puanlı maç oynamış oyuncu; o gün bulmaca bildirimi yerine gider |
 | Seri hatırlatması | 19.00–21.00 | En az 2 günlük serisi olup bugün ödülünü almamış oyuncu |
 | Geri dönüş | 19.00–21.00 | Son girişi tam 3 ya da 7 gün önce olan oyuncu |
+| Maç daveti | 12.30–13.00, 18.00–18.30, 21.00–21.30 | Bildirimi açık herkes; diğer bildirimlere ek olarak (31 Ekim 2026, kullanıcının isteğiyle) |
 
-Aynı bildirim aynı gün bir oyuncuya bir kez gider (`notification_log`). Servisin "kayıtlı değil" dediği anahtar silinir. Metinler `messages.json` içinde, cihazın diliyle (Türkçe ya da İngilizce) yazılır. Zamanlayıcı yalnızca `NOTIFICATIONS=1` iken çalışır.
+Aynı bildirim aynı gün bir oyuncuya bir kez gider (`notification_log`); maç davetinde bu sınır dilim başınadır (`invite-noon`, `invite-evening`, `invite-night`). Servisin "kayıtlı değil" dediği anahtar silinir. Metinler `messages.json` içinde, cihazın diliyle (altı dil; tanınmayan dil İngilizce) yazılır. Davet metni dil başına 12 metinden gün ve dilim sırasına göre seçilir, bu yüzden aynı gün üç farklı metin gider. Davete dokununca uygulama açılır, bir ekrana yönlendirmez. Zamanlayıcı yalnızca `NOTIFICATIONS=1` iken çalışır.
 
 ## Lider tablosu ve günün bulmacası
 

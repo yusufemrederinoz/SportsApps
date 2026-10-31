@@ -1165,6 +1165,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Ayrı tespit.** Uygulamadaki Kariyer Yolu kapsam metni bağlantı liglerinden beri yanlış ("yalnızca Süper Lig ve beş büyük lig" diyor, Ajax gibi kulüpler de görünüyor); 1.2.0 adaylarına yazıldı.
 - **Paylaşım önerileri.** Kullanıcı daha çok izlenme için ne yapabileceğini sordu: uygulama içinden düşük sesli popüler müzik (işletme hesabında ticari kütüphane), cevabı vermeyen kapak karesi, ilk saatte yorumlara cevap ve sabitlenmiş yorum, maç günlerine göre akşam saatleri, filigransız dosyayı her platforma ayrı yükleme, "Kariyer Yolu #1" gibi seri, Instagram ortak paylaşımı, hazır profil ve biyografi bağlantısı, TikTok'ta Düet ve Stitch açık.
 
+### Günde üç maç daveti (31 Ekim 2026)
+
+- **İstek.** Kullanıcı gün içinde 2-3 kez oyuncuları oyuna çağıran bildirim istedi. Kararları: günde üç kez (12.30, 18.00, 21.00, sunucunun saat dilimi), bildirimi açık herkese (yakın zamanda oynayan da dahil), mevcut bulmaca, haftalık sonuç, seri ve geri dönüş bildirimlerine ek olarak.
+- **Yapım.** Planlayıcıya `invite` türü ve üç yarım saatlik dilim eklendi. Her dilim `notification_log`'a ayrı yazılır (`invite-noon`, `invite-evening`, `invite-night`), böylece on dakikalık kontrol aynı dilimde ikinci kez göndermez. Metin dil başına 12 davetten, gün ve dilim sırasına göre seçilir: aynı gün üç farklı metin gider, dört günde bir döngü tamamlanır. Metinler oyun modlarını uygulamadaki adlarıyla anar.
+- **Uygulama.** Bildirim türü bir ekrana bağlı olmadığı için dokununca uygulama açılır; güncelleme gerekmez. Hesap ekranındaki bildirim anahtarının açıklamasına "maç davetleri" eklendi (altı dil); bu metin sonraki derlemeyle çıkar.
+- **Doğrulama.** Sunucu 298 test (dördü yeni: dilimler, metin değişimi, cihaz dili, her dilde 12 metin), uygulama 155 test; iki tarafta tür denetimi temiz. Canlıya dağıtılmadı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

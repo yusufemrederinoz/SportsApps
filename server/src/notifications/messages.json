@@ -15,7 +15,57 @@
     "comeback": {
       "title": "Maça dönme vakti",
       "body": "Rakiplerin seni bekliyor. Günlük ödülün de hazır."
-    }
+    },
+    "invite": [
+      {
+        "title": "Bir maç atalım mı?",
+        "body": "XOX'ta üç futbolcuyu yan yana dizen kazanır. Sıra sende."
+      },
+      {
+        "title": "Kart Düellosu seni bekliyor",
+        "body": "Yedi kartını seç, sorular sonra açılsın. Bakalım elin ne kadar güçlü."
+      },
+      {
+        "title": "Hangisi daha yüksek?",
+        "body": "Gol mü, piyasa değeri mi, yaş mı? Hangisi Yüksek'te üst üste beş doğru yapabilir misin?"
+      },
+      {
+        "title": "Bu kariyer kimin?",
+        "body": "Kariyer Yolu'nda kulüpler tek tek açılıyor. Ne kadar erken bilirsen o kadar çok puan."
+      },
+      {
+        "title": "Zinciri kim koparacak?",
+        "body": "Sırayla, bir öncekiyle aynı kulüpte oynamış birini söyle. Süre her halkada kısalıyor."
+      },
+      {
+        "title": "Kadronu kur",
+        "body": "Her turda bir kulüp çıkıyor. En çok asistli kadroyu sen kurabilir misin?"
+      },
+      {
+        "title": "Kaç tane sayarsın?",
+        "body": "Açık Artırma'da teklifini ver. Rakibin \"Say bakalım\" derse ispatla."
+      },
+      {
+        "title": "İlk 10'u bilir misin?",
+        "body": "Listedeki adları bul. Her doğru ad puan getirir, yanlış ad can götürür."
+      },
+      {
+        "title": "Tabloda bir basamak daha",
+        "body": "Bu hafta topladığın puanlar haftalık lider tablosuna yazılıyor. Bir maç at, yukarı çık."
+      },
+      {
+        "title": "Arkadaşına meydan oku",
+        "body": "Oda kur, kodu paylaş, aynı maçta karşılaşın."
+      },
+      {
+        "title": "Rakibin hazır",
+        "body": "Sıraya gir, maç hemen başlasın."
+      },
+      {
+        "title": "Futbol bilgini konuştur",
+        "body": "Bir mod seç, sahaya çık."
+      }
+    ]
   },
   "en": {
     "puzzle": {
@@ -33,7 +83,57 @@
     "comeback": {
       "title": "Time for a match",
       "body": "Your rivals are waiting, and your daily reward is ready."
-    }
+    },
+    "invite": [
+      {
+        "title": "Up for a match?",
+        "body": "In XOX, three players in a row wins. Your move."
+      },
+      {
+        "title": "Card Duel is waiting",
+        "body": "Pick your seven cards, then the questions open. Let's see how strong your hand is."
+      },
+      {
+        "title": "Which one is higher?",
+        "body": "Goals, market value or age? Can you get five in a row in Higher or Lower?"
+      },
+      {
+        "title": "Whose career is this?",
+        "body": "In Career Path the clubs open one by one. The sooner you guess, the more points you get."
+      },
+      {
+        "title": "Who breaks the chain?",
+        "body": "Take turns naming a player who shared a club with the last one. The clock gets shorter with every link."
+      },
+      {
+        "title": "Build your lineup",
+        "body": "A new club comes up every round. Can you build the lineup with the most assists?"
+      },
+      {
+        "title": "How many can you name?",
+        "body": "Place your bid in Answer Auction. If your rival says \"Prove it\", show them."
+      },
+      {
+        "title": "Do you know the Top Ten?",
+        "body": "Find the names on the list. Every right name scores, a wrong one costs a life."
+      },
+      {
+        "title": "One more step up",
+        "body": "The points you collect this week go on the weekly leaderboard. Play a match and climb."
+      },
+      {
+        "title": "Challenge a friend",
+        "body": "Create a room, share the code and meet in the same match."
+      },
+      {
+        "title": "Your rival is ready",
+        "body": "Join the queue and your match starts right away."
+      },
+      {
+        "title": "Show what you know",
+        "body": "Pick a mode and step onto the pitch."
+      }
+    ]
   },
   "de": {
     "puzzle": {
@@ -51,7 +151,57 @@
     "comeback": {
       "title": "Zeit für ein Match",
       "body": "Deine Gegner warten, und dein Tagesbonus liegt bereit."
-    }
+    },
+    "invite": [
+      {
+        "title": "Lust auf ein Match?",
+        "body": "Bei XOX gewinnt, wer drei Spieler in eine Reihe bringt. Du bist dran."
+      },
+      {
+        "title": "Das Kartenduell wartet",
+        "body": "Wähl deine sieben Karten, dann werden die Fragen aufgedeckt. Mal sehen, wie stark deine Hand ist."
+      },
+      {
+        "title": "Was ist höher?",
+        "body": "Tore, Marktwert oder Alter? Schaffst du bei Höher oder tiefer fünf Treffer am Stück?"
+      },
+      {
+        "title": "Wessen Karriere ist das?",
+        "body": "Beim Karriereweg werden die Vereine einzeln aufgedeckt. Je früher du es weißt, desto mehr Punkte."
+      },
+      {
+        "title": "Wer reißt die Kette?",
+        "body": "Nennt abwechselnd einen Spieler, der mit dem vorigen im selben Verein war. Mit jedem Glied wird die Zeit knapper."
+      },
+      {
+        "title": "Stell deinen Kader auf",
+        "body": "Jede Runde kommt ein neuer Verein. Baust du den Kader mit den meisten Vorlagen?"
+      },
+      {
+        "title": "Wie viele kannst du nennen?",
+        "body": "Gib dein Gebot in der Antwort-Auktion ab. Sagt dein Gegner „Beweis es“, musst du liefern."
+      },
+      {
+        "title": "Kennst du die Top 10?",
+        "body": "Finde die Namen auf der Liste. Jeder richtige Name bringt Punkte, ein falscher kostet ein Leben."
+      },
+      {
+        "title": "Eine Stufe höher",
+        "body": "Deine Punkte dieser Woche zählen für die Wochen-Rangliste. Spiel ein Match und klettere nach oben."
+      },
+      {
+        "title": "Fordere einen Freund heraus",
+        "body": "Erstell einen Raum, teil den Code und trefft euch im selben Match."
+      },
+      {
+        "title": "Dein Gegner ist bereit",
+        "body": "Stell dich an, und dein Match beginnt sofort."
+      },
+      {
+        "title": "Zeig, was du weißt",
+        "body": "Wähl einen Modus und ab auf den Platz."
+      }
+    ]
   },
   "es": {
     "puzzle": {
@@ -69,7 +219,57 @@
     "comeback": {
       "title": "Hora de jugar un partido",
       "body": "Tus rivales te esperan y tu recompensa diaria ya está lista."
-    }
+    },
+    "invite": [
+      {
+        "title": "¿Echamos un partido?",
+        "body": "En XOX gana quien pone tres jugadores en línea. Te toca."
+      },
+      {
+        "title": "El Duelo de Cartas te espera",
+        "body": "Elige tus siete cartas y luego se abren las preguntas. A ver qué tal es tu mano."
+      },
+      {
+        "title": "¿Cuál es mayor?",
+        "body": "¿Goles, valor de mercado o edad? ¿Aciertas cinco seguidas en Mayor o Menor?"
+      },
+      {
+        "title": "¿De quién es esta carrera?",
+        "body": "En Trayectoria los clubes se abren uno a uno. Cuanto antes aciertes, más puntos."
+      },
+      {
+        "title": "¿Quién rompe la cadena?",
+        "body": "Por turnos, di un jugador que coincidió en un club con el anterior. El tiempo se acorta en cada eslabón."
+      },
+      {
+        "title": "Arma tu alineación",
+        "body": "Cada ronda sale un club nuevo. ¿Montas la alineación con más asistencias?"
+      },
+      {
+        "title": "¿Cuántos te sabes?",
+        "body": "Puja en Subasta de Respuestas. Si tu rival dice «Demuéstralo», tendrás que cumplir."
+      },
+      {
+        "title": "¿Te sabes el Top 10?",
+        "body": "Encuentra los nombres de la lista. Cada acierto suma y un fallo te quita una vida."
+      },
+      {
+        "title": "Un puesto más arriba",
+        "body": "Los puntos de esta semana cuentan para la clasificación semanal. Juega un partido y sube."
+      },
+      {
+        "title": "Reta a un amigo",
+        "body": "Crea una sala, comparte el código y enfrentaos en el mismo partido."
+      },
+      {
+        "title": "Tu rival está listo",
+        "body": "Ponte en la cola y el partido empieza enseguida."
+      },
+      {
+        "title": "Enseña lo que sabes",
+        "body": "Elige un modo y salta al campo."
+      }
+    ]
   },
   "fr": {
     "puzzle": {
@@ -87,7 +287,57 @@
     "comeback": {
       "title": "C'est l'heure du match",
       "body": "Tes adversaires t'attendent, et ta récompense quotidienne est prête."
-    }
+    },
+    "invite": [
+      {
+        "title": "Partant pour un match ?",
+        "body": "Au XOX, celui qui aligne trois joueurs gagne. À toi de jouer."
+      },
+      {
+        "title": "Le Duel de cartes t'attend",
+        "body": "Choisis tes sept cartes, puis les questions se dévoilent. Voyons ce que vaut ta main."
+      },
+      {
+        "title": "Lequel est le plus haut ?",
+        "body": "Buts, valeur marchande ou âge ? Enchaîneras-tu cinq bonnes réponses à Plus ou moins ?"
+      },
+      {
+        "title": "À qui est cette carrière ?",
+        "body": "Dans Parcours de carrière, les clubs s'ouvrent un par un. Plus tu trouves tôt, plus tu marques."
+      },
+      {
+        "title": "Qui va briser la chaîne ?",
+        "body": "À tour de rôle, cite un joueur passé par le même club que le précédent. Le temps raccourcit à chaque maillon."
+      },
+      {
+        "title": "Fais ta compo",
+        "body": "Un nouveau club sort à chaque tour. Composeras-tu l'équipe avec le plus de passes décisives ?"
+      },
+      {
+        "title": "Combien peux-tu en citer ?",
+        "body": "Mise aux Enchères. Si ton adversaire lance « Prouve-le », à toi d'assurer."
+      },
+      {
+        "title": "Tu connais le Top 10 ?",
+        "body": "Trouve les noms de la liste. Chaque bon nom rapporte des points, un faux te coûte une vie."
+      },
+      {
+        "title": "Une marche de plus",
+        "body": "Tes points de la semaine comptent pour le classement de la semaine. Joue un match et grimpe."
+      },
+      {
+        "title": "Défie un ami",
+        "body": "Crée un salon, partage le code et affrontez-vous dans le même match."
+      },
+      {
+        "title": "Ton adversaire est prêt",
+        "body": "Entre dans la file et ton match démarre tout de suite."
+      },
+      {
+        "title": "Montre ce que tu sais",
+        "body": "Choisis un mode et entre sur le terrain."
+      }
+    ]
   },
   "it": {
     "puzzle": {
@@ -105,6 +355,56 @@
     "comeback": {
       "title": "È ora di una partita",
       "body": "Gli avversari ti aspettano e il tuo premio giornaliero è pronto."
-    }
+    },
+    "invite": [
+      {
+        "title": "Ti va una partita?",
+        "body": "A XOX vince chi mette tre giocatori in fila. Tocca a te."
+      },
+      {
+        "title": "Il Duello di Carte ti aspetta",
+        "body": "Scegli le tue sette carte, poi si scoprono le domande. Vediamo quanto è forte la tua mano."
+      },
+      {
+        "title": "Chi ha di più?",
+        "body": "Gol, valore di mercato o età? Riesci a farne cinque di fila a Chi di Più?"
+      },
+      {
+        "title": "Di chi è questa carriera?",
+        "body": "In Carriera Misteriosa i club si scoprono uno alla volta. Prima indovini, più punti fai."
+      },
+      {
+        "title": "Chi spezza la catena?",
+        "body": "A turno, nomina un giocatore che ha condiviso un club con il precedente. Il tempo si accorcia a ogni anello."
+      },
+      {
+        "title": "Fai la formazione",
+        "body": "A ogni turno esce un nuovo club. Riesci a costruire la formazione con più assist?"
+      },
+      {
+        "title": "Quanti ne sai?",
+        "body": "Fai la tua offerta nell'Asta delle Risposte. Se l'avversario dice \"Dimostralo\", tocca a te."
+      },
+      {
+        "title": "Conosci la Top 10?",
+        "body": "Trova i nomi della lista. Ogni nome giusto vale punti, uno sbagliato ti costa una vita."
+      },
+      {
+        "title": "Un gradino più su",
+        "body": "I punti di questa settimana valgono per la classifica settimanale. Gioca una partita e sali."
+      },
+      {
+        "title": "Sfida un amico",
+        "body": "Crea una stanza, condividi il codice e affrontatevi nella stessa partita."
+      },
+      {
+        "title": "Il tuo avversario è pronto",
+        "body": "Mettiti in coda e la partita parte subito."
+      },
+      {
+        "title": "Fai vedere cosa sai",
+        "body": "Scegli una modalità e scendi in campo."
+      }
+    ]
   }
 }
