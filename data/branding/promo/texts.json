@@ -154,6 +154,17 @@
         "twist": "Gol sorusu gelseydi 368 golle Eto'o kazanırdı.",
         "lesson": "Kartını doğru tura sakla."
       },
+      "career": {
+        "hook": ["KAÇINCI KULÜPTE", "BİLECEKSİN?"],
+        "rule": "Kulüpler katılış yılına göre açılıyor.",
+        "hidden": "? ? ?",
+        "worth": "PUAN",
+        "now": "ŞİMDİ BİLİRSEN",
+        "value": "{{n}} PUAN",
+        "ask": "Kaçıncı kulüpte bildin?",
+        "send": "Arkadaşına at,<br />bakalım bilecek mi.",
+        "note": "Kariyer uygulamanın verisine göredir."
+      },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
         "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],

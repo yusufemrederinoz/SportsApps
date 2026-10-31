@@ -40,6 +40,11 @@ const CUTS = {
     ['friend', 3.6],
     ['finale', 5.1],
   ],
+  'quiz-career': [
+    ['qcareer', 18.4],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -150,6 +155,19 @@ const QUIZ = {
     twist: 17.9,
     lesson: 18.8,
   },
+  career: {
+    first: 1.9,
+    period: 2.6,
+    hold: 2.2,
+    answer: 'sneijder',
+    clubs: [
+      { years: '2002–2007', name: 'AFC Ajax', crest: { code: 'AJX', pattern: 'pale', colors: ['#FFFFFF', '#D2122E'] } },
+      { years: '2007–2009', name: 'Real Madrid CF', crest: { code: 'RMA', pattern: 'plain', colors: ['#FFFFFF', '#00529F'], trim: '#FEBE10' } },
+      { years: '2009–2013', name: 'FC Internazionale Milano', crest: { code: 'INT', pattern: 'stripes', colors: ['#0068A8', '#000000'] } },
+      { years: '2013–2017', name: 'Galatasaray', crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
+      { years: '2017–2018', name: 'OGC Nice', crest: { code: 'NIC', pattern: 'stripes', colors: ['#D0121A', '#000000'] } },
+    ],
+  },
   friend: { code: 'K7R4X' },
 };
 const GRID = {
@@ -240,6 +258,29 @@ function seeded(seed) {
 
 function crest({ code, stroke, fields }) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 112"><defs><clipPath id="shield-${code}"><path d="${SHIELD}"/></clipPath></defs><g clip-path="url(#shield-${code})">${fields}</g><path d="${SHIELD}" fill="none" stroke="${stroke}" stroke-width="5" stroke-linejoin="round"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF" stroke="#05070A" stroke-opacity="0.35" stroke-width="1.5"/><text x="50" y="55.76" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-size="18" font-weight="700" fill="#05070A">${code}</text></svg>`;
+}
+
+const CREST_SHAPES = {
+  plain: () => '',
+  halves: (fill) => `<rect x="50" width="50" height="112" fill="${fill}"/>`,
+  pale: (fill) => `<rect x="38" width="24" height="112" fill="${fill}"/>`,
+  stripes: (fill) => [1, 3].map((index) => `<rect x="${8 + index * 16.8}" width="16.8" height="112" fill="${fill}"/>`).join(''),
+};
+
+function luminance(color) {
+  const [red, green, blue] = [1, 3, 5]
+    .map((start) => parseInt(color.slice(start, start + 2), 16) / 255)
+    .map((value) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+}
+
+function appCrest({ code, pattern, colors, trim }) {
+  const outline = trim ?? colors[1];
+  return crest({
+    code,
+    stroke: luminance(outline) < 0.05 ? '#C9CED6' : outline,
+    fields: `<rect width="100" height="112" fill="${colors[0]}"/>${CREST_SHAPES[pattern](colors[1])}`,
+  });
 }
 
 function backdrop() {
@@ -878,6 +919,44 @@ function qduel(texts, start) {
     </div>`;
 }
 
+function qcareer(texts, start) {
+  const q = texts.quiz.career;
+  const { first, period, hold, answer, clubs } = QUIZ.career;
+  const total = clubs.length;
+  const opens = clubs.map((_, index) => at(start, first + index * period));
+  const reveal = at(opens[total - 1], hold);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(at(start, offset), 'impact', index === 1 ? 1 : 0.6));
+  const rows = clubs.map((club, index) => {
+    const open = opens[index];
+    const until = index + 1 < total ? opens[index + 1] : reveal;
+    cue(open, 'impact', 0.55, 0.9 + index * 0.06);
+    ticks(at(open, 0.6), Math.floor(until - open - 0.6));
+    return `<div class="q-career-row">
+      <div class="q-worth">${total - index}<small>${q.worth}</small></div>
+      <span class="q-hide">${q.hidden}</span>
+      <div class="q-club in rise" style="--t: ${open}">${appCrest(club.crest)}<div><strong>${club.name}</strong><small>${club.years}</small></div></div>
+      <i class="q-focus state" style="--start: ${open}; --end: ${until}"></i>
+    </div>`;
+  });
+  const values = clubs.map((_, index) => [opens[index], fill(q.value, { n: total - index }), null]);
+  const [given, family] = FOOTBALLERS[answer].name.toLocaleUpperCase('en-US').split(' ');
+  cue(reveal, 'whoosh', 0.7);
+  cue(at(reveal, 0.3), 'correct', 1);
+  cue(at(reveal, 0.5), 'win', 0.8);
+  return `${titleLines(q.hook, start)}
+    <p class="q-line in rise" style="--t: ${at(start, 1)}; top: 452px; font-size: 42px; color: var(--body)">${q.rule}</p>
+    <div class="q-career in rise" style="--t: ${at(start, 1.3)}">${rows.join('')}</div>
+    <div class="layer state" style="--start: ${opens[0]}; --end: ${reveal}">
+      <div class="q-now"><span>${q.now}</span><strong ${scripted('steps', values)}>${fill(q.value, { n: total })}</strong></div>
+    </div>
+    <div class="q-answer" style="top: 1330px; left: 90px; width: 320px; height: 320px; --u: 1.48">${card(texts, answer, 'x', 'flip shiny', reveal)}</div>
+    <div class="display q-name in slam" style="--t: ${at(reveal, 0.35)}">${given}<br />${family}</div>
+    <p class="q-side in rise" style="--t: ${at(reveal, 1.1)}; top: 1545px">${q.ask}<br />${texts.quiz.more}</p>
+    <p class="q-side send in rise" style="--t: ${at(reveal, 1.9)}; top: 1680px">${q.send}</p>
+    <p class="q-note">${q.note}</p>`;
+}
+
 function friend(texts, start) {
   const f = texts.quiz.friend;
   const letters = QUIZ.friend.code.split('');
@@ -893,7 +972,7 @@ function friend(texts, start) {
     <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, friend };
+const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, qcareer, friend };
 
 function video(texts) {
   let start = 0;

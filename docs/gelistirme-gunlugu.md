@@ -1157,6 +1157,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İptal.** Kullanıcı aynı gece Telegram ve X asistanını beğenmedi ve tamamen iptal etti. Süreç durduruldu, başlangıç kaydı ve yerel durum klasörü (`~/.challengegoal/assistant/`) silindi, `social/` klasörü depodan kaldırıldı (kod git geçmişinde `29148ec`–`10db3bf` arasında duruyor). Telegram botu (@ChallengeGoalTR_bot) ve anahtar dosyası kullanıcıya ait olduğu için silinmedi.
 - **Ayrı tespit.** Uygulamadaki iki paylaşım metninde (arkadaş odası kodu, günün bulmacası sonucu) indirme bağlantısı yok; uygulaması olmayan arkadaş nereden indireceğini bilmiyor. Kullanıcıya önerildi, henüz seçilmedi. Bağlantı eklemek yeni derleme ister.
 
+### Kariyer Yolu soru videosu ve Android 1.1.0'ın yayını (31 Ekim 2026)
+
+- **Yayın.** Google Play 1.1.0'ı (sürüm kodu 17) onayladı, kullanıcı yayınladı. App Store'daki 1.1.0 hâlâ "Waiting for Review". Sunucu iki sürümü birlikte destekliyor: Android 1.1.0 ile iPhone 1.0.0 karşılaşınca tepkiler eski uygulamaya iletilmiyor, rövanş teklif edilmiyor, arkadaş odası puansız oynanıyor (kod kontrol edildi).
+- **Video isteği.** Kullanıcı yeni özelliklerden bahsetmeyen bir soru videosu istedi. Seçenekli sorularla: Kariyer Yolu, gizli futbolcu Wesley Sneijder (dört aday arasından; adaylar portreli, tanınırlığı orta, kariyeri 4-7 kulüplü ve tartışmasız isimlerdi), izleyici tahmini ve oyunun puan kuralı (5'ten 1'e), kanca "KAÇINCI KULÜPTE BİLECEKSİN?", kapanış öncekiler gibi (arkadaş sahnesi ve ücretsiz indir).
+- **Üretim.** `cut=quiz-career` ve `qcareer` sahnesi eklendi; armalar uygulamanın arma tablosundan çiziliyor. Önizlemede kural satırının başlığa değmesi, adın küçük harfli olması ve sağ sütundaki kötü satır kırılmaları düzeltildi. Çıktı `data/build/promo/videos/quiz/challengegoal-tr-quiz-career.mp4` (27,1 sn, 1080×1920, 8 MB), paylaşım metni `captions/challengegoal-tr-quiz-career.txt` (cevabı ele vermesin diye futbolcunun adı geçmiyor).
+- **Ayrı tespit.** Uygulamadaki Kariyer Yolu kapsam metni bağlantı liglerinden beri yanlış ("yalnızca Süper Lig ve beş büyük lig" diyor, Ajax gibi kulüpler de görünüyor); 1.2.0 adaylarına yazıldı.
+- **Paylaşım önerileri.** Kullanıcı daha çok izlenme için ne yapabileceğini sordu: uygulama içinden düşük sesli popüler müzik (işletme hesabında ticari kütüphane), cevabı vermeyen kapak karesi, ilk saatte yorumlara cevap ve sabitlenmiş yorum, maç günlerine göre akşam saatleri, filigransız dosyayı her platforma ayrı yükleme, "Kariyer Yolu #1" gibi seri, Instagram ortak paylaşımı, hazır profil ve biyografi bağlantısı, TikTok'ta Düet ve Stitch açık.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

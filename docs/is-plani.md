@@ -340,3 +340,8 @@ Kullanıcının "1.2.0'da değerlendirelim" dediği özellikler. Her biri yeni d
 - **En küçük çözüm.** İki metnin sonuna sitenin adresi eklenir (`https://challengegoal.app`, dile göre sayfası). Site iki mağazanın düğmesini gösteriyor, iPhone'da Safari'nin uygulama şeridi de var. Altı dilin metni değişir, kod değişmez.
 - **Daha büyük seçenek.** Oda koduna özel bağlantı (`challengegoal.app/oda/KOD` gibi): uygulama yüklüyse doğrudan odaya katılır, değilse mağazaya gider. iOS'ta Universal Links, Android'de App Links, sitede yönlendirme sayfası ve uygulamada bağlantıyı karşılayan ekran gerekir.
 - **Karar bekleyen.** Hangi çözümün 1.2.0'a gireceği.
+
+### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
+
+- **Sorun.** Ekrandaki `career.scope` metni (altı dil) "Yalnızca Süper Lig ve Avrupa'nın beş büyük liginin kulüpleri gösterilir" diyor. Bağlantı ligleri 30 Ekim'de veriye girdiğinden beri kariyer dizisi (`careerPathStatement`) yılı bilinen bütün kulüpleri gösteriyor; örneğin Sneijder'in dizisi AFC Ajax ile başlıyor. Zincir'in metni 1.1.0'da güncellendi, bu metin atlandı.
+- **Çözüm.** Metin 19 ligi sayacak ya da "kapsadığımız liglerin kulüpleri" diyecek şekilde altı dilde değişir. Yeni derleme ister.
