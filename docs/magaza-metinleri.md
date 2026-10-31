@@ -34,6 +34,8 @@ App Store ile Google Play'in tam açıklaması 16 Ekim 2026'dan beri ayrıdır. 
 
 Google Play Türkiye'de aynı aramaların hiçbirinde ilk 30'da değildik; yalnızca "challengegoal" aramasında 1. sıradaydık. ABD, İngiltere ve Almanya'da İngilizce ve Almanca aramalarda hiç görünmüyorduk.
 
+**1.1.0'dan sonra.** 1.1.0 App Store'da 31 Ekim 18.44'te (Türkiye saati) yayına girdi; Google Play'de aynı gün daha önce yayınlanmıştı. İki mağazanın açık sayfalarında yedi kaydın adı da doğru görünüyor (App Store'da Türkiye mağazası Türkçe ve İngilizce U.K. adını, Almanya mağazası Almanca ve İngilizce U.K. adını gösteriyor). Yayından yarım saat sonraki ölçümde App Store Türkiye sıraları yukarıdaki tabloyla birebir aynıydı: Apple yeni ad, alt başlık ve anahtar kelimeleri birkaç günde tarar, asıl ölçüm 2-3 Kasım'da yapılacak. Diğer ülkelerde yalnızca İspanya'da "quiz de fútbol" aramasında 51. sıradaydık. Google Play'de bütün aramalar aynı kaldı; adımızdaki "futbol düellosu" aramasında bile ilk 30'da değiliz. Google Play sıralamasında metinden çok indirme sayısı ve kullanıcıların uygulamada kalması belirleyici olduğu için oradaki sıra yeni kullanıcı geldikçe değişir.
+
 ## Türkçe (tr-TR, tr)
 
 **Google Play adı**

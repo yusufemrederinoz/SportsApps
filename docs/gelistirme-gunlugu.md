@@ -1172,6 +1172,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Uygulama.** Bildirim türü bir ekrana bağlı olmadığı için dokununca uygulama açılır; güncelleme gerekmez. Hesap ekranındaki bildirim anahtarının açıklamasına "maç davetleri" eklendi (altı dil); bu metin sonraki derlemeyle çıkar.
 - **Doğrulama.** Sunucu 298 test (dördü yeni: dilimler, metin değişimi, cihaz dili, her dilde 12 metin), uygulama 155 test; iki tarafta tür denetimi temiz. Canlıya dağıtılmadı.
 
+### 1.1.0'ın iki mağazada yayını ve ilk görünürlük ölçümü (31 Ekim 2026)
+
+- **Yayın.** App Store 1.1.0'ı onayladı, sürüm 18.44'te (Türkiye saati) yayına girdi (App Store Connect'te READY_FOR_SALE). Google Play'deki 1.1.0 aynı gün daha önce yayınlanmıştı. Kullanıcı mağaza görünürlüğünün kontrolünü istedi.
+- **Sayfalar.** iTunes arama servisinden ve Google Play'in açık sayfalarından okundu: iki mağazada da sürüm 1.1.0, yedi kaydın adı belgedekiyle aynı. App Store'da Türkiye'de 2 değerlendirme (ortalama 5), diğer ülkelerde değerlendirme yok.
+- **Sıralar.** Yayından yarım saat sonra App Store Türkiye sıraları 1.0.0 ölçümüyle birebir aynıydı (Apple'ın yeni metinleri taraması birkaç gün sürer). İspanya'da "quiz de fútbol" 51; İngiltere, ABD, Almanya, Fransa ve İtalya aramalarında yoktuk. Google Play'de yalnızca "challengegoal" aramasında 1. sıradayız, adımızdaki "futbol düellosu" dahil diğer aramalarda ilk 30'da değiliz. Ölçüm 2-3 Kasım'da tekrarlanacak; tablo `docs/magaza-metinleri.md` içinde.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
