@@ -1170,13 +1170,23 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İstek.** Kullanıcı gün içinde 2-3 kez oyuncuları oyuna çağıran bildirim istedi. Kararları: günde üç kez (12.30, 18.00, 21.00, sunucunun saat dilimi), bildirimi açık herkese (yakın zamanda oynayan da dahil), mevcut bulmaca, haftalık sonuç, seri ve geri dönüş bildirimlerine ek olarak.
 - **Yapım.** Planlayıcıya `invite` türü ve üç yarım saatlik dilim eklendi. Her dilim `notification_log`'a ayrı yazılır (`invite-noon`, `invite-evening`, `invite-night`), böylece on dakikalık kontrol aynı dilimde ikinci kez göndermez. Metin dil başına 12 davetten, gün ve dilim sırasına göre seçilir: aynı gün üç farklı metin gider, dört günde bir döngü tamamlanır. Metinler oyun modlarını uygulamadaki adlarıyla anar.
 - **Uygulama.** Bildirim türü bir ekrana bağlı olmadığı için dokununca uygulama açılır; güncelleme gerekmez. Hesap ekranındaki bildirim anahtarının açıklamasına "maç davetleri" eklendi (altı dil); bu metin sonraki derlemeyle çıkar.
-- **Doğrulama.** Sunucu 298 test (dördü yeni: dilimler, metin değişimi, cihaz dili, her dilde 12 metin), uygulama 155 test; iki tarafta tür denetimi temiz. Canlıya dağıtılmadı.
+- **Doğrulama.** Sunucu 298 test (dördü yeni: dilimler, metin değişimi, cihaz dili, her dilde 12 metin), uygulama 155 test; iki tarafta tür denetimi temiz. 31 Ekim 19.35'te, süren maç yokken canlıya dağıtıldı; ilk davet aynı akşam 21.00'de.
 
 ### 1.1.0'ın iki mağazada yayını ve ilk görünürlük ölçümü (31 Ekim 2026)
 
 - **Yayın.** App Store 1.1.0'ı onayladı, sürüm 18.44'te (Türkiye saati) yayına girdi (App Store Connect'te READY_FOR_SALE). Google Play'deki 1.1.0 aynı gün daha önce yayınlanmıştı. Kullanıcı mağaza görünürlüğünün kontrolünü istedi.
 - **Sayfalar.** iTunes arama servisinden ve Google Play'in açık sayfalarından okundu: iki mağazada da sürüm 1.1.0, yedi kaydın adı belgedekiyle aynı. App Store'da Türkiye'de 2 değerlendirme (ortalama 5), diğer ülkelerde değerlendirme yok.
 - **Sıralar.** Yayından yarım saat sonra App Store Türkiye sıraları 1.0.0 ölçümüyle birebir aynıydı (Apple'ın yeni metinleri taraması birkaç gün sürer). İspanya'da "quiz de fútbol" 51; İngiltere, ABD, Almanya, Fransa ve İtalya aramalarında yoktuk. Google Play'de yalnızca "challengegoal" aramasında 1. sıradayız, adımızdaki "futbol düellosu" dahil diğer aramalarda ilk 30'da değiliz. Ölçüm 2-3 Kasım'da tekrarlanacak; tablo `docs/magaza-metinleri.md` içinde.
+
+### Kullanıcı artırma: maç daveti, App Store etkinliği, kaynak takibi, topluluk metinleri (31 Ekim 2026)
+
+- **Sayılar.** Kullanıcı kullanıcı sayısını artırmak için ne yapılabileceğini sordu. Yönetim panelinin verisi (test ve inceleme hesapları dahil): 65 hesap, son 7 günde 19 yeni, bugün 9 (en iyi gün); bugün 9, bu hafta 21 aktif. Bugünkü 25 maçın 19'u gizli botla; arkadaş odasında toplam 34 maç, bugün hiç yok. Kullanıcıların nereden geldiği ölçülmüyordu.
+- **Öneriler.** Etkisine göre: paylaşım metinlerine bağlantı ve arkadaş getirme ödülü (1.2.0, derleme ister), mağazanın ücretsiz araçları (App Store etkinliği, öne çıkarılma başvurusu, kaynak takibi), videolar ve topluluklar, gelenleri tutmak için maç daveti. Kullanıcı maç davetini, mağaza araçlarını ve topluluk metinlerini seçti. Bağlantı ve ödül seçilmedi.
+- **Maç daveti.** Süren maç yokken canlıya dağıtıldı. Davet dilimleri yarım saatlik olduğu için kaçan 18.00 daveti geç gönderilmedi.
+- **App Store etkinliği.** "Rövanş ve tepkiler geldi" (rozet büyük güncelleme, 1-30 Kasım, 175 ülke, yedi dil) taslak olarak girildi. Görseller uygulamanın tepki çizimlerinden kuruldu: gülen ve kızgın top karşı karşıya, aralarında şimşek, çevrede kırmızı kart ve diğer tepkiler. Yazı, kulüp adı ve arma yok. Oyun içi ekran görüntüleri arka planda arma ve kulüp adı taşıdığı için kullanılmadı.
+- **Öne çıkarılma başvurusu.** Apple editörlerine İngilizce başvuru taslak olarak açıldı (1.1.0 güncellemesi, iPhone, yedi dil). Metindeki "oyuncular online karşılaşır" ifadesi gizli botlar yüzünden "sekiz kısa online futbol oyunu" olarak değiştirildi. Etkinlik ve başvuru kullanıcının onayıyla gönderilecek.
+- **Kaynak takibi.** Site `?k=` etiketini Google Play bağlantısına UTM kaynağı olarak taşıyor; her biyografi ve forum için ayrı etiket. App Store kampanya bağlantısı için ekip sağlayıcı numarası gerekiyor, API'den alınamıyor.
+- **Topluluk metinleri.** Kurallar topluluklardan okundu (ayrıntı `docs/topluluk-metinleri.md`). DonanımHaber Android Oyunlar (`[Kendi Projem]`), Technopat Sosyal Oyun Programlama (`[Devlog]`, nasıl yapıldığını anlatan metin) ve Reddit r/superlig (Kariyer Yolu videosu soru olarak, geliştirici olduğu ilk yorumda) için metinler yazıldı. Reddit'in kuralları okunamadı, paylaşmadan önce kontrol edilecek. Ekşi Sözlük yeni hesapla mümkün değil: çaylak entry'leri görünmüyor, başlık açmak için 6 ay ve 100 entry gerekiyor.
 
 ## Commit listesi
 

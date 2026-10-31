@@ -9,6 +9,7 @@ const motionButton = document.querySelector('.motion');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const ROTATION_INTERVAL = 4500;
 const MOTION_KEY = 'challengegoal-motion';
+const SOURCE_PATTERN = /^[a-z0-9-]{1,32}$/;
 
 const screenListeners = new Set();
 const motionListeners = new Set();
@@ -82,6 +83,22 @@ window.setInterval(() => {
   const index = buttons.findIndex((button) => button.dataset.screen === currentScreen);
   showScreen(buttons[(index + 1) % buttons.length].dataset.screen, false);
 }, ROTATION_INTERVAL);
+
+function tagStoreLinks() {
+  const source = new URLSearchParams(window.location.search).get('k');
+  if (!source || !SOURCE_PATTERN.test(source)) {
+    return;
+  }
+  for (const link of document.querySelectorAll('.stores a')) {
+    const url = new URL(link.href);
+    if (url.hostname === 'play.google.com') {
+      url.searchParams.set('referrer', `utm_source=${source}&utm_medium=social`);
+      link.href = url.toString();
+    }
+  }
+}
+
+tagStoreLinks();
 
 function supportsScene() {
   try {
