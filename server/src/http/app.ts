@@ -49,6 +49,7 @@ import type { AppleTokens } from '../accounts/apple-tokens';
 import type { IdentityVerifiers } from '../accounts/identity';
 import { createAccountService, type AuthenticatedSession } from '../accounts/service';
 import { createPresence, isAdminKey } from '../admin/access';
+import { MemberNotFoundError, createMembers, type MemberDetail, type MemberSummary } from '../admin/members';
 import { NO_LIVE_PLAY, createAdminStats, type AdminStats, type LiveSnapshot } from '../admin/stats';
 import { createAds, type AdRewardOutcome, type AdSettings } from '../ads/service';
 import type { ServerConfig } from '../config';
@@ -246,6 +247,14 @@ const BROADCAST = {
     },
   },
 } as const;
+const MEMBER_TEST = {
+  body: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['test'],
+    properties: { test: { type: 'boolean' } },
+  },
+} as const;
 const HISTORY_QUERY = {
   querystring: {
     type: 'object',
@@ -355,6 +364,7 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
     broadcasts,
     startedAt: now(),
   });
+  const members = createMembers(database, { now, timeZone: config.timeZone });
 
   const session = (request: FastifyRequest): AuthenticatedSession | null => {
     const header = request.headers.authorization;
@@ -472,6 +482,38 @@ export function buildApp(dependencies: AppDependencies): FastifyInstance {
         }
         throw error;
       }
+    },
+  );
+
+  const memberOf = <T>(read: () => T): T => {
+    try {
+      return read();
+    } catch (error) {
+      if (error instanceof MemberNotFoundError) {
+        throw new ApiError('not-found');
+      }
+      throw error;
+    }
+  };
+
+  app.get(`${API_PREFIX}/admin/members`, (request, reply): { generatedAt: number; members: MemberSummary[] } => {
+    requireAdmin(request);
+    void reply.header('Cache-Control', 'no-store');
+    return { generatedAt: now(), members: members.list() };
+  });
+
+  app.get<{ Params: { id: string } }>(`${API_PREFIX}/admin/members/:id`, (request, reply): MemberDetail => {
+    requireAdmin(request);
+    void reply.header('Cache-Control', 'no-store');
+    return memberOf(() => members.detail(request.params.id));
+  });
+
+  app.put<{ Params: { id: string }; Body: { test: boolean } }>(
+    `${API_PREFIX}/admin/members/:id/test`,
+    { schema: MEMBER_TEST, preValidation: async (request) => requireAdmin(request) },
+    (request, reply): { test: boolean } => {
+      void reply.header('Cache-Control', 'no-store');
+      return { test: memberOf(() => members.markTest(request.params.id, request.body.test)) };
     },
   );
 

@@ -451,6 +451,9 @@ Hepsi `/v1` altındadır ve JSON konuşur. Oturum, `Authorization: Bearer <jeton
 | `POST /matches/<kimlik>/protection` | Kaybedilen puanı 5 golle geri alır; yeni bakiyeyi döner. Gol yetmezse `not-enough-goals`, maç uygun değilse ya da zaten korunduysa `protection-unavailable` |
 | `GET /admin/stats` | Yönetim panelinin sayıları; oturum değil yönetim anahtarı ister |
 | `POST /admin/notifications` | Bildirimi açık cihazlara elle duyuru gönderir; yönetim anahtarı ister |
+| `GET /admin/members` | Bot dışındaki bütün hesapların özet listesi (üyeler sekmesi); yönetim anahtarı ister |
+| `GET /admin/members/:id` | Bir hesabın ayrıntısı: oyunlara göre sonuçlar, son 20 maç, gol, satın alma, bulmaca, cihaz; yönetim anahtarı ister |
+| `PUT /admin/members/:id/test` | Hesabı test hesabı olarak işaretler ya da işareti kaldırır (`{ test }`); yönetim anahtarı ister |
 | `GET /ads` | Bakiye, bugün kalan reklam hakkı ve reklam başına ödül |
 | `GET /ads/reward` | AdMob'un imzalı ödül bildirimi; oturum istemez |
 | `POST /purchases` | Gol paketi satın alması: mağaza (`ios` ya da `android`), ürün kimliği ve kanıt. Cevapta yazılan gol ve yeni bakiye |
@@ -555,6 +558,11 @@ Kullanıcının isteğiyle eklendi (8 Ekim 2026): uygulamanın anlık ve günlü
   - Her gönderim `broadcasts` tablosuna yazılır (metinler, cihaz, atlanan, reddedilen, durum); son 10 kayıt panelde listelenir. Bildirim servisi hata verirse kayıt "Hata" olur; bir kısmı gitmiş olabilir. Sunucu gönderim sırasında yeniden başlarsa yarım kalan kayıt açılışta "Hata"ya çevrilir.
   - Bildirimin türü `announcement`; uygulama bu türü bir ekrana bağlamaz, dokununca uygulama açılır. Bu yüzden uygulama güncellemesi gerekmez.
   - Bildirimi uygulamadan kapatan oyuncunun cihaz anahtarı sunucuda olmadığı için ona gitmez.
+- **Üyeler sekmesi** (1 Kasım 2026, kullanıcının isteğiyle). Panelin üstünde "Genel" ve "Üyeler" sekmeleri var; `#members` adresi doğrudan üyeler sekmesini açar. Kod `server/src/admin/members.ts`.
+  - **Liste.** Bot dışındaki bütün hesaplar (misafirler dahil) tek seferde gelir; arama (kullanıcı adı ya da e-posta), Hepsi / Üye / Misafir süzgeci ve sütun başlığına tıklayarak sıralama tarayıcıda yapılır. Sütunlar: kullanıcı ve e-posta, giriş yöntemi, kayıt, son görülme (oturumun son kullanımı), maç, galibiyet-yenilgi-beraberlik, terk, son 7 günde maç, oynadığı gün, en çok oynadığı oyun, seviye, gol bakiyesi, satın alma (üzerine gelince Türkiye liste fiyatıyla tahmini tutar), ödüllü reklam, günlük seri, cihaz ve dil. Liste kendiliğinden yenilenmez, "Yenile" düğmesi var.
+  - **Tanımlar.** Terk: rakibin maçı terkle kazandığı maç (bağlantı kopması dahil). Oynadığı gün: en az bir maç biten farklı gün sayısı (panelin saat dilimine göre). Günlük seri: son ödül bugün ya da dün alındıysa seri, değilse 0. Seviye: oyun puanlarının toplamından (`levelFor`). Cihaz ve dil yalnızca bildirim izni verilmişse (`push_tokens`) ya da satın alma varsa (mağaza) bilinir; sunucu başka cihaz bilgisi tutmuyor.
+  - **Ayrıntı.** Satıra tıklayınca açılan pencerede özet kartları; hesap (kayıt, son görülme, giriş yöntemleri ve e-postaları, kullanıcı adını seçip seçmediği, açık oturum, ilk ve son maç, günlük ödül); cihazlar; oyunlara göre maç, sonuç, terk, insana ve bota karşı maç, puan ve en iyi puan; son 20 maç (rakip, bot / gizli bot / insan ayrımı, tür, zorluk, sonuç, bitiş nedeni, süre, puan değişimi); gol hareketlerinin toplamı ve son 20 hareket; satın almalar ve ödüllü reklamlar; son 14 günün bulmacası. Rakip `bots` tablosundaysa ve maç türü `bot` ise "bot", sıra maçıysa "gizli bot" yazar.
+  - **Test hesapları.** Ayrıntı penceresindeki düğmeyle işaretlenir (`test_accounts` tablosu). İşaretli hesaplar üyeler sekmesinin listesinde ve özet sayılarında varsayılan olarak gizlidir, "Test hesaplarını göster" ile görünür. Genel sekmedeki sayılar test hesaplarını hâlâ sayar.
 
 ## Online maç
 

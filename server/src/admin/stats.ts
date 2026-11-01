@@ -66,7 +66,7 @@ const SERIES_DAYS = 14;
 const CACHE_LIFETIME = 3000;
 const MEGABYTE = 1024 * 1024;
 const REAL_USER = 'id NOT IN (SELECT user_id FROM bots)';
-const LIST_PRICES: Readonly<Record<string, number>> = {
+export const LIST_PRICES: Readonly<Record<string, number>> = {
   goals_cg_30: 39.99,
   goals_cg_100: 99.99,
   goals_cg_250: 199.99,

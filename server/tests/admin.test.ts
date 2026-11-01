@@ -3,6 +3,7 @@ import type { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createPresence, isAdminKey } from '../src/admin/access';
+import type { MemberDetail, MemberSummary } from '../src/admin/members';
 import type { AdminStats } from '../src/admin/stats';
 import type { ServerConfig } from '../src/config';
 import { openDatabase, type Database } from '../src/database';
@@ -30,7 +31,7 @@ let database: Database;
 let app: FastifyInstance;
 let time: number;
 
-async function call<T>(method: 'GET' | 'POST', url: string, token?: string, payload?: object) {
+async function call<T>(method: 'GET' | 'POST' | 'PUT', url: string, token?: string, payload?: object) {
   const response = await app.inject({ method, url, payload, headers: token ? { authorization: `Bearer ${token}` } : {} });
   const json = response.headers['content-type']?.toString().includes('json');
   return { status: response.statusCode, headers: response.headers, text: response.body, body: (json ? response.json() : undefined) as T };
@@ -89,6 +90,7 @@ describe('admin panel', () => {
     expect(page.headers['cache-control']).toBe('no-store');
     expect(page.headers['x-robots-tag']).toContain('noindex');
     expect(page.text).toContain('/v1/admin/stats');
+    expect(page.text).toContain('/v1/admin/members');
   });
 
   it('counts accounts, activity, purchases and goals', async () => {
@@ -127,6 +129,114 @@ describe('admin panel', () => {
     expect(next.live.online).toBe(0);
     expect(next.days.at(-1)).toMatchObject({ day: '2026-10-09', newUsers: 0, dailyRewards: 0 });
     expect(next.days.at(-2)).toMatchObject({ day: '2026-10-08', newUsers: 1, dailyRewards: 1 });
+  });
+});
+
+describe('admin members', () => {
+  const members = async () => (await call<{ members: MemberSummary[] }>('GET', '/v1/admin/members', KEY)).body.members;
+
+  function recordMatch(id: string, x: string, o: string, winner: 'x' | 'o' | null, reason: string, kind = 'queue', game = 'grid') {
+    database
+      .prepare(
+        `INSERT INTO matches (id, kind, market, difficulty, grid_id, x_user_id, o_user_id, x_username, o_username, winner, reason,
+           x_cells, o_cells, move_count, started_at, finished_at, game)
+         VALUES (?, ?, 'tr', 1, 0, ?, ?, ?, ?, ?, ?, 0, 0, 0, ?, ?, ?)`,
+      )
+      .run(id, kind, x, o, x, o, winner, reason, time - 90_000, time - 60_000, game);
+  }
+
+  function addBot(id: string) {
+    database
+      .prepare('INSERT INTO users (id, username, username_key, is_guest, created_at, updated_at) VALUES (?, ?, ?, 0, ?, ?)')
+      .run(id, id, id, time, time);
+    database.prepare("INSERT INTO bots (user_id, market, created_at) VALUES (?, 'tr', ?)").run(id, time);
+  }
+
+  async function players() {
+    const guest = (await call<AuthResponse>('POST', '/v1/auth/guest')).body;
+    const member = (
+      await call<AuthResponse>('POST', '/v1/auth/register', undefined, {
+        username: 'Listed',
+        email: 'listed@example.com',
+        password: 'Abcdefg1',
+      })
+    ).body;
+    return { guest: guest.account.id, member: member.account.id, memberToken: member.token };
+  }
+
+  it('opens only with the key', async () => {
+    expect((await call('GET', '/v1/admin/members')).status).toBe(401);
+    expect((await call('GET', '/v1/admin/members/someone', 'wrong-key')).status).toBe(401);
+    expect((await call('PUT', '/v1/admin/members/someone/test', 'wrong-key', { test: true })).status).toBe(401);
+  });
+
+  it('lists every account except bots with what they played', async () => {
+    const { guest, member, memberToken } = await players();
+    addBot('bot-1');
+    recordMatch('m1', member, guest, 'x', 'line');
+    recordMatch('m2', guest, member, 'x', 'forfeit');
+    recordMatch('m3', member, 'bot-1', null, 'score', 'bot', 'chain');
+    await call('POST', '/v1/daily', memberToken);
+
+    const list = await members();
+    expect(list.map((entry) => entry.id).sort()).toEqual([guest, member].sort());
+    expect(list.find((entry) => entry.id === member)).toMatchObject({
+      username: 'Listed',
+      guest: false,
+      test: false,
+      methods: ['email'],
+      email: 'listed@example.com',
+      matches: 3,
+      wins: 1,
+      losses: 1,
+      draws: 1,
+      quits: 1,
+      matchesWeek: 3,
+      playedDays: 1,
+      favoriteGame: 'grid',
+      streak: 1,
+      goals: expect.any(Number),
+    });
+    expect(list.find((entry) => entry.id === guest)).toMatchObject({ guest: true, methods: [], email: null, matches: 2, wins: 1, quits: 0 });
+  });
+
+  it('shows one account in detail and tells bots from people', async () => {
+    const { guest, member, memberToken } = await players();
+    addBot('bot-1');
+    addBot('bot-2');
+    await call('POST', '/v1/daily', memberToken);
+    recordMatch('m1', member, guest, 'x', 'line');
+    recordMatch('m2', member, 'bot-1', 'o', 'score', 'bot', 'chain');
+    recordMatch('m3', 'bot-2', member, 'o', 'cells');
+
+    const detail = (await call<MemberDetail>('GET', `/v1/admin/members/${member}`, KEY)).body;
+    expect(detail.summary.id).toBe(member);
+    expect(detail.signIns).toEqual([{ method: 'email', email: 'listed@example.com', createdAt: time }]);
+    expect(detail.sessions.active).toBe(1);
+    expect(detail.recent.map((match) => [match.id, match.opponentType, match.outcome])).toEqual(
+      expect.arrayContaining([
+        ['m1', 'person', 'win'],
+        ['m2', 'bot', 'loss'],
+        ['m3', 'hidden-bot', 'win'],
+      ]),
+    );
+    expect(detail.recent[0]?.seconds).toBe(30);
+    expect(detail.games.find((game) => game.game === 'grid')).toMatchObject({ matches: 2, wins: 2, againstPeople: 1, againstBots: 1 });
+    expect(detail.movements.map((movement) => movement.reason)).toContain('daily');
+    expect(detail.daily).toMatchObject({ streak: 1, lastDay: '2026-10-08' });
+
+    expect((await call('GET', '/v1/admin/members/bot-1', KEY)).status).toBe(404);
+    expect((await call('GET', '/v1/admin/members/nobody', KEY)).status).toBe(404);
+  });
+
+  it('marks and unmarks test accounts', async () => {
+    const { member } = await players();
+    expect((await call<{ test: boolean }>('PUT', `/v1/admin/members/${member}/test`, KEY, { test: true })).body).toEqual({ test: true });
+    expect((await members()).find((entry) => entry.id === member)?.test).toBe(true);
+    await call('PUT', `/v1/admin/members/${member}/test`, KEY, { test: false });
+    expect((await members()).find((entry) => entry.id === member)?.test).toBe(false);
+    expect((await call('PUT', `/v1/admin/members/${member}/test`, KEY, { test: 'yes' })).status).toBe(400);
+    expect((await call('PUT', '/v1/admin/members/nobody/test', KEY, { test: true })).status).toBe(404);
   });
 });
 

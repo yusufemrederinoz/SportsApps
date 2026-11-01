@@ -220,6 +220,12 @@ const MIGRATIONS: readonly string[] = [
     created_at INTEGER NOT NULL
   ) STRICT;
   `,
+  `
+  CREATE TABLE test_accounts (
+    user_id TEXT PRIMARY KEY REFERENCES users (id) ON DELETE CASCADE,
+    created_at INTEGER NOT NULL
+  ) STRICT;
+  `,
 ];
 
 export function migrate(database: Database, now: number = Date.now()): void {

@@ -371,6 +371,188 @@
         color: var(--red);
       }
 
+      .tabs {
+        display: flex;
+        gap: 4px;
+        margin-top: 4px;
+        border-bottom: 1px solid var(--stroke);
+      }
+
+      .tabs button {
+        min-height: 42px;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        background: none;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .tabs button[aria-selected='true'] {
+        border-bottom-color: var(--volt);
+        color: var(--text);
+      }
+
+      .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+        margin: 10px 0;
+      }
+
+      .toolbar input[type='search'] {
+        width: 280px;
+        min-height: 36px;
+      }
+
+      .toolbar .check {
+        margin: 0;
+      }
+
+      .segment {
+        display: inline-flex;
+        overflow: hidden;
+        border: 1px solid var(--stroke);
+        border-radius: 8px;
+      }
+
+      .segment button {
+        border: 0;
+        border-radius: 0;
+      }
+
+      .segment button[aria-pressed='true'] {
+        background: var(--volt);
+        color: var(--ink);
+        font-weight: 700;
+      }
+
+      .count {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      #memberTable th[data-sort] {
+        cursor: pointer;
+        user-select: none;
+      }
+
+      #memberTable th[aria-sort] {
+        color: var(--text);
+      }
+
+      #memberTable tbody tr {
+        cursor: pointer;
+      }
+
+      #memberTable tbody tr:hover td,
+      #memberTable tbody tr:focus td {
+        background: var(--raised);
+      }
+
+      #memberTable tbody tr:focus {
+        outline: none;
+      }
+
+      .who small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .badge {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 6px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        vertical-align: middle;
+      }
+
+      .badge.guest {
+        background: var(--raised);
+        color: var(--muted);
+      }
+
+      .badge.test {
+        background: var(--gold);
+        color: var(--ink);
+      }
+
+      .win {
+        color: var(--volt);
+      }
+
+      .loss {
+        color: var(--red);
+      }
+
+      dialog {
+        width: min(1100px, calc(100vw - 24px));
+        max-height: calc(100vh - 24px);
+        padding: 0;
+        border: 1px solid var(--stroke);
+        border-radius: 14px;
+        background: var(--background);
+        color: var(--text);
+      }
+
+      dialog::backdrop {
+        background: rgba(5, 7, 10, 0.78);
+      }
+
+      .sheet-head {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px 14px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--stroke);
+        background: var(--background);
+      }
+
+      .sheet-head h2 {
+        margin: 0;
+        color: var(--text);
+        font-size: 20px;
+        letter-spacing: 0;
+        text-transform: none;
+      }
+
+      .sheet-head code {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .sheet-head .spacer {
+        flex: 1;
+      }
+
+      .sheet-body {
+        padding: 0 20px 20px;
+      }
+
+      .facts {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 6px 16px;
+        margin: 0;
+      }
+
+      .facts dt {
+        color: var(--muted);
+      }
+
+      .facts dd {
+        margin: 0;
+      }
+
       [hidden] {
         display: none !important;
       }
@@ -402,50 +584,92 @@
     </form>
 
     <main id="board" hidden>
-      <h2>Şu an</h2>
-      <div class="cards" id="live"></div>
+      <nav class="tabs" role="tablist">
+        <button type="button" role="tab" id="tabOverview" aria-selected="true">Genel</button>
+        <button type="button" role="tab" id="tabPeople" aria-selected="false">Üyeler</button>
+      </nav>
 
-      <h2>Oyuncular</h2>
-      <div class="cards" id="users"></div>
+      <section id="overview">
+        <h2>Şu an</h2>
+        <div class="cards" id="live"></div>
 
-      <h2>Son 14 gün</h2>
-      <div class="columns" id="charts"></div>
+        <h2>Oyuncular</h2>
+        <div class="cards" id="users"></div>
 
-      <h2>Maçlar</h2>
-      <div class="cards" id="matches"></div>
-      <div class="columns" style="margin-top: 10px">
-        <div class="box"><h3>Oyuna göre</h3><table id="games"></table></div>
-        <div class="box"><h3>Türe göre</h3><table id="kinds"></table></div>
-      </div>
+        <h2>Son 14 gün</h2>
+        <div class="columns" id="charts"></div>
 
-      <h2>Gol, satın alma ve reklam</h2>
-      <div class="cards" id="money"></div>
-      <div class="columns" style="margin-top: 10px">
-        <div class="box"><h3>Satın almalar</h3><table id="products"></table></div>
-        <div class="box"><h3>Gol hareketleri</h3><table id="movements"></table></div>
-      </div>
-
-      <h2>Diğer</h2>
-      <div class="cards" id="other"></div>
-
-      <h2>Bildirim gönder</h2>
-      <div class="box" id="announce">
-        <p class="note" style="margin-top: 0">
-          Bildirimi açık olan cihazlara gider. Her cihaz kendi dilindeki metni alır; metni yazılmayan diller atlanır ya da
-          aşağıdaki seçenekle İngilizce metni alır. Gönderilen bildirim geri alınamaz.
-        </p>
-        <div class="languages" id="texts"></div>
-        <label class="check"><input type="checkbox" id="fallback" checked /> Metni boş kalan dillere İngilizce metni gönder</label>
-        <p class="outcome" id="reach"></p>
-        <div class="actions">
-          <button type="button" class="primary" id="send" disabled>Gönder</button>
-          <button type="button" class="primary" id="confirm" hidden></button>
-          <button type="button" id="cancel" hidden>Vazgeç</button>
+        <h2>Maçlar</h2>
+        <div class="cards" id="matches"></div>
+        <div class="columns" style="margin-top: 10px">
+          <div class="box"><h3>Oyuna göre</h3><table id="games"></table></div>
+          <div class="box"><h3>Türe göre</h3><table id="kinds"></table></div>
         </div>
-        <p class="outcome" id="outcome" role="status"></p>
-      </div>
-      <div class="box" style="margin-top: 10px"><h3>Son gönderilenler</h3><table id="sent"></table></div>
+
+        <h2>Gol, satın alma ve reklam</h2>
+        <div class="cards" id="money"></div>
+        <div class="columns" style="margin-top: 10px">
+          <div class="box"><h3>Satın almalar</h3><table id="products"></table></div>
+          <div class="box"><h3>Gol hareketleri</h3><table id="movements"></table></div>
+        </div>
+
+        <h2>Diğer</h2>
+        <div class="cards" id="other"></div>
+
+        <h2>Bildirim gönder</h2>
+        <div class="box" id="announce">
+          <p class="note" style="margin-top: 0">
+            Bildirimi açık olan cihazlara gider. Her cihaz kendi dilindeki metni alır; metni yazılmayan diller atlanır ya da
+            aşağıdaki seçenekle İngilizce metni alır. Gönderilen bildirim geri alınamaz.
+          </p>
+          <div class="languages" id="texts"></div>
+          <label class="check"><input type="checkbox" id="fallback" checked /> Metni boş kalan dillere İngilizce metni gönder</label>
+          <p class="outcome" id="reach"></p>
+          <div class="actions">
+            <button type="button" class="primary" id="send" disabled>Gönder</button>
+            <button type="button" class="primary" id="confirm" hidden></button>
+            <button type="button" id="cancel" hidden>Vazgeç</button>
+          </div>
+          <p class="outcome" id="outcome" role="status"></p>
+        </div>
+        <div class="box" style="margin-top: 10px"><h3>Son gönderilenler</h3><table id="sent"></table></div>
+      </section>
+
+      <section id="people" hidden>
+        <h2>Hesaplar</h2>
+        <div class="cards" id="peopleCards"></div>
+        <div class="toolbar">
+          <input type="search" id="peopleSearch" placeholder="Kullanıcı adı ya da e-posta ara" aria-label="Hesap ara" />
+          <div class="segment" id="peopleFilter">
+            <button type="button" data-filter="all" aria-pressed="true">Hepsi</button>
+            <button type="button" data-filter="members" aria-pressed="false">Üye</button>
+            <button type="button" data-filter="guests" aria-pressed="false">Misafir</button>
+          </div>
+          <label class="check"><input type="checkbox" id="peopleTests" /> Test hesaplarını göster</label>
+          <button type="button" id="peopleRefresh">Yenile</button>
+          <span class="count" id="peopleCount"></span>
+        </div>
+        <div class="box"><table id="memberTable"></table></div>
+        <p class="note" id="peopleState"></p>
+        <p class="note">
+          Botlar listede yok. Terk, rakibin maçı terkle kazandığı maçlardır (bağlantı kopması dahil). Gün, en az bir maç oynanan farklı
+          gün sayısıdır. Cihaz ve dil bildirim izninden ya da satın almadan bilinir. Liste kendiliğinden yenilenmez; satıra tıklayınca
+          ayrıntı açılır.
+        </p>
+      </section>
     </main>
+
+    <dialog id="member" aria-labelledby="memberName">
+      <div class="sheet-head">
+        <h2 id="memberName"></h2>
+        <span id="memberBadges"></span>
+        <code id="memberId"></code>
+        <span class="spacer"></span>
+        <button type="button" id="memberTest" hidden></button>
+        <button type="button" id="memberClose">Kapat</button>
+      </div>
+      <div class="sheet-body" id="memberBody"></div>
+    </dialog>
 
     <footer id="foot" hidden></footer>
 
@@ -476,6 +700,23 @@
       const PLATFORM_NAMES = { ios: 'App Store', android: 'Google Play' };
       const LANGUAGE_NAMES = { tr: 'Türkçe', en: 'İngilizce', de: 'Almanca', es: 'İspanyolca', fr: 'Fransızca', it: 'İtalyanca' };
       const STATUS_NAMES = { sending: 'Gönderiliyor', sent: 'Gönderildi', failed: 'Hata' };
+      const METHOD_NAMES = { email: 'E-posta', google: 'Google', apple: 'Apple' };
+      const DEVICE_NAMES = { ios: 'iPhone', android: 'Android' };
+      const OUTCOME_NAMES = { win: 'Galibiyet', loss: 'Yenilgi', draw: 'Berabere' };
+      const OPPONENT_NOTES = { person: '', bot: ' (bot)', 'hidden-bot': ' (gizli bot)' };
+      const FINISH_NAMES = {
+        line: 'Üçlü',
+        cells: 'Hücre sayısı',
+        misses: 'Az hata',
+        second: 'Eşitlikte ikinci',
+        forfeit: 'Terk',
+        score: 'Skor',
+        speed: 'Eşitlikte hız',
+      };
+      const AD_NAMES = { goals: 'Gol ödülü', protection: 'Puan koruma' };
+      const MEMBER_FILTERS = { all: () => true, members: (member) => !member.guest, guests: (member) => member.guest };
+      const MEMBERS_HASH = '#members';
+      const DAY_MILLISECONDS = 24 * 60 * 60 * 1000;
       const FALLBACK_LANGUAGE = 'en';
       const TITLE_MAX_LENGTH = 80;
       const BODY_MAX_LENGTH = 240;
@@ -490,6 +731,13 @@
       let audience = [];
       let sending = false;
       let armed = false;
+      let members = [];
+      let memberFilter = 'all';
+      let memberSearch = '';
+      let showTests = false;
+      let memberSort = { key: 'lastSeenAt', descending: true };
+      let openMemberId = null;
+      let openMember = null;
 
       const languageName = (language) => LANGUAGE_NAMES[language] ?? language.toUpperCase();
 
@@ -734,6 +982,381 @@
         element('foot').textContent = `Günler ${stats.timeZone} saatine göre sayılır. Sayfa ${REFRESH_INTERVAL / 1000} saniyede bir yenilenir.`;
       }
 
+      const dateText = (time) =>
+        time ? new Date(time).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+      const dayText = (time) => (time ? new Date(time).toLocaleDateString('tr-TR') : '—');
+      const gameName = (game) => (game ? (GAME_NAMES[game] ?? game) : '—');
+      const methodsText = (member) =>
+        member.methods.length ? member.methods.map((method) => METHOD_NAMES[method] ?? method).join(', ') : 'Misafir';
+      const deviceText = (member) =>
+        [DEVICE_NAMES[member.platform] ?? member.platform, member.language?.toUpperCase()].filter(Boolean).join(' · ') || '—';
+      const badges = (member) =>
+        `${member.guest ? '<span class="badge guest">Misafir</span>' : ''}${member.test ? '<span class="badge test">Test</span>' : ''}`;
+      const record = (item) => `${number(item.wins)}-${number(item.losses)}-${number(item.draws)}`;
+
+      function ago(time) {
+        if (!time) {
+          return '—';
+        }
+        const minutes = Math.max(0, Math.round((Date.now() - time) / 60000));
+        if (minutes < 1) {
+          return 'şimdi';
+        }
+        if (minutes < 60) {
+          return `${minutes} dk önce`;
+        }
+        const hours = Math.round(minutes / 60);
+        return hours < 24 ? `${hours} sa önce` : `${Math.round(hours / 24)} gün önce`;
+      }
+
+      function seconds(total) {
+        const minutes = Math.floor(total / 60);
+        return minutes ? `${minutes} dk ${total % 60} sn` : `${total} sn`;
+      }
+
+      const MEMBER_COLUMNS = [
+        {
+          key: 'username',
+          label: 'Kullanıcı',
+          sort: (member) => member.username.toLocaleLowerCase('tr-TR'),
+          cell: (member) =>
+            `<span class="who">${escapeText(member.username)}${badges(member)}${
+              member.email ? `<small>${escapeText(member.email)}</small>` : ''
+            }</span>`,
+        },
+        { key: 'methods', label: 'Giriş', sort: methodsText, cell: (member) => escapeText(methodsText(member)) },
+        { key: 'createdAt', label: 'Kayıt', cell: (member) => escapeText(dayText(member.createdAt)) },
+        {
+          key: 'lastSeenAt',
+          label: 'Son görülme',
+          cell: (member) => `<span title="${escapeText(dateText(member.lastSeenAt))}">${escapeText(ago(member.lastSeenAt))}</span>`,
+        },
+        { key: 'matches', label: 'Maç' },
+        { key: 'wins', label: 'G-M-B', cell: (member) => record(member) },
+        { key: 'quits', label: 'Terk' },
+        { key: 'matchesWeek', label: '7 günde maç' },
+        { key: 'playedDays', label: 'Gün' },
+        {
+          key: 'favoriteGame',
+          label: 'En çok',
+          sort: (member) => gameName(member.favoriteGame),
+          cell: (member) => escapeText(gameName(member.favoriteGame)),
+        },
+        { key: 'level', label: 'Seviye', cell: (member) => `<span title="${number(member.points)} puan">${number(member.level)}</span>` },
+        { key: 'goals', label: 'Gol' },
+        {
+          key: 'purchases',
+          label: 'Satın alma',
+          cell: (member) =>
+            member.purchases ? `<span title="${escapeText(money(member.listValue))}">${number(member.purchases)}</span>` : '0',
+        },
+        { key: 'ads', label: 'Reklam' },
+        { key: 'streak', label: 'Seri' },
+        { key: 'platform', label: 'Cihaz', sort: deviceText, cell: (member) => escapeText(deviceText(member)) },
+      ];
+
+      async function adminFetch(path, options = {}) {
+        const headers = { Authorization: `Bearer ${localStorage.getItem(STORAGE_KEY)}` };
+        if (options.body) {
+          headers['Content-Type'] = 'application/json';
+        }
+        const response = await fetch(path, { ...options, headers, cache: 'no-store' });
+        if (response.status === 401) {
+          leave('Anahtar kabul edilmedi.');
+        } else if (response.status === 429) {
+          leave('Çok fazla yanlış deneme. Bir dakika sonra tekrar dene.');
+        }
+        if (!response.ok) {
+          throw new Error(String(response.status));
+        }
+        return response.json();
+      }
+
+      function visibleMembers() {
+        const query = memberSearch.trim().toLocaleLowerCase('tr-TR');
+        const column = MEMBER_COLUMNS.find((candidate) => candidate.key === memberSort.key);
+        const value = column.sort ?? ((member) => member[column.key] ?? 0);
+        const direction = memberSort.descending ? -1 : 1;
+        return members
+          .filter((member) => showTests || !member.test)
+          .filter(MEMBER_FILTERS[memberFilter])
+          .filter(
+            (member) =>
+              !query ||
+              member.username.toLocaleLowerCase('tr-TR').includes(query) ||
+              (member.email ?? '').toLocaleLowerCase('tr-TR').includes(query),
+          )
+          .sort((first, second) => {
+            const left = value(first);
+            const right = value(second);
+            return (left < right ? -1 : left > right ? 1 : 0) * direction;
+          });
+      }
+
+      function renderMembers() {
+        const counted = members.filter((member) => showTests || !member.test);
+        const weekAgo = Date.now() - 7 * DAY_MILLISECONDS;
+        const buyers = counted.filter((member) => member.purchases > 0);
+        const tests = members.filter((member) => member.test).length;
+        element('peopleCards').innerHTML = [
+          card(
+            'hesap',
+            number(counted.length),
+            `${number(counted.filter((member) => !member.guest).length)} üye, ${number(counted.filter((member) => member.guest).length)} misafir`,
+          ),
+          card('maç oynamış', number(counted.filter((member) => member.matches > 0).length), 'en az bir maç oynayan hesap'),
+          card('7 günde görülen', number(counted.filter((member) => member.lastSeenAt >= weekAgo).length)),
+          card('7 günde maç oynayan', number(counted.filter((member) => member.matchesWeek > 0).length)),
+          card('satın alan', number(buyers.length), money(buyers.reduce((sum, member) => sum + member.listValue, 0))),
+          card('test hesabı', number(tests), showTests ? 'listede ve sayılarda' : 'listede ve bu sayılarda gizli'),
+        ].join('');
+
+        const shown = visibleMembers();
+        element('peopleCount').textContent = `${number(shown.length)} hesap gösteriliyor`;
+        const head = MEMBER_COLUMNS.map((column) => {
+          const sorted = column.key === memberSort.key;
+          const arrow = sorted ? (memberSort.descending ? ' ↓' : ' ↑') : '';
+          const state = sorted ? ` aria-sort="${memberSort.descending ? 'descending' : 'ascending'}"` : '';
+          return `<th data-sort="${column.key}"${state}>${escapeText(column.label)}${arrow}</th>`;
+        }).join('');
+        const body = shown.length
+          ? shown
+              .map(
+                (member) =>
+                  `<tr data-id="${escapeText(member.id)}" tabindex="0">${MEMBER_COLUMNS.map(
+                    (column) => `<td>${column.cell ? column.cell(member) : number(member[column.key])}</td>`,
+                  ).join('')}</tr>`,
+              )
+              .join('')
+          : `<tr><td colspan="${MEMBER_COLUMNS.length}">Bu süzgece uyan hesap yok</td></tr>`;
+        element('memberTable').innerHTML = `<thead><tr>${head}</tr></thead><tbody>${body}</tbody>`;
+      }
+
+      async function loadMembers() {
+        element('peopleState').textContent = 'Yükleniyor…';
+        try {
+          const payload = await adminFetch('/v1/admin/members');
+          members = payload.members;
+          element('peopleState').textContent = `Liste ${new Date(payload.generatedAt).toLocaleTimeString('tr-TR')} itibarıyla.`;
+          renderMembers();
+        } catch {
+          element('peopleState').textContent = 'Liste alınamadı. Yenile ile tekrar dene.';
+        }
+      }
+
+      function box(title, content) {
+        return `<div class="box"><h3>${escapeText(title)}</h3>${content}</div>`;
+      }
+
+      function facts(pairs) {
+        return `<dl class="facts">${pairs.map(([label, value]) => `<dt>${escapeText(label)}</dt><dd>${escapeText(value)}</dd>`).join('')}</dl>`;
+      }
+
+      function renderMember(detail) {
+        const { summary } = detail;
+        openMember = detail;
+        element('memberName').textContent = summary.username;
+        element('memberBadges').innerHTML = badges(summary);
+        element('memberId').textContent = summary.id;
+        element('memberTest').hidden = false;
+        element('memberTest').disabled = false;
+        element('memberTest').textContent = summary.test ? 'Test işaretini kaldır' : 'Test hesabı olarak işaretle';
+
+        const signIns = detail.signIns.length
+          ? detail.signIns.map((signIn) => [
+              METHOD_NAMES[signIn.method] ?? signIn.method,
+              `${signIn.email ?? 'e-posta yok'} · ${dayText(signIn.createdAt)}`,
+            ])
+          : [['Giriş', 'Misafir (giriş yöntemi yok)']];
+        const daily = detail.daily
+          ? `${number(summary.streak)} gün (en iyi ${number(detail.daily.bestStreak)}, son ödül ${detail.daily.lastDay})`
+          : 'Hiç almadı';
+        const adRewards = detail.adRewards.map((ad) => `${AD_NAMES[ad.kind] ?? ad.kind}: ${number(ad.count)}`).join(', ');
+        const devices = detail.devices.length
+          ? `<table>${table(
+              ['Telefon', 'Dil', 'Güncelleme'],
+              detail.devices.map((device) => [
+                DEVICE_NAMES[device.platform] ?? device.platform,
+                languageName(device.language),
+                dateText(device.updatedAt),
+              ]),
+            )}</table>`
+          : `<p class="note" style="margin-top: 0">Bildirim izni yok.${
+              summary.platform ? ` Satın almadan bilinen: ${escapeText(DEVICE_NAMES[summary.platform] ?? summary.platform)}.` : ''
+            }</p>`;
+
+        element('memberBody').innerHTML = `
+          <h2>Özet</h2>
+          <div class="cards">
+            ${card('maç', number(summary.matches), `G-M-B ${record(summary)}, terk ${number(summary.quits)}`)}
+            ${card('seviye', number(summary.level), `${number(summary.points)} puan`)}
+            ${card('gol bakiyesi', number(summary.goals))}
+            ${card('oynadığı gün', number(summary.playedDays), `son 7 günde ${number(summary.matchesWeek)} maç`)}
+            ${card('günlük seri', number(summary.streak), detail.daily ? `en iyi ${number(detail.daily.bestStreak)}` : 'hiç almadı')}
+          </div>
+          <h2>Hesap ve cihaz</h2>
+          <div class="columns">
+            ${box(
+              'Hesap',
+              facts([
+                ['Kayıt', dateText(summary.createdAt)],
+                ['Son görülme', `${ago(summary.lastSeenAt)} (${dateText(summary.lastSeenAt)})`],
+                ...signIns,
+                ['Kullanıcı adı', detail.usernamePending ? 'Henüz seçmedi' : 'Seçti'],
+                ['Açık oturum', number(detail.sessions.active)],
+                ['İlk maç', dateText(detail.firstMatchAt)],
+                ['Son maç', dateText(summary.lastMatchAt)],
+                ['Günlük ödül', daily],
+              ]),
+            )}
+            ${box('Cihaz', devices)}
+          </div>
+          <h2>Oyunlar</h2>
+          ${box(
+            'Oyunlara göre',
+            `<table>${table(
+              ['Oyun', 'Maç', 'G-M-B', 'Terk', 'İnsana karşı', 'Bota karşı', 'Puan', 'En iyi', 'Son maç'],
+              detail.games.map((game) => [
+                gameName(game.game),
+                number(game.matches),
+                record(game),
+                number(game.quits),
+                number(game.againstPeople),
+                number(game.againstBots),
+                number(game.points),
+                number(game.bestPoints),
+                dateText(game.lastPlayedAt),
+              ]),
+            )}</table>`,
+          )}
+          <div style="margin-top: 10px">
+            ${box(
+              `Son ${detail.recent.length} maç`,
+              `<table>${table(
+                ['Zaman', 'Oyun', 'Tür', 'Zorluk', 'Rakip', 'Sonuç', 'Neden', 'Süre', 'Puan'],
+                detail.recent.map((match) => [
+                  dateText(match.finishedAt),
+                  gameName(match.game),
+                  KIND_NAMES[match.kind] ?? match.kind,
+                  String(match.difficulty),
+                  `${match.opponent}${OPPONENT_NOTES[match.opponentType] ?? ''}`,
+                  OUTCOME_NAMES[match.outcome] ?? match.outcome,
+                  FINISH_NAMES[match.reason] ?? match.reason,
+                  seconds(match.seconds),
+                  match.pointsChange === null ? '—' : `${match.pointsChange > 0 ? '+' : ''}${number(match.pointsChange)}`,
+                ]),
+              )}</table>`,
+            )}
+          </div>
+          <h2>Gol, satın alma ve reklam</h2>
+          <div class="columns">
+            ${box(
+              'Gol hareketleri (toplam)',
+              `<table>${table(
+                ['Neden', 'Hareket', 'Gol'],
+                detail.movementTotals.map((movement) => [
+                  REASON_NAMES[movement.reason] ?? movement.reason,
+                  number(movement.count),
+                  number(movement.amount),
+                ]),
+              )}</table>`,
+            )}
+            ${box(
+              'Son gol hareketleri',
+              `<table>${table(
+                ['Zaman', 'Neden', 'Gol', 'Bakiye'],
+                detail.movements.map((movement) => [
+                  dateText(movement.createdAt),
+                  REASON_NAMES[movement.reason] ?? movement.reason,
+                  `${movement.amount > 0 ? '+' : ''}${number(movement.amount)}`,
+                  number(movement.balance),
+                ]),
+              )}</table>`,
+            )}
+            ${box(
+              'Satın almalar',
+              `<table>${table(
+                ['Zaman', 'Paket', 'Mağaza', 'Gol'],
+                detail.purchases.map((purchase) => [
+                  dateText(purchase.createdAt),
+                  purchase.productId,
+                  PLATFORM_NAMES[purchase.platform] ?? purchase.platform,
+                  number(purchase.goals),
+                ]),
+              )}</table><p class="note">Ödüllü reklam: ${escapeText(adRewards || 'hiç izlemedi')}</p>`,
+            )}
+          </div>
+          <h2>Günün Bulmacası</h2>
+          ${box(
+            `Son ${detail.puzzles.length} gün`,
+            `<table>${table(
+              ['Gün', 'Durum', 'Kalan hak', 'Ödül'],
+              detail.puzzles.map((puzzle) => [
+                puzzle.day,
+                puzzle.finished ? 'Bitirdi' : 'Yarım bıraktı',
+                number(puzzle.guessesLeft),
+                puzzle.rewardGoals === null ? '—' : number(puzzle.rewardGoals),
+              ]),
+            )}</table>`,
+          )}`;
+      }
+
+      async function showMember(id) {
+        openMemberId = id;
+        openMember = null;
+        const listed = members.find((member) => member.id === id);
+        element('memberName').textContent = listed?.username ?? '';
+        element('memberBadges').innerHTML = listed ? badges(listed) : '';
+        element('memberId').textContent = id;
+        element('memberTest').hidden = true;
+        element('memberBody').innerHTML = '<p class="note">Yükleniyor…</p>';
+        if (!element('member').open) {
+          element('member').showModal();
+        }
+        try {
+          const detail = await adminFetch(`/v1/admin/members/${encodeURIComponent(id)}`);
+          if (openMemberId === id) {
+            renderMember(detail);
+          }
+        } catch {
+          if (openMemberId === id) {
+            element('memberBody').innerHTML = '<p class="error">Ayrıntı alınamadı.</p>';
+          }
+        }
+      }
+
+      async function toggleTest() {
+        if (!openMember) {
+          return;
+        }
+        const { id, test } = openMember.summary;
+        element('memberTest').disabled = true;
+        try {
+          const result = await adminFetch(`/v1/admin/members/${encodeURIComponent(id)}/test`, {
+            method: 'PUT',
+            body: JSON.stringify({ test: !test }),
+          });
+          members = members.map((member) => (member.id === id ? { ...member, test: result.test } : member));
+          renderMembers();
+          await showMember(id);
+        } catch {
+          element('memberTest').disabled = false;
+          element('memberTest').textContent = 'Kaydedilemedi, tekrar dene';
+        }
+      }
+
+      function showTab(name) {
+        const people = name === 'members';
+        element('overview').hidden = people;
+        element('people').hidden = !people;
+        element('tabOverview').setAttribute('aria-selected', String(!people));
+        element('tabPeople').setAttribute('aria-selected', String(people));
+        history.replaceState(null, '', people ? MEMBERS_HASH : location.pathname);
+        if (people && members.length === 0) {
+          void loadMembers();
+        }
+      }
+
       function show(signedIn) {
         element('login').hidden = signedIn;
         element('board').hidden = !signedIn;
@@ -745,6 +1368,10 @@
         clearInterval(timer);
         timer = null;
         localStorage.removeItem(STORAGE_KEY);
+        members = [];
+        if (element('member').open) {
+          element('member').close();
+        }
         element('problem').textContent = message ?? '';
         show(false);
       }
@@ -781,6 +1408,7 @@
         clearInterval(timer);
         timer = setInterval(refresh, REFRESH_INTERVAL);
         void refresh();
+        showTab(location.hash === MEMBERS_HASH ? 'members' : 'overview');
       }
 
       element('login').addEventListener('submit', (event) => {
@@ -809,6 +1437,53 @@
         say('', '');
       });
       element('confirm').addEventListener('click', () => void announce());
+      element('tabOverview').addEventListener('click', () => showTab('overview'));
+      element('tabPeople').addEventListener('click', () => showTab('members'));
+      element('peopleSearch').addEventListener('input', (event) => {
+        memberSearch = event.target.value;
+        renderMembers();
+      });
+      element('peopleFilter').addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-filter]');
+        if (!button) {
+          return;
+        }
+        memberFilter = button.dataset.filter;
+        element('peopleFilter')
+          .querySelectorAll('button')
+          .forEach((candidate) => candidate.setAttribute('aria-pressed', String(candidate === button)));
+        renderMembers();
+      });
+      element('peopleTests').addEventListener('change', (event) => {
+        showTests = event.target.checked;
+        renderMembers();
+      });
+      element('peopleRefresh').addEventListener('click', () => void loadMembers());
+      element('memberTable').addEventListener('click', (event) => {
+        const header = event.target.closest('th[data-sort]');
+        if (header) {
+          const key = header.dataset.sort;
+          memberSort = { key, descending: memberSort.key === key ? !memberSort.descending : key !== 'username' };
+          renderMembers();
+          return;
+        }
+        const row = event.target.closest('tr[data-id]');
+        if (row) {
+          void showMember(row.dataset.id);
+        }
+      });
+      element('memberTable').addEventListener('keydown', (event) => {
+        const row = event.target.closest('tr[data-id]');
+        if (row && event.key === 'Enter') {
+          void showMember(row.dataset.id);
+        }
+      });
+      element('memberClose').addEventListener('click', () => element('member').close());
+      element('memberTest').addEventListener('click', () => void toggleTest());
+      element('member').addEventListener('close', () => {
+        openMemberId = null;
+        openMember = null;
+      });
 
       if (localStorage.getItem(STORAGE_KEY)) {
         start();

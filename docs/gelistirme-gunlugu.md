@@ -1195,6 +1195,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Video isteği.** Beşiktaş ve Trabzonspor'un aynı gün maçı olduğu için (Trabzonspor–Gaziantep FK, Kasımpaşa–Beşiktaş) bu iki takımın yer aldığı, Kariyer Yolu'ndan farklı bir oyun tarzında soru videosu istendi. Seçenekli sorularla: Zincir (bu modla ilk soru videosu), "rakip takılır, sen bitir" akışı, maça değinmeyen zamansız kanca "ZİNCİRİ SEN TAMAMLA", Beşiktaşlı rakip adı (kartal1903), zincir Salah → Fatih Tekke → Burak Yılmaz → Vlahović. Salah ile Fabinho'nun Ağustos 2026'da Trabzonspor'a, Vlahović'in Beşiktaş'a geçtiği haberlerden doğrulandı.
 - **Üretim.** `cut=quiz-chain` ve `qchain` sahnesi eklendi. Önizlemede başlığın kural satırına değmesi, sondaki yazıların sıkışması ve "SÜRE DOLDU!" damgasının Vlahović kartını örtmesi düzeltildi. Çıktı `data/build/promo/videos/quiz/challengegoal-tr-quiz-chain.mp4`, paylaşım metni `captions/challengegoal-tr-quiz-chain.txt`. Maç günü yalnızca paylaşım metninin ilk cümlesinde geçiyor, video başka gün de kullanılabilir.
 
+### Yönetim panelinde üyeler sekmesi (1 Kasım 2026)
+
+- **İstek.** Kullanıcı yönetim panelinde üye listesi ve her üyenin ne kadar oynadığı gibi ayrıntıları gösteren bir sayfa istedi. Seçenekli sorularla: panelde yeni sekme, misafirler dahil süzgeçli liste, ayrıntıda oyun geçmişi, bağlılık, cihaz ve giriş, gol ve satın almanın hepsi, test hesapları panelden işaretlenip varsayılan olarak gizlensin.
+- **Yapılan.** `GET /v1/admin/members`, `GET /v1/admin/members/:id`, `PUT /v1/admin/members/:id/test` uçları, `test_accounts` tablosu (göç 17) ve panelde "Üyeler" sekmesi. Sunucuda bot dışında 96 hesap olduğu için liste tek seferde geliyor; arama, süzgeç ve sıralama tarayıcıda.
+- **Doğrulama.** Sunucu testleri (302) geçti; yerel geliştirme veritabanının kopyasıyla panel başsız Chrome'da açıldı, liste, sıralama, ayrıntı penceresi ve test işareti denendi, telefon genişliğinde tablo kutunun içinde kayıyor.
+- **Bilinen sınır.** Cihaz ve dil yalnızca bildirim izninden ya da satın almadan biliniyor; bildirime izin vermeyen misafirin telefonu görünmez. Genel sekmedeki sayılar test hesaplarını dışarıda bırakmıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
