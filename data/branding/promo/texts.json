@@ -165,6 +165,18 @@
         "send": "Arkadaşına at,<br />bakalım bilecek mi.",
         "note": "Kariyer uygulamanın verisine göredir."
       },
+      "chain": {
+        "hook": ["ZİNCİRİ SEN", "TAMAMLA"],
+        "rule": "Son futbolcuyla aynı kulüpte oynamış birini söyle.",
+        "round": "TUR 5 · 3 TUR ALAN KAZANIR",
+        "need": "Vlahović'le aynı kulüpte oynamış biri lazım.",
+        "timeUp": "SÜRE DOLDU!",
+        "won": "KAZANDIN!",
+        "call": "SEN OLSAN KİMİ YAZARDIN? 👇",
+        "hint": "Vlahović'le aynı kulüpte oynamış biri.",
+        "send": "Arkadaşına at, o bulur mu bakalım.",
+        "note": "Bağlantılar uygulamanın verisine göredir."
+      },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
         "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],

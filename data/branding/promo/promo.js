@@ -45,6 +45,11 @@ const CUTS = {
     ['friend', 3.6],
     ['finale', 5.1],
   ],
+  'quiz-chain': [
+    ['qchain', 18.6],
+    ['friend', 3.6],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -80,6 +85,9 @@ const FOOTBALLERS = {
   burak: { id: 18765, name: 'Burak Yılmaz', short: 'Burak', position: 'FW' },
   hagi: { id: 189892, name: 'Gheorghe Hagi', short: 'Hagi', position: 'MF' },
   quaresma: { id: 188241, name: 'Ricardo Quaresma', short: 'Quaresma', position: 'FW' },
+  salah: { id: 1354960, name: 'Mohamed Salah', short: 'Salah', position: 'FW' },
+  tekke: { id: 559158, name: 'Fatih Tekke', short: 'Tekke', position: 'FW' },
+  vlahovic: { id: 23762815, name: 'Dušan Vlahović', short: 'Vlahović', position: 'FW' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -167,6 +175,23 @@ const QUIZ = {
       { years: '2013–2017', name: 'Galatasaray', crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
       { years: '2017–2018', name: 'OGC Nice', crest: { code: 'NIC', pattern: 'stripes', colors: ['#D0121A', '#000000'] } },
     ],
+  },
+  chain: {
+    rival: 'kartal1903',
+    scores: [2, 2],
+    seed: { footballer: 'salah', side: 'o', at: 2.2 },
+    links: [
+      { footballer: 'tekke', side: 'x', club: 'TRABZONSPOR', at: 4.4, typed: [3.2, 4.1], seconds: 20 },
+      { footballer: 'burak', side: 'o', club: 'BEŞİKTAŞ', at: 6.4, seconds: 20 },
+      { footballer: 'vlahovic', side: 'x', club: 'BEŞİKTAŞ', at: 8.7, typed: [7.4, 8.4], seconds: 18 },
+    ],
+    stuckSeconds: 18,
+    urgent: 5,
+    timeUp: 13.3,
+    won: 13.9,
+    call: 14.8,
+    hint: 15.5,
+    send: 16.3,
   },
   friend: { code: 'K7R4X' },
 };
@@ -728,8 +753,9 @@ function phone(side, name, criteria, time, content) {
   </div>`;
 }
 
-function stamp(kind, text, time) {
-  return `<div class="q-stamp ${kind}"><strong class="display in slam" style="--t: ${time}">${text}</strong></div>`;
+function stamp(kind, text, time, top = null) {
+  const style = top === null ? '' : ` style="top: ${top}px"`;
+  return `<div class="q-stamp ${kind}"${style}><strong class="display in slam" style="--t: ${time}">${text}</strong></div>`;
 }
 
 function qauction(texts, start) {
@@ -957,6 +983,101 @@ function qcareer(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function qchain(texts, start) {
+  const q = texts.quiz.chain;
+  const plan = QUIZ.chain;
+  const time = (offset) => at(start, offset);
+  const seed = { ...plan.seed, at: time(plan.seed.at) };
+  const said = plan.links.map((link) => ({ ...link, at: time(link.at) }));
+  const links = [seed].concat(said);
+  const last = said[said.length - 1];
+  const timeUp = time(plan.timeUp);
+  const won = time(plan.won);
+  const call = time(plan.call);
+  const stuckRate = plan.stuckSeconds / (plan.timeUp - plan.links[plan.links.length - 1].at);
+  const sides = { ...texts, sides: { ...texts.sides, rival: plan.rival } };
+
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(time(offset), 'impact', index === 1 ? 1 : 0.6));
+  cue(seed.at, 'whoosh', 0.6);
+  cue(at(seed.at, 0.2), 'impact', 0.5);
+  said.forEach((link) => {
+    cue(link.at, 'whoosh', 0.5);
+    cue(at(link.at, 0.25), 'correct', link.side === 'x' ? 0.8 : 0.5);
+  });
+  for (let left = plan.stuckSeconds - 1; left >= 1; left -= 1) {
+    const share = (plan.stuckSeconds - left) / plan.stuckSeconds;
+    cue(at(last.at, (plan.stuckSeconds - left) / stuckRate), 'tick', 0.3 + share * 0.35, 0.9 + share * 0.6);
+  }
+  cue(timeUp, 'whistle', 0.8);
+  cue(at(timeUp, 0.1), 'impact', 1);
+  cue(won, 'win', 0.9);
+  cue(call, 'impact', 0.6);
+
+  const turns = [[seed.at, 'you', 20]]
+    .concat(
+      said.map((link, index) => {
+        const next = said[index + 1];
+        const side = link.side === 'x' ? 'rival' : 'you';
+        return next ? [link.at, side, next.seconds] : [link.at, side, plan.stuckSeconds, stuckRate, plan.urgent];
+      }),
+    )
+    .concat([[timeUp, 'done', 0, 1, 1]]);
+  const [yours, theirs] = plan.scores;
+  const scores = {
+    you: [
+      [seed.at, String(yours)],
+      [won, String(yours + 1)],
+    ],
+    rival: [[seed.at, String(theirs)]],
+  };
+  const turnTexts = [[seed.at, texts.chain.yourTurn, 'you']]
+    .concat(said.map((link) => [link.at, link.side === 'x' ? texts.chain.theirTurn : texts.chain.yourTurn, link.side === 'x' ? 'rival' : 'you']));
+  const vias = [[seed.at, '']].concat(said.map((link) => [link.at, fill(texts.chain.via, { club: link.club })]));
+  const cards = links.map((link, index) => {
+    const until = index + 1 < links.length ? links[index + 1].at : NEVER;
+    return `<div class="layer state" style="--start: ${link.at}; --end: ${until}">${card(texts, link.footballer, link.side, 'flip shiny', link.at)}</div>`;
+  });
+  const trail = said.map((link, index) => {
+    const previous = FOOTBALLERS[links[index].footballer];
+    return `<div class="node in pop" style="--t: ${link.at}"><i><img src="/portraits/${previous.id}.webp" alt="" /></i>${previous.short}</div><div class="link in pop" style="--t: ${at(link.at, 0.1)}">${link.club}</div>`;
+  });
+  const entries = said
+    .filter((link) => link.typed)
+    .map((link) => ({
+      text: FOOTBALLERS[link.footballer].name,
+      from: time(link.typed[0]),
+      until: time(link.typed[1]),
+      release: at(link.at, 0.1),
+    }));
+
+  return `${titleLines(q.hook, start)}
+    <p class="q-line q-rule in rise" style="--t: ${time(1)}">${q.rule}</p>
+    <p class="centered last-label q-round in rise" style="--t: ${time(1.5)}">${q.round}</p>
+    ${scoreboard(sides, time(1.5), turns, scores, 576)}
+    <div class="trail">${trail.join('')}</div>
+    <p class="centered last-label in rise" style="--t: ${time(1.9)}">${texts.chain.last}</p>
+    <div class="last">${cards.join('')}</div>
+    <div class="layer state" style="--start: ${start}; --end: ${timeUp}">
+      <p class="centered via" ${scripted('steps', vias)}></p>
+      <div class="display centered turn in rise" style="--t: ${at(seed.at, 0.2)}" ${scripted('steps', turnTexts)}>${texts.chain.yourTurn}</div>
+    </div>
+    <div class="layer state" style="--start: ${start}; --end: ${last.at}">
+      ${typing(entries, texts.chain.search, 'in rise', at(seed.at, 0.2))}
+    </div>
+    <div class="layer state" style="--start: ${last.at}; --end: ${timeUp}">
+      <p class="q-line q-need in rise" style="--t: ${at(last.at, 0.4)}">${q.need}</p>
+    </div>
+    <div class="layer state" style="--start: ${timeUp}; --end: ${NEVER}">
+      <div class="q-shout caught"><strong class="display in slam" style="--t: ${timeUp}">${q.timeUp}</strong></div>
+    </div>
+    ${stamp('win', q.won, won)}
+    <div class="display centered q-call in slam" style="--t: ${call}" data-fit>${q.call}</div>
+    <p class="q-line q-hint in rise" style="--t: ${time(plan.hint)}">${q.hint} ${texts.quiz.more}</p>
+    <p class="q-line q-hint send in rise" style="--t: ${time(plan.send)}">${q.send}</p>
+    <p class="q-note">${q.note}</p>`;
+}
+
 function friend(texts, start) {
   const f = texts.quiz.friend;
   const letters = QUIZ.friend.code.split('');
@@ -972,7 +1093,7 @@ function friend(texts, start) {
     <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, qcareer, friend };
+const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, qcareer, qchain, friend };
 
 function video(texts) {
   let start = 0;
@@ -1046,10 +1167,12 @@ const APPLY = {
   },
   clock(element, turns, seconds) {
     const current = turns.findLast(([time]) => seconds >= time);
-    const elapsed = current ? Math.floor(seconds - current[0] + 1e-6) : 0;
-    const text = String(Math.max(0, TURN_SECONDS - elapsed));
+    const [startedAt = 0, state, length = TURN_SECONDS, rate = 1, urgent = 0] = current ?? [];
+    const elapsed = current ? Math.floor((seconds - startedAt) * rate + 1e-6) : 0;
+    const left = Math.max(0, length - elapsed);
+    const text = String(left);
     if (element.textContent !== text) element.textContent = text;
-    if (current) element.dataset.state = current[1];
+    if (current) element.dataset.state = urgent > 0 && left <= urgent ? 'urgent' : state;
   },
   countdown(element, { from, start, rate = 1, urgent: threshold = Math.min(3, Math.ceil(from / 3)) }, seconds) {
     const left = Math.min(from, Math.max(0, from - (seconds - start) * rate));

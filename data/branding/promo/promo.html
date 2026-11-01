@@ -363,6 +363,11 @@
         color: var(--blue);
       }
 
+      .clock[data-state="urgent"] {
+        border-color: var(--negative);
+        color: var(--negative);
+      }
+
       .panel {
         position: absolute;
         left: 70px;
@@ -2473,6 +2478,80 @@
         font-style: italic;
         font-size: 52px;
         color: var(--text);
+      }
+
+      .qchain .q-rule {
+        top: 458px;
+        font-size: 40px;
+        color: var(--body);
+      }
+
+      .qchain .q-round {
+        top: 532px;
+      }
+
+      .qchain .trail {
+        top: 752px;
+      }
+
+      .qchain .node {
+        font-size: 30px;
+      }
+
+      .qchain .link {
+        font-size: 25px;
+      }
+
+      .qchain .last-label:not(.q-round) {
+        top: 918px;
+      }
+
+      .qchain .last {
+        top: 962px;
+      }
+
+      .qchain .via {
+        top: 1300px;
+      }
+
+      .qchain .turn {
+        top: 1356px;
+      }
+
+      .qchain .search {
+        top: 1456px;
+      }
+
+      .qchain .q-need {
+        top: 1476px;
+        font-size: 46px;
+        color: var(--body);
+      }
+
+      .qchain .q-shout.caught {
+        top: 752px;
+      }
+
+      .qchain .q-shout.caught strong {
+        font-size: 104px;
+      }
+
+      .qchain .q-stamp {
+        top: 1262px;
+      }
+
+      .qchain .q-call {
+        top: 1460px;
+      }
+
+      .qchain .q-hint {
+        top: 1590px;
+        font-size: 46px;
+      }
+
+      .qchain .q-hint.send {
+        top: 1690px;
+        font-size: 50px;
       }
 
       .q-call {
