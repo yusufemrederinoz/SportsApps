@@ -50,6 +50,10 @@ const CUTS = {
     ['friend', 3.6],
     ['finale', 5.1],
   ],
+  'reel-shirts': [
+    ['shirts', 16.4],
+    ['signature', 3],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -88,6 +92,14 @@ const FOOTBALLERS = {
   salah: { id: 1354960, name: 'Mohamed Salah', short: 'Salah', position: 'FW' },
   tekke: { id: 559158, name: 'Fatih Tekke', short: 'Tekke', position: 'FW' },
   vlahovic: { id: 23762815, name: 'Dušan Vlahović', short: 'Vlahović', position: 'FW' },
+  kuyt: { id: 294214, name: 'Dirk Kuyt', short: 'Kuyt', position: 'FW' },
+  meireles: { id: 175296, name: 'Raúl Meireles', short: 'Meireles', position: 'MF' },
+  skrtel: { id: 192913, name: 'Martin Škrtel', short: 'Škrtel', position: 'DF' },
+  moses: { id: 295637, name: 'Victor Moses', short: 'Moses', position: 'MF' },
+  yakin: { id: 122346, name: 'Hakan Yakın', short: 'Yakın', position: 'FW' },
+  meira: { id: 310206, name: 'Fernando Meira', short: 'Meira', position: 'DF' },
+  kabak: { id: 53280628, name: 'Ozan Kabak', short: 'Kabak', position: 'DF' },
+  insua: { id: 351797, name: 'Emiliano Insúa', short: 'Insúa', position: 'DF' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -195,6 +207,45 @@ const QUIZ = {
   },
   friend: { code: 'K7R4X' },
 };
+const SHIRT_CLUBS = {
+  FB: { name: 'FENERBAHÇE', crest: { code: 'FB', pattern: 'stripes', colors: ['#FFED00', '#163962'] } },
+  LIV: { name: 'LIVERPOOL', crest: { code: 'LIV', pattern: 'plain', colors: ['#C8102E', '#FFFFFF'] } },
+  GS: { name: 'GALATASARAY', crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
+  VFB: { name: 'STUTTGART', crest: { code: 'VFB', pattern: 'band', colors: ['#FFFFFF', '#E32219'] } },
+};
+const SHIRTS = {
+  pairs: [
+    {
+      at: 1.8,
+      clubs: ['FB', 'LIV'],
+      day: 'wednesday',
+      players: [
+        { key: 'kuyt', at: 0.6, stints: [['LIV', '2006–2012'], ['FB', '2012–2015']] },
+        { key: 'meireles', at: 1.4, stints: [['LIV', '2010–2011'], ['FB', '2012–2016']] },
+        { key: 'skrtel', at: 2.2, stints: [['LIV', '2008–2016'], ['FB', '2016–2019']] },
+        { key: 'moses', at: 3, stints: [['LIV', '2013–2014'], ['FB', '2019–2020']] },
+      ],
+    },
+    {
+      at: 7,
+      clubs: ['GS', 'VFB'],
+      day: 'tuesday',
+      players: [
+        { key: 'yakin', at: 0.6, stints: [['VFB', '2004–2005'], ['GS', '2005']] },
+        { key: 'meira', at: 1.4, stints: [['VFB', '2002–2008'], ['GS', '2008–2009']] },
+      ],
+    },
+  ],
+  twist: {
+    at: 10.6,
+    clubs: ['GS', 'VFB', 'LIV'],
+    players: [
+      { key: 'kabak', at: 1.1, stints: [['GS', '2017–2019'], ['VFB', '2019'], ['LIV', '2021']] },
+      { key: 'insua', at: 1.7, stints: [['LIV', '2007–2011'], ['GS', '2010–2011'], ['VFB', '2015–2020']] },
+    ],
+  },
+  call: 14.6,
+};
 const GRID = {
   moves: [
     { row: 0, column: 0, side: 'x', footballer: 'turan', at: 1.5, typed: [0.95, 1.4] },
@@ -287,6 +338,7 @@ function crest({ code, stroke, fields }) {
 
 const CREST_SHAPES = {
   plain: () => '',
+  band: (fill) => `<rect y="68" width="100" height="18" fill="${fill}"/>`,
   halves: (fill) => `<rect x="50" width="50" height="112" fill="${fill}"/>`,
   pale: (fill) => `<rect x="38" width="24" height="112" fill="${fill}"/>`,
   stripes: (fill) => [1, 3].map((index) => `<rect x="${8 + index * 16.8}" width="16.8" height="112" fill="${fill}"/>`).join(''),
@@ -1078,6 +1130,95 @@ function qchain(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function stints(list) {
+  return `<div class="stints">${list.map(([club, years]) => `<span>${appCrest(SHIRT_CLUBS[club].crest)}${years}</span>`).join('')}</div>`;
+}
+
+function shirtCards(texts, players, time) {
+  return players
+    .map((player) => {
+      const shown = time(player.at);
+      cue(shown, 'impact', 0.55);
+      return `<div class="shirt in pop" style="--t: ${shown}">${card(texts, player.key, 'x', 'shiny', shown)}${stints(player.stints)}</div>`;
+    })
+    .join('');
+}
+
+function shirts(texts, start) {
+  const r = texts.reel.shirts;
+  const time = (offset) => at(start, offset);
+  const [first] = SHIRTS.pairs;
+  const { twist } = SHIRTS;
+  const call = time(SHIRTS.call);
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(time(offset), 'impact', index === 1 ? 1 : 0.6));
+
+  const pairs = SHIRTS.pairs.map((pair, index) => {
+    const from = time(pair.at);
+    const next = SHIRTS.pairs[index + 1]?.at ?? twist.at;
+    const local = (offset) => at(from, offset);
+    const [home, away] = pair.clubs.map((club) => SHIRT_CLUBS[club]);
+    cue(at(from, -0.1), 'whoosh', 0.7);
+    cue(at(from, 0.15), 'impact', 0.8);
+    return `<div class="layer state" style="--start: ${from}; --end: ${time(next)}">
+      <div class="matchup in slam" style="--t: ${local(0.1)}"><i>${appCrest(home.crest)}</i><strong class="display" data-fit>${home.name}<em> × </em>${away.name}</strong><i>${appCrest(away.crest)}</i></div>
+      <p class="centered day in rise" style="--t: ${local(0.3)}">${r.days[pair.day]}</p>
+      <div class="shirt-grid ${pair.players.length > 2 ? '' : 'wide'}">${shirtCards(texts, pair.players, local)}</div>
+    </div>`;
+  });
+
+  const twistFrom = time(twist.at);
+  const twistLocal = (offset) => at(twistFrom, offset);
+  cue(at(twistFrom, -0.1), 'whoosh', 0.7);
+  cue(at(twistFrom, 0.7), 'correct', 0.9);
+  cue(call, 'impact', 0.8);
+  cue(at(call, 0.2), 'win', 0.6);
+  const crests = twist.clubs
+    .map((club, index) => `<i class="in pop" style="--t: ${twistLocal(0.6 + index * 0.12)}">${appCrest(SHIRT_CLUBS[club].crest)}</i>`)
+    .join('');
+  const duos = SHIRTS.pairs
+    .map((pair, index) => {
+      const [home, away] = pair.clubs.map((club) => `<i>${appCrest(SHIRT_CLUBS[club].crest)}</i>`);
+      return `<div class="duo in pop" style="--t: ${time(1 + index * 0.2)}">${home}<em class="display">×</em>${away}</div>`;
+    })
+    .join('');
+
+  return `<div class="display mark">CHALLENGE<span>GOAL</span></div>
+    <div class="layer state" style="--start: ${start}; --end: ${time(first.at)}">
+      <p class="eyebrow centered reel-eyebrow in rise" style="--t: ${time(0.1)}">${r.eyebrow}</p>
+      ${titleLines(r.hook, start, 'reel-title')}
+      <div class="crest-row hook-duos">${duos}</div>
+    </div>
+    ${pairs.join('')}
+    <div class="layer state" style="--start: ${twistFrom}; --end: ${NEVER}">
+      ${titleLines(r.twist, twistFrom, 'reel-title twist')}
+      <div class="crest-row">${crests}</div>
+      <div class="shirt-grid twist">${shirtCards(texts, twist.players, twistLocal)}</div>
+    </div>
+    <div class="display centered q-call in slam" style="--t: ${call}" data-fit>${r.call}</div>
+    <p class="q-line reel-more in rise" style="--t: ${at(call, 0.4)}">${r.more}</p>
+    <p class="q-note">${r.note}</p>`;
+}
+
+function signature(texts, start) {
+  cue(at(start, 0.05), 'whoosh', 0.7);
+  cue(at(start, 0.3), 'impact', 0.9);
+  cue(at(start, 0.8), 'impact', 0.7);
+  cue(at(start, 1.3), 'win', 0.7);
+  const pills = storeNames(texts).map(
+    (name, index) => `<div class="in ${index % 2 ? 'from-right' : 'from-left'}" style="--t: ${at(start, 1.1 + index * 0.1)}">${name}</div>`,
+  );
+  return `<canvas class="ball in pop" style="--t: ${at(start, 0.05)}" width="1400" height="1400" data-job="alev-large" data-count="79" data-at="0" data-rate="30" data-loop="1"></canvas>
+    <p class="eyebrow centered tagline in rise" style="--t: ${at(start, 0.2)}">${texts.reel.signature}</p>
+    <div class="display centered wordmark in slam" style="--t: ${at(start, 0.3)}">CHALLENGE<span>GOAL</span></div>
+    <i class="underline" style="--t: ${at(start, 0.55)}"></i>
+    <div class="centered promise in slam" style="--t: ${at(start, 0.8)}"><span class="display no-ads">${texts.noAds.title}</span></div>
+    <p class="eyebrow centered call in rise" style="--t: ${at(start, 1)}">${texts.end.call}</p>
+    <div class="stores">${pills.join('')}</div>
+    <p class="centered site in rise" style="--t: ${at(start, 1.3)}">${texts.end.site}</p>
+    <p class="notice in rise" style="--t: ${at(start, 1.45)}">${texts.end.notice}</p>`;
+}
+
 function friend(texts, start) {
   const f = texts.quiz.friend;
   const letters = QUIZ.friend.code.split('');
@@ -1093,7 +1234,26 @@ function friend(texts, start) {
     <div class="layer in rise" style="--t: ${at(start, 2)}"><div class="button primary press" style="top: 1370px; --t: ${at(start, 2.3)}">${f.button}</div></div>`;
 }
 
-const SCENES = { hook, play, duel, auction, chain, games, features, finale, qgrid, qhigher, qtop, qauction, qduel, qcareer, qchain, friend };
+const SCENES = {
+  hook,
+  play,
+  duel,
+  auction,
+  chain,
+  games,
+  features,
+  finale,
+  qgrid,
+  qhigher,
+  qtop,
+  qauction,
+  qduel,
+  qcareer,
+  qchain,
+  friend,
+  shirts,
+  signature,
+};
 
 function video(texts) {
   let start = 0;

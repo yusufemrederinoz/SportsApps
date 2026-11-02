@@ -184,6 +184,18 @@
         "button": "ODA KUR, KODU PAYLAŞ"
       }
     },
+    "reel": {
+      "shirts": {
+        "eyebrow": "ŞAMPİYONLAR LİGİ HAFTASI",
+        "hook": ["İKİ FORMAYI", "DA GİYDİLER"],
+        "twist": ["İKİSİ ÜÇ TAKIMDA", "DA OYNADI"],
+        "days": { "tuesday": "SALI AKŞAMI", "wednesday": "ÇARŞAMBA AKŞAMI" },
+        "call": "KAÇINI BİLİYORDUN? 👇",
+        "more": "Eksik varsa yoruma yaz.",
+        "note": "Yıllar uygulamanın verisine göredir."
+      },
+      "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"
+    },
     "poster": {
       "noAds": ["ZORUNLU", "REKLAM YOK"],
       "call": { "both": "GOOGLE PLAY VE APP STORE'DA ÜCRETSİZ", "play": "GOOGLE PLAY'DE ÜCRETSİZ", "apple": "APP STORE'DA ÜCRETSİZ" }

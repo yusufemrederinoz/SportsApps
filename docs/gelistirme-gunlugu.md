@@ -1207,6 +1207,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Durum.** "Rematch and reactions (1.1.0)" etkinliği Apple'ın incelemesinden geçti, App Store Connect'te `PUBLISHED`. 1 Kasım 09.00'dan (TSİ) 30 Kasım 23.00'e kadar 175 ülkede yayında; bağlantı `challengegoal://friend`. Herkese açık sayfası `https://apps.apple.com/tr/app/id6820528682?eventid=6829254761`.
 - **Öne çıkarılma başvurusu.** `SUBMITTED` (31 Ekim). Bu başvurunun onay ya da ret aşaması yok, Apple editörleri seçerse uygulama öne çıkarılır, seçmezse haber verilmez. Başvuruya bağlı etkinlik yok (taslak etkinlik bağlanamamıştı).
 
+### Yön değişikliği: gündem videoları, "İki formayı da giydiler" (2 Kasım 2026)
+
+- **İstek.** Kullanıcı Şampiyonlar Ligi haftası için bir Instagram videosu istedi, ardından şimdiye kadarki videoların çok çalışmadığını söyleyip yönü viral olabilecek, yalnızca oyun odaklı olmayan videolara çevirdi. Bu kalıcı bir karar olarak hafızaya yazıldı.
+- **Seçimler.** Bu haftanın Türk maçları Salı Galatasaray–Stuttgart ve Çarşamba Fenerbahçe–Liverpool (Fanatik'in fikstür haberinden). Seçenekli sorularla: konu "İki formayı da giydiler", uygulama yalnızca sonda kısa imza ve köşede küçük yazı, süre 15–20 saniye. Kullanıcı "İkisi üçünü de giydi" başlığının dilini bozuk buldu, "İkisi üç takımda da oynadı" oldu.
+- **Üretim.** `cut=reel-shirts` kurgusu, `shirts` ve `signature` sahneleri. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-shirts.mp4`, paylaşım metni `captions/challengegoal-tr-reel-shirts.txt`. Önizlemede açılışın alt yarısının boş kalması (iki maçın armaları eklendi) ve dört kartın 3+1 dizilmesi (2×2 yapıldı) düzeltildi.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

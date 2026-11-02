@@ -40,7 +40,7 @@ const options = Object.fromEntries(extras.map((extra) => extra.split('=')));
 const cut = options.cut ?? 'short';
 const stores = options.stores ?? 'both';
 const name = ['challengegoal', language, cut === 'short' ? null : cut, stores === 'both' ? null : stores].filter(Boolean).join('-');
-const series = cut.startsWith('quiz') ? 'quiz' : 'showcase';
+const series = cut.startsWith('quiz') ? 'quiz' : cut.startsWith('reel') ? 'reels' : 'showcase';
 const folders = {
   videos: join(BUILD, 'videos', series),
   posts: join(BUILD, 'posts'),

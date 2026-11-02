@@ -1287,7 +1287,8 @@
         color: var(--body);
       }
 
-      .finale .ball {
+      .finale .ball,
+      .signature .ball {
         position: absolute;
         top: -230px;
         left: -316px;
@@ -1296,21 +1297,27 @@
         transform-origin: 63% 54%;
       }
 
-      .finale .wordmark {
+      .finale .wordmark,
+      .signature .wordmark {
         top: 836px;
         font-size: 158px;
       }
 
       .finale .wordmark span,
+      .signature .wordmark span,
+      .shirts .mark span,
       .poster .brand span {
         color: var(--volt);
       }
 
-      .finale .wordmark span {
+      .finale .wordmark span,
+      .signature .wordmark span,
+      .shirts .mark span {
         text-shadow: 0 0 60px rgba(200, 255, 46, 0.5);
       }
 
-      .finale .underline {
+      .finale .underline,
+      .signature .underline {
         position: absolute;
         top: 998px;
         left: 250px;
@@ -1323,16 +1330,19 @@
         animation: grow 0.5s cubic-bezier(0.3, 0.9, 0.3, 1) calc(var(--t) * 1s) both;
       }
 
-      .finale .promise {
+      .finale .promise,
+      .signature .promise {
         top: 1052px;
       }
 
-      .finale .promise .no-ads {
+      .finale .promise .no-ads,
+      .signature .promise .no-ads {
         padding: 14px 30px 8px;
         font-size: 76px;
       }
 
-      .finale .call {
+      .finale .call,
+      .signature .call {
         top: 1208px;
       }
 
@@ -1359,7 +1369,8 @@
         font-size: 56px;
       }
 
-      .finale .site {
+      .finale .site,
+      .signature .site {
         top: 1404px;
         font-family: var(--display);
         font-weight: 700;
@@ -1367,7 +1378,8 @@
         letter-spacing: 0.04em;
       }
 
-      .finale .notice {
+      .finale .notice,
+      .signature .notice {
         position: absolute;
         top: 1488px;
         left: 110px;
@@ -2552,6 +2564,183 @@
       .qchain .q-hint.send {
         top: 1690px;
         font-size: 50px;
+      }
+
+      .shirts .mark {
+        position: absolute;
+        top: 196px;
+        left: 70px;
+        font-size: 36px;
+        letter-spacing: 0.02em;
+      }
+
+      .shirts .reel-eyebrow {
+        top: 600px;
+      }
+
+      .shirts .q-title.reel-title {
+        top: 670px;
+        text-align: center;
+      }
+
+      .shirts .reel-title span,
+      .shirts .reel-title em {
+        transform-origin: center;
+      }
+
+      .shirts .q-title.twist {
+        top: 310px;
+        font-size: 120px;
+      }
+
+      .matchup {
+        position: absolute;
+        top: 330px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 22px;
+      }
+
+      .matchup i {
+        flex: none;
+        width: 90px;
+        height: 101px;
+      }
+
+      .matchup svg,
+      .crest-row svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .matchup strong {
+        min-width: 0;
+        font-size: 64px;
+        white-space: nowrap;
+      }
+
+      .matchup em {
+        font-style: normal;
+        color: var(--volt);
+      }
+
+      .shirts .day {
+        top: 450px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 34px;
+        letter-spacing: 0.16em;
+        color: var(--muted);
+      }
+
+      .shirt-grid {
+        position: absolute;
+        top: 530px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        grid-template-columns: repeat(2, max-content);
+        justify-content: center;
+        gap: 34px 70px;
+        --u: 1.2;
+      }
+
+      .shirt-grid.wide {
+        top: 570px;
+        --u: 1.5;
+      }
+
+      .shirt-grid.twist {
+        top: 720px;
+        --u: 1.3;
+      }
+
+      .shirt {
+        width: calc(216px * var(--u));
+      }
+
+      .stints {
+        display: grid;
+        gap: 6px;
+        margin-top: 12px;
+      }
+
+      .stints span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 32px;
+        color: var(--text);
+      }
+
+      .stints svg {
+        flex: none;
+        width: 32px;
+        height: 36px;
+      }
+
+      .crest-row {
+        position: absolute;
+        top: 570px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        justify-content: center;
+        gap: 36px;
+      }
+
+      .crest-row i {
+        width: 104px;
+        height: 116px;
+      }
+
+      .shirts .q-call {
+        top: 1330px;
+      }
+
+      .shirts .reel-more {
+        top: 1445px;
+        font-size: 48px;
+        color: var(--body);
+      }
+
+      .crest-row.hook-duos {
+        top: 1000px;
+        gap: 90px;
+      }
+
+      .duo {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+
+      .duo i {
+        width: 120px;
+        height: 134px;
+      }
+
+      .duo svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .duo em {
+        font-size: 64px;
+        font-style: normal;
+        color: var(--volt);
+      }
+
+      .signature .tagline {
+        top: 760px;
+        font-size: 34px;
       }
 
       .q-call {
