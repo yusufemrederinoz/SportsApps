@@ -1202,6 +1202,11 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Doğrulama.** Sunucu testleri (302) geçti; yerel geliştirme veritabanının kopyasıyla panel başsız Chrome'da açıldı, liste, sıralama, ayrıntı penceresi ve test işareti denendi, telefon genişliğinde tablo kutunun içinde kayıyor.
 - **Bilinen sınır.** Cihaz ve dil yalnızca bildirim izninden ya da satın almadan biliniyor; bildirime izin vermeyen misafirin telefonu görünmez. Genel sekmedeki sayılar test hesaplarını dışarıda bırakmıyor.
 
+### App Store etkinliğinin yayını (2 Kasım 2026)
+
+- **Durum.** "Rematch and reactions (1.1.0)" etkinliği Apple'ın incelemesinden geçti, App Store Connect'te `PUBLISHED`. 1 Kasım 09.00'dan (TSİ) 30 Kasım 23.00'e kadar 175 ülkede yayında; bağlantı `challengegoal://friend`. Herkese açık sayfası `https://apps.apple.com/tr/app/id6820528682?eventid=6829254761`.
+- **Öne çıkarılma başvurusu.** `SUBMITTED` (31 Ekim). Bu başvurunun onay ya da ret aşaması yok, Apple editörleri seçerse uygulama öne çıkarılır, seçmezse haber verilmez. Başvuruya bağlı etkinlik yok (taslak etkinlik bağlanamamıştı).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
