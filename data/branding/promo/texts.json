@@ -198,7 +198,7 @@
         "eyebrow": "BU AKŞAM · ŞAMPİYONLAR LİGİ",
         "hook": ["HER MEVKİDE", "BİRİNİ SEÇ"],
         "lead": "5 eşleşme. Her birinde birini seç, sonda yoruma yaz.",
-        "hint": "Seçmek için videoyu durdur",
+        "critical": "Bizce kritik eşleşmeler şunlar 👇",
         "step": "{{n}}/{{total}}",
         "roles": { "centerBack": "STOPER", "leftBack": "SOL BEK", "midfield": "ORTA SAHA", "winger": "KANAT", "striker": "FORVET" },
         "stats": ["MAÇ", "GOL", "ASİST"],

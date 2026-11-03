@@ -55,7 +55,7 @@ const CUTS = {
     ['signature', 3],
   ],
   'reel-pick': [
-    ['pick', 18.4],
+    ['pick', 25.2],
     ['signature', 3],
   ],
 };
@@ -261,8 +261,9 @@ const SHIRTS = {
 };
 const PICKS = {
   clubs: ['GS', 'VFB'],
-  first: 2.2,
-  period: 2.5,
+  first: 4,
+  period: 3.5,
+  critical: 2.3,
   pairs: [
     { role: 'centerBack', home: { key: 'sanchez', career: [379, 22, 7] }, away: { key: 'hendriks', career: [187, 5, 3] } },
     { role: 'leftBack', home: { key: 'jakobs', career: [252, 11, 20] }, away: { key: 'mittelstadt', career: [325, 20, 45] } },
@@ -1256,7 +1257,6 @@ function pick(texts, start) {
     [0.8, 0.5, 0.25].forEach((left, tick) => cue(at(until, -left), 'tick', 0.45, 1 + tick * 0.12));
     return `<div class="layer state" style="--start: ${from}; --end: ${until}">
       <div class="pick-head in slam" style="--t: ${from}"><span class="chip">${fill(r.step, { n: index + 1, total })}</span><strong class="display">${r.roles[pair.role]}</strong></div>
-      <p class="centered pick-hint in rise" style="--t: ${at(from, 0.1)}">${r.hint}</p>
       <div class="pick-row">
         ${side(home, pair.home, pair.away, at(from, 0.15), 'x')}
         <div class="display pick-versus in pop" style="--t: ${at(from, 0.3)}">VS</div>
@@ -1286,6 +1286,7 @@ function pick(texts, start) {
       ${titleLines(r.hook, start, 'reel-title')}
       <div class="crest-row hook-duos">${duo}</div>
       <p class="q-line pick-lead in rise" style="--t: ${time(1.3)}">${r.lead}</p>
+      <p class="q-line send pick-critical in rise" style="--t: ${time(PICKS.critical)}">${r.critical}</p>
     </div>
     ${rounds.join('')}
     <div class="layer state" style="--start: ${call}; --end: ${NEVER}">
