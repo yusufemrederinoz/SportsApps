@@ -1219,6 +1219,11 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Doğrulama.** Kadrolar veriye değil maç önü haberine dayandırıldı (Hürriyet: Galatasaray Uğurcan, Sallai, Sánchez, Abdülkerim, Jakobs, Torreira, Lemina, Yunus, Batrakov, Barış Alper, Osimhen; Stuttgart Seimen, Assignon, Chabot, Hendriks, Mittelstädt, Karazor, Prömel, Leweling, El Khannouss, Führich, Undav). Batrakov veride yok; Seimen, Sallai, Yunus, Chabot, Assignon, Karazor ve Führich'in portresi yok.
 - **Üretim.** `cut=reel-pick`, `pick` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-pick.mp4`, paylaşım metni `captions/challengegoal-tr-reel-pick.txt`. Kullanıcı videoya ek açıklama konmasını istemedi; alttaki not "Sayılar uygulamanın verisine göredir." olarak kısaltıldı. Kapanıştaki örnek satırı kaldırıldı; skor sorusunun yerine önerdiğim iki cümleyi kullanıcı beğenmedi, kendi cümlesi "Bu akşam kazanan kim olur?" kondu. Ardından "Seçmek için videoyu durdur" yazısı kaldırıldı, eşleşmeler 2,5'ten 3,5 saniyeye, açılış 2,2'den 4 saniyeye uzatıldı ve açılışa kullanıcının cümlesi "Bizce kritik eşleşmeler şunlar" eklendi (eski alt satırla birlikte); video 28,2 saniye oldu.
 
+### İkinci mağaza görünürlüğü ölçümü (3 Kasım 2026)
+
+- **İstek.** Kullanıcı mağaza görünürlüğünün ne seviyede olduğunu sordu; 31 Ekim'de planlanan ikinci ölçüm yapıldı (`deploy/store_rank.mjs` ve Google Play arama sayfası).
+- **Sonuç.** App Store Türkiye'de "futbol quiz" 10, "futbol trivia" 18, "futbol bilgi oyunu" 33 (üçü de büyük artış); "futbol bilgi" ilk 190'dan düştü, "futbol bilgi yarışması", "futbol bulmaca" ve "futbol soruları" yok. Almanya'da ilk kez sıra aldık (77 ve 118). Değerlendirme 5 (ortalama 5). Google Play'de "futbol düello" 6. sıra, diğer genel aramalarda ilk 30'da değiliz, 10+ indirme. Tablo `docs/magaza-metinleri.md` içinde.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
