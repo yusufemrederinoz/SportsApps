@@ -1217,7 +1217,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 
 - **İstek.** Kullanıcı bu akşamki Galatasaray–Stuttgart maçı için viral ve etkileşimli bir video istedi, izleyici videoyla etkileşime girebilmeli. Önerilenler: "Durdur, kadronu kur", "Birini seç", "Bul bakalım", "Durdur, golcünü seç". Kullanıcı kendi fikrini seçti: bugünkü Galatasaray yıldızlarıyla Stuttgart yıldızlarının karşılaştırılması; havuz yalnızca bugünkü kadrolar, kapanış "seçimini yaz + skor tahmini", eşleşmeler muhtemel 11'den, kartlarda kariyer gol ve asisti.
 - **Doğrulama.** Kadrolar veriye değil maç önü haberine dayandırıldı (Hürriyet: Galatasaray Uğurcan, Sallai, Sánchez, Abdülkerim, Jakobs, Torreira, Lemina, Yunus, Batrakov, Barış Alper, Osimhen; Stuttgart Seimen, Assignon, Chabot, Hendriks, Mittelstädt, Karazor, Prömel, Leweling, El Khannouss, Führich, Undav). Batrakov veride yok; Seimen, Sallai, Yunus, Chabot, Assignon, Karazor ve Führich'in portresi yok.
-- **Üretim.** `cut=reel-pick`, `pick` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-pick.mp4`, paylaşım metni `captions/challengegoal-tr-reel-pick.txt`. Kullanıcı videoya ek açıklama konmasını istemedi; alttaki not "Sayılar uygulamanın verisine göredir." olarak kısaltıldı.
+- **Üretim.** `cut=reel-pick`, `pick` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-pick.mp4`, paylaşım metni `captions/challengegoal-tr-reel-pick.txt`. Kullanıcı videoya ek açıklama konmasını istemedi; alttaki not "Sayılar uygulamanın verisine göredir." olarak kısaltıldı. Kapanıştaki örnek satırı kaldırıldı; skor sorusunun yerine önerdiğim iki cümleyi kullanıcı beğenmedi, kendi cümlesi "Bu akşam kazanan kim olur?" kondu.
 
 ## Commit listesi
 

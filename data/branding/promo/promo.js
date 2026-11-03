@@ -1291,7 +1291,6 @@ function pick(texts, start) {
     <div class="layer state" style="--start: ${call}; --end: ${NEVER}">
       <div class="display centered q-call pick-call in slam" style="--t: ${call}" data-fit>${r.call}</div>
       <div class="recap">${recap}</div>
-      <p class="q-line pick-example in rise" style="--t: ${at(call, 0.9)}">${r.example}</p>
       <div class="display centered pick-score in slam" style="--t: ${score}" data-fit>${r.score}</div>
     </div>
     <p class="q-note">${r.note}</p>`;

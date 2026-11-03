@@ -203,8 +203,7 @@
         "roles": { "centerBack": "STOPER", "leftBack": "SOL BEK", "midfield": "ORTA SAHA", "winger": "KANAT", "striker": "FORVET" },
         "stats": ["MAÇ", "GOL", "ASİST"],
         "call": "SEÇİMLERİNİ YORUMA YAZ 👇",
-        "example": "Örnek: GS GS VFB GS VFB",
-        "score": "BU AKŞAM SKOR KAÇ KAÇ?",
+        "score": "BU AKŞAM KAZANAN KİM OLUR?",
         "note": "Sayılar uygulamanın verisine göredir."
       },
       "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"
