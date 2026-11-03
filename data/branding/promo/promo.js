@@ -54,6 +54,10 @@ const CUTS = {
     ['shirts', 16.4],
     ['signature', 3],
   ],
+  'reel-pick': [
+    ['pick', 18.4],
+    ['signature', 3],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -100,6 +104,15 @@ const FOOTBALLERS = {
   meira: { id: 310206, name: 'Fernando Meira', short: 'Meira', position: 'DF' },
   kabak: { id: 53280628, name: 'Ozan Kabak', short: 'Kabak', position: 'DF' },
   insua: { id: 351797, name: 'Emiliano Insúa', short: 'Insúa', position: 'DF' },
+  sanchez: { id: 20737387, name: 'Dávinson Sánchez', short: 'Sánchez', position: 'DF' },
+  hendriks: { id: 56306162, name: 'Ramon Hendriks', short: 'Hendriks', position: 'DF' },
+  jakobs: { id: 74178822, name: 'Ismail Jakobs', short: 'Jakobs', position: 'DF' },
+  mittelstadt: { id: 22998602, name: 'M. Mittelstädt', short: 'Mittelstädt', position: 'DF' },
+  torreira: { id: 16302330, name: 'Lucas Torreira', short: 'Torreira', position: 'MF' },
+  promel: { id: 20436216, name: 'Grischa Prömel', short: 'Prömel', position: 'MF' },
+  baris: { id: 107352615, name: 'Barış Alper', short: 'Barış Alper', position: 'FW' },
+  leweling: { id: 65964628, name: 'Jamie Leweling', short: 'Leweling', position: 'FW' },
+  undav: { id: 55955918, name: 'Deniz Undav', short: 'Undav', position: 'FW' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -245,6 +258,19 @@ const SHIRTS = {
     ],
   },
   call: 14.6,
+};
+const PICKS = {
+  clubs: ['GS', 'VFB'],
+  first: 2.2,
+  period: 2.5,
+  pairs: [
+    { role: 'centerBack', home: { key: 'sanchez', career: [379, 22, 7] }, away: { key: 'hendriks', career: [187, 5, 3] } },
+    { role: 'leftBack', home: { key: 'jakobs', career: [252, 11, 20] }, away: { key: 'mittelstadt', career: [325, 20, 45] } },
+    { role: 'midfield', home: { key: 'torreira', career: [422, 30, 26] }, away: { key: 'promel', career: [303, 35, 24] } },
+    { role: 'winger', home: { key: 'baris', career: [239, 41, 31] }, away: { key: 'leweling', career: [193, 21, 19] } },
+    { role: 'striker', home: { key: 'osimhen', career: [267, 153, 36] }, away: { key: 'undav', career: [338, 155, 69] } },
+  ],
+  score: 1.4,
 };
 const GRID = {
   moves: [
@@ -1200,6 +1226,77 @@ function shirts(texts, start) {
     <p class="q-note">${r.note}</p>`;
 }
 
+function careerLines(labels, own, other) {
+  return `<div class="career">${own
+    .map((value, index) => `<span class="${value > other[index] ? 'lead' : ''}"><small>${labels[index]}</small>${value}</span>`)
+    .join('')}</div>`;
+}
+
+function pick(texts, start) {
+  const r = texts.reel.pick;
+  const time = (offset) => at(start, offset);
+  const total = PICKS.pairs.length;
+  const call = time(PICKS.first + total * PICKS.period);
+  const score = at(call, PICKS.score);
+  const [home, away] = PICKS.clubs.map((club) => SHIRT_CLUBS[club]);
+  const side = (club, entry, other, shown, tone) =>
+    `<div class="pick-side">
+      ${card(texts, entry.key, tone, 'flip shiny', shown)}
+      <p class="pick-club">${appCrest(club.crest)}${club.name}</p>
+      ${careerLines(r.stats, entry.career, other.career)}
+    </div>`;
+
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(time(offset), 'impact', index === 1 ? 1 : 0.6));
+  const rounds = PICKS.pairs.map((pair, index) => {
+    const from = time(PICKS.first + index * PICKS.period);
+    const until = index + 1 < total ? at(from, PICKS.period) : call;
+    cue(at(from, -0.1), 'whoosh', 0.7);
+    cue(at(from, 0.2), 'impact', 0.7);
+    [0.8, 0.5, 0.25].forEach((left, tick) => cue(at(until, -left), 'tick', 0.45, 1 + tick * 0.12));
+    return `<div class="layer state" style="--start: ${from}; --end: ${until}">
+      <div class="pick-head in slam" style="--t: ${from}"><span class="chip">${fill(r.step, { n: index + 1, total })}</span><strong class="display">${r.roles[pair.role]}</strong></div>
+      <p class="centered pick-hint in rise" style="--t: ${at(from, 0.1)}">${r.hint}</p>
+      <div class="pick-row">
+        ${side(home, pair.home, pair.away, at(from, 0.15), 'x')}
+        <div class="display pick-versus in pop" style="--t: ${at(from, 0.3)}">VS</div>
+        ${side(away, pair.away, pair.home, at(from, 0.25), 'o')}
+      </div>
+      <div class="pick-timer"><i style="--t: ${from}; --d: ${until - from}"></i></div>
+    </div>`;
+  });
+
+  cue(at(call, -0.1), 'whoosh', 0.7);
+  cue(call, 'impact', 0.9);
+  cue(score, 'impact', 0.8);
+  cue(at(score, 0.2), 'win', 0.6);
+  const recap = PICKS.pairs
+    .map((pair, index) => {
+      const shown = at(call, 0.3 + index * 0.1);
+      return `<div class="recap-row in rise" style="--t: ${shown}"><b>${index + 1}</b><small>${r.roles[pair.role]}</small><span>${
+        FOOTBALLERS[pair.home.key].short
+      }</span><em>—</em><span>${FOOTBALLERS[pair.away.key].short}</span></div>`;
+    })
+    .join('');
+  const duo = `<div class="duo in pop" style="--t: ${time(1)}"><i>${appCrest(home.crest)}</i><em class="display">×</em><i>${appCrest(away.crest)}</i></div>`;
+
+  return `<div class="display mark">CHALLENGE<span>GOAL</span></div>
+    <div class="layer state" style="--start: ${start}; --end: ${time(PICKS.first)}">
+      <p class="eyebrow centered reel-eyebrow in rise" style="--t: ${time(0.1)}">${r.eyebrow}</p>
+      ${titleLines(r.hook, start, 'reel-title')}
+      <div class="crest-row hook-duos">${duo}</div>
+      <p class="q-line pick-lead in rise" style="--t: ${time(1.3)}">${r.lead}</p>
+    </div>
+    ${rounds.join('')}
+    <div class="layer state" style="--start: ${call}; --end: ${NEVER}">
+      <div class="display centered q-call pick-call in slam" style="--t: ${call}" data-fit>${r.call}</div>
+      <div class="recap">${recap}</div>
+      <p class="q-line pick-example in rise" style="--t: ${at(call, 0.9)}">${r.example}</p>
+      <div class="display centered pick-score in slam" style="--t: ${score}" data-fit>${r.score}</div>
+    </div>
+    <p class="q-note">${r.note}</p>`;
+}
+
 function signature(texts, start) {
   cue(at(start, 0.05), 'whoosh', 0.7);
   cue(at(start, 0.3), 'impact', 0.9);
@@ -1252,6 +1349,7 @@ const SCENES = {
   qchain,
   friend,
   shirts,
+  pick,
   signature,
 };
 

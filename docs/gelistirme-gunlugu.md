@@ -1213,6 +1213,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Seçimler.** Bu haftanın Türk maçları Salı Galatasaray–Stuttgart ve Çarşamba Fenerbahçe–Liverpool (Fanatik'in fikstür haberinden). Seçenekli sorularla: konu "İki formayı da giydiler", uygulama yalnızca sonda kısa imza ve köşede küçük yazı, süre 15–20 saniye. Kullanıcı "İkisi üçünü de giydi" başlığının dilini bozuk buldu, "İkisi üç takımda da oynadı" oldu.
 - **Üretim.** `cut=reel-shirts` kurgusu, `shirts` ve `signature` sahneleri. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-shirts.mp4`, paylaşım metni `captions/challengegoal-tr-reel-shirts.txt`. Önizlemede açılışın alt yarısının boş kalması (iki maçın armaları eklendi) ve dört kartın 3+1 dizilmesi (2×2 yapıldı) düzeltildi.
 
+### Etkileşimli maç günü videosu: Galatasaray–Stuttgart "Birini seç" (3 Kasım 2026)
+
+- **İstek.** Kullanıcı bu akşamki Galatasaray–Stuttgart maçı için viral ve etkileşimli bir video istedi, izleyici videoyla etkileşime girebilmeli. Önerilenler: "Durdur, kadronu kur", "Birini seç", "Bul bakalım", "Durdur, golcünü seç". Kullanıcı kendi fikrini seçti: bugünkü Galatasaray yıldızlarıyla Stuttgart yıldızlarının karşılaştırılması; havuz yalnızca bugünkü kadrolar, kapanış "seçimini yaz + skor tahmini", eşleşmeler muhtemel 11'den, kartlarda kariyer gol ve asisti.
+- **Doğrulama.** Kadrolar veriye değil maç önü haberine dayandırıldı (Hürriyet: Galatasaray Uğurcan, Sallai, Sánchez, Abdülkerim, Jakobs, Torreira, Lemina, Yunus, Batrakov, Barış Alper, Osimhen; Stuttgart Seimen, Assignon, Chabot, Hendriks, Mittelstädt, Karazor, Prömel, Leweling, El Khannouss, Führich, Undav). Batrakov veride yok; Seimen, Sallai, Yunus, Chabot, Assignon, Karazor ve Führich'in portresi yok.
+- **Üretim.** `cut=reel-pick`, `pick` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-pick.mp4`, paylaşım metni `captions/challengegoal-tr-reel-pick.txt`. Kullanıcı videoya ek açıklama konmasını istemedi; alttaki not "Sayılar uygulamanın verisine göredir." olarak kısaltıldı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

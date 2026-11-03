@@ -194,6 +194,19 @@
         "more": "Eksik varsa yoruma yaz.",
         "note": "Yıllar uygulamanın verisine göredir."
       },
+      "pick": {
+        "eyebrow": "BU AKŞAM · ŞAMPİYONLAR LİGİ",
+        "hook": ["HER MEVKİDE", "BİRİNİ SEÇ"],
+        "lead": "5 eşleşme. Her birinde birini seç, sonda yoruma yaz.",
+        "hint": "Seçmek için videoyu durdur",
+        "step": "{{n}}/{{total}}",
+        "roles": { "centerBack": "STOPER", "leftBack": "SOL BEK", "midfield": "ORTA SAHA", "winger": "KANAT", "striker": "FORVET" },
+        "stats": ["MAÇ", "GOL", "ASİST"],
+        "call": "SEÇİMLERİNİ YORUMA YAZ 👇",
+        "example": "Örnek: GS GS VFB GS VFB",
+        "score": "BU AKŞAM SKOR KAÇ KAÇ?",
+        "note": "Sayılar uygulamanın verisine göredir."
+      },
       "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"
     },
     "poster": {
