@@ -62,6 +62,7 @@ const CUTS = {
     ['qwho', 18.8],
     ['signature', 3],
   ],
+  'reel-outro': [['signature', 3]],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;

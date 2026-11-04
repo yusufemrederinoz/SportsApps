@@ -1232,6 +1232,11 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Görsel kaynakları.** Sitedeki liste "tanıtım videolarında görünen futbolcular da listededir" diyordu ama 29 Ekim'den sonraki videolardaki oyuncular eklenmemişti. Videolardaki 23 oyuncu ve Batrakov eklendi (46'dan 70'e), site yeniden üretildi ve yalnızca sayfalar sunucuya kopyalandı (API yeniden başlatılmadı). Videonun paylaşım metninde fotoğrafçının adı ve lisans yazıyor.
 - **Üretim.** `cut=reel-who`, `qwho` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-who.mp4`, paylaşım metni `captions/challengegoal-tr-reel-who.txt`.
 
+### Kullanıcının videosuna logo, marka işareti ve kapanış (4 Kasım 2026)
+
+- **İstek.** Kullanıcı bir dizi sahnesinde futbolcuların yüzlerinin gerçekçi biçimde değiştirilmesini istedi. Gerçek kişilerin izinsiz gerçekçi sahte videosu olacağı için yapılmadı. Çizim kafalarla "kafa yapıştırma" denemesi yapıldı, kullanıcı beğenmedi.
+- **Yapılan.** Kullanıcı videoyu kendisi başka bir araçla hazırladı ve üç ekleme istedi: sorgulanan adamın yüzüne kendi verdiği Stuttgart logosu (kullanım hakkını kendisi üstlendi), sağ üstte bütün sahne boyunca top ve ChallengeGoal yazısı, sonda 3 saniyelik kapanış. Logo yüz bulucunun izlerine göre yerleşti (geniş açı ve yakın plan). Kapanış için `cut=reel-outro` (yalnızca `signature`) eklendi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-sorgu.mp4`.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
