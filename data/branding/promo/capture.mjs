@@ -24,6 +24,7 @@ const MOUNTS = {
   '/fonts/': join(ROOT, 'deploy', 'site', 'fonts'),
   '/artwork/': join(ROOT, 'data', 'branding', 'artwork'),
   '/portraits/': join(ROOT, 'data', 'build', 'portraits'),
+  '/promo-portraits/': join(ROOT, 'data', 'build', 'promo', 'portraits'),
   '/frames/': join(ROOT, 'data', 'build', 'animation', 'frames'),
 };
 const TYPES = {

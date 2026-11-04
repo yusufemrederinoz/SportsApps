@@ -1224,6 +1224,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İstek.** Kullanıcı mağaza görünürlüğünün ne seviyede olduğunu sordu; 31 Ekim'de planlanan ikinci ölçüm yapıldı (`deploy/store_rank.mjs` ve Google Play arama sayfası).
 - **Sonuç.** App Store Türkiye'de "futbol quiz" 10, "futbol trivia" 18, "futbol bilgi oyunu" 33 (üçü de büyük artış); "futbol bilgi" ilk 190'dan düştü, "futbol bilgi yarışması", "futbol bulmaca" ve "futbol soruları" yok. Almanya'da ilk kez sıra aldık (77 ve 118). Değerlendirme 5 (ortalama 5). Google Play'de "futbol düello" 6. sıra, diğer genel aramalarda ilk 30'da değiliz, 10+ indirme. Tablo `docs/magaza-metinleri.md` içinde.
 
+### Batrakov videosu ve görsel kaynakları listesinin tamamlanması (4 Kasım 2026)
+
+- **İstek.** Kullanıcı Kariyer Yolu biçiminde Aleksey Batrakov videosu istedi. Batrakov 3 Kasım'da Stuttgart'a iki gol attı (2-0), Şampiyonlar Ligi'nde 4 maçta 4 golü var. Seçenekli sorularla: "Kim bu?" ipuçlu tahmin, kanca "Dün gecenin adamı", kapanış "Batrakov bu sezon kaç gol atar?".
+- **Doğrulama.** Batrakov uygulamanın verisinde yok. Kariyer Wikipedia'dan (2011–2024 Lokomotiv Moskova altyapısı, 2024–2026 A takım, 2026'dan beri Galatasaray), transfer KAP bildiriminden, maç sonucu haberlerden.
+- **Portre.** Commons'ta CC BY 2.0 lisanslı bir fotoğrafı var. ControlNet modeli önbellekte bulunmadığı için yeniden indirildi; çizim hattın adımlarıyla tek fotoğraftan üretildi, bunun için `portraits.single` eklendi.
+- **Görsel kaynakları.** Sitedeki liste "tanıtım videolarında görünen futbolcular da listededir" diyordu ama 29 Ekim'den sonraki videolardaki oyuncular eklenmemişti. Videolardaki 23 oyuncu ve Batrakov eklendi (46'dan 70'e), site yeniden üretildi ve yalnızca sayfalar sunucuya kopyalandı (API yeniden başlatılmadı). Videonun paylaşım metninde fotoğrafçının adı ve lisans yazıyor.
+- **Üretim.** `cut=reel-who`, `qwho` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-who.mp4`, paylaşım metni `captions/challengegoal-tr-reel-who.txt`.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

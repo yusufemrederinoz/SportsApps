@@ -58,6 +58,10 @@ const CUTS = {
     ['pick', 25.2],
     ['signature', 3],
   ],
+  'reel-who': [
+    ['qwho', 18.8],
+    ['signature', 3],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -113,6 +117,7 @@ const FOOTBALLERS = {
   baris: { id: 107352615, name: 'Barış Alper', short: 'Barış Alper', position: 'FW' },
   leweling: { id: 65964628, name: 'Jamie Leweling', short: 'Leweling', position: 'FW' },
   undav: { id: 55955918, name: 'Deniz Undav', short: 'Undav', position: 'FW' },
+  batrakov: { id: 'batrakov', image: '/promo-portraits/batrakov.webp', name: 'Aleksey Batrakov', short: 'Batrakov', position: 'MF' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -217,6 +222,19 @@ const QUIZ = {
     call: 14.8,
     hint: 15.5,
     send: 16.3,
+  },
+  who: {
+    first: 1.9,
+    period: 2.6,
+    hold: 2.2,
+    answer: 'batrakov',
+    clues: [
+      { badge: 'RUS' },
+      { crest: { code: 'LOK', pattern: 'plain', colors: ['#E30613', '#007A3D'] } },
+      { crest: { code: 'LOK', pattern: 'plain', colors: ['#E30613', '#007A3D'] } },
+      { crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
+      { crest: { code: 'VFB', pattern: 'band', colors: ['#FFFFFF', '#E32219'] } },
+    ],
   },
   friend: { code: 'K7R4X' },
 };
@@ -402,7 +420,8 @@ function backdrop() {
 function card(texts, key, side, classes = '', time = null) {
   const footballer = FOOTBALLERS[key];
   const style = time === null ? '' : ` style="--t: ${time}"`;
-  return `<div class="card ${side} ${classes}"${style}><b>${texts.grid.positions[footballer.position]}</b><img src="/portraits/${footballer.id}.webp" alt="" /><span>${footballer.name}</span></div>`;
+  const image = footballer.image ?? `/portraits/${footballer.id}.webp`;
+  return `<div class="card ${side} ${classes}"${style}><b>${texts.grid.positions[footballer.position]}</b><img src="${image}" alt="" /><span>${footballer.name}</span></div>`;
 }
 
 function scoreboard(texts, start, turns, scores, top = null) {
@@ -1062,6 +1081,45 @@ function qcareer(texts, start) {
     <p class="q-note">${q.note}</p>`;
 }
 
+function qwho(texts, start) {
+  const q = texts.quiz.who;
+  const shared = texts.quiz.career;
+  const { first, period, hold, answer, clues } = QUIZ.who;
+  const total = clues.length;
+  const opens = clues.map((_, index) => at(start, first + index * period));
+  const reveal = at(opens[total - 1], hold);
+  cue(at(start, 0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(at(start, offset), 'impact', index === 1 ? 1 : 0.6));
+  const rows = clues.map((clue, index) => {
+    const open = opens[index];
+    const until = index + 1 < total ? opens[index + 1] : reveal;
+    const { title, detail } = q.clues[index];
+    cue(open, 'impact', 0.55, 0.9 + index * 0.06);
+    ticks(at(open, 0.6), Math.floor(until - open - 0.6));
+    const mark = clue.crest ? appCrest(clue.crest) : `<b class="q-badge display">${clue.badge}</b>`;
+    return `<div class="q-career-row">
+      <div class="q-worth">${total - index}<small>${shared.worth}</small></div>
+      <span class="q-hide">${shared.hidden}</span>
+      <div class="q-club in rise" style="--t: ${open}">${mark}<div><strong>${title}</strong>${detail ? `<small>${detail}</small>` : ''}</div></div>
+      <i class="q-focus state" style="--start: ${open}; --end: ${until}"></i>
+    </div>`;
+  });
+  const values = clues.map((_, index) => [opens[index], fill(shared.value, { n: total - index }), null]);
+  const [given, family] = FOOTBALLERS[answer].name.toLocaleUpperCase('tr-TR').split(' ');
+  cue(reveal, 'whoosh', 0.7);
+  cue(at(reveal, 0.3), 'correct', 1);
+  cue(at(reveal, 0.5), 'win', 0.8);
+  cue(at(reveal, 1.3), 'impact', 0.7);
+  return `${titleLines(q.hook, start)}
+    <div class="q-career who in rise" style="--t: ${at(start, 1.1)}">${rows.join('')}</div>
+    <div class="layer state" style="--start: ${opens[0]}; --end: ${reveal}">
+      <div class="q-now"><span>${shared.now}</span><strong ${scripted('steps', values)}>${fill(shared.value, { n: total })}</strong></div>
+    </div>
+    <div class="q-answer" style="top: 1330px; left: 90px; width: 320px; height: 320px; --u: 1.48">${card(texts, answer, 'x', 'flip shiny', reveal)}</div>
+    <div class="display q-name in slam" style="--t: ${at(reveal, 0.35)}">${given}<br />${family}</div>
+    <p class="display q-side send who-ask in slam" style="--t: ${at(reveal, 1.3)}">${q.ask.join('<br />')}</p>`;
+}
+
 function qchain(texts, start) {
   const q = texts.quiz.chain;
   const plan = QUIZ.chain;
@@ -1347,6 +1405,7 @@ const SCENES = {
   qduel,
   qcareer,
   qchain,
+  qwho,
   friend,
   shirts,
   pick,

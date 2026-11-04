@@ -177,6 +177,17 @@
         "send": "Arkadaşına at, o bulur mu bakalım.",
         "note": "Bağlantılar uygulamanın verisine göredir."
       },
+      "who": {
+        "hook": ["DÜN GECENİN", "ADAMI"],
+        "clues": [
+          { "title": "Rus", "detail": "2005 doğumlu" },
+          { "title": "Lokomotiv Moskova", "detail": "Altyapı · 2011–2024" },
+          { "title": "Lokomotiv Moskova", "detail": "2024–2026" },
+          { "title": "Galatasaray", "detail": "2026–" },
+          { "title": "Dün akşam Stuttgart'a 2 gol", "detail": "" }
+        ],
+        "ask": ["BATRAKOV BU SEZON", "KAÇ GOL ATAR?"]
+      },
       "friend": {
         "eyebrow": "ARKADAŞINLA DA OYNA",
         "lines": ["HER OYUNU", "ARKADAŞINLA DA", "OYNAYABİLİRSİN"],
