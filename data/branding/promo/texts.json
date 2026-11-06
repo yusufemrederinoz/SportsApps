@@ -177,6 +177,11 @@
         "send": "Arkadaşına at, o bulur mu bakalım.",
         "note": "Bağlantılar uygulamanın verisine göredir."
       },
+      "xox": {
+        "columns": ["BREZİLYA", "HOLLANDA", "PORTEKİZ"],
+        "rows": ["GALATASARAY", "FENERBAHÇE", "BEŞİKTAŞ"],
+        "ask": "BOŞ KARELERE KİM GELİR?"
+      },
       "who": {
         "hook": ["DÜN GECENİN", "ADAMI"],
         "clues": [

@@ -538,7 +538,8 @@
         --face: linear-gradient(150deg, #e3eeff, var(--blue) 45%, var(--blue-deep));
       }
 
-      .play .title {
+      .play .title,
+      .qxox .title {
         position: absolute;
         top: 262px;
         left: 70px;
@@ -547,7 +548,8 @@
         text-shadow: 0 0 60px rgba(200, 255, 46, 0.45);
       }
 
-      .play .rule-text {
+      .play .rule-text,
+      .qxox .rule-text {
         position: absolute;
         top: 300px;
         left: 400px;
@@ -608,6 +610,34 @@
         border: 2px solid var(--stroke);
         border-radius: 22px;
         background: var(--ink);
+      }
+
+      .cell.open {
+        display: grid;
+        place-items: center;
+        border-style: dashed;
+        border-color: var(--stroke-bright);
+      }
+
+      .cell.open b {
+        font-size: 130px;
+        color: var(--stroke-bright);
+        animation: open-mark 0.3s ease-out calc(var(--t) * 1s) both;
+      }
+
+      .cell.open::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border: 5px solid var(--volt);
+        border-radius: 24px;
+        box-shadow: 0 0 34px rgba(200, 255, 46, 0.5);
+        opacity: 0;
+        animation: open-glow 1.2s ease-in-out calc(var(--t) * 1s) infinite;
+      }
+
+      .xox-ask {
+        top: 1400px;
       }
 
       .cell .card {
@@ -3045,6 +3075,25 @@
       @keyframes gone {
         to {
           opacity: 0;
+        }
+      }
+
+      @keyframes open-mark {
+        from {
+          color: var(--stroke-bright);
+        }
+        to {
+          color: var(--volt);
+        }
+      }
+
+      @keyframes open-glow {
+        0%,
+        100% {
+          opacity: 0.25;
+        }
+        50% {
+          opacity: 1;
         }
       }
 

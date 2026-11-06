@@ -1237,6 +1237,11 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İstek.** Kullanıcı bir dizi sahnesinde futbolcuların yüzlerinin gerçekçi biçimde değiştirilmesini istedi. Gerçek kişilerin izinsiz gerçekçi sahte videosu olacağı için yapılmadı. Çizim kafalarla "kafa yapıştırma" denemesi yapıldı, kullanıcı beğenmedi.
 - **Yapılan.** Kullanıcı videoyu kendisi başka bir araçla hazırladı ve üç ekleme istedi: sorgulanan adamın yüzüne kendi verdiği Stuttgart logosu (kullanım hakkını kendisi üstlendi), sağ üstte bütün sahne boyunca top ve ChallengeGoal yazısı, sonda 3 saniyelik kapanış. Logo yüz bulucunun izlerine göre yerleşti (geniş açı ve yakın plan). Kapanış için `cut=reel-outro` (yalnızca `signature`) eklendi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-sorgu.mp4`.
 
+### XOX tanıtım videosu (7 Kasım 2026)
+
+- **İstek.** Kullanıcı öncekiler gibi bir ChallengeGoal tanıtım videosu istedi. Seçenekli sorularla: XOX'a odaklı, 20-30 saniye, kanca "Futbolu kim daha iyi biliyor?", tahta üç büyükler × Brezilya, Hollanda, Portekiz, birkaç kare dolu birkaç kare boş, soru "Boş karelere kim gelir?" (kullanıcının seçimi), 1.1.0 yenilikleri gösterilmeyecek.
+- **Üretim.** `cut=promo-xox`, `qxox` sahnesi. Çıktı `data/build/promo/videos/showcase/challengegoal-tr-promo-xox.mp4` (21,3 saniye).
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -63,6 +63,11 @@ const CUTS = {
     ['signature', 3],
   ],
   'reel-outro': [['signature', 3]],
+  'promo-xox': [
+    ['hook', 4.2],
+    ['qxox', 12],
+    ['finale', 5.1],
+  ],
 };
 const NEVER = 9999;
 const TYPED_HOLD = 0.25;
@@ -118,6 +123,8 @@ const FOOTBALLERS = {
   baris: { id: 107352615, name: 'Barış Alper', short: 'Barış Alper', position: 'FW' },
   leweling: { id: 65964628, name: 'Jamie Leweling', short: 'Leweling', position: 'FW' },
   undav: { id: 55955918, name: 'Deniz Undav', short: 'Undav', position: 'FW' },
+  nani: { id: 482947, name: 'Nani', short: 'Nani', position: 'FW' },
+  babel: { id: 184218, name: 'Ryan Babel', short: 'Babel', position: 'FW' },
   batrakov: { id: 'batrakov', image: '/promo-portraits/batrakov.webp', name: 'Aleksey Batrakov', short: 'Batrakov', position: 'MF' },
 };
 const QUIZ = {
@@ -236,6 +243,21 @@ const QUIZ = {
       { crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
       { crest: { code: 'VFB', pattern: 'band', colors: ['#FFFFFF', '#E32219'] } },
     ],
+  },
+  xox: {
+    clubs: [
+      { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] },
+      { code: 'FB', pattern: 'stripes', colors: ['#FFED00', '#163962'] },
+      { code: 'BJK', pattern: 'stripes', colors: ['#000000', '#FFFFFF'] },
+    ],
+    cells: [
+      [null, { key: 'sneijder', side: 'x' }, null],
+      [{ key: 'alex', side: 'o' }, null, { key: 'nani', side: 'x' }],
+      [null, { key: 'babel', side: 'o' }, { key: 'quaresma', side: 'x' }],
+    ],
+    first: 1.3,
+    gap: 0.6,
+    ask: 4.6,
   },
   friend: { code: 'K7R4X' },
 };
@@ -1121,6 +1143,37 @@ function qwho(texts, start) {
     <p class="display q-side send who-ask in slam" style="--t: ${at(reveal, 1.3)}">${q.ask.join('<br />')}</p>`;
 }
 
+function qxox(texts, start) {
+  const q = texts.quiz.xox;
+  const { clubs, cells, first, gap, ask } = QUIZ.xox;
+  const time = (offset) => at(start, offset);
+  const asked = time(ask);
+  let order = 0;
+  cue(time(0.1), 'impact', 0.5);
+  cue(asked, 'impact', 1);
+  cue(at(asked, 0.2), 'whoosh', 0.6);
+  const columns = q.columns.map((name, index) => `<div class="header in pop" style="--t: ${time(0.4 + index * 0.08)}">${name}</div>`);
+  const rows = q.rows.map((name, row) => {
+    const header = `<div class="header club in pop" style="--t: ${time(0.6 + row * 0.08)}">${appCrest(clubs[row])}<span>${name}</span></div>`;
+    const line = cells[row]
+      .map((filled) => {
+        if (!filled) {
+          return `<div class="cell open" style="--t: ${asked}"><b class="display">?</b></div>`;
+        }
+        const shown = time(first + order * gap);
+        order += 1;
+        cue(shown, filled.side === 'x' ? 'correct' : 'impact', 0.55);
+        return `<div class="cell ${filled.side}" style="--t: ${shown}"><i class="ring"></i>${card(texts, filled.key, filled.side, 'flip shiny', shown)}</div>`;
+      })
+      .join('');
+    return header + line;
+  });
+  return `<div class="display title in slam" style="--t: ${time(0.1)}">${texts.grid.title}</div>
+    <p class="rule-text in rise" style="--t: ${time(0.25)}">${texts.grid.rule}</p>
+    <div class="board"><div class="grid"><div></div>${columns.join('')}${rows.join('')}</div></div>
+    <div class="display centered q-call xox-ask in slam" style="--t: ${asked}" data-fit>${q.ask}</div>`;
+}
+
 function qchain(texts, start) {
   const q = texts.quiz.chain;
   const plan = QUIZ.chain;
@@ -1407,6 +1460,7 @@ const SCENES = {
   qcareer,
   qchain,
   qwho,
+  qxox,
   friend,
   shirts,
   pick,
