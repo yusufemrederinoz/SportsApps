@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { dirname, extname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,31 +11,59 @@ const ROOT = join(HERE, '..');
 const HOST = '127.0.0.1';
 const PORT = 8765;
 const RETRY_SECONDS = 15;
+const LISTED_GIFTS = 80;
 const FILES = {
   '/': join(HERE, 'tribune.html'),
   '/texts.json': join(HERE, 'texts.json'),
+  '/gifts.json': join(HERE, 'gifts.json'),
   '/questions.json': join(HERE, 'questions.json'),
   '/blocked.json': join(HERE, 'blocked.json'),
   '/ball.png': join(ROOT, 'data', 'branding', 'artwork', 'ball.png'),
 };
 const FONTS = join(ROOT, 'deploy', 'site', 'fonts');
+const THREE = join(HERE, 'node_modules', 'three', 'build');
+const AUDIO = join(HERE, 'audio');
+const AUDIO_EXTENSIONS = ['.mp3', '.ogg', '.wav', '.m4a'];
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
   '.png': 'image/png',
   '.ttf': 'font/ttf',
+  '.mp3': 'audio/mpeg',
+  '.ogg': 'audio/ogg',
+  '.wav': 'audio/wav',
+  '.m4a': 'audio/mp4',
 };
 
 const username = process.argv[2];
 
-function fileFor(path) {
+const safe = (name) => name.replace(/[^\w.-]/g, '');
+
+async function exists(file) {
+  try {
+    return (await stat(file)).isFile();
+  } catch {
+    return false;
+  }
+}
+
+async function fileFor(path) {
   if (FILES[path]) return FILES[path];
-  if (path.startsWith('/fonts/')) return join(FONTS, path.slice('/fonts/'.length).replace(/[^\w.-]/g, ''));
+  if (path.startsWith('/fonts/')) return join(FONTS, safe(path.slice('/fonts/'.length)));
+  if (path.startsWith('/three/')) return join(THREE, safe(path.slice('/three/'.length)));
+  if (path.startsWith('/audio/')) {
+    const key = safe(path.slice('/audio/'.length));
+    for (const extension of AUDIO_EXTENSIONS) {
+      const file = join(AUDIO, `${key}${extension}`);
+      if (await exists(file)) return file;
+    }
+  }
   return null;
 }
 
 const server = createServer(async (request, response) => {
-  const file = fileFor(new URL(request.url, `http://${HOST}`).pathname);
+  const file = await fileFor(new URL(request.url, `http://${HOST}`).pathname);
   if (!file) {
     response.writeHead(404).end();
     return;
@@ -72,6 +100,17 @@ function scheduleRetry(reason) {
   }, RETRY_SECONDS * 1000);
 }
 
+async function listGifts(connection) {
+  try {
+    const info = await connection.fetchAvailableGifts();
+    const gifts = info?.gifts ?? info?.data?.gifts ?? [];
+    const rows = gifts.slice(0, LISTED_GIFTS).map((gift) => `${gift.name} (${gift.diamond_count ?? gift.diamondCount ?? '?'})`);
+    console.log(`gifts in this room (${gifts.length}): ${rows.join(', ')}`);
+  } catch (error) {
+    console.log(`could not list gifts: ${error.message}`);
+  }
+}
+
 function connect() {
   const connection = new TikTokLiveConnection(username, {});
   connection.on(WebcastEvent.CHAT, (data) => broadcast({ kind: 'chat', ...person(data.user), text: data.content ?? '' }));
@@ -79,13 +118,25 @@ function connect() {
   connection.on(WebcastEvent.GIFT, (data) => {
     if (data.gift?.type === 1 && !data.repeatEnd) return;
     const count = data.repeatCount || 1;
-    broadcast({ kind: 'gift', ...person(data.user), gift: data.gift?.name ?? '', count, diamonds: (data.gift?.diamondCount || 1) * count });
+    const gift = data.gift?.name ?? '';
+    console.log(`gift: ${gift} (id ${data.giftId}) x${count}`);
+    broadcast({
+      kind: 'gift',
+      ...person(data.user),
+      gift,
+      giftId: String(data.giftId ?? ''),
+      count,
+      diamonds: (data.gift?.diamondCount || 1) * count,
+    });
   });
   connection.on(WebcastEvent.STREAM_END, () => console.log('stream ended'));
   connection.on(ControlEvent.DISCONNECTED, () => scheduleRetry('disconnected'));
   connection
     .connect()
-    .then((state) => console.log(`connected to @${username}, room ${state.roomId}`))
+    .then((state) => {
+      console.log(`connected to @${username}, room ${state.roomId}`);
+      return listGifts(connection);
+    })
     .catch((error) => scheduleRetry(`could not connect: ${error.message}`));
 }
 

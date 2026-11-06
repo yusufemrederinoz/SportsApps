@@ -10,8 +10,8 @@
   "nobody": "Bu soruyu kimse bilemedi",
   "joined": "{{team}} tribününe katıldı",
   "moved": "{{team}} tribününe geçti",
-  "gift": "{{points}} puan kazandırdı",
-  "giftNoTeam": "hediye gönderdi, takımını yazarsa puan olur",
+  "gift": "{{team}} için {{points}} puan",
   "guest": "Taraftar",
-  "footer": "ChallengeGoal · Futbol bilgi oyunları · Link profilde"
+  "footer": "ChallengeGoal · Futbol bilgi oyunları · Link profilde",
+  "giftThanks": "hediye için teşekkürler"
 }

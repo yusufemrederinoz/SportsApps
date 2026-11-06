@@ -1249,6 +1249,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Yapılan.** `live/` klasörü (köprü, sahne, soru bankası, yasaklı kelime listesi). Demo kipinde tarayıcıda denendi: tribünler doluyor, balonlar figürlerin üstünde çıkıyor, küfür ve bağlantı içeren yorumlar balona çıkmıyor (60 saniyelik deneyde görülen balon metinleri toplanıp kontrol edildi), hediye puanı ve taç çalışıyor. Köprünün TikTok tarafı denenmedi (canlı yayın gerekir).
 - **Bekleyen.** Ekrandaki cümleler taslak, yayından önce kullanıcıyla seçilecek. Gerçek yayında ilk deneme kullanıcının hesabıyla yapılacak.
 
+#### Tribün Savaşı: 3B sahne, kullanıcı adlı balon, takıma özel hediye ve lider sesi (7 Kasım 2026)
+
+- **İstekler.** Kullanıcı sahnenin referans halay örneği gibi daha 3B ve gerçekçi bir tribün olmasını, balonun üstünde yorumu yazanın kullanıcı adını, her takım için ayrı hediye türünü (hediye o takıma puan yazar) ve her takım için bir ses dosyası eklenip lider takımın sesinin arka planda çalmasını istedi.
+- **Yapılan.** Sahne three.js ile baştan kuruldu (kavisli basamaklı tribünler, koltuklar, çatı, pankart, reklam panosu, projektör, atkılı 3B figürler, kamera salınımı); metin ve sayılar HTML katmanında. `gifts.json` ile hediye-takım eşleşmesi, köprü bağlanınca odadaki hediye adlarını yazıyor. Ses Web Audio ile (`live/audio`, depoya girmez).
+- **Denendi.** Başsız Chrome'da yazılım GL ile demo kipinde: beş tribün ekrana sığıyor (ilk denemede kenarlar taşıyordu, kamera uzaklaştırıldı, figürler büyütüldü), balonlar ve kullanıcı adları doğru figürün üstünde, küfür ve bağlantı içeren yorumlar çıkmıyor, hediye puanı doğru takıma yazılıyor, lider seçimi ve geçici sinüs sesleriyle beş ses yüklenip lider seçiliyor. Denenmeyenler: gerçek TikTok yayını, OBS'te akıcılık, sesin kulakla duyulması.
+- **Bekleyen.** Gerçek hediye adlarının seçilmesi, takım sesleri, ekrandaki cümleler (taslak) ve ilk gerçek yayın denemesi kullanıcıyla.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
