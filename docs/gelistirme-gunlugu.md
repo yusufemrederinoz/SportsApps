@@ -1240,7 +1240,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 ### XOX tanıtım videosu (7 Kasım 2026)
 
 - **İstek.** Kullanıcı öncekiler gibi bir ChallengeGoal tanıtım videosu istedi. Seçenekli sorularla: XOX'a odaklı, 20-30 saniye, kanca "Futbolu kim daha iyi biliyor?", tahta üç büyükler × Brezilya, Hollanda, Portekiz, birkaç kare dolu birkaç kare boş, soru "Boş karelere kim gelir?" (kullanıcının seçimi), 1.1.0 yenilikleri gösterilmeyecek.
-- **Üretim.** `cut=promo-xox`, `qxox` sahnesi. Çıktı `data/build/promo/videos/showcase/challengegoal-tr-promo-xox.mp4` (21,3 saniye).
+- **Üretim.** `cut=promo-xox`, `qxox` sahnesi. Çıktı `data/build/promo/videos/showcase/challengegoal-tr-promo-xox.mp4`. Kullanıcı ilk hâlini görünce açılış ekranının kaldırılmasını istedi; video doğrudan XOX ile başlıyor (17,1 saniye).
 
 ## Commit listesi
 

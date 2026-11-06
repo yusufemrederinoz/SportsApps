@@ -64,7 +64,6 @@ const CUTS = {
   ],
   'reel-outro': [['signature', 3]],
   'promo-xox': [
-    ['hook', 4.2],
     ['qxox', 12],
     ['finale', 5.1],
   ],
