@@ -564,6 +564,24 @@ Kullanıcının isteğiyle eklendi (8 Ekim 2026): uygulamanın anlık ve günlü
   - **Ayrıntı.** Satıra tıklayınca açılan pencerede özet kartları; hesap (kayıt, son görülme, giriş yöntemleri ve e-postaları, kullanıcı adını seçip seçmediği, açık oturum, ilk ve son maç, günlük ödül); cihazlar; oyunlara göre maç, sonuç, terk, insana ve bota karşı maç, puan ve en iyi puan; son 20 maç (rakip, bot / gizli bot / insan ayrımı, tür, zorluk, sonuç, bitiş nedeni, süre, puan değişimi); gol hareketlerinin toplamı ve son 20 hareket; satın almalar ve ödüllü reklamlar; son 14 günün bulmacası. Rakip `bots` tablosundaysa ve maç türü `bot` ise "bot", sıra maçıysa "gizli bot" yazar.
   - **Test hesapları.** Ayrıntı penceresindeki düğmeyle işaretlenir (`test_accounts` tablosu). İşaretli hesaplar üyeler sekmesinin listesinde ve özet sayılarında varsayılan olarak gizlidir, "Test hesaplarını göster" ile görünür. Genel sekmedeki sayılar test hesaplarını hâlâ sayar.
 
+## TikTok canlı yayın sahnesi
+
+Kullanıcının fikri (7 Kasım 2026): TikTok canlı yayınında izleyiciler yorumla takımlarını yazar, tribünleri dolar. Yöntem sayiyla.com'daki "halay yayını" yazısından alındı: yorumları okuyan küçük bir Node betiği ve OBS ya da TikTok LIVE Studio'ya tarayıcı kaynağı olarak eklenen bir sayfa. Yapay zekâ kullanılmaz, takım adları eşleştirilir. Klasör: `live/` (kendi `package.json` dosyası var, depo çalışma alanlarına dahil değil).
+
+| Dosya | Görevi |
+|---|---|
+| `bridge.mjs` | `tiktok-live-connector` 2.5.0 (resmi olmayan kütüphane, AGPL-3.0, yerelde çalışır) ile yayındaki yorum, beğeni ve hediyeleri okur, `ws://127.0.0.1:8765/events` üzerinden sayfaya iletir; aynı portta sahneyi sunar. Bağlantı koparsa 15 saniyede yeniden dener |
+| `tribune.html` | 1080×1920 sahne: beş tribün, futbol sorusu kartı, saha ve konuşma balonları |
+| `texts.json` | Ekrandaki yazılar (taslak) |
+| `blocked.json` | Balona ve ada çıkmayacak kelimeler; eklenebilir |
+| `questions.json` | 65 futbol sorusu; `python build_questions.py` ile `football.db`'den üretilir |
+
+- **Çalıştırma.** `live` klasöründe `npm install`, ardından yayın açıkken `node bridge.mjs <tiktok_kullanıcı_adı>`. Sahne `http://127.0.0.1:8765/`; OBS'te tarayıcı kaynağı 1080×1920, LIVE Studio'da aynı adres bağlantı kaynağı. Deneme için `?demo=1` (sahte yorumlar), `?reset=1` sayaçları sıfırlar, `?bubbles=0` balonları kapatır, `?every=75&answer=25` soru aralığını ve cevap süresini (saniye) belirler.
+- **Tribünler.** Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor, Amedspor (armalar özgün çizim). Yorumda takım adı ya da takma adı (gs, cimbom, fener, kartal, trabzon, amed...) geçen izleyici o tribüne figür olarak eklenir; başka takım yazarsa 10 saniyeden sonra geçer. Her tribünde taraftar sayısı ve puan yazar. En çok puanı olan tribün taç alır. Sayaçlar tarayıcının yerel deposunda tutulur, sunucuya hiçbir şey gönderilmez.
+- **Puan.** Futbol sorusu birkaç dakikada bir gelir (kulüp × ülke hücresi, ilk 3 doğru cevap soru bitince gösterilir); doğru cevap veren, tribüne katılmışsa tribününe 10 puan getirir. Hediye, elmas değeri kadar puan getirir (seri hediyeler seri bitince bir kez sayılır). Tribüne katılmamış izleyicinin puanı yazılmaz, ekranda takım yazması istenir.
+- **Konuşma balonu.** Tribüne katılmış izleyicinin yorumu figürünün üstünde 4,2 saniye görünür (en çok 44 karakter, kişi başı 3 saniyede bir, aynı anda en çok 7). Bağlantı, `@` ve `blocked.json` listesindeki kelimeleri içeren yorumlar gösterilmez; yasaklı kelime içeren kullanıcı adı "Taraftar" olarak yazılır.
+- **Sınırlar.** Kütüphane resmi değil, TikTok protokolü değişirse bozulabilir. Sahne yalnızca sahte olaylarla denendi, gerçek yayında denenmedi. TikTok sahibi başında olmayan, önceden kaydedilmiş ya da tekrar tekrar hediye isteyen yayınları kısıtlayabilir; ekranda hediye çağrısı yoktur, yayıncı yayında konuşmalıdır. TikTok LIVE için 18 yaş ve (bölgeye göre) 1.000 takipçi gerekir.
+
 ## Online maç
 
 Maçın sahibi sunucudur: durumu sunucu tutar, her cevabı kendi futbol veritabanında doğrular, süreyi kendi sayar. Uygulama yalnızca hamle gönderir ve sunucudan gelen hamleleri ekrana işler; cevabın doğru olduğuna uygulama karar vermez.

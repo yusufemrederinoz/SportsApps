@@ -1,0 +1,17 @@
+{
+  "title": "TRİBÜN SAVAŞI",
+  "join": "Yoruma takımını yaz, tribününe katıl",
+  "fans": "TARAFTAR",
+  "points": "PUAN",
+  "questionLabel": "FUTBOL SORUSU",
+  "question": "İki ölçüte de uyan bir futbolcu yaz",
+  "next": "SIRADAKİ SORU",
+  "reveal": "CEVAPLARDAN BAZILARI",
+  "nobody": "Bu soruyu kimse bilemedi",
+  "joined": "{{team}} tribününe katıldı",
+  "moved": "{{team}} tribününe geçti",
+  "gift": "{{points}} puan kazandırdı",
+  "giftNoTeam": "hediye gönderdi, takımını yazarsa puan olur",
+  "guest": "Taraftar",
+  "footer": "ChallengeGoal · Futbol bilgi oyunları · Link profilde"
+}

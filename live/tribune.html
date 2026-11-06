@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1080" />
+    <title>ChallengeGoal Tribün</title>
+    <style>
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-weight: 800;
+        font-style: italic;
+        src: url("/fonts/BarlowCondensed_800ExtraBold_Italic.ttf");
+      }
+      @font-face {
+        font-family: "Barlow Condensed";
+        font-weight: 700;
+        src: url("/fonts/BarlowCondensed_700Bold.ttf");
+      }
+      @font-face {
+        font-family: "Barlow";
+        font-weight: 500;
+        src: url("/fonts/Barlow_500Medium.ttf");
+      }
+
+      :root {
+        --ink: #05070a;
+        --background: #0a0d12;
+        --panel: #121821;
+        --raised: #1b2430;
+        --stroke: #2b3644;
+        --text: #f6f8fb;
+        --body: #d5dce6;
+        --muted: #9ba8ba;
+        --volt: #c8ff2e;
+        --display: "Barlow Condensed", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--background);
+        color: var(--text);
+        font-family: "Barlow", sans-serif;
+      }
+
+      .stage {
+        position: relative;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background:
+          radial-gradient(ellipse 900px 520px at 50% 0%, rgba(200, 255, 46, 0.12), transparent 70%),
+          radial-gradient(ellipse 700px 600px at 50% 100%, rgba(46, 160, 90, 0.22), transparent 70%),
+          linear-gradient(180deg, #0b1018, var(--background) 45%, #070a0e);
+      }
+
+      .display {
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        line-height: 0.94;
+      }
+
+      .brand {
+        position: absolute;
+        top: 168px;
+        left: 0;
+        width: 1080px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        font-size: 44px;
+      }
+
+      .brand img {
+        width: 64px;
+        height: 64px;
+      }
+
+      .brand b {
+        color: var(--volt);
+        font-weight: inherit;
+      }
+
+      .title {
+        position: absolute;
+        top: 236px;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-size: 124px;
+        color: var(--volt);
+        text-shadow: 0 0 60px rgba(200, 255, 46, 0.45);
+      }
+
+      .join {
+        position: absolute;
+        top: 366px;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 40px;
+        color: var(--body);
+      }
+
+      .chips {
+        position: absolute;
+        top: 422px;
+        left: 0;
+        width: 1080px;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .chips span {
+        min-width: 120px;
+        padding: 8px 18px 4px;
+        border-radius: 12px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: 40px;
+        color: var(--ink);
+      }
+
+      .card {
+        position: absolute;
+        top: 506px;
+        left: 70px;
+        width: 940px;
+        height: 262px;
+        padding: 20px 28px;
+        border: 2px solid var(--stroke);
+        border-radius: 28px;
+        background: linear-gradient(160deg, var(--raised), var(--panel));
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+
+      .card.live {
+        border-color: var(--volt);
+        box-shadow: 0 0 50px rgba(200, 255, 46, 0.25);
+      }
+
+      .card .label {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 28px;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+      }
+
+      .card .criteria {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-top: 8px;
+        font-size: 60px;
+      }
+
+      .card .criteria b {
+        padding: 6px 20px 2px;
+        border: 2px solid var(--stroke);
+        border-radius: 14px;
+        background: var(--ink);
+      }
+
+      .card .criteria i {
+        font-style: normal;
+        color: var(--volt);
+      }
+
+      .card .rule {
+        margin-top: 10px;
+        font-size: 30px;
+        color: var(--body);
+      }
+
+      .card .timer {
+        position: absolute;
+        right: 28px;
+        top: 20px;
+        font-size: 64px;
+        color: var(--volt);
+      }
+
+      .card .wait {
+        margin-top: 18px;
+        font-size: 96px;
+        color: var(--text);
+      }
+
+      .card .list {
+        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+      }
+
+      .card .list span {
+        padding: 4px 12px 0;
+        border-radius: 10px;
+        background: rgba(200, 255, 46, 0.12);
+        color: var(--volt);
+      }
+
+      .stands {
+        position: absolute;
+        top: 800px;
+        left: 70px;
+        width: 940px;
+        height: 690px;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+      }
+
+      .stand {
+        position: relative;
+        display: grid;
+        grid-template-rows: 116px 1fr 112px;
+        border: 2px solid var(--stroke);
+        border-radius: 22px;
+        background: linear-gradient(180deg, color-mix(in srgb, var(--body-color) 18%, var(--panel)), var(--panel) 60%);
+        overflow: hidden;
+      }
+
+      .stand.lead {
+        border-color: var(--volt);
+        box-shadow: 0 0 40px rgba(200, 255, 46, 0.35);
+      }
+
+      .stand.pulse {
+        animation: pulse 0.5s ease-out;
+      }
+
+      .stand .head {
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 2px;
+      }
+
+      .stand .count {
+        font-size: 66px;
+      }
+
+      .stand .fans {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 20px;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+
+      .stand .crown {
+        position: absolute;
+        top: 6px;
+        left: 50%;
+        width: 34px;
+        margin-left: -17px;
+        opacity: 0;
+      }
+
+      .stand.lead .crown {
+        opacity: 1;
+      }
+
+      .stand .crowd {
+        display: flex;
+        flex-wrap: wrap-reverse;
+        align-content: flex-start;
+        justify-content: center;
+        gap: 4px;
+        padding: 6px;
+      }
+
+      .stand .crowd svg {
+        width: 24px;
+        height: 28px;
+        animation: arrive 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+
+      .stand .foot {
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 4px;
+        border-top: 2px solid var(--stroke);
+        background: rgba(5, 7, 10, 0.55);
+      }
+
+      .stand .foot svg {
+        width: 46px;
+        height: 52px;
+      }
+
+      .stand .foot b {
+        font-size: 30px;
+      }
+
+      .stand .right {
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 22px;
+        color: var(--volt);
+      }
+
+      .pitch {
+        position: absolute;
+        top: 1512px;
+        left: 70px;
+        width: 940px;
+        height: 250px;
+        border-radius: 26px;
+        background: repeating-linear-gradient(90deg, #1f7a3f 0 94px, #1b6e39 94px 188px);
+        box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.65);
+        overflow: hidden;
+      }
+
+      .pitch::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        margin-left: -2px;
+        background: rgba(255, 255, 255, 0.65);
+      }
+
+      .pitch::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 140px;
+        height: 140px;
+        margin: -70px 0 0 -70px;
+        border: 4px solid rgba(255, 255, 255, 0.65);
+        border-radius: 50%;
+      }
+
+      .feed {
+        position: absolute;
+        top: 1512px;
+        left: 70px;
+        width: 940px;
+        height: 250px;
+        pointer-events: none;
+      }
+
+      .feed .chip {
+        position: absolute;
+        bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 640px;
+        padding: 8px 16px 6px 10px;
+        border-radius: 999px;
+        background: rgba(5, 7, 10, 0.86);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 30px;
+        white-space: nowrap;
+        animation: rise 3.2s ease-out forwards;
+      }
+
+      .feed .chip i {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        flex: none;
+      }
+
+      .feed .chip em {
+        font-style: normal;
+        color: var(--muted);
+      }
+
+      .burst {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+      }
+
+      .burst i {
+        position: absolute;
+        width: 12px;
+        height: 18px;
+        border-radius: 3px;
+        animation: confetti 1.6s ease-out forwards;
+      }
+
+      .footer {
+        position: absolute;
+        top: 1790px;
+        left: 0;
+        width: 1080px;
+        text-align: center;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 34px;
+        color: var(--muted);
+      }
+
+      .stand .crowd svg.talk {
+        animation: hop 0.5s ease-out;
+      }
+
+      .bubbles {
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+      }
+
+      .bubble {
+        position: absolute;
+        max-width: 230px;
+        padding: 6px 12px 4px;
+        border: 3px solid var(--tone);
+        border-radius: 16px;
+        background: #ffffff;
+        color: #05070a;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 26px;
+        line-height: 1.05;
+        text-align: center;
+        overflow-wrap: anywhere;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+        animation: bubble 4.2s ease-out forwards;
+      }
+
+      .bubble::after {
+        content: "";
+        position: absolute;
+        left: var(--tail, 50%);
+        bottom: -11px;
+        width: 14px;
+        height: 14px;
+        margin-left: -8px;
+        background: #ffffff;
+        border-right: 3px solid var(--tone);
+        border-bottom: 3px solid var(--tone);
+        transform: rotate(45deg);
+      }
+
+      @keyframes hop {
+        40% {
+          transform: translateY(-9px);
+        }
+      }
+
+      @keyframes bubble {
+        0% {
+          transform: translateY(8px) scale(0.6);
+          opacity: 0;
+        }
+        8% {
+          transform: none;
+          opacity: 1;
+        }
+        85% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes arrive {
+        from {
+          transform: translateY(-30px) scale(1.6);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        50% {
+          transform: scale(1.03);
+        }
+      }
+
+      @keyframes rise {
+        0% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        12% {
+          transform: none;
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(-24px);
+          opacity: 0;
+        }
+      }
+
+      @keyframes confetti {
+        from {
+          transform: translate(0, 0) rotate(0deg);
+          opacity: 1;
+        }
+        to {
+          transform: translate(var(--dx), var(--dy)) rotate(var(--turn));
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="stage" id="stage">
+      <div class="display brand"><img src="/ball.png" alt="" /><span>CHALLENGE<b>GOAL</b></span></div>
+      <div class="display title" id="title"></div>
+      <div class="join" id="join"></div>
+      <div class="chips" id="chips"></div>
+      <div class="card" id="card"></div>
+      <div class="stands" id="stands"></div>
+      <div class="pitch"></div>
+      <div class="feed" id="feed"></div>
+      <div class="footer" id="footer"></div>
+      <div class="bubbles" id="bubbles"></div>
+    </div>
+    <script type="module">
+      const TEAMS = [
+        {
+          key: 'gs',
+          name: 'GALATASARAY',
+          short: 'GS',
+          crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] },
+          body: '#FDB912',
+          collar: '#A90432',
+          aliases: ['gs', 'galatasaray', 'cimbom', 'cimbombom', 'aslan', 'gala'],
+        },
+        {
+          key: 'fb',
+          name: 'FENERBAHÇE',
+          short: 'FB',
+          crest: { code: 'FB', pattern: 'stripes', colors: ['#FFED00', '#163962'] },
+          body: '#FFED00',
+          collar: '#163962',
+          aliases: ['fb', 'fener', 'fenerbahce', 'kanarya'],
+        },
+        {
+          key: 'bjk',
+          name: 'BEŞİKTAŞ',
+          short: 'BJK',
+          crest: { code: 'BJK', pattern: 'stripes', colors: ['#000000', '#FFFFFF'] },
+          body: '#F6F8FB',
+          collar: '#000000',
+          aliases: ['bjk', 'besiktas', 'kartal', 'carsi', 'kara kartal'],
+        },
+        {
+          key: 'ts',
+          name: 'TRABZONSPOR',
+          short: 'TS',
+          crest: { code: 'TS', pattern: 'stripes', colors: ['#7B1B38', '#6CB4E4'] },
+          body: '#6CB4E4',
+          collar: '#7B1B38',
+          aliases: ['ts', 'trabzon', 'trabzonspor', 'firtina', 'bordo mavi', 'karadeniz'],
+        },
+        {
+          key: 'amed',
+          name: 'AMEDSPOR',
+          short: 'AMED',
+          crest: { code: 'AMED', pattern: 'halves', colors: ['#D7141A', '#00843D'] },
+          body: '#D7141A',
+          collar: '#00843D',
+          aliases: ['amed', 'amedspor'],
+        },
+      ];
+      const BLOCKED_URL = '/blocked.json';
+      const SHIELD = 'M8 6 H92 V58 C92 86 72 100 50 108 C28 100 8 86 8 58 Z';
+      const CREST_SHAPES = {
+        plain: () => '',
+        halves: (fill) => `<rect x="50" width="50" height="112" fill="${fill}"/>`,
+        stripes: (fill) => [1, 3].map((index) => `<rect x="${8 + index * 16.8}" width="16.8" height="112" fill="${fill}"/>`).join(''),
+      };
+      const params = new URLSearchParams(location.search);
+      const DEMO = params.has('demo');
+      const QUESTION_EVERY = Number(params.get('every') ?? 75) * 1000;
+      const ANSWER_TIME = Number(params.get('answer') ?? 25) * 1000;
+      const REVEAL_TIME = 7000;
+      const SWITCH_COOLDOWN = 10000;
+      const VISIBLE_FIGURES = 72;
+      const LISTED_ANSWERS = 6;
+      const NAME_LENGTH = 14;
+      const FEED_SLOTS = 4;
+      const FEED_STEP = 58;
+      let feedSlot = 0;
+      const STORAGE_KEY = 'challengegoal-tribune-v1';
+      const BUBBLES = params.get('bubbles') !== '0';
+      const BUBBLE_LIMIT = 7;
+      const BUBBLE_COOLDOWN = 3000;
+      const BUBBLE_LENGTH = 44;
+      const BUBBLE_TOP = 780;
+      const ANSWER_POINTS = 10;
+      const BURST_LIMIT = 70;
+      const EDGE = 8;
+      const BLOCKED_LINK = /(https?:|www\.|@|\.com|\.net|\.org|\.tr\b)/i;
+
+      const element = (id) => document.getElementById(id);
+      const escapeText = (value) => String(value).replace(/[&<>"']/g, (character) => `&#${character.charCodeAt(0)};`);
+      const fill = (template, values) => template.replace(/\{\{(\w+)\}\}/g, (_, name) => String(values[name] ?? ''));
+      const plain = (text) =>
+        String(text)
+          .replace(/ı/g, 'i')
+          .replace(/İ/g, 'i')
+          .toLowerCase()
+          .normalize('NFKD')
+          .replace(/[̀-ͯ]/g, '')
+          .replace(/[^0-9a-z]+/g, ' ')
+          .trim();
+      const number = (value) => value.toLocaleString('tr-TR');
+
+      const texts = await (await fetch('/texts.json')).json();
+      const bank = (await (await fetch('/questions.json')).json()).questions;
+      const BLOCKED = (await (await fetch(BLOCKED_URL)).json()).words;
+      const figures = new Map();
+      const spoke = new Map();
+
+      const state = loadState();
+      const stands = {};
+      let question = null;
+      let phase = 'wait';
+      let phaseEnds = Date.now() + 15000;
+      let answered = new Map();
+      let unused = [];
+
+      function loadState() {
+        if (params.has('reset')) localStorage.removeItem(STORAGE_KEY);
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
+          if (saved?.members) {
+            saved.points ??= zeros();
+            return saved;
+          }
+        } catch {}
+        return { members: {}, correct: zeros(), points: zeros() };
+      }
+
+      function zeros() {
+        return Object.fromEntries(TEAMS.map((team) => [team.key, 0]));
+      }
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch {}
+      }
+
+      function crest({ code, pattern, colors }) {
+        const outline = colors[1] === '#000000' ? '#C9CED6' : colors[1];
+        return `<svg viewBox="0 0 100 112"><defs><clipPath id="shield-${code}"><path d="${SHIELD}"/></clipPath></defs><g clip-path="url(#shield-${code})"><rect width="100" height="112" fill="${colors[0]}"/>${CREST_SHAPES[pattern](colors[1])}</g><path d="${SHIELD}" fill="none" stroke="${outline}" stroke-width="5"/><rect x="2" y="38" width="96" height="24" rx="5" fill="#FFFFFF"/><text x="50" y="55.5" text-anchor="middle" font-family="Barlow Condensed" font-weight="700" font-size="${code.length > 3 ? 16 : 18}" fill="#05070A">${code}</text></svg>`;
+      }
+
+      function figure(team) {
+        return `<svg viewBox="0 0 24 28"><circle cx="12" cy="7" r="5.6" fill="#E8EDF3"/><path d="M1.5 27.5 C1.5 18 6 14.5 12 14.5 C18 14.5 22.5 18 22.5 27.5 Z" fill="${team.body}" stroke="rgba(255,255,255,0.35)"/><path d="M8.5 14.8 L12 19 L15.5 14.8 Z" fill="${team.collar}"/></svg>`;
+      }
+
+      function addFigure(crowd, team, id) {
+        crowd.insertAdjacentHTML('beforeend', figure(team));
+        const added = crowd.lastElementChild;
+        added.dataset.id = id;
+        figures.set(id, added);
+        while (crowd.children.length > VISIBLE_FIGURES) {
+          const oldest = crowd.firstElementChild;
+          if (figures.get(oldest.dataset.id) === oldest) figures.delete(oldest.dataset.id);
+          oldest.remove();
+        }
+      }
+
+      function removeFigure(id) {
+        const current = figures.get(id);
+        if (current) current.remove();
+        figures.delete(id);
+      }
+
+      function teamOf(text) {
+        const padded = ` ${plain(text)} `;
+        let found = null;
+        for (const team of TEAMS) {
+          for (const alias of team.aliases) {
+            const position = padded.indexOf(` ${alias} `);
+            if (position >= 0 && (found === null || position < found.position)) found = { team, position };
+          }
+        }
+        return found?.team ?? null;
+      }
+
+      function isBlocked(text) {
+        const words = plain(text)
+          .replace(/(.)\1+/g, '$1')
+          .split(' ');
+        return BLOCKED.some((stem) => {
+          const squeezed = plain(stem).replace(/(.)\1+/g, '$1');
+          return words.some((word) => word.startsWith(squeezed) && (squeezed.length > 3 || word === squeezed));
+        });
+      }
+
+      function shownName(name) {
+        const clean = String(name ?? '').trim();
+        if (!clean || isBlocked(clean)) return texts.guest;
+        return clean.length > NAME_LENGTH ? `${clean.slice(0, NAME_LENGTH - 1)}…` : clean;
+      }
+
+      function cleanMessage(text) {
+        const clean = String(text ?? '').replace(/\s+/g, ' ').trim();
+        if (!clean || BLOCKED_LINK.test(clean) || isBlocked(clean)) return '';
+        return clean.length > BUBBLE_LENGTH ? `${clean.slice(0, BUBBLE_LENGTH - 1)}…` : clean;
+      }
+
+      function speak(id, text) {
+        if (!BUBBLES) return;
+        const member = state.members[id];
+        const team = member ? TEAMS.find((candidate) => candidate.key === member.team) : null;
+        const message = cleanMessage(text);
+        const now = Date.now();
+        if (!team || !message || now - (spoke.get(id) ?? 0) < BUBBLE_COOLDOWN) return;
+        spoke.set(id, now);
+        const layer = element('bubbles');
+        while (layer.children.length >= BUBBLE_LIMIT) layer.firstElementChild.remove();
+        const anchor = figures.get(id);
+        const target = anchor?.isConnected ? anchor : stands[team.key].crowd;
+        const stage = element('stage').getBoundingClientRect();
+        const box = target.getBoundingClientRect();
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.style.setProperty('--tone', team.collar);
+        bubble.textContent = message;
+        layer.append(bubble);
+        const centre = box.left - stage.left + box.width / 2;
+        const left = Math.min(Math.max(centre - bubble.offsetWidth / 2, EDGE), 1080 - bubble.offsetWidth - EDGE);
+        const top = Math.max(box.top - stage.top - bubble.offsetHeight - 14, BUBBLE_TOP);
+        bubble.style.left = `${left}px`;
+        bubble.style.top = `${top}px`;
+        bubble.style.setProperty('--tail', `${centre - left}px`);
+        bubble.addEventListener('animationend', () => bubble.remove());
+        if (anchor?.isConnected) {
+          anchor.classList.remove('talk');
+          void anchor.getBoundingClientRect();
+          anchor.classList.add('talk');
+        }
+      }
+
+      function build() {
+        element('title').textContent = texts.title;
+        element('join').textContent = texts.join;
+        element('footer').textContent = texts.footer;
+        element('chips').innerHTML = TEAMS.map(
+          (team) => `<span style="background:${team.body};color:${team.collar === '#000000' ? '#05070A' : team.collar}">${team.short}</span>`,
+        ).join('');
+        element('stands').innerHTML = TEAMS.map(
+          (team) => `<div class="stand" id="stand-${team.key}" style="--body-color:${team.crest.colors[0] === '#000000' ? '#FFFFFF' : team.crest.colors[0]}">
+            <svg class="crown" viewBox="0 0 34 22"><path d="M2 20 L5 5 L12 12 L17 2 L22 12 L29 5 L32 20 Z" fill="#C8FF2E"/></svg>
+            <div class="head"><div class="display count">0</div><div class="fans">${escapeText(texts.fans)}</div></div>
+            <div class="crowd"></div>
+            <div class="foot">${crest(team.crest)}<b class="display">${team.short}</b><span class="right">0 ${escapeText(texts.points)}</span></div>
+          </div>`,
+        ).join('');
+        for (const team of TEAMS) {
+          const root = element(`stand-${team.key}`);
+          stands[team.key] = {
+            root,
+            count: root.querySelector('.count'),
+            crowd: root.querySelector('.crowd'),
+            right: root.querySelector('.right'),
+          };
+        }
+        const recent = Object.entries(state.members).sort((first, second) => first[1].at - second[1].at);
+        for (const team of TEAMS) {
+          for (const [id] of recent.filter(([, member]) => member.team === team.key).slice(-VISIBLE_FIGURES)) {
+            addFigure(stands[team.key].crowd, team, id);
+          }
+        }
+        refresh();
+      }
+
+      function counts() {
+        const result = Object.fromEntries(TEAMS.map((team) => [team.key, 0]));
+        for (const member of Object.values(state.members)) result[member.team] += 1;
+        return result;
+      }
+
+      function refresh() {
+        const totals = counts();
+        const top = Math.max(...Object.values(state.points));
+        for (const team of TEAMS) {
+          const stand = stands[team.key];
+          stand.count.textContent = number(totals[team.key]);
+          stand.right.textContent = `${number(state.points[team.key])} ${texts.points}`;
+          stand.root.classList.toggle('lead', top > 0 && state.points[team.key] === top);
+        }
+      }
+
+      function pulse(key) {
+        const root = stands[key].root;
+        root.classList.remove('pulse');
+        void root.offsetWidth;
+        root.classList.add('pulse');
+      }
+
+      function announce(team, name, text) {
+        const feed = element('feed');
+        feedSlot = (feedSlot + 1) % FEED_SLOTS;
+        feed.querySelector(`[data-slot="${feedSlot}"]`)?.remove();
+        const chip = document.createElement('div');
+        chip.className = 'chip';
+        chip.dataset.slot = String(feedSlot);
+        chip.style.bottom = `${14 + feedSlot * FEED_STEP}px`;
+        chip.style.left = `${20 + Math.random() * 260}px`;
+        chip.innerHTML = `<i style="background:${team ? team.body : '#C8FF2E'}"></i>${escapeText(name)} <em>${escapeText(text)}</em>`;
+        chip.addEventListener('animationend', () => chip.remove());
+        feed.append(chip);
+      }
+
+      function join(id, name, team) {
+        const now = Date.now();
+        const existing = state.members[id];
+        if (existing?.team === team.key) {
+          pulse(team.key);
+          return;
+        }
+        if (existing && now - existing.at < SWITCH_COOLDOWN) return;
+        const moved = Boolean(existing);
+        if (moved) removeFigure(id);
+        state.members[id] = { team: team.key, at: now };
+        addFigure(stands[team.key].crowd, team, id);
+        pulse(team.key);
+        refresh();
+        announce(team, shownName(name), fill(moved ? texts.moved : texts.joined, { team: team.name }));
+      }
+
+      function findAnswer(text) {
+        const padded = ` ${plain(text)} `;
+        for (const [key, name] of Object.entries(question.answers)) {
+          if (padded.includes(` ${key} `)) return name;
+        }
+        return null;
+      }
+
+      function answer(id, name, text) {
+        if (answered.has(id)) return;
+        const player = findAnswer(text);
+        if (!player) return;
+        const member = state.members[id];
+        const team = member ? TEAMS.find((candidate) => candidate.key === member.team) : null;
+        answered.set(id, { name: shownName(name), team, player });
+        if (team) {
+          state.correct[team.key] = (state.correct[team.key] ?? 0) + 1;
+          state.points[team.key] += ANSWER_POINTS;
+          pulse(team.key);
+          refresh();
+        }
+        drawCard();
+      }
+
+      function onChat({ id, name, text }) {
+        if (!id) return;
+        const team = teamOf(text);
+        if (team) join(id, name, team);
+        else if (phase === 'ask') answer(id, name, text);
+        speak(id, text);
+      }
+
+      function onLike({ id }) {
+        const member = state.members[id];
+        if (member) pulse(member.team);
+      }
+
+      function onGift({ id, name, diamonds }) {
+        const member = state.members[id];
+        const team = member ? TEAMS.find((candidate) => candidate.key === member.team) : null;
+        if (!team) {
+          announce(null, shownName(name), texts.giftNoTeam);
+          return;
+        }
+        const points = Math.max(1, Math.round(diamonds || 1));
+        state.points[team.key] += points;
+        refresh();
+        announce(team, shownName(name), fill(texts.gift, { points: number(points) }));
+        const root = stands[team.key].root;
+        const burst = document.createElement('div');
+        burst.className = 'burst';
+        burst.innerHTML = Array.from({ length: Math.min(BURST_LIMIT, 20 + Math.round(Math.sqrt(points) * 3)) }, () => {
+          const color = Math.random() < 0.5 ? team.crest.colors[0] : team.crest.colors[1] === '#000000' ? '#C8FF2E' : team.crest.colors[1];
+          return `<i style="left:${40 + Math.random() * 100}px;top:${300 + Math.random() * 120}px;background:${color};--dx:${Math.round(Math.random() * 160 - 80)}px;--dy:${Math.round(-200 - Math.random() * 220)}px;--turn:${Math.round(Math.random() * 720)}deg"></i>`;
+        }).join('');
+        root.append(burst);
+        setTimeout(() => burst.remove(), 1800);
+        pulse(team.key);
+      }
+
+      function handle(event) {
+        if (event.kind === 'chat') onChat(event);
+        else if (event.kind === 'like') onLike(event);
+        else if (event.kind === 'gift') onGift(event);
+      }
+
+      function pickQuestion() {
+        if (unused.length === 0) unused = bank.map((_, index) => index).sort(() => Math.random() - 0.5);
+        return bank[unused.pop()];
+      }
+
+      function seconds(until) {
+        return Math.max(0, Math.ceil((until - Date.now()) / 1000));
+      }
+
+      function drawCard() {
+        const card = element('card');
+        card.classList.toggle('live', phase === 'ask');
+        if (phase === 'wait') {
+          const left = seconds(phaseEnds);
+          card.innerHTML = `<div class="label">${escapeText(texts.next)}</div><div class="display wait">${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}</div>`;
+          return;
+        }
+        const criteria = `<div class="display criteria"><b>${escapeText(question.club)}</b><i>×</i><b>${escapeText(question.country)}</b></div>`;
+        if (phase === 'ask') {
+          const list = [...answered.values()]
+            .slice(-LISTED_ANSWERS)
+            .map((entry) => `<span>✓ ${escapeText(entry.name)}${entry.team ? ` · ${entry.team.short}` : ''}</span>`)
+            .join('');
+          card.innerHTML = `<div class="label">${escapeText(texts.questionLabel)}</div><div class="display timer">${seconds(phaseEnds)}</div>${criteria}<div class="rule">${escapeText(texts.question)}</div><div class="list">${list}</div>`;
+          return;
+        }
+        const reveal = question.reveal.map((name) => `<span>${escapeText(name)}</span>`).join('');
+        const nobody = answered.size === 0 ? `<div class="rule">${escapeText(texts.nobody)}</div>` : '';
+        card.innerHTML = `<div class="label">${escapeText(texts.reveal)}</div>${criteria}${nobody}<div class="list">${reveal}</div>`;
+      }
+
+      function tick() {
+        const now = Date.now();
+        if (now >= phaseEnds) {
+          if (phase === 'wait') {
+            question = pickQuestion();
+            answered = new Map();
+            phase = 'ask';
+            phaseEnds = now + ANSWER_TIME;
+          } else if (phase === 'ask') {
+            phase = 'reveal';
+            phaseEnds = now + REVEAL_TIME;
+          } else {
+            phase = 'wait';
+            phaseEnds = now + Math.max(10000, QUESTION_EVERY - ANSWER_TIME - REVEAL_TIME);
+          }
+        }
+        drawCard();
+      }
+
+      function listen() {
+        const socket = new WebSocket(`ws://${location.host}/events`);
+        socket.addEventListener('message', (message) => {
+          try {
+            handle(JSON.parse(message.data));
+          } catch {}
+        });
+        socket.addEventListener('close', () => setTimeout(listen, 2000));
+      }
+
+      function demo() {
+        const first = ['ahmet', 'mehmet', 'ayse', 'can', 'elif', 'emre', 'zeynep', 'burak', 'deniz', 'mert', 'selin', 'kerem', 'ece', 'baris'];
+        const variants = { gs: ['GS', 'cimbom', 'Galatasaray 🦁'], fb: ['FB', 'fener', 'Fenerbahçe 💛💙'], bjk: ['BJK', 'kartal', 'Beşiktaş'], ts: ['TS', 'trabzon', 'Trabzonspor 61'], amed: ['amed', 'Amedspor'] };
+        const weights = ['gs', 'gs', 'gs', 'fb', 'fb', 'fb', 'bjk', 'bjk', 'ts', 'ts', 'amed'];
+        const people = Array.from({ length: 400 }, (_, index) => ({ id: `demo${index}`, name: `${first[index % first.length]}${10 + (index % 89)}` }));
+        const pick = (list) => list[Math.floor(Math.random() * list.length)];
+        const lines = ['bu akşam bizim', 'şampiyon bizim 🏆', 'selam 👋', 'hadi be', 'kim kazanır?', 'çok iyi', 'bilemedim ya', 'amk', 'www.site.com'];
+        setInterval(() => {
+          const person = pick(people);
+          const roll = Math.random();
+          if (roll < 0.45) handle({ kind: 'chat', ...person, text: pick(variants[pick(weights)]) });
+          else if (roll < 0.65) handle({ kind: 'chat', ...person, text: pick(lines) });
+          else if (roll < 0.85 && phase === 'ask') {
+            const names = Object.values(question.answers);
+            handle({ kind: 'chat', ...person, text: Math.random() < 0.7 ? pick(names) : 'messi' });
+          } else if (roll < 0.95) handle({ kind: 'like', ...person, count: 5 });
+          else handle({ kind: 'gift', ...person, gift: 'Rose', count: 1, diamonds: pick([1, 1, 5, 10, 30, 99, 450]) });
+        }, 280);
+      }
+
+      build();
+      tick();
+      setInterval(tick, 250);
+      setInterval(saveState, 3000);
+      if (DEMO) demo();
+      else listen();
+    </script>
+  </body>
+</html>

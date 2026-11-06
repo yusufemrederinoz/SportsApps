@@ -1242,6 +1242,13 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **İstek.** Kullanıcı öncekiler gibi bir ChallengeGoal tanıtım videosu istedi. Seçenekli sorularla: XOX'a odaklı, 20-30 saniye, kanca "Futbolu kim daha iyi biliyor?", tahta üç büyükler × Brezilya, Hollanda, Portekiz, birkaç kare dolu birkaç kare boş, soru "Boş karelere kim gelir?" (kullanıcının seçimi), 1.1.0 yenilikleri gösterilmeyecek.
 - **Üretim.** `cut=promo-xox`, `qxox` sahnesi. Çıktı `data/build/promo/videos/showcase/challengegoal-tr-promo-xox.mp4`. Kullanıcı ilk hâlini görünce açılış ekranının kaldırılmasını istedi; video doğrudan XOX ile başlıyor (17,1 saniye).
 
+### TikTok canlı yayın "Tribün Savaşı" sahnesi (7 Kasım 2026)
+
+- **Fikir.** Kullanıcı uygulamaya kullanıcı çekmek için TikTok canlı yayını önerdi: halay yayınlarındaki gibi yorumla katılım, ama futbol sahası ve beş tribünle (Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor, Amedspor), tribün sayıları yazacak. Yöntem olarak sayiyla.com'daki yazıyı verdi. Yazı okundu: çekirdek yapay zekâ değil, yorumları okuyan bir köprü betiği ve OBS ya da LIVE Studio'da tarayıcı kaynağı; yazı gerçek bir yayında denenmemiş, sahte yorumlarla test edilmiş.
+- **Seçimler (seçenekli sorularla).** Hesap canlı yayın açabiliyor. Tribün ve futbol soruları birlikte; figürün yanında kullanıcı adı görünür. Sonradan eklenenler: yorum metni figürün başında konuşma balonu olarak görünsün, hediyeler tribüne puan yazsın.
+- **Yapılan.** `live/` klasörü (köprü, sahne, soru bankası, yasaklı kelime listesi). Demo kipinde tarayıcıda denendi: tribünler doluyor, balonlar figürlerin üstünde çıkıyor, küfür ve bağlantı içeren yorumlar balona çıkmıyor (60 saniyelik deneyde görülen balon metinleri toplanıp kontrol edildi), hediye puanı ve taç çalışıyor. Köprünün TikTok tarafı denenmedi (canlı yayın gerekir).
+- **Bekleyen.** Ekrandaki cümleler taslak, yayından önce kullanıcıyla seçilecek. Gerçek yayında ilk deneme kullanıcının hesabıyla yapılacak.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
