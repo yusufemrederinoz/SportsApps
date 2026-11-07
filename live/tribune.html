@@ -1412,6 +1412,14 @@
         }, 280);
       }
 
+      function fitStage() {
+        const stage = element('stage');
+        stage.style.transformOrigin = '0 0';
+        stage.style.transform = `scale(${Math.min(innerWidth / WIDTH, innerHeight / HEIGHT)})`;
+      }
+      addEventListener('resize', fitStage);
+      fitStage();
+
       buildTags();
       const recent = Object.entries(state.members).sort((first, second) => first[1].at - second[1].at);
       for (const team of TEAMS) {
