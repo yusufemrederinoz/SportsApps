@@ -592,6 +592,7 @@
       const BUBBLE_COOLDOWN = 3000;
       const BUBBLE_LENGTH = 44;
       const BUBBLE_LIFETIME = 4200;
+      const PREFIX_MIN = 5;
       const EDGE = 8;
       const BLOCKED_LINK = /(https?:|www\.|@|\.com|\.net|\.org|\.tr\b)/i;
 
@@ -1140,12 +1141,18 @@
         root.classList.add('pulse');
       }
 
+      function aliasPosition(padded, alias) {
+        const exact = padded.indexOf(` ${alias} `);
+        if (exact >= 0 || alias.includes(' ') || alias.length < PREFIX_MIN) return exact;
+        return padded.indexOf(` ${alias}`);
+      }
+
       function teamOf(text) {
         const padded = ` ${plain(text)} `;
         let found = null;
         for (const team of TEAMS) {
           for (const alias of team.aliases) {
-            const position = padded.indexOf(` ${alias} `);
+            const position = aliasPosition(padded, alias);
             if (position >= 0 && (found === null || position < found.position)) found = { team, position };
           }
         }
