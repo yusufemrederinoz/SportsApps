@@ -1257,6 +1257,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Kararlar (seçenekli sorularla).** Hediyeler: kullanıcı kimse yokken kısa bir deneme yayını açacak, köprünün yazdığı listeden en ucuz (1 jeton) beş hediye birlikte seçilecek. Sesler: kullanıcı kendisi `live/audio` klasörüne koyacak (telif sorumluluğu kendisinde). Ekrandaki cümleler: başlık "TRİBÜN SAVAŞI", "Yoruma takımını yaz, tribününe katıl", soru kartında "İki ölçüte de uyan bir futbolcu yaz" ve alt yazı "ChallengeGoal · Futbol bilgi oyunları · Link profilde" olarak kaldı.
 - **Bekleyen.** Deneme yayınında hediye listesinin okunması ve `gifts.json` güncellenmesi, takım seslerinin eklenmesi, ilk gerçek yayın denemesi (sahne gerçek TikTok olaylarıyla henüz denenmedi).
 
+### Üçüncü mağaza görünürlüğü ölçümü (11 Kasım 2026)
+
+- **İstek.** Kullanıcı ASO'nun durumunu sordu; `deploy/store_rank.mjs`, Google Play arama sayfaları ve App Store Connect API'siyle yeniden ölçüldü. Tablo `docs/magaza-metinleri.md` içinde.
+- **Sonuç.** App Store Türkiye'de dört yeni arama listede (48-129. sıra), 3 Kasım'daki bazı yüksek sıralar düştü (düellosu 5→27, xox 11→25, bilgi oyunu 33→67, quiz 10→15); trivia 18→14 ve futbolcu tahmin 70→53 iyileşti. Google Play'de "futbol düellosu" ilk 30'da yokken 4. oldu. Değerlendirme 5'ten 6'ya (ortalama 5). Etkinlik yayında (30 Kasım'a kadar), öne çıkarılma başvurusu yanıtsız.
+- **Eksik.** İndirme ve gösterim sayıları çekilmedi, düşüşlerin nedeni ayrılamıyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

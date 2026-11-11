@@ -20,26 +20,28 @@ App Store ile Google Play'in tam açıklaması 16 Ekim 2026'dan beri ayrıdır. 
 
 **Arama sırası ölçümü.** `node deploy/store_rank.mjs` Apple'ın açık arama servisiyle (iTunes Search API) aramalardaki sırayı yazar. Bu servis App Store aramasıyla birebir aynı değildir ama eğilimi gösterir. Google Play'in açık bir arama servisi yok.
 
-| Arama (App Store Türkiye) | 31 Ekim 2026 (1.0.0) | 3 Kasım 2026 (1.1.0) |
-|---|---|---|
-| challengegoal | 1 | 1 |
-| futbol düellosu | 4 | 5 |
-| futbol düello | 7 | 9 |
-| futbol xox | 10 | 11 |
-| futbol quiz | 105 | 10 |
-| futbol trivia | 50 | 18 |
-| futbol bilgi oyunu | ilk 180'de yok | 33 |
-| futbolcu tahmin | 66 | 70 |
-| futbol bilgi | 66 | ilk 190'da yok |
-| futbol bilgi yarışması | ilk 180'de yok | ilk 180'de yok |
-| futbol bulmaca | ilk 180'de yok | ilk 185'te yok |
-| futbol soruları | ilk 180'de yok | ilk 184'te yok |
+| Arama (App Store Türkiye) | 31 Ekim 2026 (1.0.0) | 3 Kasım 2026 (1.1.0) | 11 Kasım 2026 |
+|---|---|---|---|
+| challengegoal | 1 | 1 | 1 |
+| futbol düellosu | 4 | 5 | 27 |
+| futbol düello | 7 | 9 | 9 |
+| futbol xox | 10 | 11 | 25 |
+| futbol quiz | 105 | 10 | 15 |
+| futbol trivia | 50 | 18 | 14 |
+| futbol bilgi oyunu | ilk 180'de yok | 33 | 67 |
+| futbolcu tahmin | 66 | 70 | 53 |
+| futbol bilgi | 66 | ilk 190'da yok | 73 |
+| futbol bilgi yarışması | ilk 180'de yok | ilk 180'de yok | 107 |
+| futbol bulmaca | ilk 180'de yok | ilk 185'te yok | 129 |
+| futbol soruları | ilk 180'de yok | ilk 184'te yok | 48 |
 
 Google Play Türkiye'de aynı aramaların hiçbirinde ilk 30'da değildik; yalnızca "challengegoal" aramasında 1. sıradaydık. ABD, İngiltere ve Almanya'da İngilizce ve Almanca aramalarda hiç görünmüyorduk.
 
 **1.1.0'dan sonra.** 1.1.0 App Store'da 31 Ekim 18.44'te (Türkiye saati) yayına girdi; Google Play'de aynı gün daha önce yayınlanmıştı. İki mağazanın açık sayfalarında yedi kaydın adı da doğru görünüyor (App Store'da Türkiye mağazası Türkçe ve İngilizce U.K. adını, Almanya mağazası Almanca ve İngilizce U.K. adını gösteriyor). Yayından yarım saat sonraki ölçümde App Store Türkiye sıraları yukarıdaki tabloyla birebir aynıydı: Apple yeni ad, alt başlık ve anahtar kelimeleri birkaç günde tarar, asıl ölçüm 2-3 Kasım'da yapılacak. Diğer ülkelerde yalnızca İspanya'da "quiz de fútbol" aramasında 51. sıradaydık. Google Play'de bütün aramalar aynı kaldı; adımızdaki "futbol düellosu" aramasında bile ilk 30'da değiliz. Google Play sıralamasında metinden çok indirme sayısı ve kullanıcıların uygulamada kalması belirleyici olduğu için oradaki sıra yeni kullanıcı geldikçe değişir.
 
 **3 Kasım 2026 ölçümü (1.1.0 metinleri tarandıktan sonra).** App Store Türkiye'de İngilizce (U.K.) kaydındaki "quiz" ve "trivia" Türkçe "futbol" ile birleşince büyük sıçrama oldu: "futbol quiz" 105'ten 10'a, "futbol trivia" 50'den 18'e çıktı; anahtar kelimedeki "oyunu" ile "futbol bilgi oyunu" 33. sırada. Alt başlıkta "Futbol bilgi yarışması" yazmasına rağmen "futbol bilgi" ilk 190'dan düştü ve "futbol bilgi yarışması" hâlâ yok; anahtar kelimedeki "bulmaca" ve "soruları" da sonuç vermedi. Bu ölçüm Apple'ın açık arama servisiyle yapıldı, App Store'un kendi aramasıyla birebir aynı olmayabilir. Diğer ülkeler: Almanya'da "fussball quiz" 77, "fußball quiz" 118 (önce yoktu), İspanya'da "quiz de fútbol" 54; İngiltere, ABD, Fransa ve İtalya aramalarında yokuz. Değerlendirme sayısı Türkiye'de 2'den 5'e çıktı (ortalama 5). Google Play Türkiye'de "futbol düello" aramasında 6. sıraya girdik (önce ilk 30'da değildik); "challengegoal" 1. sıra, adımızdaki "futbol düellosu" dahil diğer aramalarda ilk 30'da değiliz. Google Play sayfası "10+ indirme" gösteriyor.
+
+**11 Kasım 2026 ölçümü.** Apple yeni metinleri taramayı bitirmiş: 3 Kasım'da listede olmayan dört arama ("futbol bilgi", "futbol bilgi yarışması", "futbol bulmaca", "futbol soruları") artık 48 ile 129 arasında görünüyor. Buna karşılık 3 Kasım'daki bazı yüksek sıralar düştü ("futbol düellosu" 5'ten 27'ye, "futbol xox" 11'den 25'e, "futbol bilgi oyunu" 33'ten 67'ye, "futbol quiz" 10'dan 15'e). Apple'ın açık arama servisi App Store aramasıyla birebir aynı değil ve yeni uygulamalara başlangıçta verilen geçici bir artış da olabilir; elimizdeki veriyle düşüşün nedenini ayıramıyoruz. İndirme, gösterim ve dönüşüm sayıları App Store Connect Analytics ve Play Console'da, onları henüz çekmedik. Google Play Türkiye'de "futbol düellosu" aramasında 4. sıraya çıktık (3 Kasım'da ilk 30'da yoktuk), "futbol düello" 6, "challengegoal" 1; diğer genel aramalarda ilk 30'da değiliz, sayfa hâlâ "10+ indirme" gösteriyor. Diğer ülkeler: Almanya'da "fussball quiz" 119 ("fußball quiz" artık ilk 143'te yok), İspanya'da "quiz de fútbol" 73; İngiltere, ABD, Fransa ve İtalya'da yokuz. Değerlendirme 6 (ortalama 5). 1.1.0 yayında, "Rematch and reactions" etkinliği 30 Kasım'a kadar yayında, öne çıkarılma başvurusu hâlâ SUBMITTED (yanıt yok).
 
 ## Türkçe (tr-TR, tr)
 
