@@ -165,20 +165,10 @@ describe('bot disguise and level', () => {
 
   it('plays stronger against a winning player and weaker against a losing one', () => {
     expect(botLevelFor(2, ['win', 'win', 'win', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(3);
-    expect(botLevelFor(2, ['loss', 'win', 'draw', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(1);
-    expect(botLevelFor(2, ['loss', 'loss', 'draw', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(0);
+    expect(botLevelFor(2, ['loss', 'loss', 'draw', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(1);
     expect(botLevelFor(2, ['win', 'loss', 'win', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(2);
     expect(botLevelFor(3, ['win', 'win', 'win'], RANKED_TARGET_WIN_RATE)).toBe(3);
-    expect(botLevelFor(1, ['loss', 'loss', 'loss', 'win'], RANKED_TARGET_WIN_RATE)).toBe(0);
-  });
-
-  it('keeps weakening the bot below easy for a player who cannot win', () => {
-    expect(botLevelFor(1, ['loss', 'loss', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(-1);
-    expect(botLevelFor(1, ['loss', 'loss', 'loss', 'loss', 'win'], BOT_TARGET_WIN_RATES[1])).toBe(-1);
-    expect(botLevelFor(1, ['win', 'win', 'loss', 'loss', 'loss'], BOT_TARGET_WIN_RATES[1])).toBe(0);
-    expect(botLevelFor(1, ['win', 'win', 'win', 'loss', 'win'], BOT_TARGET_WIN_RATES[1])).toBe(1);
-    expect(botLevelFor(3, ['loss', 'loss', 'loss', 'loss', 'loss'], BOT_TARGET_WIN_RATES[3])).toBe(2);
-    expect(botLevelFor(2, ['loss', 'loss', 'loss', 'loss', 'loss'], BOT_TARGET_WIN_RATES[2])).toBe(0);
+    expect(botLevelFor(1, ['loss', 'loss', 'loss'], RANKED_TARGET_WIN_RATE)).toBe(1);
   });
 
   it('aims at a higher win rate on easy and a lower one on hard', () => {

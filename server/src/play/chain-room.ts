@@ -31,10 +31,8 @@ const BOT_CANDIDATES = 30;
 const BOT_SHORTLIST = 10;
 const HINT_FAME = 35;
 const HINT_CANDIDATES = 40;
-const BOT_FAME: Record<BotLevel, number> = { [-1]: 60, 0: 55, 1: 50, 2: 40, 3: 30 };
+const BOT_FAME: Record<BotLevel, number> = { 1: 50, 2: 40, 3: 30 };
 const BOT_FAILURE: Record<BotLevel, { base: number; growth: number }> = {
-  [-1]: { base: 0.45, growth: 0.04 },
-  0: { base: 0.3, growth: 0.035 },
   1: { base: 0.2, growth: 0.03 },
   2: { base: 0.1, growth: 0.02 },
   3: { base: 0.04, growth: 0.015 },

@@ -345,19 +345,18 @@ Kullanıcının "1.2.0'da değerlendirelim" dediği özellikler. Her biri yeni d
 
 Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Amaç: "uygulama zor" algısını azaltmak.
 
-- **Sunucu (mağaza onayı beklemez).** Bot tabanına iki zayıf seviye; İlk 10 listeleri, can kuralı ve Kolay bot yüzdesi; Kart Düellosu'nda 5 kart, 60 saniye, 5 soru ve Kolay seviye soru kümesi; Kariyer Yolu'nda 3 gizli futbolcu ve Kolay bot yüzdeleri.
+- **Sunucu (mağaza onayı beklemez).** İlk 10 listeleri ve can kuralı; Kart Düellosu'nda 5 kart, 60 saniye, 5 soru ve Kolay seviye soru kümesi; Kariyer Yolu'nda 3 gizli futbolcu. Bot tabanı ve Kolay bot yüzdeleri 14 Kasım'da kullanıcı kararıyla iptal edildi: botlar eski zorluğunda kalır.
 - **Uygulama (1.2.0).** İlk 10 ve Kariyer Yolu'nda Kolay seviye şıkları, boş satır ipuçları, Kariyer Yolu'nda kulüp başına maç ve gol, yeni joker adları.
 - **Yeni modlar.** Tombala (1'e 1, 4×4), Gizli Futbolcu (1'e 1), ardından günlük oyunlar bölümü.
 - **Veri ön koşulları.** İlk 10 ve Kariyer Yolu şıklarından önce: listeler için dönem sınırı denetimi, Ümit Karan uyruğu, Bobô tutarsızlığı, ülke ve kıta tablosu.
 - **Sohbetten gelen ek öneriler (14 Kasım).** Yalnızca "mod kuralları tek cümle" seçildi (uygulama metni, 1.2.0). Karşılamada oynatan tur ve ilk maçlarda bedava joker seçilmedi.
 - **Sıra (kullanıcı en verimli yolu bana bıraktı).** Önce mağaza onayı beklemeyen ve eski uygulamayı bozmayan sunucu değişiklikleri, çünkü etkisi hemen görünür ve yeni derlemeyi beklemez; sonra veri düzeltmeleri; sonra 1.2.0 uygulama işleri; en son iki yeni mod.
-  1. Kart Düellosu: el 5, seçim 60 saniye, Kolay seviyede soru kümesi.
-  2. Kariyer Yolu: 3 gizli futbolcu, Kolay bot yüzdeleri.
-  3. Bot tabanı: Kolay botun altına iki zayıf seviye (dokuz modun bot tabloları).
-  4. İlk 10: can bitince "ilk hataya kadar devam" kuralı, Kolay bot %15.
-  5. Veri düzeltmeleri, sonra İlk 10 kulüp listeleri.
-  6. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri.
-  7. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
+  1. Kart Düellosu: el 5, seçim 60 saniye, Kolay seviyede soru kümesi. (Kodlandı, dağıtılmadı)
+  2. Kariyer Yolu: 3 gizli futbolcu. (Kodlandı, dağıtılmadı)
+  3. İlk 10: can bitince "ilk hataya kadar devam" kuralı. (Kodlandı, dağıtılmadı)
+  4. Veri düzeltmeleri, sonra İlk 10 kulüp listeleri.
+  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri.
+  6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
 

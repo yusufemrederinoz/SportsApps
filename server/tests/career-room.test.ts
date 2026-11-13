@@ -137,10 +137,6 @@ describe('career path setup', () => {
   it('makes the bot surer as clues open and on harder levels', () => {
     expect(botKnows(3, 1)).toBeGreaterThan(botKnows(1, 1));
     expect(botKnows(2, 4)).toBeGreaterThan(botKnows(2, 1));
-    expect(botKnows(1, 1)).toBeCloseTo(0.05);
-    expect(botKnows(1, 3)).toBeCloseTo(0.21);
-    expect(botKnows(0, 1)).toBeLessThan(botKnows(1, 1));
-    expect(botKnows(-1, 1)).toBeLessThan(botKnows(0, 1));
     expect(botKnows(3, 20)).toBe(0.95);
   });
 });

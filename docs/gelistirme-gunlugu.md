@@ -1280,14 +1280,21 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 
 ### Mod yenileme: sunucu tarafı ilk adım (14 Kasım 2026)
 
-- **Bot tabanı.** `BotLevel` −1 | 0 | 1 | 2 | 3 oldu; eski kayıtlardaki 1–3 anlamını koruyor, yeni düzeyler altına eklendi. `botLevelFor` oyuncunun son beş bot maçına bakıyor: hedef kazanma oranının 0,2 gerisinde bir, 0,45 gerisinde iki düzey iniyor (Kolay %65 hedefiyle son beşte en çok 1 galibiyet iki düzey indiriyor). Dokuz modun bot tabloları iki yeni düzey için dolduruldu; Hangisi Yüksek'te en alt düzey %50 (rastgele tahmin).
-- **Kolay bot.** İlk 10'da %30'dan %15'e, Kariyer Yolu'nda ilk kulüpte %12'den %5'e, her yeni kulüpte +%15'ten +%8'e. Kolay yüzdeleri o düzeyin kendisi olduğundan, aynı düzeye inen Orta oyuncuların botu da etkileniyor.
-- **Kart Düellosu.** El 5, seçim süresi 90'dan 60 saniyeye, maç 5 soru; Kolay seviyede yalnızca gol, maç, piyasa değeri, millî maç ve yaş soruluyor. El 5 olunca Orta botun "güçlü kart" sayısı 4'ten 3'e indi, yoksa Zor ile aynılaşıyordu.
+- **Bot tabanı (aynı gün geri alındı, aşağıya bak).** `BotLevel` −1 | 0 | 1 | 2 | 3 oldu; eski kayıtlardaki 1–3 anlamını koruyor, yeni düzeyler altına eklendi. `botLevelFor` oyuncunun son beş bot maçına bakıyor: hedef kazanma oranının 0,2 gerisinde bir, 0,45 gerisinde iki düzey iniyor (Kolay %65 hedefiyle son beşte en çok 1 galibiyet iki düzey indiriyor). Dokuz modun bot tabloları iki yeni düzey için dolduruldu; Hangisi Yüksek'te en alt düzey %50 (rastgele tahmin).
+- **Kolay bot (aynı gün geri alındı).** İlk 10'da %30'dan %15'e, Kariyer Yolu'nda ilk kulüpte %12'den %5'e, her yeni kulüpte +%15'ten +%8'e. Kolay yüzdeleri o düzeyin kendisi olduğundan, aynı düzeye inen Orta oyuncuların botu da etkileniyor.
+- **Kart Düellosu.** El 5, seçim süresi 90'dan 60 saniyeye, maç 5 soru; Kolay seviyede yalnızca gol, maç, piyasa değeri, millî maç ve yaş soruluyor. El 5 olunca Orta botun "güçlü kart" sayısı 4'ten 3'e indirilmişti (bot geri alınınca 4'e döndü).
 - **Kariyer Yolu.** Maçta 3 gizli futbolcu.
 - **İlk 10 can kuralı.** Bir oyuncunun canı bitince rakip ilk yanlışına kadar devam ediyor, o yanlışta liste kapanıyor (`guessTopTen`).
 - **Testler.** Sunucu 304, game-core 70, uygulama 155 test geçiyor; dört çalışma alanının ve uygulamanın tür denetimi temiz. Yeni testler: iki düzey inme, Kolay soru kümesi, Kolay Kariyer botu yüzdeleri, İlk 10'da son şans.
 - **Dağıtılmadı.** Sunucu yeni sayıları gönderince 1.1.0 uygulaması "Yedi kart seç" (ana ekran), "Yedi tur tamamlandı" (Kart Düellosu sonucu) ve "Dört futbolcu da soruldu" (Kariyer Yolu sonucu) yazar; sayılar sabit çeviri metni. Bu yüzden sunucu, sayısız metinlerin geldiği 1.2.0 uygulamasıyla birlikte dağıtılacak. Uygulama ve sunucuda başka sabit sayı ("7 kart", "90 saniye") kalıp kalmadığı 1.2.0 metin turunda taranacak.
 - **Araç tuzağı.** Git Bash'ten `npx vitest run` bu makinede ara sıra "Vitest failed to find the runner" ile bütün dosyaları düşürüyor; PowerShell'den `C:\dev\...` yoluyla çalıştırınca sorunsuz.
+
+### Bot değişikliklerinden vazgeçildi (14 Kasım 2026)
+
+- **Karar.** Kullanıcı bot tabanı işinden vazgeçti: botlar eski zorluğunda kalacak. Bununla birlikte iki modun Kolay bot yüzdesi (İlk 10 %15, Kariyer Yolu %5 ve +%8) ve Orta Kart Düellosu botunun "güçlü kart" sayısını 4'ten 3'e indirmek de geri alındı; hepsi bot gücünü değiştiriyordu.
+- **Yapılan.** Bot düzeyi `1 | 2 | 3`e, bot tabloları ve `botLevelFor` bir önceki hâline döndü (dokuz modun tabloları, `packages/game-core/src/bot.ts`, `server/src/play/bot.ts`). Kalanlar: Kart Düellosu el 5, seçim 60 saniye, Kolay soru kümesi; Kariyer Yolu 3 futbolcu; İlk 10 son şans kuralı.
+- **Not.** Kart Düellosu'nda el 5'e inince Orta botun "güçlü kart" sayısı (4) ile Zor botunki (5) birbirine yaklaştı; bu eski sayıların küçük ele uygulanmasının sonucu, bilerek değiştirilmedi.
+- **Testler.** Sunucu 303, game-core 70 test geçiyor; tür denetimleri temiz. İki düzey inme testi ve Kolay Kariyer botu yüzdesi doğrulamaları kaldırıldı.
 
 ## Commit listesi
 

@@ -187,12 +187,14 @@ Uygulanan hâli (7 Ekim 2026):
 
 Kaynak: 1 Kasım'da hazırlanan 17 kararlık sayfa (`Mod Yenileme Kararları` Artifact'ı), kullanıcı 14 Kasım'da tamamladı. Gerekçe: oyunculardan "oyunlar çok zor, Hangisi Yüksek gibi seçenekli oyunlar daha iyi" geri bildirimi; Hangisi Yüksek'te oyuncu maçların %67'sini kazanıyor (41/61), yarıda bırakma İlk 10'da %65, Kariyer Yolu'nda %32 (8 Ekim–1 Kasım, mod başına 9–18 oyuncu). Aşağıdakiler karardır; yukarıdaki "Uygulanan hâli" bölümleri bu kararlar kodlanana kadar bugünkü durumu anlatır.
 
-Kodlanan, henüz dağıtılmayan (14 Kasım, commit `c0162b7`): bot tabanı (düzeyler −1, 0, 1, 2, 3; oyuncu kaybettikçe hedefin 0,2 gerisinde bir, 0,45 gerisinde iki düzey iner); Kolay bot yüzdeleri (İlk 10 %15, Kariyer Yolu %5 ve her kulüpte +%8); Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`), Orta bot güçlü seçim sayısı 4'ten 3'e; Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam". Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
+**Botlar eski zorluğunda kalır (kullanıcı 14 Kasım'da bot değişikliklerinden vazgeçti).** Sayfadaki bot tabanı kararı ve iki modun Kolay bot yüzdeleri (İlk 10 %15 ve önce en tanınmış isimler, Kariyer Yolu %5 ve her kulüpte +%8) uygulanmaz. Bot düzeyleri 1–3 olarak, bot tabloları ve uyarlama mantığı kararlardan önceki hâliyle kalır.
+
+Kodlanan, henüz dağıtılmayan (14 Kasım): Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`); Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam". Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
 
 Genel:
 
 - **Şıklı cevap.** Yalnızca Kolay seviyede ve cevabı dar modlarda: İlk 10 ve Kariyer Yolu. Orta ve Zor seviyede yazarak oynanır. XOX ve Zincir yazarak kalır.
-- **Bot tabanı.** Kolay botun altına, oyuncu kaybettikçe inebileceği iki zayıf seviye eklenir. Kolay hedefi (%65) aynı kalır. Yalnızca sunucuda değişir.
+- **Bot tabanı.** Vazgeçildi (14 Kasım): botlar eski zorluğunda kalır.
 - **Yeni seçenekli mod.** Şimdilik yok; Tombala ile şıklı Kolay seviye bu ihtiyacı karşılar.
 
 İlk 10:
@@ -200,7 +202,7 @@ Genel:
 - **Listeler.** Tanıdık konular: "Galatasaray formasıyla en çok gol atan 10 futbolcu" gibi; sayılan gol o kulüpte atılan gol. Kolay seviyede Türkiye'nin büyük kulüpleri ve Avrupa'nın en bilinen kulüpleri çıkar.
 - **İpucu.** Boş satırlarda Kolay seviyede uyruk ve mevki, Orta seviyede yalnızca mevki, Zor seviyede ipucu yok.
 - **Şık.** Kolay seviyede sırası gelen oyuncu 4 isimden listede olanı seçer. Çeldiriciler listenin hemen altından gelir (11.–25. sıra).
-- **Bot.** Kolay bot listenin %15'ini bilir, önce en tanınmış isimleri söyler.
+- **Bot.** Değişmez (Kolay bot %30; kolay bot yüzdesini düşürme önerisinden vazgeçildi).
 - **Can bitince.** Canı biten oyuncunun listesi kapanmaz: rakip ilk hatasına kadar devam eder, canı kalan oyuncu ilk yanlışını yapınca liste kapanır.
 - **Veri ön koşulları.** Veride 1990 öncesi eksik (Galatasaray listesinde Metin Oktay yok): listenin başlığına bir dönem sınırı konur, sınır veri denetlenerek belirlenir. Ümit Karan veride Almanya uyruklu görünüyor, uyruk ipucundan önce düzeltilir. Bobô'nun Beşiktaş golleri kulüp istatistiğinde var ama kulüp yılları tablosunda yok; listeler iki tablonun uyduğu kayıtlardan kurulur.
 
@@ -210,7 +212,7 @@ Kariyer Yolu:
 - **Kulüp satırı.** Her kulübün yanında o kulüpteki maç ve gol sayısı yazar (veri 24 bin futbolcuda var).
 - **İpucu.** Kolay ve Orta seviyede uyruk ve mevki baştan açık olur. Jokerler "Baş harf" ve "Doğum yılı" olur.
 - **Şık.** Kolay seviyede 4 şık: çeldiriciler aynı ülkeden, aynı mevkiden ve açık kulüplerden birinde oynamış futbolcular. Yanlış şık silinir, yeni kulüp açılır, sıra geçer.
-- **Bot.** Kolay bot ilk kulüpte %5 ihtimalle bilir, her yeni kulüpte ihtimal %8 artar.
+- **Bot.** Değişmez (Kolay bot ilk kulüpte %12, her yeni kulüpte +%15; yüzdeleri düşürme önerisinden vazgeçildi).
 
 Kart Düellosu (değişiklikle onaylandı):
 
@@ -229,7 +231,7 @@ Yeni modlar:
 
 Yayın sırası:
 
-1. **Sunucu ayarları** (bot tabanı ve bot yüzdeleri, İlk 10 listeleri ve can kuralı, Kart Düellosu el, süre ve soru sayıları): mağaza onayı beklemeden çıkar. Uygulamanın her değeri sunucudan aldığı tek tek kontrol edilir.
+1. **Sunucu ayarları** (İlk 10 listeleri ve can kuralı, Kart Düellosu el, süre ve soru sayıları, Kariyer Yolu futbolcu sayısı): mağaza onayı beklemeden çıkar. Uygulamanın her değeri sunucudan aldığı tek tek kontrol edilir.
 2. **Şıklar ve yeni ipuçları** (İlk 10, Kariyer Yolu): uygulama güncellemesi, 1.2.0. Derleme kullanıcının onayıyla.
 3. **Tombala ve Gizli Futbolcu:** uygulama güncellemesi. Önce kurallar ve testler, sonra emülatörde baştan sona maç.
 

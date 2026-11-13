@@ -39,8 +39,8 @@ const SECOND = 1000;
 const POOL_FAME = 45;
 const POOL_SIZE = 60;
 const AGE_METRICS: readonly DuelMetric[] = ['older', 'younger'];
-const BOT_STRONG_PICKS: Record<BotLevel, number> = { [-1]: 0, 0: 0, 1: 1, 2: 3, 3: DUEL_HAND_SIZE };
-const BOT_ACCURACY: Record<BotLevel, number> = { [-1]: 0.1, 0: 0.2, 1: 0.3, 2: 0.6, 3: 0.85 };
+const BOT_STRONG_PICKS: Record<BotLevel, number> = { 1: 1, 2: 4, 3: DUEL_HAND_SIZE };
+const BOT_ACCURACY: Record<BotLevel, number> = { 1: 0.3, 2: 0.6, 3: 0.85 };
 
 export interface DuelTiming {
   pickMilliseconds: number;

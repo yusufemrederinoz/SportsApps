@@ -34,8 +34,8 @@ const CANDIDATES = 300;
 const DECOYS = 20;
 const DECOY_FAME = 40;
 const MYSTERY_FAME: Record<PlayDifficulty, number> = { 1: 65, 2: 55, 3: 45 };
-const BOT_BASE: Record<BotLevel, number> = { [-1]: 0.02, 0: 0.03, 1: 0.05, 2: 0.22, 3: 0.32 };
-const BOT_STEP: Record<BotLevel, number> = { [-1]: 0.04, 0: 0.06, 1: 0.08, 2: 0.15, 3: 0.15 };
+const BOT_BASE: Record<BotLevel, number> = { 1: 0.12, 2: 0.22, 3: 0.32 };
+const BOT_STEP = 0.15;
 const BOT_CEILING = 0.95;
 
 export interface CareerTiming {
@@ -73,7 +73,7 @@ function shuffle<T>(items: readonly T[], random: () => number): T[] {
 }
 
 export function botKnows(level: BotLevel, revealed: number): number {
-  return Math.min(BOT_CEILING, BOT_BASE[level] + BOT_STEP[level] * (revealed - 1));
+  return Math.min(BOT_CEILING, BOT_BASE[level] + BOT_STEP * (revealed - 1));
 }
 
 export function chooseMysteries(

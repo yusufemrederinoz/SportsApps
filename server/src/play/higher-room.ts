@@ -32,7 +32,7 @@ const PAIR_ATTEMPTS = 20;
 const POOL_FAME: Record<PlayDifficulty, number> = { 1: 55, 2: 45, 3: 35 };
 const MINIMUM_RATIO: Record<PlayDifficulty, number> = { 1: 1.5, 2: 1.25, 3: 1.1 };
 const MINIMUM_YEARS: Record<PlayDifficulty, number> = { 1: 5, 2: 3, 3: 1 };
-const BOT_ACCURACY: Record<BotLevel, number> = { [-1]: 0.5, 0: 0.56, 1: 0.62, 2: 0.75, 3: 0.88 };
+const BOT_ACCURACY: Record<BotLevel, number> = { 1: 0.62, 2: 0.75, 3: 0.88 };
 
 export interface HigherTiming {
   answerMilliseconds: number;
