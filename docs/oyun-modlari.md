@@ -187,6 +187,8 @@ Uygulanan hâli (7 Ekim 2026):
 
 Kaynak: 1 Kasım'da hazırlanan 17 kararlık sayfa (`Mod Yenileme Kararları` Artifact'ı), kullanıcı 14 Kasım'da tamamladı. Gerekçe: oyunculardan "oyunlar çok zor, Hangisi Yüksek gibi seçenekli oyunlar daha iyi" geri bildirimi; Hangisi Yüksek'te oyuncu maçların %67'sini kazanıyor (41/61), yarıda bırakma İlk 10'da %65, Kariyer Yolu'nda %32 (8 Ekim–1 Kasım, mod başına 9–18 oyuncu). Aşağıdakiler karardır; yukarıdaki "Uygulanan hâli" bölümleri bu kararlar kodlanana kadar bugünkü durumu anlatır.
 
+Kodlanan, henüz dağıtılmayan (14 Kasım, commit `c0162b7`): bot tabanı (düzeyler −1, 0, 1, 2, 3; oyuncu kaybettikçe hedefin 0,2 gerisinde bir, 0,45 gerisinde iki düzey iner); Kolay bot yüzdeleri (İlk 10 %15, Kariyer Yolu %5 ve her kulüpte +%8); Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`), Orta bot güçlü seçim sayısı 4'ten 3'e; Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam". Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
+
 Genel:
 
 - **Şıklı cevap.** Yalnızca Kolay seviyede ve cevabı dar modlarda: İlk 10 ve Kariyer Yolu. Orta ve Zor seviyede yazarak oynanır. XOX ve Zincir yazarak kalır.

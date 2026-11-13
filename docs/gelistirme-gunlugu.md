@@ -1276,7 +1276,18 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Koddan görülen.** Karşılama üç bilgi ekranı (oyunlar, puan, gol); hiç oynatan adım yok. Oyun listesi XOX ile başlıyor, yani ilk maç büyük ihtimalle boş kutuya isim yazmak. Kural metinleri 2–3 cümle.
 - **Kararlar.** Şıklı cevap yalnızca Kolay seviyede İlk 10 ve Kariyer Yolu'nda; XOX ve Zincir yazarak kalır; bot tabanına iki zayıf seviye; yeni seçenekli mod yok. İlk 10'da rakip ilk hatasına kadar devam eder. Kariyer Yolu'nda 3 gizli futbolcu. Kart Düellosu değişiklikle onaylandı (5 kart, 60 saniye, 5 soru; 12 karttan seçme yok, yazarak seçim kalır; soru türleri gizli). Açık Artırma bekletildi. Tombala (1'e 1, 4×4) ve Gizli Futbolcu (1'e 1) onaylandı. Genel özelliklerden yalnızca günlük oyunlar bölümü seçildi. Ayrıntı `oyun-modlari.md` içinde.
 - **Çelişkiler ve çözümü.** Şık kapsamı sorusu Açık Artırma'yı ve Kart Düellosu el seçimini sayıyordu; ikisinin kendi sorularındaki cevap (bekletelim; el yazarak seçilsin notu) daha özel olduğu için onlar önce geldi. Günlük bölüm seçildi ama iki yeni mod 1'e 1 başladığı için bölüm ilk çıkışta yalnızca XOX bulmacasını içerir.
-- **Sohbetten gelip sayfada olmayanlar.** Karşılamada oynatan Hangisi Yüksek turu, ilk maçlarda bedava joker, tek cümlelik kural metinleri: karar bekliyor.
+- **Sohbetten gelip sayfada olmayanlar.** Yalnızca tek cümlelik kural metinleri seçildi (1.2.0). Karşılamada oynatan tur ve ilk maçlarda bedava joker seçilmedi. Kodlama sırasını kullanıcı bana bıraktı (`is-plani.md` "Mod yenileme").
+
+### Mod yenileme: sunucu tarafı ilk adım (14 Kasım 2026)
+
+- **Bot tabanı.** `BotLevel` −1 | 0 | 1 | 2 | 3 oldu; eski kayıtlardaki 1–3 anlamını koruyor, yeni düzeyler altına eklendi. `botLevelFor` oyuncunun son beş bot maçına bakıyor: hedef kazanma oranının 0,2 gerisinde bir, 0,45 gerisinde iki düzey iniyor (Kolay %65 hedefiyle son beşte en çok 1 galibiyet iki düzey indiriyor). Dokuz modun bot tabloları iki yeni düzey için dolduruldu; Hangisi Yüksek'te en alt düzey %50 (rastgele tahmin).
+- **Kolay bot.** İlk 10'da %30'dan %15'e, Kariyer Yolu'nda ilk kulüpte %12'den %5'e, her yeni kulüpte +%15'ten +%8'e. Kolay yüzdeleri o düzeyin kendisi olduğundan, aynı düzeye inen Orta oyuncuların botu da etkileniyor.
+- **Kart Düellosu.** El 5, seçim süresi 90'dan 60 saniyeye, maç 5 soru; Kolay seviyede yalnızca gol, maç, piyasa değeri, millî maç ve yaş soruluyor. El 5 olunca Orta botun "güçlü kart" sayısı 4'ten 3'e indi, yoksa Zor ile aynılaşıyordu.
+- **Kariyer Yolu.** Maçta 3 gizli futbolcu.
+- **İlk 10 can kuralı.** Bir oyuncunun canı bitince rakip ilk yanlışına kadar devam ediyor, o yanlışta liste kapanıyor (`guessTopTen`).
+- **Testler.** Sunucu 304, game-core 70, uygulama 155 test geçiyor; dört çalışma alanının ve uygulamanın tür denetimi temiz. Yeni testler: iki düzey inme, Kolay soru kümesi, Kolay Kariyer botu yüzdeleri, İlk 10'da son şans.
+- **Dağıtılmadı.** Sunucu yeni sayıları gönderince 1.1.0 uygulaması "Yedi kart seç" (ana ekran), "Yedi tur tamamlandı" (Kart Düellosu sonucu) ve "Dört futbolcu da soruldu" (Kariyer Yolu sonucu) yazar; sayılar sabit çeviri metni. Bu yüzden sunucu, sayısız metinlerin geldiği 1.2.0 uygulamasıyla birlikte dağıtılacak. Uygulama ve sunucuda başka sabit sayı ("7 kart", "90 saniye") kalıp kalmadığı 1.2.0 metin turunda taranacak.
+- **Araç tuzağı.** Git Bash'ten `npx vitest run` bu makinede ara sıra "Vitest failed to find the runner" ile bütün dosyaları düşürüyor; PowerShell'den `C:\dev\...` yoluyla çalıştırınca sorunsuz.
 
 ## Commit listesi
 
