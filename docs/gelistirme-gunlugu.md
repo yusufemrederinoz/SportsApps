@@ -1263,6 +1263,12 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Sonuç.** App Store Türkiye'de dört yeni arama listede (48-129. sıra), 3 Kasım'daki bazı yüksek sıralar düştü (düellosu 5→27, xox 11→25, bilgi oyunu 33→67, quiz 10→15); trivia 18→14 ve futbolcu tahmin 70→53 iyileşti. Google Play'de "futbol düellosu" ilk 30'da yokken 4. oldu. Değerlendirme 5'ten 6'ya (ortalama 5). Etkinlik yayında (30 Kasım'a kadar), öne çıkarılma başvurusu yanıtsız.
 - **Eksik.** İndirme ve gösterim sayıları çekilmedi, düşüşlerin nedeni ayrılamıyor.
 
+### Sayma challenge videosu: Fransa'da oynamış Türkler (14 Kasım 2026)
+
+- **İstek.** Kullanıcı viral olabilecek yeni bir video için seçenek istedi. Gündem: Türkiye–Fransa (15 Kasım Pazar 22.45, Uluslar Ligi son grup maçı; tek haber kaynağından, TFF'den teyit edilmeli). Dört fikir sunuldu (sayma challenge'ı, Fransız yıldızlar Türkiye'de, Fransa mı Türkiye mi hız turu, Tribün Savaşı iki parça seri). Kullanıcı sayma challenge'ını seçti.
+- **Cümleler (kullanıcı seçti).** Kanca "Fransa'da oynamış 5 Türk futbolcuyu sayabilir misin?" (kullanıcının yazdığı "futbolu" yazım hatası "futbolcuyu" olarak düzeltildi), kapanış "Kaçını buldun? Yoruma yaz".
+- **Üretim.** `cut=reel-count`, `qcount` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-count.mp4`, paylaşım metni `captions/challengegoal-tr-reel-count.txt`.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

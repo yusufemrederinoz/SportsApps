@@ -177,6 +177,14 @@
         "send": "Arkadaşına at, o bulur mu bakalım.",
         "note": "Bağlantılar uygulamanın verisine göredir."
       },
+      "count": {
+        "hook": ["FRANSA'DA OYNAMIŞ", "5 TÜRK FUTBOLCUYU", "SAYABİLİR MİSİN?"],
+        "seconds": "10 SANİYEN VAR",
+        "timeUp": "SÜRE BİTTİ",
+        "more": "DAHA FAZLASI",
+        "call": "KAÇINI BULDUN? YORUMA YAZ",
+        "note": "Kariyerler uygulamanın verisine göredir."
+      },
       "xox": {
         "columns": ["BREZİLYA", "HOLLANDA", "PORTEKİZ"],
         "rows": ["GALATASARAY", "FENERBAHÇE", "BEŞİKTAŞ"],
