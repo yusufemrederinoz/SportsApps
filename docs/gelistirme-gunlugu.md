@@ -1270,6 +1270,14 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Tempo dersi.** İlk sürüm 10 saniyelik geri sayımla başlıyor, süre bitince altı kartı birden açıyordu (23,4 saniye). Kullanıcı reddetti: izleyici sonucun çıkmasını 10 saniye beklemez. İkinci sürümde geri sayım kaldırıldı; kutular baştan numaralı görünür, her 2 saniyede bir yeni futbolcu açılır (20,4 saniye). Kural: videoda yaklaşık her 2 saniyede ekrana yeni bir şey gelmeli, sonuç için bekletilmemeli.
 - **Üretim.** `cut=reel-count`, `qcount` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-count.mp4`, paylaşım metni `captions/challengegoal-tr-reel-count.txt`.
 
+### Mod yenileme kararları okundu (14 Kasım 2026)
+
+- **Bağlam.** Kullanıcı yeni sürüm için uygulamayı kolaylaştırmak istedi; genel kanı "zor", ilgi gören mod Hangisi Yüksek çünkü seçilerek cevap veriliyor. 1 Kasım'dan duran 17 kararlık sayfa tamamlandı ve seçimler okundu.
+- **Koddan görülen.** Karşılama üç bilgi ekranı (oyunlar, puan, gol); hiç oynatan adım yok. Oyun listesi XOX ile başlıyor, yani ilk maç büyük ihtimalle boş kutuya isim yazmak. Kural metinleri 2–3 cümle.
+- **Kararlar.** Şıklı cevap yalnızca Kolay seviyede İlk 10 ve Kariyer Yolu'nda; XOX ve Zincir yazarak kalır; bot tabanına iki zayıf seviye; yeni seçenekli mod yok. İlk 10'da rakip ilk hatasına kadar devam eder. Kariyer Yolu'nda 3 gizli futbolcu. Kart Düellosu değişiklikle onaylandı (5 kart, 60 saniye, 5 soru; 12 karttan seçme yok, yazarak seçim kalır; soru türleri gizli). Açık Artırma bekletildi. Tombala (1'e 1, 4×4) ve Gizli Futbolcu (1'e 1) onaylandı. Genel özelliklerden yalnızca günlük oyunlar bölümü seçildi. Ayrıntı `oyun-modlari.md` içinde.
+- **Çelişkiler ve çözümü.** Şık kapsamı sorusu Açık Artırma'yı ve Kart Düellosu el seçimini sayıyordu; ikisinin kendi sorularındaki cevap (bekletelim; el yazarak seçilsin notu) daha özel olduğu için onlar önce geldi. Günlük bölüm seçildi ama iki yeni mod 1'e 1 başladığı için bölüm ilk çıkışta yalnızca XOX bulmacasını içerir.
+- **Sohbetten gelip sayfada olmayanlar.** Karşılamada oynatan Hangisi Yüksek turu, ilk maçlarda bedava joker, tek cümlelik kural metinleri: karar bekliyor.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

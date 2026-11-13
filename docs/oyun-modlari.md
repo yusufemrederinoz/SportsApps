@@ -183,6 +183,54 @@ Uygulanan hâli (7 Ekim 2026):
 - **Süre.** Tahmin başına 20 saniye.
 - **Bot.** Listenin zorluğa göre %30, %50 ya da %70'ini bilir, bildiklerini rastgele sırayla söyler; bildikleri bitince listenin hemen altındaki (11.–30. sıra) akla yatkın bir adı söyleyip can kaybeder.
 
+## Mod yenileme kararları (14 Kasım 2026, 1.2.0)
+
+Kaynak: 1 Kasım'da hazırlanan 17 kararlık sayfa (`Mod Yenileme Kararları` Artifact'ı), kullanıcı 14 Kasım'da tamamladı. Gerekçe: oyunculardan "oyunlar çok zor, Hangisi Yüksek gibi seçenekli oyunlar daha iyi" geri bildirimi; Hangisi Yüksek'te oyuncu maçların %67'sini kazanıyor (41/61), yarıda bırakma İlk 10'da %65, Kariyer Yolu'nda %32 (8 Ekim–1 Kasım, mod başına 9–18 oyuncu). Aşağıdakiler karardır; yukarıdaki "Uygulanan hâli" bölümleri bu kararlar kodlanana kadar bugünkü durumu anlatır.
+
+Genel:
+
+- **Şıklı cevap.** Yalnızca Kolay seviyede ve cevabı dar modlarda: İlk 10 ve Kariyer Yolu. Orta ve Zor seviyede yazarak oynanır. XOX ve Zincir yazarak kalır.
+- **Bot tabanı.** Kolay botun altına, oyuncu kaybettikçe inebileceği iki zayıf seviye eklenir. Kolay hedefi (%65) aynı kalır. Yalnızca sunucuda değişir.
+- **Yeni seçenekli mod.** Şimdilik yok; Tombala ile şıklı Kolay seviye bu ihtiyacı karşılar.
+
+İlk 10:
+
+- **Listeler.** Tanıdık konular: "Galatasaray formasıyla en çok gol atan 10 futbolcu" gibi; sayılan gol o kulüpte atılan gol. Kolay seviyede Türkiye'nin büyük kulüpleri ve Avrupa'nın en bilinen kulüpleri çıkar.
+- **İpucu.** Boş satırlarda Kolay seviyede uyruk ve mevki, Orta seviyede yalnızca mevki, Zor seviyede ipucu yok.
+- **Şık.** Kolay seviyede sırası gelen oyuncu 4 isimden listede olanı seçer. Çeldiriciler listenin hemen altından gelir (11.–25. sıra).
+- **Bot.** Kolay bot listenin %15'ini bilir, önce en tanınmış isimleri söyler.
+- **Can bitince.** Canı biten oyuncunun listesi kapanmaz: rakip ilk hatasına kadar devam eder, canı kalan oyuncu ilk yanlışını yapınca liste kapanır.
+- **Veri ön koşulları.** Veride 1990 öncesi eksik (Galatasaray listesinde Metin Oktay yok): listenin başlığına bir dönem sınırı konur, sınır veri denetlenerek belirlenir. Ümit Karan veride Almanya uyruklu görünüyor, uyruk ipucundan önce düzeltilir. Bobô'nun Beşiktaş golleri kulüp istatistiğinde var ama kulüp yılları tablosunda yok; listeler iki tablonun uyduğu kayıtlardan kurulur.
+
+Kariyer Yolu:
+
+- **Gizli futbolcu sayısı.** Maçta 3 (şimdi 4).
+- **Kulüp satırı.** Her kulübün yanında o kulüpteki maç ve gol sayısı yazar (veri 24 bin futbolcuda var).
+- **İpucu.** Kolay ve Orta seviyede uyruk ve mevki baştan açık olur. Jokerler "Baş harf" ve "Doğum yılı" olur.
+- **Şık.** Kolay seviyede 4 şık: çeldiriciler aynı ülkeden, aynı mevkiden ve açık kulüplerden birinde oynamış futbolcular. Yanlış şık silinir, yeni kulüp açılır, sıra geçer.
+- **Bot.** Kolay bot ilk kulüpte %5 ihtimalle bilir, her yeni kulüpte ihtimal %8 artar.
+
+Kart Düellosu (değişiklikle onaylandı):
+
+- **El ve süre.** El 5 kart, seçim süresi 60 saniye, maç 5 soru.
+- **Seçim şekli.** Kartlar bugünkü gibi aramayla yazarak seçilir. "Konseptin en tanınmış 12 futbolcusundan 5'ini seç" önerisi kullanıcının notuyla kaldırıldı.
+- **Kolay seviye soruları.** Gol, maç, piyasa değeri, millî maç ve yaş. Asist, sarı kart ve maç başına gol Orta ve Zor seviyede sorulur.
+- **Soru türleri.** Kart seçiminden önce gösterilmez, bugünkü gibi sürpriz kalır.
+
+Açık Artırma: **bekletildi**, bu turda değişmez. Sayfada işaretlenen şıklı sayma, Kolay seviyede teklif tavanı 8, bot %20 ve "yanlış dokunuş 3 saniye götürür" yanıtı uygulanmaz; modun şıklı kapsamdan çıkması, kendi onay sorusundaki "bekletelim" cevabının daha özel olması nedeniyle.
+
+Yeni modlar:
+
+- **Tombala.** Onaylandı. 4×4 kart, önce 1'e 1 (günlük sonra). Kurallar 1 Kasım sayfasındaki öneri gibi: kutular kulüp, ülke ve lig; sırayla gelen futbolcuyu uyduğu bir kutuya koyarsın ya da pas geçersin; yanlış kutu bir can götürür, 3 can; futbolcu başına 8 saniye.
+- **Gizli Futbolcu.** Onaylandı, önce 1'e 1. Beş kutulu karşılaştırma (uyruk, lig, mevki, doğum yılı, ortak kulüp), 8 tahmin hakkı, tahmin arama kutusuna yazılır. Veride kıta yok; "aynı kıta" için küçük bir ülke ve kıta tablosu eklenir.
+- **Günlük oyunlar bölümü.** Genel özelliklerden yalnızca bu seçildi: günün XOX bulmacası ve geçmiş günler tek yerde. Tombala ve Gizli Futbolcu ilk çıkışta 1'e 1 olduğu için bölüm başta yalnızca XOX bulmacasını içerir; günlük Tombala ve Gizli Futbolcu sonra eklenir. Taraftarlık ve takım sıralaması, arkadaşla sırayla maç, daha çok lider tablosu sonraya kaldı.
+
+Yayın sırası:
+
+1. **Sunucu ayarları** (bot tabanı ve bot yüzdeleri, İlk 10 listeleri ve can kuralı, Kart Düellosu el, süre ve soru sayıları): mağaza onayı beklemeden çıkar. Uygulamanın her değeri sunucudan aldığı tek tek kontrol edilir.
+2. **Şıklar ve yeni ipuçları** (İlk 10, Kariyer Yolu): uygulama güncellemesi, 1.2.0. Derleme kullanıcının onayıyla.
+3. **Tombala ve Gizli Futbolcu:** uygulama güncellemesi. Önce kurallar ve testler, sonra emülatörde baştan sona maç.
+
 ## Veri
 
 ### İstatistik kaynağı

@@ -341,6 +341,16 @@ Kullanıcının "1.2.0'da değerlendirelim" dediği özellikler. Her biri yeni d
 - **Daha büyük seçenek.** Oda koduna özel bağlantı (`challengegoal.app/oda/KOD` gibi): uygulama yüklüyse doğrudan odaya katılır, değilse mağazaya gider. iOS'ta Universal Links, Android'de App Links, sitede yönlendirme sayfası ve uygulamada bağlantıyı karşılayan ekran gerekir.
 - **Karar bekleyen.** Hangi çözümün 1.2.0'a gireceği.
 
+### Mod yenileme (14 Kasım 2026)
+
+Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Amaç: "uygulama zor" algısını azaltmak.
+
+- **Sunucu (mağaza onayı beklemez).** Bot tabanına iki zayıf seviye; İlk 10 listeleri, can kuralı ve Kolay bot yüzdesi; Kart Düellosu'nda 5 kart, 60 saniye, 5 soru ve Kolay seviye soru kümesi; Kariyer Yolu'nda 3 gizli futbolcu ve Kolay bot yüzdeleri.
+- **Uygulama (1.2.0).** İlk 10 ve Kariyer Yolu'nda Kolay seviye şıkları, boş satır ipuçları, Kariyer Yolu'nda kulüp başına maç ve gol, yeni joker adları.
+- **Yeni modlar.** Tombala (1'e 1, 4×4), Gizli Futbolcu (1'e 1), ardından günlük oyunlar bölümü.
+- **Veri ön koşulları.** İlk 10 ve Kariyer Yolu şıklarından önce: listeler için dönem sınırı denetimi, Ümit Karan uyruğu, Bobô tutarsızlığı, ülke ve kıta tablosu.
+- **Karar bekleyen (sohbetten, sayfada yoktu).** Karşılamada oynatan 3 soruluk Hangisi Yüksek turu, ilk maçlarda bedava joker, mod kurallarının tek cümleye inmesi.
+
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
 
 - **Sorun.** Ekrandaki `career.scope` metni (altı dil) "Yalnızca Süper Lig ve Avrupa'nın beş büyük liginin kulüpleri gösterilir" diyor. Bağlantı ligleri 30 Ekim'de veriye girdiğinden beri kariyer dizisi (`careerPathStatement`) yılı bilinen bütün kulüpleri gösteriyor; örneğin Sneijder'in dizisi AFC Ajax ile başlıyor. Zincir'in metni 1.1.0'da güncellendi, bu metin atlandı.
