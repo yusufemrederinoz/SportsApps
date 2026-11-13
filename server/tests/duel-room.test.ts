@@ -1,6 +1,6 @@
 import { metricValue, type MetricRow } from '@sportapps/football-data';
 import { DUEL_HAND_SIZE } from '@sportapps/game-core';
-import type { DuelConcept, DuelMetric, DuelView, GameView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
+import { DUEL_EASY_METRICS, type DuelConcept, type DuelMetric, type DuelView, type GameView, type ServerMessage, type SessionSnapshot } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -126,8 +126,8 @@ function pair(): { first: Client; second: Client } {
   return { first, second };
 }
 
-const FIRST_HAND = [1, 2, 3, 4, 5, 6, 7];
-const SECOND_HAND = [11, 12, 13, 14, 15, 16, 17];
+const FIRST_HAND = [1, 2, 3, 4, 5];
+const SECOND_HAND = [11, 12, 13, 14, 15];
 
 function dealt(): { first: Client; second: Client } {
   const players = pair();
@@ -219,11 +219,11 @@ describe('duel setup', () => {
 describe('picking a hand', () => {
   it('refuses cards outside the concept, repeated cards and oversized hands', () => {
     const { first } = pair();
-    act(first, { kind: 'hand', footballerIds: [1, 2, 3, 4, 5, 6, OUTSIDER] });
+    act(first, { kind: 'hand', footballerIds: [1, 2, 3, 4, OUTSIDER] });
     expect(lastError(first)).toBe('invalid-action');
-    act(first, { kind: 'hand', footballerIds: [1, 1, 2, 3, 4, 5, 6] });
+    act(first, { kind: 'hand', footballerIds: [1, 1, 2, 3, 4] });
     expect(lastError(first)).toBe('invalid-action');
-    act(first, { kind: 'hand', footballerIds: [1, 2, 3, 4, 5, 6, 7, 8] });
+    act(first, { kind: 'hand', footballerIds: [1, 2, 3, 4, 5, 6] });
     expect(lastError(first)).toBe('invalid-action');
     expect(first.view().hand).toBeNull();
   });
@@ -270,7 +270,20 @@ describe('questions', () => {
     expect(questions.map((question) => question.metric)).not.toContain('caps');
     expect(questions.map((question) => question.metric)).not.toContain('marketValue');
     expect(new Set(questions.map((question) => question.metric)).size).toBe(DUEL_HAND_SIZE);
-    expect(questions.find((question) => question.metric === 'older')?.prefer).toBe('low');
+    const ages = questions.filter((question) => question.metric === 'older' || question.metric === 'younger');
+    expect(ages).toHaveLength(1);
+    expect(ages[0]?.prefer).toBe(ages[0]?.metric === 'older' ? 'low' : 'high');
+  });
+
+  it('keeps to the easy set of questions on the easy level', () => {
+    for (let match = 0; match < 20; match += 1) {
+      const metrics = chooseQuestions([1, 2, 3], (footballerId) => footballerId, random, DUEL_EASY_METRICS).map((question) => question.metric);
+      expect(new Set(metrics).size).toBe(DUEL_HAND_SIZE);
+      metrics.forEach((metric) => expect(DUEL_EASY_METRICS).toContain(metric));
+      expect(metrics).not.toContain('assists');
+      expect(metrics).not.toContain('yellowCards');
+      expect(metrics).not.toContain('goalRate');
+    }
   });
 
   it('asks one age question when enough statistics are known', () => {
@@ -319,8 +332,8 @@ describe('playing rounds', () => {
     const question = first.view().question;
     expect(question).toEqual(second.view().question);
 
-    act(first, { kind: 'play', footballerId: 7 });
-    expect(first.view()).toMatchObject({ phase: 'playing', played: 7, opponentPlayed: false });
+    act(first, { kind: 'play', footballerId: 5 });
+    expect(first.view()).toMatchObject({ phase: 'playing', played: 5, opponentPlayed: false });
     expect(second.view()).toMatchObject({ phase: 'playing', played: null, opponentPlayed: true, rounds: [] });
 
     act(second, { kind: 'play', footballerId: 11 });
@@ -331,9 +344,9 @@ describe('playing rounds', () => {
     expect(view.deadlineIn).toBe(TIMING.revealMilliseconds);
     expect(view.question).toBeNull();
     expect(view.rounds).toHaveLength(1);
-    expect(view.rounds[0]).toMatchObject({ metric: question?.metric, cards: { [side]: 7, [other]: 11 } });
+    expect(view.rounds[0]).toMatchObject({ metric: question?.metric, cards: { [side]: 5, [other]: 11 } });
     expect(view.rounds[0]?.values[side]).not.toBeNull();
-    expect(view.remaining).not.toContain(7);
+    expect(view.remaining).not.toContain(5);
     expect(second.view().opponentRemaining).toBe(DUEL_HAND_SIZE - 1);
     expect(view.scores.x + view.scores.o).toBe(view.rounds[0]?.winner ? 1 : 0);
   });

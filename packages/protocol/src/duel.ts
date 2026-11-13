@@ -21,7 +21,9 @@ export const DUEL_METRICS = [
 
 export type DuelMetric = (typeof DUEL_METRICS)[number];
 
-export const DUEL_PICK_SECONDS = 90;
+export const DUEL_EASY_METRICS: readonly DuelMetric[] = ['goals', 'appearances', 'marketValue', 'caps', 'older', 'younger'];
+
+export const DUEL_PICK_SECONDS = 60;
 export const DUEL_PLAY_SECONDS = 20;
 
 export type MetricPreference = 'high' | 'low';

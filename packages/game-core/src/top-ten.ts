@@ -102,7 +102,8 @@ export function guessTopTen<List>(state: TopTenState<List>, side: Side, football
   const other = opponentOf(side);
   const complete = found.every((owner) => owner !== null);
   const exhausted = lives.x === 0 && lives.o === 0;
-  if (complete || exhausted) {
+  const lastChanceMissed = !fresh && (state.lives.x === 0 || state.lives.o === 0);
+  if (complete || exhausted || lastChanceMissed) {
     return {
       ...state,
       phase: state.round + 1 >= state.rounds.length ? 'finished' : 'between',

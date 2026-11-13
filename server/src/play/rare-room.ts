@@ -32,8 +32,8 @@ const SECOND = 1000;
 const BOT_ANSWERS = 24;
 const BOT_NEAR_MISSES = 8;
 const BOT_FAME = 20;
-const BOT_MISS: Record<BotLevel, number> = { 1: 0.3, 2: 0.15, 3: 0.07 };
-const BOT_DEPTH: Record<BotLevel, number> = { 1: 0.85, 2: 0.5, 3: 0.15 };
+const BOT_MISS: Record<BotLevel, number> = { [-1]: 0.45, 0: 0.38, 1: 0.3, 2: 0.15, 3: 0.07 };
+const BOT_DEPTH: Record<BotLevel, number> = { [-1]: 0.95, 0: 0.9, 1: 0.85, 2: 0.5, 3: 0.15 };
 const HINT_SHARE = 0.34;
 
 export interface RareTiming {

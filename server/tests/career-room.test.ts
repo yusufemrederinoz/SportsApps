@@ -130,13 +130,17 @@ afterEach(() => {
 describe('career path setup', () => {
   it('only picks footballers with three to eight clubs', () => {
     const mysteries = chooseMysteries(library, 'tr', 2, () => 0);
-    expect(mysteries).toHaveLength(4);
+    expect(mysteries).toHaveLength(3);
     expect(mysteries.every((mystery) => mystery.path.length >= 3 && mystery.path.length <= 8)).toBe(true);
   });
 
   it('makes the bot surer as clues open and on harder levels', () => {
     expect(botKnows(3, 1)).toBeGreaterThan(botKnows(1, 1));
     expect(botKnows(2, 4)).toBeGreaterThan(botKnows(2, 1));
+    expect(botKnows(1, 1)).toBeCloseTo(0.05);
+    expect(botKnows(1, 3)).toBeCloseTo(0.21);
+    expect(botKnows(0, 1)).toBeLessThan(botKnows(1, 1));
+    expect(botKnows(-1, 1)).toBeLessThan(botKnows(0, 1));
     expect(botKnows(3, 20)).toBe(0.95);
   });
 });
@@ -145,7 +149,7 @@ describe('career path matches', () => {
   it('opens one club and hides the answer', () => {
     const { first } = pair();
     const view = first.view();
-    expect(view).toMatchObject({ phase: 'playing', round: 1, totalRounds: 4, totalClues: 4, attemptsLeft: 5, points: 4, answer: null });
+    expect(view).toMatchObject({ phase: 'playing', round: 1, totalRounds: 3, totalClues: 4, attemptsLeft: 5, points: 4, answer: null });
     expect(view.clues).toHaveLength(1);
     expect(view.clues[0]).toMatchObject({ firstYear: 2000, lastYear: 2002 });
   });
@@ -177,9 +181,9 @@ describe('career path matches', () => {
     expect(first.view().clues).toHaveLength(1);
   });
 
-  it('finishes after four footballers and records the match', () => {
+  it('finishes after three footballers and records the match', () => {
     const { first, second, active } = pair();
-    for (let round = 0; round < 4; round += 1) {
+    for (let round = 0; round < 3; round += 1) {
       if (active() === second) {
         name(second, 9999);
       }

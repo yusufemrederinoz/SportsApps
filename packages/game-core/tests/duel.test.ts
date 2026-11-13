@@ -18,20 +18,18 @@ import {
 
 type Metric = 'goals' | 'older';
 
-const HAND_X = [1, 2, 3, 4, 5, 6, 7];
-const HAND_O = [11, 12, 13, 14, 15, 16, 17];
+const HAND_X = [1, 2, 3, 4, 5];
+const HAND_O = [11, 12, 13, 14, 15];
 const QUESTIONS: DuelQuestion<Metric>[] = [
   { metric: 'goals', prefer: 'high' },
   { metric: 'older', prefer: 'low' },
   { metric: 'goals', prefer: 'high' },
   { metric: 'goals', prefer: 'high' },
   { metric: 'older', prefer: 'low' },
-  { metric: 'goals', prefer: 'high' },
-  { metric: 'goals', prefer: 'high' },
 ];
 
 const valueOf = (footballerId: number, metric: Metric): number | null => {
-  if (footballerId === 7) {
+  if (footballerId === 5) {
     return null;
   }
   return metric === 'goals' ? footballerId * 10 : 2000 - footballerId;
@@ -52,12 +50,13 @@ function codeOf(action: () => unknown): string {
 }
 
 describe('hands', () => {
-  it('accepts seven different footballers and nothing else', () => {
+  it('accepts five different footballers and nothing else', () => {
     expect(isValidHand(HAND_X)).toBe(true);
+    expect(isValidHand([1, 2, 3, 4])).toBe(false);
+    expect(isValidHand([1, 1, 2, 3, 4])).toBe(false);
+    expect(isValidHand([1, 2, 3, 4, 0])).toBe(false);
+    expect(isValidHand([1, 2, 3, 4, 4.5])).toBe(false);
     expect(isValidHand([1, 2, 3, 4, 5, 6])).toBe(false);
-    expect(isValidHand([1, 1, 2, 3, 4, 5, 6])).toBe(false);
-    expect(isValidHand([1, 2, 3, 4, 5, 6, 0])).toBe(false);
-    expect(isValidHand([1, 2, 3, 4, 5, 6, 7.5])).toBe(false);
   });
 
   it('locks a hand once it is submitted', () => {
@@ -114,14 +113,14 @@ describe('rounds', () => {
     expect(codeOf(() => playCard(state, 'x', 99, valueOf))).toBe('card-not-in-hand');
   });
 
-  it('finishes after seven rounds with the higher score as winner', () => {
+  it('finishes after five rounds with the higher score as winner', () => {
     let state = ready();
     HAND_X.forEach((card, index) => {
       state = playCard(playCard(state, 'x', card, valueOf), 'o', HAND_O[index] as number, valueOf);
     });
     expect(state.phase).toBe('finished');
-    expect(state.rounds).toHaveLength(7);
-    expect(state.scores.x + state.scores.o).toBeLessThanOrEqual(7);
+    expect(state.rounds).toHaveLength(5);
+    expect(state.scores.x + state.scores.o).toBeLessThanOrEqual(5);
     expect(duelWinner(state)).toBe(state.scores.x > state.scores.o ? 'x' : 'o');
     expect(codeOf(() => playCard(state, 'x', 1, valueOf))).toBe('wrong-phase');
     expect(pendingSides(state)).toEqual([]);

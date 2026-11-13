@@ -36,9 +36,9 @@ const CELL_FAME = 32;
 const MINIMUM_ANSWERS = 6;
 const GRID_ATTEMPTS = 6;
 const BOT_LIST = 30;
-const BOT_FAME: Record<BotLevel, number> = { 1: 55, 2: 45, 3: 35 };
-const BOT_SHARE: Record<BotLevel, number> = { 1: 0.35, 2: 0.55, 3: 0.75 };
-const BOT_OVERBID: Record<BotLevel, number> = { 1: 0.4, 2: 0.2, 3: 0.05 };
+const BOT_FAME: Record<BotLevel, number> = { [-1]: 65, 0: 60, 1: 55, 2: 45, 3: 35 };
+const BOT_SHARE: Record<BotLevel, number> = { [-1]: 0.15, 0: 0.25, 1: 0.35, 2: 0.55, 3: 0.75 };
+const BOT_OVERBID: Record<BotLevel, number> = { [-1]: 0.6, 0: 0.5, 1: 0.4, 2: 0.2, 3: 0.05 };
 
 export interface AuctionTiming {
   bidMilliseconds: number;

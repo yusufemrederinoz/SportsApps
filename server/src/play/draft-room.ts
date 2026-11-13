@@ -85,6 +85,12 @@ export function chooseBotPick(
   if (level === 2) {
     return pick(ranked.slice(0, BOT_SHORTLIST), random);
   }
+  if (level === 0) {
+    return pick(candidates, random);
+  }
+  if (level === -1) {
+    return pick(ranked.slice(Math.floor(ranked.length / 2)), random);
+  }
   const famous = candidates.filter((candidate) => candidate.fame >= FAMOUS);
   return pick(famous.length > 0 ? famous : candidates, random);
 }

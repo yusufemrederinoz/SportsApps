@@ -48,6 +48,20 @@ describe('top ten', () => {
     expect(state.guesses.map((guess) => guess.rank)).toEqual([1, null, null, null]);
   });
 
+  it('gives the opponent one more chance when a player runs out of lives', () => {
+    let state: TopTenState<string> = createTopTen([list('a'), list('b')], 'x', 2);
+    state = guessTopTen(state, 'x', null);
+    state = guessTopTen(state, 'o', 105);
+    state = guessTopTen(state, 'x', null);
+    expect(state.lives).toEqual({ x: 0, o: 2 });
+    expect(state.turn).toBe('o');
+    state = guessTopTen(state, 'o', 104);
+    expect(state).toMatchObject({ phase: 'playing', turn: 'o' });
+    state = guessTopTen(state, 'o', null);
+    expect(state.phase).toBe('between');
+    expect(state.lives).toEqual({ x: 0, o: 1 });
+  });
+
   it('lets the player with lives left keep playing and ends the round when nobody has lives', () => {
     let state: TopTenState<string> = createTopTen([list('a'), list('b')], 'x', 1);
     state = guessTopTen(state, 'x', null);

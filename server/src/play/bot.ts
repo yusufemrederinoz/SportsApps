@@ -27,7 +27,9 @@ const NEAR_MISS_CHANCE = 0.7;
 const NEAR_MISS_POOL = 12;
 const ADAPTATION_SAMPLE = 3;
 const TARGET_MARGIN = 0.2;
-const LEVELS: readonly BotLevel[] = [1, 2, 3];
+const DEEP_MARGIN = 0.45;
+const LEVELS: readonly BotLevel[] = [-1, 0, 1, 2, 3];
+const DIFFICULTY_OFFSET = 1;
 
 export interface BotTiming {
   minimumThinkMilliseconds: number;
@@ -99,8 +101,9 @@ export function botLevelFor(difficulty: PlayDifficulty, recent: readonly MatchOu
     return difficulty;
   }
   const winRate = recent.filter((outcome) => outcome === 'win').length / recent.length;
-  const shift = winRate >= target + TARGET_MARGIN ? 1 : winRate <= target - TARGET_MARGIN ? -1 : 0;
-  const index = Math.max(0, Math.min(LEVELS.length - 1, difficulty - 1 + shift));
+  const shortfall = target - winRate;
+  const shift = winRate >= target + TARGET_MARGIN ? 1 : shortfall >= DEEP_MARGIN ? -2 : shortfall >= TARGET_MARGIN ? -1 : 0;
+  const index = Math.max(0, Math.min(LEVELS.length - 1, difficulty + DIFFICULTY_OFFSET + shift));
   return LEVELS[index] as BotLevel;
 }
 

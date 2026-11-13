@@ -1,7 +1,7 @@
 import { opponentOf } from './match';
 import type { Side } from './types';
 
-export const DUEL_HAND_SIZE = 7;
+export const DUEL_HAND_SIZE = 5;
 
 export type DuelPhase = 'picking' | 'playing' | 'finished';
 

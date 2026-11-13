@@ -13,9 +13,11 @@ export interface BotProfile {
 
 export type BotMove = { kind: 'answer'; position: CellPosition; footballerId: number } | { kind: 'skip' };
 
-export type BotLevel = 1 | 2 | 3;
+export type BotLevel = -1 | 0 | 1 | 2 | 3;
 
 export const BOT_PROFILES: Readonly<Record<BotLevel, BotProfile>> = {
+  [-1]: { accuracy: 0.35, answerPool: 1 },
+  0: { accuracy: 0.45, answerPool: 2 },
   1: { accuracy: 0.55, answerPool: 3 },
   2: { accuracy: 0.75, answerPool: 5 },
   3: { accuracy: 0.92, answerPool: 8 },

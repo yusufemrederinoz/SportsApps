@@ -17,6 +17,7 @@ import {
   type Side,
 } from '@sportapps/game-core';
 import {
+  DUEL_EASY_METRICS,
   DUEL_METRICS,
   DUEL_PICK_SECONDS,
   DUEL_PLAY_SECONDS,
@@ -38,8 +39,8 @@ const SECOND = 1000;
 const POOL_FAME = 45;
 const POOL_SIZE = 60;
 const AGE_METRICS: readonly DuelMetric[] = ['older', 'younger'];
-const BOT_STRONG_PICKS: Record<BotLevel, number> = { 1: 1, 2: 4, 3: DUEL_HAND_SIZE };
-const BOT_ACCURACY: Record<BotLevel, number> = { 1: 0.3, 2: 0.6, 3: 0.85 };
+const BOT_STRONG_PICKS: Record<BotLevel, number> = { [-1]: 0, 0: 0, 1: 1, 2: 3, 3: DUEL_HAND_SIZE };
+const BOT_ACCURACY: Record<BotLevel, number> = { [-1]: 0.1, 0: 0.2, 1: 0.3, 2: 0.6, 3: 0.85 };
 
 export interface DuelTiming {
   pickMilliseconds: number;
@@ -92,12 +93,13 @@ export function chooseQuestions(
   cards: readonly number[],
   valueOf: (footballerId: number, metric: DuelMetric) => number | null,
   random: () => number,
+  allowed: readonly DuelMetric[] = DUEL_METRICS,
 ): DuelQuestion<DuelMetric>[] {
   const coverage = (metric: DuelMetric) => cards.filter((id) => valueOf(id, metric) !== null).length;
-  const covered = DUEL_METRICS.filter((metric) => coverage(metric) === cards.length);
+  const covered = allowed.filter((metric) => coverage(metric) === cards.length);
   const stats = shuffle(covered.filter((metric) => !AGE_METRICS.includes(metric)), random);
   const ages = shuffle(covered.filter((metric) => AGE_METRICS.includes(metric)), random);
-  const partial = DUEL_METRICS.filter((metric) => !covered.includes(metric)).sort(
+  const partial = allowed.filter((metric) => !covered.includes(metric)).sort(
     (first, second) => coverage(second) - coverage(first),
   );
   const preferred = [...stats.slice(0, DUEL_HAND_SIZE - 1), ...ages, ...stats.slice(DUEL_HAND_SIZE - 1), ...partial];
@@ -126,6 +128,7 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
     const botTimers = new Map<Side, Timer>();
     const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
+    const askable = difficulty === 1 ? DUEL_EASY_METRICS : DUEL_METRICS;
     const clock = createThinkingClock(now);
     let state = createDuel<DuelMetric>();
     let stage: DuelViewPhase = 'picking';
@@ -298,13 +301,13 @@ export function createDuelRoomFactory(library: DuelLibrary, timing: DuelTiming =
     const beginPlay = () => {
       const cards = [...(state.hands.x ?? []), ...(state.hands.o ?? [])];
       remember(cards);
-      state = startPlay(state, chooseQuestions(cards, valueOf, random));
+      state = startPlay(state, chooseQuestions(cards, valueOf, random, askable));
       startRound();
     };
 
     const botHand = (): number[] => {
       remember(pool);
-      const strong = DUEL_METRICS.reduce<number[]>((chosen, metric) => {
+      const strong = askable.reduce<number[]>((chosen, metric) => {
         const open = pool.filter((footballerId) => !chosen.includes(footballerId));
         return open.length > 0 ? [...chosen, strongest(open, { metric, prefer: METRIC_PREFERENCES[metric] })] : chosen;
       }, []);

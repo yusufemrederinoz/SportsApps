@@ -30,7 +30,7 @@ const ROUNDS = 2;
 const LIST_SIZE = 10;
 const RANKING_DEPTH = 30;
 const LIST_ATTEMPTS = 20;
-const BOT_SHARE: Record<BotLevel, number> = { 1: 0.3, 2: 0.5, 3: 0.7 };
+const BOT_SHARE: Record<BotLevel, number> = { [-1]: 0.05, 0: 0.1, 1: 0.15, 2: 0.5, 3: 0.7 };
 
 export interface TopTenTiming {
   turnMilliseconds: number;
