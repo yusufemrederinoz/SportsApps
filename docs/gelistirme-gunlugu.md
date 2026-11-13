@@ -1267,6 +1267,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 
 - **İstek.** Kullanıcı viral olabilecek yeni bir video için seçenek istedi. Gündem: Türkiye–Fransa (15 Kasım Pazar 22.45, Uluslar Ligi son grup maçı; tek haber kaynağından, TFF'den teyit edilmeli). Dört fikir sunuldu (sayma challenge'ı, Fransız yıldızlar Türkiye'de, Fransa mı Türkiye mi hız turu, Tribün Savaşı iki parça seri). Kullanıcı sayma challenge'ını seçti.
 - **Cümleler (kullanıcı seçti).** Kanca "Fransa'da oynamış 5 Türk futbolcuyu sayabilir misin?" (kullanıcının yazdığı "futbolu" yazım hatası "futbolcuyu" olarak düzeltildi), kapanış "Kaçını buldun? Yoruma yaz".
+- **Tempo dersi.** İlk sürüm 10 saniyelik geri sayımla başlıyor, süre bitince altı kartı birden açıyordu (23,4 saniye). Kullanıcı reddetti: izleyici sonucun çıkmasını 10 saniye beklemez. İkinci sürümde geri sayım kaldırıldı; kutular baştan numaralı görünür, her 2 saniyede bir yeni futbolcu açılır (20,4 saniye). Kural: videoda yaklaşık her 2 saniyede ekrana yeni bir şey gelmeli, sonuç için bekletilmemeli.
 - **Üretim.** `cut=reel-count`, `qcount` sahnesi. Çıktı `data/build/promo/videos/reels/challengegoal-tr-reel-count.mp4`, paylaşım metni `captions/challengegoal-tr-reel-count.txt`.
 
 ## Commit listesi

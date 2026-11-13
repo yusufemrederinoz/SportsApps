@@ -64,7 +64,7 @@ const CUTS = {
   ],
   'reel-outro': [['signature', 3]],
   'reel-count': [
-    ['qcount', 20.4],
+    ['qcount', 17.4],
     ['signature', 3],
   ],
   'promo-xox': [
@@ -323,10 +323,8 @@ const PICKS = {
   score: 1.4,
 };
 const COUNT = {
-  seconds: 10,
-  ask: 2.4,
-  reveal: 0.9,
-  step: 0.42,
+  first: 2,
+  step: 2,
   clubs: {
     LIL: { code: 'LIL', pattern: 'plain', colors: ['#E01E13', '#1D2A57'] },
     OM: { code: 'OM', pattern: 'plain', colors: ['#FFFFFF', '#2FAEE0'] },
@@ -1174,40 +1172,29 @@ function qwho(texts, start) {
 
 function qcount(texts, start) {
   const q = texts.quiz.count;
-  const { seconds, ask: askOffset, reveal: revealOffset, step, clubs, answers, more } = COUNT;
+  const { first, step, clubs, answers, more } = COUNT;
   const time = (offset) => at(start, offset);
-  const ask = time(askOffset);
-  const timeUp = at(ask, seconds);
-  const first = at(timeUp, revealOffset);
-  const last = at(first, (answers.length - 1) * step);
-  const closing = at(last, 1.5);
+  const shown = answers.map((_, index) => time(first + index * step));
+  const last = shown[shown.length - 1];
+  const extras = at(last, 1.3);
+  const closing = at(last, 2.4);
   cue(time(0.05), 'whoosh', 0.8);
   [0.35, 0.7, 1.05].forEach((offset, index) => cue(time(offset), 'impact', index === 2 ? 1 : 0.6));
-  cue(ask, 'whistle', 0.4);
-  ticks(ask, seconds);
-  cue(timeUp, 'whistle', 0.9);
-  cue(at(timeUp, 0.1), 'impact', 1);
-  const slots = Array.from({ length: 5 }, (_, index) => `<div class="count-slot in pop" style="--t: ${time(0.9 + index * 0.08)}"><b class="display">${index + 1}</b></div>`).join('');
-  const cards = answers
+  const cells = answers
     .map((entry, index) => {
-      const shown = at(first, index * step);
-      cue(shown, 'correct', 0.6, 0.95 + index * 0.05);
-      return `<div class="count-answer in pop" style="--t: ${shown}">${card(texts, entry.key, 'x', 'flip shiny', shown)}<p class="count-club">${appCrest(clubs[entry.club])}<span>${entry.years}</span></p></div>`;
+      cue(shown[index], 'whoosh', 0.45);
+      cue(at(shown[index], 0.2), 'correct', 0.7, 0.95 + index * 0.05);
+      return `<div class="count-answer">
+        <div class="count-ghost in pop" style="--t: ${time(0.9 + index * 0.08)}"><b class="display">${index + 1}</b></div>
+        <div class="count-filled in pop" style="--t: ${shown[index]}">${card(texts, entry.key, 'x', 'flip shiny', shown[index])}<p class="count-club">${appCrest(clubs[entry.club])}<span>${entry.years}</span></p></div>
+      </div>`;
     })
     .join('');
   cue(at(last, 0.9), 'win', 0.8);
   cue(closing, 'impact', 0.7);
   return `${titleLines(q.hook, start)}
-    <div class="count-slots layer state" style="--start: ${start}; --end: ${timeUp}">${slots}</div>
-    <div class="layer state" style="--start: ${ask}; --end: ${timeUp}">
-      ${countdown(seconds, ask, '', 'style="top: 1180px; left: 415px"')}
-      <p class="q-seconds" style="top: 1460px">${q.seconds}</p>
-    </div>
-    <div class="layer state" style="--start: ${timeUp}; --end: ${at(timeUp, 1.1)}">${stamp('lose', q.timeUp, timeUp)}</div>
-    <div class="layer state" style="--start: ${at(timeUp, 0.7)}; --end: ${NEVER}">
-      <div class="count-answers">${cards}</div>
-      <p class="count-more in rise" style="--t: ${at(last, 0.5)}">${q.more}<br /><strong>${more.join(' · ')}</strong></p>
-    </div>
+    <div class="count-answers">${cells}</div>
+    <p class="count-more in rise" style="--t: ${extras}">${q.more}<br /><strong>${more.join(' · ')}</strong></p>
     <div class="display centered q-call count-call in slam" style="--t: ${closing}" data-fit>${q.call}</div>
     <p class="q-note">${q.note}</p>`;
 }
