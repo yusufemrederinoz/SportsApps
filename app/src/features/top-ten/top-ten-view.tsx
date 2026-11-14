@@ -26,6 +26,12 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
+const LIST_TITLES = {
+  value: 'topTen.listValue',
+  goals: 'topTen.listGoals',
+  clubGoals: 'topTen.listClubGoals',
+  clubValue: 'topTen.listClubValue',
+} as const satisfies Record<TopTenListView['kind'], string>;
 const LIFE_SIZE = 12;
 const RANK_SIZE = 30;
 
@@ -44,7 +50,10 @@ function useListSubject(list: TopTenListView, market: string): HeaderView | null
   const database = useSQLiteContext();
   const { i18n } = useTranslation();
   const language = i18n.language;
-  const header = list.kind === 'clubGoals' ? { kind: 'club' as const, referenceId: list.clubId } : { kind: 'country' as const, referenceId: list.countryId };
+  const header =
+    list.kind === 'clubGoals' || list.kind === 'clubValue'
+      ? { kind: 'club' as const, referenceId: list.clubId }
+      : { kind: 'country' as const, referenceId: list.countryId };
   const key = `${header.kind}-${header.referenceId}`;
   const [loaded, setLoaded] = useState<{ key: string; label: HeaderView } | null>(null);
 
@@ -145,11 +154,13 @@ export function TopTenMatchView({
   const names = { [side]: t('match.you'), [rival]: topTen.usernames[rival] } as Record<Side, string>;
   const won = result?.winner === side;
   const subjectName = subject ? nameUppercase(subject.name, subject.local) : '';
-  const titleKey = view.list.kind === 'value' ? 'topTen.listValue' : view.list.kind === 'goals' ? 'topTen.listGoals' : 'topTen.listClubGoals';
+  const titleKey = LIST_TITLES[view.list.kind];
   const title = subject ? uppercase(t(titleKey, { name: '{}' })).split('{}').join(subjectName) : '';
   const turnKey = `${view.round}-${view.scores.x}-${view.scores.o}-${view.lives.x}-${view.lives.o}-${view.phase}`;
   const formatValue = (value: number) =>
-    view.list.kind === 'value' ? metricValueText(t, 'marketValue', value, i18n.language) : t('topTen.goals', { goals: value });
+    view.list.kind === 'value' || view.list.kind === 'clubValue'
+      ? metricValueText(t, 'marketValue', value, i18n.language)
+      : t('topTen.goals', { goals: value });
 
   const status = (): { text: string; color: ThemeColor } => {
     if (!playing) {

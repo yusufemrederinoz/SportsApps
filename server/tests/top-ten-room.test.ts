@@ -1,4 +1,11 @@
-import type { GameView, ServerMessage, SessionSnapshot, TopTenListView, TopTenView } from '@sportapps/protocol';
+import type {
+  GameView,
+  PlayFeature,
+  ServerMessage,
+  SessionSnapshot,
+  TopTenListView,
+  TopTenView,
+} from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -25,7 +32,7 @@ const LISTS: TopTenListView[] = [
   { kind: 'clubGoals', clubId: 3 },
   { kind: 'clubGoals', clubId: 4 },
 ];
-const keyOf = (list: TopTenListView) => (list.kind === 'clubGoals' ? list.clubId : list.countryId);
+const keyOf = (list: TopTenListView) => ('clubId' in list ? list.clubId : list.countryId);
 
 const library: TopTenLibrary = {
   topTenLists: (market) => (market === 'tr' ? LISTS : []),
@@ -61,10 +68,21 @@ function topTenOf(state: GameView): TopTenView {
   return state.view;
 }
 
-function join(): Client {
+function openLobby(source: TopTenLibrary): Lobby {
+  return createLobby({
+    games: { 'top-ten': capturing(createTopTenRoomFactory(source, TIMING), rooms) },
+    hasMarket: (market) => market === 'tr' || market === 'empty',
+    history,
+    random,
+    now: () => Date.now(),
+    botWaitMilliseconds: BOT_WAIT,
+  });
+}
+
+function join(features?: PlayFeature[]): Client {
   const { account } = createAccountService(database, { sessionDays: 90 }).createGuest();
   const client: Client = {
-    player: { id: account.id, username: account.username },
+    player: { id: account.id, username: account.username, ...(features ? { features } : {}) },
     received: [],
     send(message) {
       client.received.push(message);
@@ -114,14 +132,7 @@ beforeEach(() => {
   rooms = [];
   database = openDatabase(':memory:');
   history = createMatchHistory(database);
-  lobby = createLobby({
-    games: { 'top-ten': capturing(createTopTenRoomFactory(library, TIMING), rooms) },
-    hasMarket: (market) => market === 'tr' || market === 'empty',
-    history,
-    random,
-    now: () => Date.now(),
-    botWaitMilliseconds: BOT_WAIT,
-  });
+  lobby = openLobby(library);
 });
 
 afterEach(() => {
@@ -139,6 +150,37 @@ describe('top ten setup', () => {
       expect(list.nearMisses).toHaveLength(5);
       expect(keyOf(list.round.list)).not.toBe(4);
     });
+  });
+
+  it('offers club value lists in place of club goal lists only when every player supports them', () => {
+    const clubLists: TopTenListView[] = [
+      { kind: 'clubGoals', clubId: 3 },
+      { kind: 'clubValue', clubId: 3 },
+      { kind: 'clubGoals', clubId: 5 },
+      { kind: 'clubValue', clubId: 5 },
+    ];
+    const clubLibrary: TopTenLibrary = { ...library, topTenLists: () => clubLists };
+    const kinds = (features: Parameters<typeof prepareLists>[3]) =>
+      prepareLists(clubLibrary, 'tr', () => 0.5, features).map((list) => list.round.list.kind);
+    expect(kinds([])).toEqual(['clubGoals', 'clubGoals']);
+    expect(kinds(['rematch', 'club-value-lists'])).toEqual(['clubValue', 'clubValue']);
+  });
+
+  it('lets the lobby offer club value lists only when both apps support them', () => {
+    lobby.shutdown();
+    const clubLists: TopTenListView[] = [
+      { kind: 'clubGoals', clubId: 3 },
+      { kind: 'clubValue', clubId: 5 },
+      { kind: 'clubGoals', clubId: 6 },
+      { kind: 'clubValue', clubId: 7 },
+    ];
+    lobby = openLobby({ ...library, topTenLists: () => clubLists });
+    const modern = [join(['club-value-lists']), join(['club-value-lists'])];
+    modern.forEach((client) => queue(client));
+    const mixed = [join(['club-value-lists']), join()];
+    mixed.forEach((client) => queue(client));
+    expect(modern.map((client) => client.view().list.kind)).toEqual(['clubValue', 'clubValue']);
+    expect(mixed.map((client) => client.view().list.kind)).toEqual(['clubGoals', 'clubGoals']);
   });
 });
 

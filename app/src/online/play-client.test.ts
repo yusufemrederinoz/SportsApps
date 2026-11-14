@@ -67,7 +67,7 @@ describe('createPlayClient', () => {
 
     socket?.onopen?.();
     expect(socket?.sent).toEqual([
-      { type: 'hello', token: 'token-1', protocol: 1, dataVersion: 'v1', features: ['reactions', 'rematch', 'ranked-rooms'] },
+      { type: 'hello', token: 'token-1', protocol: 1, dataVersion: 'v1', features: ['reactions', 'rematch', 'ranked-rooms', 'club-value-lists'] },
     ]);
 
     socket?.receive({ type: 'ready' });

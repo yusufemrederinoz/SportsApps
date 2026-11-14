@@ -14,6 +14,7 @@ import {
 import {
   TOP_TEN_TURN_SECONDS,
   type PlayErrorCode,
+  type PlayFeature,
   type PlayResult,
   type TopTenListView,
   type TopTenView,
@@ -66,8 +67,24 @@ function shuffle<T>(items: readonly T[], random: () => number): T[] {
   return shuffled;
 }
 
-export function prepareLists(library: TopTenLibrary, market: string, random: () => number): PreparedList[] {
-  const lists = shuffle(library.topTenLists(market), random);
+function offered(list: TopTenListView, features: readonly PlayFeature[]): boolean {
+  const clubValues = features.includes('club-value-lists');
+  if (list.kind === 'clubValue') {
+    return clubValues;
+  }
+  return list.kind !== 'clubGoals' || !clubValues;
+}
+
+export function prepareLists(
+  library: TopTenLibrary,
+  market: string,
+  random: () => number,
+  features: readonly PlayFeature[] = [],
+): PreparedList[] {
+  const lists = shuffle(
+    library.topTenLists(market).filter((list) => offered(list, features)),
+    random,
+  );
   const prepared: PreparedList[] = [];
   for (const list of lists.slice(0, LIST_ATTEMPTS)) {
     const rows: RankedRow[] = library.ranking(list, RANKING_DEPTH);
@@ -87,7 +104,7 @@ export function prepareLists(library: TopTenLibrary, market: string, random: () 
 export function createTopTenRoomFactory(library: TopTenLibrary, timing: TopTenTiming = DEFAULT_TOP_TEN_TIMING): RoomFactory {
   return (context) => {
     const { id, kind, market, difficulty, seats, now, random } = context;
-    const prepared = prepareLists(library, market, random);
+    const prepared = prepareLists(library, market, random, context.features);
     if (prepared.length < ROUNDS) {
       return null;
     }

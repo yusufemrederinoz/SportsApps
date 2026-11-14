@@ -424,6 +424,7 @@
     "listValue": "Los 10 futbolistas de {{name}} que alcanzaron mayor valor de mercado",
     "listGoals": "Los 10 futbolistas de {{name}} con más goles en su carrera",
     "listClubGoals": "Los 10 con más goles en su carrera que jugaron en {{name}}",
+    "listClubValue": "Los 10 con mayor valor de mercado alcanzado que jugaron en {{name}}",
     "rule": "El orden sigue los datos de la app. El número 10 vale 10 puntos y el número 1 vale 1; un nombre equivocado cuesta una vida.",
     "lives": "{{name}}: {{lives}} vidas",
     "goals": "{{goals}} goles",

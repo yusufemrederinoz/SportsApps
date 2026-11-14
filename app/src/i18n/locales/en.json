@@ -424,6 +424,7 @@
     "listValue": "Top 10 {{name}} footballers by peak market value",
     "listGoals": "Top 10 {{name}} footballers by career goals",
     "listClubGoals": "Top 10 career scorers who played for {{name}}",
+    "listClubValue": "Top 10 by peak market value who played for {{name}}",
     "rule": "Rankings follow the app's data. Number 10 is worth 10 points and number 1 is worth 1. A wrong name costs a life.",
     "lives": "{{name}}: {{lives}} lives",
     "goals": "{{goals}} goals",

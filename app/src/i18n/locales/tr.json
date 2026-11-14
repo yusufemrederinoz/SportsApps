@@ -424,6 +424,7 @@
     "listValue": "En yüksek piyasa değerine ulaşmış 10 {{name}} futbolcusu",
     "listGoals": "Kariyerinde en çok gol atan 10 {{name}} futbolcusu",
     "listClubGoals": "{{name}} forması giymiş, kariyerinde en çok gol atan 10 futbolcu",
+    "listClubValue": "{{name}} forması giymiş, en yüksek piyasa değerine ulaşmış 10 futbolcu",
     "rule": "Sıralama uygulamanın verisine göredir. 10. sıradaki isim 10 puan, 1. sıradaki 1 puan getirir. Yanlış isim bir can götürür.",
     "lives": "{{name}}: {{lives}} can",
     "goals": "{{goals}} gol",

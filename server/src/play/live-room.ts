@@ -8,6 +8,7 @@ import type {
   MatchKind,
   PlayDifficulty,
   PlayErrorCode,
+  PlayFeature,
   PlayResult,
   ServerMessage,
 } from '@sportapps/protocol';
@@ -63,6 +64,7 @@ export interface RoomContext {
   difficulty: PlayDifficulty;
   seats: Record<Side, Seat>;
   botLevel: BotLevel;
+  features?: readonly PlayFeature[];
   now: () => number;
   random: () => number;
   send: (side: Side, message: ServerMessage) => void;

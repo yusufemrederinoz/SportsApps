@@ -33,6 +33,7 @@ import {
   sharedClubStatement,
   toGrid,
   topClubGoalsStatement,
+  topClubValuesStatement,
   topCountryGoalsStatement,
   topValuesStatement,
   type CareerStepRow,
@@ -217,6 +218,7 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
         ...countries.map((countryId): TopTenListView => ({ kind: 'value', countryId })),
         ...countries.map((countryId): TopTenListView => ({ kind: 'goals', countryId })),
         ...clubs.map((clubId): TopTenListView => ({ kind: 'clubGoals', clubId })),
+        ...clubs.map((clubId): TopTenListView => ({ kind: 'clubValue', clubId })),
       ];
       topTenLists.set(market, loaded);
       return loaded;
@@ -242,6 +244,8 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
           return all<RankedRow>(topCountryGoalsStatement(list.countryId, limit));
         case 'clubGoals':
           return all<RankedRow>(topClubGoalsStatement(list.clubId, limit));
+        case 'clubValue':
+          return all<RankedRow>(topClubValuesStatement(list.clubId, limit));
       }
     },
 

@@ -424,6 +424,7 @@
     "listValue": "{{name}}: top 10 calciatori per valore di mercato massimo",
     "listGoals": "{{name}}: top 10 calciatori per gol in carriera",
     "listClubGoals": "{{name}}: top 10 per gol in carriera tra chi ci ha giocato",
+    "listClubValue": "{{name}}: top 10 per valore di mercato massimo tra chi ci ha giocato",
     "rule": "La classifica segue i dati dell'app. Il numero 10 vale 10 punti, il numero 1 vale 1; un nome sbagliato costa una vita.",
     "lives": "{{name}}: {{lives}} vite",
     "goals": "{{goals}} gol",

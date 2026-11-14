@@ -25,6 +25,17 @@ export function topCountryGoalsStatement(countryId: number, limit: number): Stat
   };
 }
 
+export function topClubValuesStatement(clubId: number, limit: number): Statement {
+  return {
+    sql: `SELECT p.id, r.market_value AS value FROM player_clubs pc
+          JOIN players p ON p.id = pc.player_id
+          JOIN player_profile r ON r.player_id = p.id
+          WHERE pc.club_id = ? AND r.market_value IS NOT NULL
+          ORDER BY r.market_value DESC, p.id LIMIT ?`,
+    parameters: [clubId, limit],
+  };
+}
+
 export function topClubGoalsStatement(clubId: number, limit: number): Statement {
   return {
     sql: `SELECT p.id, s.goals AS value FROM player_clubs pc

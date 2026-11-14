@@ -5,7 +5,8 @@ export const TOP_TEN_TURN_SECONDS = 20;
 export type TopTenListView =
   | { kind: 'value'; countryId: number }
   | { kind: 'goals'; countryId: number }
-  | { kind: 'clubGoals'; clubId: number };
+  | { kind: 'clubGoals'; clubId: number }
+  | { kind: 'clubValue'; clubId: number };
 
 export interface TopTenEntryView {
   rank: number;

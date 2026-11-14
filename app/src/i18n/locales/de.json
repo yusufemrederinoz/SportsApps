@@ -424,6 +424,7 @@
     "listValue": "Top 10 nach Rekordmarktwert – Nation: {{name}}",
     "listGoals": "Top 10 nach Karrieretoren – Nation: {{name}}",
     "listClubGoals": "Top 10 nach Karrieretoren – spielten für {{name}}",
+    "listClubValue": "Top 10 nach Rekordmarktwert – spielten für {{name}}",
     "rule": "Die Platzierungen richten sich nach den Daten der App. Platz 10 bringt 10 Punkte, Platz 1 bringt 1 Punkt; ein falscher Name kostet ein Leben.",
     "lives": "{{name}}: {{lives}} Leben",
     "goals": "{{goals}} Tore",

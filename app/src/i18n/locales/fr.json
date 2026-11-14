@@ -424,6 +424,7 @@
     "listValue": "{{name}} : top 10 des plus hautes valeurs marchandes atteintes",
     "listGoals": "{{name}} : top 10 des meilleurs buteurs en carrière",
     "listClubGoals": "{{name}} : top 10 des buteurs en carrière passés par le club",
+    "listClubValue": "{{name}} : top 10 des plus hautes valeurs marchandes parmi ses joueurs",
     "rule": "Le classement suit les données de l'appli. Le n° 10 vaut 10 points, le n° 1 vaut 1 point ; un mauvais nom coûte une vie.",
     "lives": "{{name}} · vies : {{lives}}",
     "goals": "{{goals}} buts",
