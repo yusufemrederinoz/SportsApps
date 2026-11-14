@@ -91,14 +91,14 @@
     "modeOnlineHint": "Finde einen Gegner und hol Punkte.",
     "modeFriendTitle": "Gegen Freunde",
     "modeFriendHint": "Eröffne einen privaten Raum mit Code.",
-    "subtitleDuel": "Wähl sieben Karten. In jeder Runde punktet die Karte, die bei der Frage besser abschneidet.",
-    "subtitleDraft": "Jede Runde zeigt einen Verein. Hol einen Fußballer, der dort gespielt hat, in deinen Kader; der Kader mit mehr Karriere-Vorlagen gewinnt.",
-    "subtitleHigher": "Zwei Fußballer, eine Frage: Wer liegt bei Toren, Vorlagen, Marktwert oder Alter vorn? Solange du richtig liegst, bleibst du dran.",
-    "subtitleChain": "Nennt abwechselnd jemanden, der beim selben Verein gespielt hat wie der letzte Fußballer. Wer nichts weiß oder falsch liegt, verliert die Runde; drei Runden bringen den Sieg.",
-    "subtitleRare": "Ihr nennt beide einen Fußballer, der zu beiden Kriterien passt; die Antworten bleiben geheim. Liegt ihr beide richtig, holt der unbekanntere Fußballer die Runde.",
-    "subtitleAuction": "Biete, wie viele Namen du nennen kannst. Wer „Beweis es“ zu hören bekommt, holt die Runde nur, wenn er so viele richtige Antworten rechtzeitig nennt.",
-    "subtitleTopTen": "Es gibt eine geheime Zehnerliste. Nennt abwechselnd Namen; je weiter unten auf der Liste, desto mehr Punkte. Ein falscher Name kostet ein Leben.",
-    "subtitleCareer": "Die Vereine eines geheimen Fußballers werden nach und nach aufgedeckt. Je weniger Hinweise du brauchst, desto mehr Punkte; wer falsch rät, deckt einen neuen Verein auf und gibt den Zug ab.",
+    "subtitleDuel": "Wähl deine Karten; in jeder Runde holt die Karte die Runde, die bei der Frage besser abschneidet.",
+    "subtitleDraft": "Hol in jeder Runde einen Fußballer, der beim gezogenen Verein gespielt hat, in deinen Kader; der Kader mit mehr Karriere-Vorlagen gewinnt.",
+    "subtitleHigher": "Wähl, wer von zwei Fußballern bei Toren, Vorlagen, Marktwert oder Alter vorn liegt; solange du richtig liegst, bleibst du dran.",
+    "subtitleChain": "Nennt abwechselnd jemanden, der beim selben Verein gespielt hat wie der letzte Fußballer; wer nichts weiß oder falsch liegt, verliert die Runde.",
+    "subtitleRare": "Ihr nennt beide geheim einen Fußballer, der zu beiden Kriterien passt; liegt ihr beide richtig, holt der unbekanntere die Runde.",
+    "subtitleAuction": "Biete, wie viele Namen du nennen kannst; wer „Beweis es“ hört, holt die Runde nur mit so vielen richtigen Antworten in der Zeit.",
+    "subtitleTopTen": "Nennt abwechselnd Namen aus einer geheimen Top 10; je weiter unten auf der Liste, desto mehr Punkte.",
+    "subtitleCareer": "Finde den geheimen Fußballer, dessen Vereine nach und nach aufgedeckt werden; je früher du ihn errätst, desto mehr Punkte.",
     "puzzleTitle": "Tagesrätsel",
     "puzzleHint": "Gleiches Raster für alle · 9 Versuche",
     "puzzleProgress": "{{filled}}/9 · {{score}} Punkte",
@@ -322,7 +322,7 @@
     "roundWon": "Runde gewonnen!",
     "roundLost": "Runde verloren",
     "roundDrawn": "Runde unentschieden",
-    "byScore": "Sieben Runden gespielt"
+    "byScore": "Alle Runden gespielt"
   },
   "draft": {
     "round": "Runde {{round}}/{{total}}",
@@ -378,7 +378,7 @@
   "rare": {
     "round": "Runde {{round}}/{{total}}",
     "criteria": "Kriterien",
-    "rule": "Nenn einen Fußballer, der zu beiden passt. Die unbekanntere richtige Antwort holt die Runde.",
+    "rule": "Nenn einen Fußballer, der zu beiden passt; die unbekanntere richtige Antwort holt die Runde.",
     "hint": "Finde den Geheimtipp",
     "name": "Fußballer nennen",
     "locked": "Deine Antwort bleibt geheim",
@@ -396,7 +396,7 @@
   "auction": {
     "round": "Runde {{round}} · {{target}} Runden zum Sieg",
     "criteria": "Kriterien",
-    "rule": "Wie viele Fußballer, die zu beiden passen, kannst du nennen? Dein Gegner erhöht oder sagt „Beweis es“. Läuft deine Zeit ab, sagst du „Beweis es“.",
+    "rule": "Sag, wie viele passende Fußballer du nennen kannst; dein Gegner erhöht oder sagt „Beweis es“, und läuft deine Zeit ab, sagst du „Beweis es“.",
     "noBid": "Noch kein Gebot",
     "lastBid": "Gebot des Gegners",
     "bidLabel": "Gebot: {{bid}} Namen",
@@ -425,7 +425,7 @@
     "listGoals": "Top 10 nach Karrieretoren – Nation: {{name}}",
     "listClubGoals": "Top 10 nach Karrieretoren – spielten für {{name}}",
     "listClubValue": "Top 10 nach Rekordmarktwert – spielten für {{name}}",
-    "rule": "Die Platzierungen richten sich nach den Daten der App. Platz 10 bringt 10 Punkte, Platz 1 bringt 1 Punkt; ein falscher Name kostet ein Leben.",
+    "rule": "Die Platzierungen richten sich nach den Daten der App: Platz 10 bringt 10 Punkte, Platz 1 bringt 1 Punkt, ein falscher Name kostet ein Leben.",
     "lives": "{{name}}: {{lives}} Leben",
     "goals": "{{goals}} Tore",
     "say": "Fußballer nennen",
@@ -441,8 +441,8 @@
   "career": {
     "round": "Fußballer {{round}}/{{total}}",
     "question": "Wer ist dieser Fußballer?",
-    "rule": "Die Vereine werden in der Reihenfolge der Stationen aufgedeckt. Errätst du ihn jetzt, gibt's {{points}} Punkte.",
-    "scope": "Gezeigt werden nur Vereine aus der Süper Lig und den fünf großen Ligen Europas.",
+    "rule": "Die Vereine werden in der Reihenfolge der Stationen aufgedeckt; errätst du ihn jetzt, gibt's {{points}} Punkte.",
+    "scope": "Gezeigt werden Vereine mit bekannten Jahren aus den Ligen, die die App abdeckt.",
     "guess": "Raten ({{points}} Punkte)",
     "yourTurn": "Du bist dran",
     "pick": "Wähle den richtigen Spieler",
@@ -453,7 +453,7 @@
     "solvedByYou": "Erraten!",
     "solvedByRival": "Dein Gegner hat's erraten",
     "unsolved": "Keiner hat's erraten",
-    "byScore": "Alle vier Fußballer gespielt"
+    "byScore": "Alle Fußballer gespielt"
   },
   "leave": {
     "title": "Match verlassen?",

@@ -91,14 +91,14 @@
     "modeOnlineHint": "Rakibini bul, puan topla.",
     "modeFriendTitle": "Arkadaşınla oyna",
     "modeFriendHint": "Kodla özel oda aç.",
-    "subtitleDuel": "Yedi kart seç. Her turda bir soru gelir, kartı üstün gelen turu alır.",
-    "subtitleDraft": "Her turda bir kulüp çıkar. O kulüpte oynamış bir futbolcuyu kadrona al. Kariyer asist toplamı yüksek olan kadro kazanır.",
-    "subtitleHigher": "Gol, asist, piyasa değeri ya da yaş sorulur. İki futbolcudan öndekini seç. Bildikçe sıra sende kalır.",
-    "subtitleChain": "Sırayla, son futbolcuyla aynı kulüpte oynamış birini söyle. Bulamayan ya da yanlış söyleyen turu kaybeder. Üç tur alan kazanır.",
-    "subtitleRare": "İki ölçüte de uyan bir futbolcu yaz. Cevaplar gizli kalır. İkiniz de doğru bilirseniz daha az tanınan futbolcuyu yazan turu alır.",
-    "subtitleAuction": "Sırayla kaç isim sayabileceğini söyleyip teklifi artır. \"Say bakalım\" denen oyuncu, söylediği kadar doğru ismi süre içinde yazarsa turu alır.",
-    "subtitleTopTen": "Gizli bir 10'luk liste var. Sırayla isim söyle. Listede ne kadar aşağıdaysa o kadar puan getirir. Yanlış isim can götürür.",
-    "subtitleCareer": "Gizli bir futbolcunun kulüpleri sırayla açılır. Az ipucuyla bilen çok puan alır. Yanlış tahminde yeni bir kulüp açılır ve sıra rakibe geçer.",
+    "subtitleDuel": "Kartlarını seç, her turda gelen soruda üstün gelen kart turu alır.",
+    "subtitleDraft": "Her turda çıkan kulüpte oynamış bir futbolcuyu kadrona al, kariyer asist toplamı yüksek olan kadro kazanır.",
+    "subtitleHigher": "Gol, asist, piyasa değeri ya da yaşta iki futbolcudan öndekini seç, bildikçe sıra sende kalır.",
+    "subtitleChain": "Sırayla son futbolcuyla aynı kulüpte oynamış birini söyle, bulamayan ya da yanlış söyleyen turu kaybeder.",
+    "subtitleRare": "İki ölçüte de uyan bir futbolcu yaz, ikiniz de bilirseniz daha az tanınanı yazan turu alır.",
+    "subtitleAuction": "Kaç isim sayabileceğini söyleyip teklifi artır, \"Say bakalım\" denen oyuncu sözünü süresinde tutarsa turu alır.",
+    "subtitleTopTen": "Gizli 10'luk listeden sırayla isim söyle, listede ne kadar aşağıdaysa o kadar çok puan alırsın.",
+    "subtitleCareer": "Kulüpleri sırayla açılan gizli futbolcuyu bul, ne kadar erken bilirsen o kadar çok puan alırsın.",
     "puzzleTitle": "Günün bulmacası",
     "puzzleHint": "Herkes aynı ızgarada · 9 hak",
     "puzzleProgress": "{{filled}}/9 · {{score}} puan",
@@ -322,7 +322,7 @@
     "roundWon": "Tur senin!",
     "roundLost": "Tur rakibin",
     "roundDrawn": "Tur berabere",
-    "byScore": "Yedi tur tamamlandı"
+    "byScore": "Bütün turlar tamamlandı"
   },
   "draft": {
     "round": "Tur {{round}}/{{total}}",
@@ -378,7 +378,7 @@
   "rare": {
     "round": "Tur {{round}}/{{total}}",
     "criteria": "Ölçüt",
-    "rule": "İkisine de uyan bir futbolcu yaz. Daha az tanınan doğru cevap turu alır.",
+    "rule": "İkisine de uyan bir futbolcu yaz, daha az tanınan doğru cevap turu alır.",
     "hint": "En az bilineni bul",
     "name": "Futbolcu yaz",
     "locked": "Cevabın gizli kaldı",
@@ -396,7 +396,7 @@
   "auction": {
     "round": "Tur {{round}} · {{target}} tur alan kazanır",
     "criteria": "Ölçüt",
-    "rule": "Bu ikisine uyan kaç futbolcu sayabilirsin? Rakibin artırır ya da \"Say bakalım\" der. Süren biterse \"Say bakalım\" demiş sayılırsın.",
+    "rule": "Bu ikisine uyan kaç futbolcu sayabileceğini söyle; rakibin ya artırır ya da \"Say bakalım\" der, süren biterse sen demiş sayılırsın.",
     "noBid": "Henüz teklif yok",
     "lastBid": "Rakibin teklifi",
     "bidLabel": "Teklif {{bid}} isim",
@@ -425,7 +425,7 @@
     "listGoals": "Kariyerinde en çok gol atan 10 {{name}} futbolcusu",
     "listClubGoals": "{{name}} forması giymiş, kariyerinde en çok gol atan 10 futbolcu",
     "listClubValue": "{{name}} forması giymiş, en yüksek piyasa değerine ulaşmış 10 futbolcu",
-    "rule": "Sıralama uygulamanın verisine göredir. 10. sıradaki isim 10 puan, 1. sıradaki 1 puan getirir. Yanlış isim bir can götürür.",
+    "rule": "Sıralama uygulamanın verisine göredir: 10. sıradaki isim 10 puan, 1. sıradaki 1 puan getirir, yanlış isim can götürür.",
     "lives": "{{name}}: {{lives}} can",
     "goals": "{{goals}} gol",
     "say": "Futbolcu söyle",
@@ -441,8 +441,8 @@
   "career": {
     "round": "Futbolcu {{round}}/{{total}}",
     "question": "Kim bu futbolcu?",
-    "rule": "Kulüpler katılış yılına göre açılıyor. Şimdi bilirsen {{points}} puan.",
-    "scope": "Yalnızca Süper Lig ve Avrupa'nın beş büyük liginin kulüpleri gösterilir.",
+    "rule": "Kulüpler katılış yılına göre açılıyor, şimdi bilirsen {{points}} puan alırsın.",
+    "scope": "Uygulamanın kapsadığı liglerde yılı bilinen kulüpler gösterilir.",
     "guess": "Tahmin et ({{points}} puan)",
     "yourTurn": "Sıra sende",
     "pick": "Doğru futbolcuyu seç",
@@ -453,7 +453,7 @@
     "solvedByYou": "Bildin!",
     "solvedByRival": "Rakip bildi",
     "unsolved": "Kimse bilemedi",
-    "byScore": "Dört futbolcu da soruldu"
+    "byScore": "Bütün futbolcular soruldu"
   },
   "leave": {
     "title": "Maçtan çıkılsın mı?",

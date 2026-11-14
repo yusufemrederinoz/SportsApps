@@ -91,14 +91,14 @@
     "modeOnlineHint": "Busca rival y suma puntos.",
     "modeFriendTitle": "Jugar con un amigo",
     "modeFriendHint": "Abre una sala privada con código.",
-    "subtitleDuel": "Elige siete cartas. En cada ronda sale una pregunta y puntúa la mejor carta.",
-    "subtitleDraft": "En cada ronda sale un club. Ficha para tu alineación a un futbolista que haya jugado allí; gana la alineación con más asistencias de carrera.",
-    "subtitleHigher": "Dos futbolistas, una pregunta: goles, asistencias, valor o edad. ¿Quién gana? Mientras aciertes, sigues tú.",
-    "subtitleChain": "Por turnos, di a alguien que haya jugado en el mismo club que el último futbolista. Si fallas o no se te ocurre nadie, pierdes la ronda; gana quien se lleve tres.",
-    "subtitleRare": "Los dos escribís un futbolista que cumpla los dos criterios; las respuestas quedan ocultas. Si acertáis los dos, se lleva la ronda el futbolista menos conocido.",
-    "subtitleAuction": "Puja cuántos nombres te sabes. Si te dicen «Demuéstralo», solo te llevas la ronda si escribes a tiempo tantas respuestas correctas como has pujado.",
-    "subtitleTopTen": "Hay una lista oculta de diez nombres. Di jugadores por turnos: cuanto más abajo estén en la lista, más puntos. Un nombre equivocado cuesta una vida.",
-    "subtitleCareer": "Los clubes de un futbolista oculto se descubren uno a uno. Adivínalo con menos pistas para ganar más puntos; si fallas, se descubre otro club y pasa el turno.",
+    "subtitleDuel": "Elige tus cartas y, en cada ronda, se la lleva la carta que gane la pregunta.",
+    "subtitleDraft": "En cada ronda, ficha a un futbolista que haya jugado en el club que sale; gana la alineación con más asistencias de carrera.",
+    "subtitleHigher": "Elige cuál de dos futbolistas gana en goles, asistencias, valor o edad; mientras aciertes, sigues tú.",
+    "subtitleChain": "Por turnos, di a alguien que haya jugado en el mismo club que el último futbolista; si fallas o no se te ocurre nadie, pierdes la ronda.",
+    "subtitleRare": "Los dos escribís en secreto un futbolista que cumpla los dos criterios y, si acertáis los dos, se lleva la ronda el menos conocido.",
+    "subtitleAuction": "Puja cuántos nombres te sabes; si te dicen «Demuéstralo», solo ganas la ronda si escribes a tiempo tantas respuestas correctas.",
+    "subtitleTopTen": "Di por turnos jugadores de un top 10 oculto: cuanto más abajo estén en la lista, más puntos.",
+    "subtitleCareer": "Descubre al futbolista oculto mientras sus clubes aparecen uno a uno: cuanto antes aciertes, más puntos.",
     "puzzleTitle": "Reto diario",
     "puzzleHint": "Mismo tablero para todos · 9 intentos",
     "puzzleProgress": "{{filled}}/9 · {{score}} puntos",
@@ -322,7 +322,7 @@
     "roundWon": "¡Ronda para ti!",
     "roundLost": "Ronda perdida",
     "roundDrawn": "Ronda empatada",
-    "byScore": "Siete rondas jugadas"
+    "byScore": "Todas las rondas jugadas"
   },
   "draft": {
     "round": "Ronda {{round}}/{{total}}",
@@ -378,7 +378,7 @@
   "rare": {
     "round": "Ronda {{round}}/{{total}}",
     "criteria": "Criterios",
-    "rule": "Escribe un futbolista que cumpla los dos. Se lleva la ronda la respuesta correcta menos conocida.",
+    "rule": "Escribe un futbolista que cumpla los dos; se lleva la ronda la respuesta correcta menos conocida.",
     "hint": "Busca al menos conocido",
     "name": "Escribe un futbolista",
     "locked": "Tu respuesta está oculta",
@@ -396,7 +396,7 @@
   "auction": {
     "round": "Ronda {{round}} · {{target}} para ganar",
     "criteria": "Criterios",
-    "rule": "¿Cuántos futbolistas que cumplan los dos te sabes? Tu rival sube la puja o dice «Demuéstralo». Si se te acaba el tiempo, eres tú quien dice «Demuéstralo».",
+    "rule": "Di cuántos futbolistas que cumplan los dos te sabes; tu rival sube la puja o dice «Demuéstralo», y si se te acaba el tiempo, lo dices tú.",
     "noBid": "Aún no hay puja",
     "lastBid": "Puja del rival",
     "bidLabel": "Puja: {{bid}} nombres",
@@ -425,7 +425,7 @@
     "listGoals": "Los 10 futbolistas de {{name}} con más goles en su carrera",
     "listClubGoals": "Los 10 con más goles en su carrera que jugaron en {{name}}",
     "listClubValue": "Los 10 con mayor valor de mercado alcanzado que jugaron en {{name}}",
-    "rule": "El orden sigue los datos de la app. El número 10 vale 10 puntos y el número 1 vale 1; un nombre equivocado cuesta una vida.",
+    "rule": "El orden sigue los datos de la app: el número 10 vale 10 puntos, el número 1 vale 1 y un nombre equivocado cuesta una vida.",
     "lives": "{{name}}: {{lives}} vidas",
     "goals": "{{goals}} goles",
     "say": "Di un futbolista",
@@ -441,8 +441,8 @@
   "career": {
     "round": "Futbolista {{round}}/{{total}}",
     "question": "¿Quién es este futbolista?",
-    "rule": "Los clubes aparecen en el orden en que llegó a ellos. Acierta ahora y te llevas {{points}} puntos.",
-    "scope": "Solo se muestran clubes de la Süper Lig y de las cinco grandes ligas de Europa.",
+    "rule": "Los clubes aparecen en el orden en que llegó a ellos; acierta ahora y te llevas {{points}} puntos.",
+    "scope": "Se muestran los clubes con años conocidos de las ligas que cubre la app.",
     "guess": "Adivinar ({{points}} puntos)",
     "yourTurn": "Te toca",
     "pick": "Elige al futbolista correcto",
@@ -453,7 +453,7 @@
     "solvedByYou": "¡Has acertado!",
     "solvedByRival": "Tu rival ha acertado",
     "unsolved": "Nadie ha acertado",
-    "byScore": "Los cuatro futbolistas jugados"
+    "byScore": "Todos los futbolistas jugados"
   },
   "leave": {
     "title": "¿Abandonar el partido?",

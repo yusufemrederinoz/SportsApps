@@ -91,14 +91,14 @@
     "modeOnlineHint": "Trova un avversario e fai punti.",
     "modeFriendTitle": "Gioca con un amico",
     "modeFriendHint": "Apri una stanza privata con un codice.",
-    "subtitleDuel": "Scegli sette carte. A ogni round arriva una domanda: vince la carta migliore.",
-    "subtitleDraft": "A ogni round esce un club. Metti in formazione un calciatore che ci ha giocato: vince la formazione con più assist in carriera.",
-    "subtitleHigher": "Due calciatori, una domanda: chi è davanti per gol, assist, valore o età? Finché indovini, il turno resta tuo.",
-    "subtitleChain": "A turno, scrivete qualcuno che ha giocato nello stesso club dell'ultimo calciatore. Chi non lo trova o sbaglia perde il round; vince chi arriva a tre.",
-    "subtitleRare": "Scrivete entrambi un calciatore che rispetta i due criteri; le risposte restano nascoste. Se sono giuste tutte e due, il round va al calciatore meno noto.",
-    "subtitleAuction": "A turno, rilanciate su quanti nomi sapete elencare. Chi si sente dire \"Dimostralo\" vince il round solo se scrive in tempo tutti i nomi promessi.",
-    "subtitleTopTen": "C'è una lista segreta di dieci nomi. A turno, scrivete un calciatore: più è in basso nella lista, più punti vale. Un nome sbagliato costa una vita.",
-    "subtitleCareer": "I club di un calciatore misterioso si svelano uno alla volta. Meno indizi usi, più punti fai; se sbagli si apre un altro club e il turno passa.",
+    "subtitleDuel": "Scegli le tue carte: a ogni round arriva una domanda e vince la carta migliore.",
+    "subtitleDraft": "A ogni round metti in formazione un calciatore che ha giocato nel club estratto: vince la formazione con più assist in carriera.",
+    "subtitleHigher": "Scegli chi tra due calciatori è davanti per gol, assist, valore o età: finché indovini, il turno resta tuo.",
+    "subtitleChain": "A turno, scrivete qualcuno che ha giocato nello stesso club dell'ultimo calciatore: chi non lo trova o sbaglia perde il round.",
+    "subtitleRare": "Scrivete entrambi in segreto un calciatore che rispetta i due criteri e, se avete ragione tutti e due, il round va al meno noto.",
+    "subtitleAuction": "A turno, rilanciate su quanti nomi sapete elencare: chi si sente dire \"Dimostralo\" vince il round solo se scrive in tempo tutti i nomi promessi.",
+    "subtitleTopTen": "A turno, scrivete un calciatore di una top 10 segreta: più è in basso nella lista, più punti vale.",
+    "subtitleCareer": "Trova il calciatore misterioso mentre i suoi club si svelano uno alla volta: prima indovini, più punti fai.",
     "puzzleTitle": "Sfida del giorno",
     "puzzleHint": "Stessa griglia per tutti · 9 tentativi",
     "puzzleProgress": "{{filled}}/9 · {{score}} punti",
@@ -322,7 +322,7 @@
     "roundWon": "Il round è tuo!",
     "roundLost": "Round perso",
     "roundDrawn": "Round pari",
-    "byScore": "Sette round giocati"
+    "byScore": "Tutti i round giocati"
   },
   "draft": {
     "round": "Round {{round}}/{{total}}",
@@ -378,7 +378,7 @@
   "rare": {
     "round": "Round {{round}}/{{total}}",
     "criteria": "Criteri",
-    "rule": "Scrivi un calciatore che li rispetta entrambi. Il round va alla risposta giusta meno nota.",
+    "rule": "Scrivi un calciatore che li rispetta entrambi: il round va alla risposta giusta meno nota.",
     "hint": "Trova il meno noto",
     "name": "Scrivi un calciatore",
     "locked": "La tua risposta è nascosta",
@@ -396,7 +396,7 @@
   "auction": {
     "round": "Round {{round}} · si vince a {{target}}",
     "criteria": "Criteri",
-    "rule": "Quanti calciatori che rispettano entrambi i criteri sai elencare? L'avversario rilancia o dice \"Dimostralo\". Se ti scade il tempo, vale come un tuo \"Dimostralo\".",
+    "rule": "Di' quanti calciatori che rispettano entrambi i criteri sai elencare: l'avversario rilancia o dice \"Dimostralo\", e se ti scade il tempo vale come un tuo \"Dimostralo\".",
     "noBid": "Ancora nessuna offerta",
     "lastBid": "Offerta avversaria",
     "bidLabel": "Offerta: {{bid}} nomi",
@@ -425,7 +425,7 @@
     "listGoals": "{{name}}: top 10 calciatori per gol in carriera",
     "listClubGoals": "{{name}}: top 10 per gol in carriera tra chi ci ha giocato",
     "listClubValue": "{{name}}: top 10 per valore di mercato massimo tra chi ci ha giocato",
-    "rule": "La classifica segue i dati dell'app. Il numero 10 vale 10 punti, il numero 1 vale 1; un nome sbagliato costa una vita.",
+    "rule": "La classifica segue i dati dell'app: il numero 10 vale 10 punti, il numero 1 vale 1 e un nome sbagliato costa una vita.",
     "lives": "{{name}}: {{lives}} vite",
     "goals": "{{goals}} gol",
     "say": "Scrivi un calciatore",
@@ -441,8 +441,8 @@
   "career": {
     "round": "Calciatore {{round}}/{{total}}",
     "question": "Chi è questo calciatore?",
-    "rule": "I club si svelano in ordine cronologico. Se indovini adesso, {{points}} punti.",
-    "scope": "Si vedono solo i club della Süper Lig e dei cinque grandi campionati europei.",
+    "rule": "I club si svelano in ordine cronologico: se indovini adesso, {{points}} punti.",
+    "scope": "Si vedono i club con anni noti dei campionati coperti dall'app.",
     "guess": "Indovina ({{points}} punti)",
     "yourTurn": "Tocca a te",
     "pick": "Scegli il calciatore giusto",
@@ -453,7 +453,7 @@
     "solvedByYou": "Indovinato!",
     "solvedByRival": "L'avversario indovina",
     "unsolved": "Nessuno ha indovinato",
-    "byScore": "Quattro calciatori giocati"
+    "byScore": "Tutti i calciatori giocati"
   },
   "leave": {
     "title": "Abbandonare la partita?",

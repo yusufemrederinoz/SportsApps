@@ -91,14 +91,14 @@
     "modeOnlineHint": "Find an opponent and earn points.",
     "modeFriendTitle": "Play a friend",
     "modeFriendHint": "Open a private room with a code.",
-    "subtitleDuel": "Pick seven cards. Each round, the better card for the question scores.",
-    "subtitleDraft": "Each round reveals a club. Add a footballer who played there to your lineup. The lineup with more career assists wins.",
-    "subtitleHigher": "Pick which of two footballers comes out on top for goals, assists, value or age. Keep answering right to keep your turn.",
-    "subtitleChain": "Take turns naming someone who played at the same club as the last footballer. A miss or a wrong name loses the round. First to three rounds wins.",
-    "subtitleRare": "Each of you secretly names a footballer who fits both criteria. If both are right, the less known footballer takes the round.",
-    "subtitleAuction": "Bid how many names you can list. The player who is told \"Prove it\" takes the round only by naming that many right answers in time.",
-    "subtitleTopTen": "Take turns naming players from a hidden list of ten. The lower on the list, the more points. A wrong name costs a life.",
-    "subtitleCareer": "A hidden footballer's clubs open one by one. Guess with fewer clues for more points. A wrong guess opens a new club and passes the turn.",
+    "subtitleDuel": "Pick your cards, and each round the card that wins the question takes it.",
+    "subtitleDraft": "Each round, add a footballer who played for the drawn club, and the lineup with more career assists wins.",
+    "subtitleHigher": "Pick which of two footballers comes out on top for goals, assists, value or age, and keep answering right to keep your turn.",
+    "subtitleChain": "Take turns naming someone who played at the same club as the last footballer, and a miss or a wrong name loses the round.",
+    "subtitleRare": "Each of you secretly names a footballer who fits both criteria, and if both are right the less known one takes the round.",
+    "subtitleAuction": "Bid how many names you can list, and the player told \"Prove it\" takes the round only by naming that many in time.",
+    "subtitleTopTen": "Take turns naming players from a hidden top ten, and the lower they are on the list, the more points you get.",
+    "subtitleCareer": "Find the hidden footballer as their clubs open one by one, and the sooner you guess, the more points you get.",
     "puzzleTitle": "Daily puzzle",
     "puzzleHint": "Everyone gets the same grid · 9 guesses",
     "puzzleProgress": "{{filled}}/9 · {{score}} points",
@@ -322,7 +322,7 @@
     "roundWon": "You take the round!",
     "roundLost": "Round lost",
     "roundDrawn": "Round drawn",
-    "byScore": "Seven rounds played"
+    "byScore": "All rounds played"
   },
   "draft": {
     "round": "Round {{round}}/{{total}}",
@@ -378,7 +378,7 @@
   "rare": {
     "round": "Round {{round}}/{{total}}",
     "criteria": "Criteria",
-    "rule": "Name a footballer who fits both. The less known right answer takes the round.",
+    "rule": "Name a footballer who fits both, and the less known right answer takes the round.",
     "hint": "Find the least known",
     "name": "Name a footballer",
     "locked": "Your answer is hidden",
@@ -396,7 +396,7 @@
   "auction": {
     "round": "Round {{round}} · first to {{target}}",
     "criteria": "Criteria",
-    "rule": "How many footballers fitting both can you name? Your opponent raises or says \"Prove it\". If your time runs out, you say \"Prove it\".",
+    "rule": "Say how many footballers fitting both you can name; your opponent raises or says \"Prove it\", and if your time runs out you say \"Prove it\".",
     "noBid": "No bid yet",
     "lastBid": "Their bid",
     "bidLabel": "Bid {{bid}} names",
@@ -425,7 +425,7 @@
     "listGoals": "Top 10 {{name}} footballers by career goals",
     "listClubGoals": "Top 10 career scorers who played for {{name}}",
     "listClubValue": "Top 10 by peak market value who played for {{name}}",
-    "rule": "Rankings follow the app's data. Number 10 is worth 10 points and number 1 is worth 1. A wrong name costs a life.",
+    "rule": "Rankings follow the app's data: number 10 is worth 10 points, number 1 is worth 1, and a wrong name costs a life.",
     "lives": "{{name}}: {{lives}} lives",
     "goals": "{{goals}} goals",
     "say": "Name a footballer",
@@ -441,8 +441,8 @@
   "career": {
     "round": "Footballer {{round}}/{{total}}",
     "question": "Who is this footballer?",
-    "rule": "Clubs open in the order they were joined. Get it now for {{points}} points.",
-    "scope": "Only clubs of the Süper Lig and Europe's big five leagues are shown.",
+    "rule": "Clubs open in the order they were joined, so get it now for {{points}} points.",
+    "scope": "Clubs with known years from the leagues the app covers are shown.",
     "guess": "Guess ({{points}} points)",
     "yourTurn": "Your turn",
     "pick": "Pick the right footballer",
@@ -453,7 +453,7 @@
     "solvedByYou": "You got it!",
     "solvedByRival": "Your opponent got it",
     "unsolved": "Nobody got it",
-    "byScore": "All four footballers played"
+    "byScore": "All footballers played"
   },
   "leave": {
     "title": "Leave the match?",
