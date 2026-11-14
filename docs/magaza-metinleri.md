@@ -185,7 +185,7 @@ Destek: destek@challengegoal.app
 • İlk 10'da boş satırlar uyruk ve mevki ipucu veriyor; kulüp listeleri piyasa değerine göre.
 • Kariyer Yolu'nda kulüp başına maç ve gol yazıyor. Yeni jokerler: Baş harf ve Doğum yılı.
 • Daha kısa maçlar: Kart Düellosu 5 kart, Kariyer Yolu 3 futbolcu.
-• Güncel futbolcu verisi ve daha büyük bayraklar.
+• Yeni sesler, maçta tribün sesi ve güncel veri.
 ```
 
 ## İngilizce (en-US, en-GB)
@@ -354,7 +354,7 @@ Support: destek@challengegoal.app
 • Top Ten hints nationality and position on empty rows; club lists rank by peak market value.
 • Career Path shows matches and goals per club. New jokers: First letters and Birth year.
 • Shorter matches: Card Duel uses 5 cards, Career Path 3 footballers.
-• Updated football data and bigger flags.
+• New sounds, a stadium crowd during matches and updated football data.
 ```
 
 ## Almanca (de-DE)
@@ -499,7 +499,7 @@ Support: destek@challengegoal.app
 • Top 10 zeigt in leeren Zeilen Nationalität und Position; Vereinslisten zählen den Rekordmarktwert.
 • Der Karriereweg zeigt Spiele und Tore pro Verein. Neue Joker: Initialen und Geburtsjahr.
 • Kürzere Matches: Kartenduell mit 5 Karten, Karriereweg mit 3 Fußballern.
-• Neue Fußballdaten und größere Flaggen.
+• Neue Sounds, Stadionkulisse und neue Daten.
 ```
 
 ## İspanyolca (es-ES)
@@ -643,8 +643,8 @@ Soporte: destek@challengegoal.app
 • En Fácil, en Top 10 y Trayectoria eliges entre cuatro nombres en lugar de escribir.
 • Top 10 da pistas de nacionalidad y posición; los clubes se ordenan por valor de mercado.
 • Trayectoria muestra partidos y goles por club. Comodines nuevos: Iniciales y Año de nacimiento.
-• Partidas más cortas: Duelo de Cartas con 5 cartas, Trayectoria con 3 futbolistas.
-• Datos actualizados y banderas más grandes.
+• Partidas más cortas: 5 cartas en el Duelo, 3 futbolistas en Trayectoria.
+• Sonidos nuevos, ambiente de grada y datos al día.
 ```
 
 ## Fransızca (fr-FR)
@@ -788,8 +788,8 @@ Assistance : destek@challengegoal.app
 • En Facile, dans Top 10 et Parcours de carrière, choisis parmi quatre noms au lieu d'écrire.
 • Top 10 indique nationalité et poste ; les listes de clubs suivent la valeur marchande maximale.
 • Parcours de carrière montre matchs et buts par club. Jokers : Initiales, Année de naissance.
-• Matchs plus courts : 5 cartes au Duel de cartes, 3 footballeurs au Parcours.
-• Données à jour et drapeaux plus grands.
+• Matchs plus courts : 5 cartes au Duel, 3 footballeurs au Parcours.
+• Nouveaux sons, ambiance de stade, données à jour.
 ```
 
 ## İtalyanca (it-IT, it)
@@ -933,8 +933,8 @@ Assistenza: destek@challengegoal.app
 • In Facile, in Top 10 e Carriera Misteriosa scegli tra quattro nomi invece di scrivere.
 • Top 10 dà indizi su nazionalità e ruolo; i club si ordinano per valore di mercato.
 • Carriera Misteriosa mostra presenze e gol per club. Nuovi jolly: Iniziali e Anno di nascita.
-• Partite più brevi: Duello di Carte con 5 carte, Carriera Misteriosa con 3 calciatori.
-• Dati aggiornati e bandiere più grandi.
+• Partite più brevi: 5 carte nel Duello, 3 calciatori in Carriera.
+• Nuovi suoni, brusio dello stadio e dati aggiornati.
 ```
 
 ## App Store inceleme notu (İngilizce)
@@ -954,7 +954,8 @@ What is new in 1.2.0:
 - Career Path shows appearances and goals for each club and, on Easy and Medium, the nationality and position of the hidden footballer from the start. Its two jokers are now "First letters" and "Birth year".
 - Lineup Draft now asks a different stat in each round (career goals, assists, matches or peak market value). Both players pick at the same time, the opponent's pick is shown when the round closes, and the higher value takes the round.
 - Shorter matches: Card Duel uses 5 cards and Career Path 3 footballers.
-- Updated football data and larger flags.
+- New sound effects, and an optional stadium crowd sound during matches that can be turned off in Account ("Crowd sound"). Sounds follow the device's silent switch and do not stop other apps' audio.
+- Updated football data.
 
 As described in our earlier notes, if nobody is waiting for a match, a computer-controlled opponent joins after a short wait.
 

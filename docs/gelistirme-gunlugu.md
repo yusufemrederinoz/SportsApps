@@ -1433,6 +1433,30 @@ Kullanıcı uygulamadaki seslerin amatör geldiğini söyledi. Sebebi: 10 sesin 
 
 **Dinleme sayfası.** 12 ses yerine 3–6 aday ve bugünkü ses var: "ChallengeGoal Ses Seçimi" Artifact'ı (https://claude.ai/artifact/1JAr1qAVoZUQp1a5tjd1ky). Seçimler sayfanın veri deposunda `sound-picks/main` belgesine yazılıyor. Sesleri dinleyemediğim için seçim kullanıcıda; seçilenler uygulamaya bağlanacak.
 
+**Birinci tur.**
+- 8 ses seçildi: düdük, doğru, süre, geçiş, uğultu ve üç tepki.
+- Kazanma, ödül ve yanlış için "hiçbiri olmadı" dendi. Notlar:
+  - Kazanma: kısa olsun, rahatsız etmesin.
+  - Ödül: "claim" havasında olsun.
+  - Yanlış: en yakını şimdiki ses.
+
+**İkinci tur.**
+- Kazanma için 1–2 saniyelik başarı sesleri, ödül için jeton ve parıltı sesleri bulundu. Yanlış için kısa vızıltılar ve şimdiki sesin iki temiz yeniden yapımı hazırlandı.
+- Seçilenler: kazanma "Win Spacey" (1 sn), ödül "achievement-sparkle".
+- Yanlış sesinde şimdiki ses tutuldu, yalnızca düzeyi eşitlendi.
+- Hamlede kullanıcı ilk turda top vuruşunu (A) seçtiğini söyledi, ama seçim kayda geçmemişti. Sözlü cevaba göre işlendi ve kayda da yazıldı.
+
+**Uygulamaya bağlananlar.**
+- 11 ses dosyası değişti.
+- Yeni `reward` sesi: günlük ödül, gol alma ve ödüllü reklam artık kazanma sesini değil bunu çalıyor.
+- Top vuruşunun perdesi ±%4 kaydırılmış iki çeşidi rastgele çalıyor.
+- Maç sürerken tribün uğultusu çalıyor; hesap ekranında "Tribün sesi" ayarı var (altı dil).
+- Eski `data/branding/sounds.py` silindi; çalıştırılırsa seçilen sesleri ezerdi. Yerine `data/branding/sounds/` (hat betikleri, dinleme sayfası şablonu, `sources.json`) geldi.
+
+**Bulunan sorun.** Tasarım belgesi "telefon sessizdeyse ses çalmaz" diyordu, ama expo-audio'nun varsayılanı sessiz modda da çalmak (`playsInSilentMode: true`). Ses oturumu artık sessiz ayara uyacak biçimde kuruluyor. Başka uygulamanın müziğiyle birlikte çalma aynen kaldı.
+
+**Denenmeyen.** Sesler henüz cihazda ya da emülatörde çalınmadı. Uğultunun döngü ek yeri ve sessiz mod davranışı cihazda denenmeli.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

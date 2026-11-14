@@ -369,6 +369,7 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
 **1.2.0 yayın adımları**
 
 1. **Derleme (kullanıcı onayıyla).** `eas build --platform all --profile production`.
+   - Önce yeni sesler emülatörde dinlenir: tribün uğultusunun döngü ek yeri, maç sonunda kısılması, "Tribün sesi" ayarı, ödül sesi, sessiz modda susma.
    - Expo'nun ücretsiz hakkı biterse Android için `python deploy/android_local_build.py <sürüm kodu>` kullanılır.
    - Son Android sürüm kodu 17 (1.1.0).
 2. **App Store.**

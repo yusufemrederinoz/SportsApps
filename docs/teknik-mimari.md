@@ -293,6 +293,32 @@ Yüz tanıma ya da kimlik eşleme modeli kullanılmaz. Modeller yaklaşık 10 GB
 - Kart, veritabanında görseli kayıtlı oyuncu için görseli yükler ve cihazda saklar. Görseli olmayan ya da sunucuya ulaşılamayan durumda kart eski hâliyle görünür.
 - "Görsel kaynakları" ekranı (hesap ekranından açılır) her görselin oyuncusunu, yazarını ve lisansını listeler; satıra dokununca kaynak fotoğraf açılır. Çizimler kaynak fotoğrafla aynı lisansla paylaşılır.
 
+## Ses hattı
+
+Uygulamanın sesleri (15 Kasım 2026'dan beri) gerçek kayıtlardır. Kullanıcı adayları dinleyip seçti.
+
+| Adım | Ne yapar |
+|---|---|
+| Aday toplama (`data/branding/sounds/fetch_candidates.py`, `fetch_round2.py`) | Freesound'da CC0 süzgeciyle ve en çok indirilene göre arar, önizleme dosyalarını (yüksek kalite ogg) indirir. Kenney paketlerini (CC0) OpenGameArt'tan alır; kenney.nl indirmeyi betiklere kapatıyor. İndirilenler çalışma klasörüne gider, depoya girmez |
+| Ölçme (`analyze.py`) | Süre, tepe düzeyi, etkin bölüm, gürültü tabanı ve kırpılma. Kırpılmış ve gürültü tabanı yüksek kayıtlar elenir |
+| İşleme (`process.py`, `process_round2.py`) | Baştaki sessizliği keser, role göre süreyi sınırlar, sona yumuşak bitiş koyar, etkin bölümün düzeyini role göre eşitler (düdük ve kazanma −16, doğru −18, yanlış −20, tik −24 dBFS civarı; tepe en çok −1,5 dBFS). Uğultu için kaydın en durgun bölümünü bulur ve 2 saniyelik çapraz geçişle 40 saniyelik döngü yapar |
+| Dinleme sayfası (`build_page.py`, `template.html`) | Adayları ve bugünkü sesleri tek sayfada çalar; seçimler Artifact veri deposuna (`sound-picks/main`) yazılır |
+| Kayıt (`sources.json`) | Uygulamadaki her ses dosyasının kaynağı, yazarı, lisansı, kesim başlangıcı ve uygulanan kazanç |
+
+Uygulama tarafı (`app/src/feedback/`):
+
+- **`sounds.ts`**
+  - Bir ses birden çok dosyadan oluşabilir. `impact` için perdesi ±%4 kaydırılmış üç dosya var. `pickVariant` aynı çeşidi arka arkaya seçmez.
+  - Her çeşidin kendi oynatıcısı var.
+  - `reward` sesi günlük ödülde, gol satın almada ve ödüllü reklamdan sonra çalar; `win` yalnızca kazanmada çalar.
+- **`ambience.ts`**
+  - Tribün uğultusu (`ambience.m4a`, AAC 128 kb/sn stereo) döngüde çalar.
+  - `useMatchAmbience(active)` maç ekranında maç sürerken açar: 1,4 saniyede yükselir, sonuçta 0,6 saniyede kısılır, uygulama arka plana geçince hemen durur.
+  - Kapatma tercihi `secureStore` içinde `ambience-muted` anahtarında, ayar hesap ekranında ("Tribün sesi").
+- **`audio-mode.ts`**
+  - İlk seste ses oturumunu `playsInSilentMode: false` ve `interruptionMode: 'mixWithOthers'` ile ayarlar. Telefon sessizdeyse ses çalmaz; başka uygulamanın müziği durmaz.
+  - Kütüphanenin varsayılanı sessiz modda da çalmaktı.
+
 ## Diller ve pazarlar
 
 Dil ve pazar ayrı boyutlardır: dil arayüz metnini, pazar oyuncuların bilinirliğini ve ızgaraları belirler.

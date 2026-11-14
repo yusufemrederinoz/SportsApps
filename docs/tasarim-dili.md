@@ -153,15 +153,19 @@ Plaka, kart ve düğme ışımaları Skia ile çizilir: aynı şeklin bulanık b
 
 | An | Ses |
 |---|---|
-| Maç başlangıcı | Düdük |
-| Kart yerine oturunca | Tok vuruş; oyuncunun kendi doğrusunda ayrıca yükselen iki nota |
-| Yanlış cevap | Alçalan kalın ses |
-| Son 5 saniye | Tik |
-| Sonuç perdesi | Hışırtı; kazanınca yükselen dizi, diğer durumlarda düdük |
+| Maç başlangıcı ve sonu | Gerçek hakem düdüğü |
+| Kart yerine oturunca, futbolcu seçilince | Top vuruşu; perdesi hafif farklı üç çeşitten biri rastgele çalar, aynısı arka arkaya gelmez. Oyuncunun kendi doğrusunda ayrıca onay sesi |
+| Doğru cevap | Kısa, parlak onay sesi |
+| Yanlış cevap | Alçalan iki notalı kısa ses |
+| Son 5 saniye | Kısa tik |
+| Yeni tur | Hışırtı |
+| Kazanma | Bir saniyelik kısa başarı sesi |
+| Ödül (günlük ödül, gol alma, ödüllü reklam) | Parıltılı "ödül toplandı" sesi |
+| Maç boyunca | Alçak sesle tribün uğultusu (40 saniyelik döngü); maç başlayınca yavaşça açılır, sonuçta ve uygulama arka plana geçince kısılır. Hesap ekranındaki "Tribün sesi" ayarıyla kapanır |
 | Rakip rövanş istiyor | Düdük |
-| Emoji | Her emojinin kendi sesi: kahkahada "boing", nanikte "pop", ağlamada inen "wah-wah", kartlarda ve VAR'da düdük, kurtarışta hışırtı. Rakibin emojileri susturulunca ses de çalmaz |
+| Emoji | Her emojinin kendi sesi: kahkahada "boing", nanikte "pop", ağlamada ağlayan trompet, kartlarda ve VAR'da düdük, kurtarışta hışırtı. Rakibin emojileri susturulunca ses de çalmaz |
 
-Sesler `app/assets/sounds/` altındadır ve kodla üretilmiş yer tutuculardır. Telefon sessizdeyse ses çalmaz.
+Sesler `app/assets/sounds/` altındadır. Kaynakları ve işleme adımları `data/branding/sounds/sources.json` dosyasında; yanlış cevap sesi dışında hepsi CC0 kayıtlardır (15 Kasım 2026'da kullanıcının dinleyip seçtikleri). Düzeyler role göre eşitlenmiştir: düdük ve kazanma en yüksek, tik en alçak, uğultu en arkada. Telefon sessizdeyse ses çalmaz; başka uygulamada çalan müzik durmaz, uygulamanın sesleri onunla birlikte çalar.
 
 ## Erişilebilirlik
 
@@ -174,7 +178,6 @@ Sesler `app/assets/sounds/` altındadır ve kodla üretilmiş yer tutuculardır.
 
 - İkinci sürüm cihazda incelenmedi; boyut, renk ve hız ayarı ekran görüntülerine göre yapılacak.
 - Kartlarda oyuncu görseli yok; Adım 3'teki çizgi film görselleri kartın ortasına gelecek.
-- Sesler yer tutucu; gerçek ses tasarımı gerekiyor.
 - Bayraklar emoji; vektör bayrak setine geçilmeli.
 - Kulüp başlıklarında arma yok; yalnızca ad yazıyor.
-- Ses ve titreşimi kapatma ayarı yok.
+- Efekt seslerini ve titreşimi kapatma ayarı yok; yalnızca tribün sesi kapatılabiliyor.
