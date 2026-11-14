@@ -21,6 +21,12 @@ LANGUAGES = ("en", "tr", "de", "es", "fr", "it")
 BASE_LANGUAGES = ("en", "tr")
 DEFAULT_LANGUAGE = "en"
 
+NATIONAL_TEAM_MINIMUM_CAPS = 3
+NATIONAL_TEAM_DOMINANCE = 2
+NATIONAL_TEAM_IGNORED_COUNTRIES = frozenset({"Q145", "Q21", "Q22", "Q25", "Q26"})
+HISTORICAL_STATES = frozenset({"Q16957", "Q36704", "Q83286", "Q37024", "Q15180", "Q33946"})
+YOUTH_TEAM_PATTERN = r"under|\bu-?\d\d\b|olympic|\bB\b|amateur|youth|junior|futsal|beach|military|women|students|regional"
+
 TRANSFERMARKT_POSITIONS = {"Goalkeeper": "GK", "Defender": "DF", "Midfield": "MF", "Attack": "FW"}
 TRANSFERMARKT_ONLY_ID_OFFSET = 1_000_000_000
 REASSIGNED_ID_OFFSET = 2_000_000_000

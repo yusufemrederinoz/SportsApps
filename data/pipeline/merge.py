@@ -1,15 +1,29 @@
 import csv
 import datetime
+import functools
+import re
 import urllib.parse
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
-from . import dumps, fame, squads, transfermarkt, wikidata, wikipedia
-from .config import BASE_LANGUAGES, DEFAULT_LANGUAGE, LANGUAGES, OVERRIDES_DIR, TRANSFERMARKT_POSITIONS
+from . import dumps, fame, squads, stats, transfermarkt, wikidata, wikipedia
+from .config import (
+    BASE_LANGUAGES,
+    DEFAULT_LANGUAGE,
+    HISTORICAL_STATES,
+    LANGUAGES,
+    NATIONAL_TEAM_DOMINANCE,
+    NATIONAL_TEAM_IGNORED_COUNTRIES,
+    NATIONAL_TEAM_MINIMUM_CAPS,
+    OVERRIDES_DIR,
+    TRANSFERMARKT_POSITIONS,
+    YOUTH_TEAM_PATTERN,
+)
 from .registry import PlayerRegistry
 from .text import normalize
 from .wikidata import FEMALE, NAME_FALLBACK_LANGUAGES, NEUTRAL_LANGUAGE, entity_id, entity_number
 
+YOUTH_TEAM = re.compile(YOUTH_TEAM_PATTERN, re.IGNORECASE)
 CLUB_NAME_SLACK = 4
 LINK_BATCH_SIZE = 40
 NAME_LANGUAGES = tuple(dict.fromkeys((DEFAULT_LANGUAGE, NEUTRAL_LANGUAGE, *BASE_LANGUAGES, *NAME_FALLBACK_LANGUAGES)))
@@ -74,6 +88,32 @@ def integer_or_none(value):
         return int(float(value))
     except (TypeError, ValueError):
         return None
+
+
+def represented_country(caps, countries, aliases, current=None):
+    current_name = countries.get(current, {}).get("names", {}).get(DEFAULT_LANGUAGE, "").casefold()
+    totals = Counter()
+    unknown = set()
+    for label, country, matches in caps:
+        if YOUTH_TEAM.search(label):
+            continue
+        resolved = aliases.get(country, country)
+        if current and (resolved == current or (current_name and current_name in label.casefold())):
+            return None
+        if resolved not in countries:
+            continue
+        if matches is None:
+            unknown.add(resolved)
+        else:
+            totals[resolved] += matches
+    ranked = totals.most_common(2)
+    if not ranked or ranked[0][1] < NATIONAL_TEAM_MINIMUM_CAPS:
+        return None
+    if len(ranked) > 1 and ranked[0][1] < NATIONAL_TEAM_DOMINANCE * ranked[1][1]:
+        return None
+    if unknown - {ranked[0][0]}:
+        return None
+    return ranked[0][0]
 
 
 def position_from_labels(labels):
@@ -239,7 +279,31 @@ def collect_transfermarkt_spells(clubs, players, refresh):
         if row["current_club_id"].isdigit() and int(row["current_club_id"]) in clubs:
             spell(player_id, int(row["current_club_id"])).add("tm")
 
+    for (player_id, club_id), (first, last, count) in performance_seasons(refresh).items():
+        if club_id in clubs and player_id in players:
+            target = spell(player_id, club_id)
+            target.add("tm", first, last)
+            target.appearances = max(target.appearances, count)
+
     return spells
+
+
+@functools.cache
+def performance_seasons(refresh):
+    seasons = {}
+    with open(stats.download(refresh), encoding="utf-8", newline="") as source:
+        for row in csv.DictReader(source):
+            appearances = stats.whole(row["nb_on_pitch"])
+            start = stats.season_year(row["season_name"])
+            if appearances <= 0 or start is None:
+                continue
+            end = start + 1 if "/" in row["season_name"] else start
+            key = (stats.whole(row["player_id"]), stats.whole(row["team_id"]))
+            entry = seasons.setdefault(key, [start, end, 0])
+            entry[0] = min(entry[0], start)
+            entry[1] = max(entry[1], end)
+            entry[2] += appearances
+    return seasons
 
 
 def collect_wikidata_spells(membership_rows, club_by_wikidata_id):
@@ -297,6 +361,7 @@ def load_wikidata_players(scopes, refresh):
                 "articles": {},
                 "sport_countries": [],
                 "citizenships": [],
+                "national_caps": [],
                 "positions": [],
             },
         )
@@ -318,6 +383,9 @@ def load_wikidata_players(scopes, refresh):
             identifier = entity_id(row["country"])
             if identifier not in record(row)[name]:
                 record(row)[name].append(identifier)
+    for row in attributes["national_caps"]:
+        if row.get("country"):
+            record(row)["national_caps"].append((row["label"], entity_id(row["country"]), integer_or_none(row.get("matches"))))
     for row in attributes["positions"]:
         record(row)["positions"].append(row["label"])
     return players
@@ -452,6 +520,16 @@ def build(refresh=False, registry=None, views_month=None):
         if primary is None and not sport_countries and len(citizenships) == 1:
             primary = citizenships[0]
         nationality_ids = list(dict.fromkeys(([primary] if primary else []) + sport_countries + citizenships))
+        represented = represented_country(entry["national_caps"] if entry else [], countries, country_aliases, primary)
+        if (
+            represented
+            and represented in nationality_ids
+            and represented not in NATIONAL_TEAM_IGNORED_COUNTRIES
+            and primary not in NATIONAL_TEAM_IGNORED_COUNTRIES
+            and not (primary and {primary, represented} & HISTORICAL_STATES)
+        ):
+            primary = represented
+            nationality_ids = list(dict.fromkeys([primary] + nationality_ids))
         for identifier in nationality_ids:
             player_countries.append((player_id, countries[identifier]["id"], int(identifier == primary)))
 

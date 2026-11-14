@@ -46,6 +46,10 @@ PLAYER_QUERIES = {
     "citizenships": "SELECT ?player ?country WHERE { %s ?player wdt:P27 ?country }",
     "positions": "SELECT ?player ?label WHERE { %s ?player wdt:P413 ?position . "
     '?position rdfs:label ?label FILTER(LANG(?label) = "en") }',
+    "national_caps": "SELECT ?player ?label ?country ?matches WHERE { %s ?player p:P54 ?statement . "
+    "?statement ps:P54 ?team . ?team wdt:P31/wdt:P279* wd:Q1194951 . "
+    '?team rdfs:label ?label FILTER(LANG(?label) = "en") '
+    "OPTIONAL { ?team wdt:P17 ?country } OPTIONAL { ?statement pq:P1350 ?matches } }",
 }
 
 
