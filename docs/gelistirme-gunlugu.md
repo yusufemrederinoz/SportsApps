@@ -1340,6 +1340,34 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 
 **Testler.** Veri hattı 94, sunucu 305, uygulama 155 test geçiyor; tür denetimi ve lint temiz.
 
+### 1.2.0 uygulama işleri: şıklar, ipuçları, kural metinleri (14 Kasım 2026)
+
+Ayrıntılar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde.
+
+- **Uyumluluk yöntemi.** Yeni yardımların her biri bir özellik bildirimine bağlandı: `top-ten-hints`, `top-ten-choices`, `career-help`, `career-choices`.
+  - Sunucu, yardımı yalnızca maçtaki bütün oyuncular destekliyorsa açar. 1.1.0 ile eşleşen yeni sürüm oyuncusu bu yüzden avantaj kazanmaz.
+  - Protokol numarası artmadı. 1.2.0 uygulaması eski sunucuya bağlanırsa yalnızca yardımlar görünmez.
+  - Yeni Kariyer jokerleri eski sunucuda "kullanılamaz" hatası verir. Bu hatada gol düşmez.
+- **İlk 10.**
+  - Kolay seviyede 4 şık var ve kulüp listeleri en tanınmış 16 kulüpten geliyor.
+  - Boş satırlarda Kolay'da bayrak ve mevki, Orta'da yalnızca mevki ipucu gösteriliyor.
+  - Emülatörde Manchester City listesiyle denendi. Haaland'ın satırında Norveç bayrağı ve FV vardı; şıklarda Haaland, Rúben Dias, Cancelo ve Morgan Rogers çıktı. Haaland seçilince 1. sıra açıldı ve şıklar bota geçince gizlendi.
+  - Denemede bayraklı şıklar doğru cevabı ele verdi, şıklardan bayrak kaldırıldı.
+  - İngiltere, İskoçya ve Galler artık bayrakla çiziliyor (`flagEmoji`); bu XOX başlıklarını da düzeltiyor.
+- **Kariyer Yolu.**
+  - Kulüp satırlarında maç ve gol sayısı var.
+  - Kolay ve Orta seviyede uyruk ve mevki baştan açık.
+  - Kolay seviyede 4 şık var; yanlış şık silinir.
+  - Jokerler "Baş harf" ve "Doğum yılı" oldu.
+  - Gerçek veriyle denendi: çeldiriciler aynı ülke ve mevkiden geliyor.
+  - Emülatörde görülmedi; emülatör İlk 10 denemesinden sonra kapandı (günlükte düzgün kapanış var) ve yeniden açılmadı.
+- **Kural metinleri.**
+  - Sekiz oyunun tanıtım cümlesi ve dört modun maç içi kuralı altı dilde tek cümleye indi. Tur ve kart sayısı metinlerden çıktı.
+  - Kariyer kapsam metni düzeldi.
+  - Düello bildirimi ve mağaza görsel yazıları da sayısız oldu.
+  - 1.1.0 el boyutunu ve tur sayısını sunucudan okuduğu için dağıtımdan sonra yalnızca metinleri yanlış kalır, oyun bozulmaz.
+- **Testler.** Sunucu 317, uygulama 157 test geçiyor; tür denetimi ve lint temiz.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -189,11 +189,16 @@ Kaynak: 1 Kasım'da hazırlanan 17 kararlık sayfa (`Mod Yenileme Kararları` Ar
 
 **Botlar eski zorluğunda kalır (kullanıcı 14 Kasım'da bot değişikliklerinden vazgeçti).** Sayfadaki bot tabanı kararı ve iki modun Kolay bot yüzdeleri (İlk 10 %15 ve önce en tanınmış isimler, Kariyer Yolu %5 ve her kulüpte +%8) uygulanmaz. Bot düzeyleri 1–3 olarak, bot tabloları ve uyarlama mantığı kararlardan önceki hâliyle kalır.
 
-Kodlanan, henüz dağıtılmayan (14 Kasım): Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`); Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam" ve kulüp + piyasa değeri listeleri. Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
+Kodlanan, henüz dağıtılmayan (14 Kasım): Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`); Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam" ve kulüp + piyasa değeri listeleri; İlk 10 ve Kariyer Yolu'nda şıklar, ipuçları, kulüp başına maç ve gol, yeni jokerler (1.2.0 uygulamasıyla birlikte). Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
 
 Genel:
 
 - **Şıklı cevap.** Yalnızca Kolay seviyede ve cevabı dar modlarda: İlk 10 ve Kariyer Yolu. Orta ve Zor seviyede yazarak oynanır. XOX ve Zincir yazarak kalır.
+- **Kural metinleri tek cümle (kodlandı, 14 Kasım).**
+  - Ana sayfadaki sekiz oyunun tanıtım cümlesi ile İlk 10, Kariyer Yolu, Açık Artırma ve En Az Bilinen'in maç içi kural satırı tek cümleye indi. Altı dilde yazıldı.
+  - Tur ve kart sayısı metinlerden çıktı ("Yedi kart seç", "Üç tur alan kazanır"). Bitiş metinleri artık "Bütün turlar tamamlandı" ve "Bütün futbolcular soruldu".
+  - Kariyer Yolu'nun kapsam metni, gerçekte gösterilen kulüpleri anlatacak şekilde düzeldi: "Uygulamanın kapsadığı liglerde yılı bilinen kulüpler gösterilir."
+  - Sunucunun Kart Düellosu bildirimi ("Yedi kartını seç") ve mağaza görsel yazıları da sayısız oldu. Tanıtım videosu üreteci (`data/branding/promo`) hâlâ 7 kartlık el çiziyor; yeni bir düello videosu yapılırsa güncellenmeli.
 - **Bot tabanı.** Vazgeçildi (14 Kasım): botlar eski zorluğunda kalır.
 - **Yeni seçenekli mod.** Şimdilik yok; Tombala ile şıklı Kolay seviye bu ihtiyacı karşılar.
 
@@ -204,9 +209,15 @@ Genel:
   - Liste başlığı: "{kulüp} forması giymiş, en yüksek piyasa değerine ulaşmış 10 futbolcu". Kulüp gol listesinin yerini alır; ülke listeleri (piyasa değeri, kariyer golü) aynen kalır. Örnek: Galatasaray listesi Osimhen 120M, Icardi 100M, Sané 100M, Leão 90M ile başlıyor.
   - Liste türü `clubValue`. Uygulama 1.2.0 `club-value-lists` özelliğini bildirir; sunucu bu listeyi yalnızca maçtaki bütün oyuncular destekliyorsa sorar, 1.1.0 kulüp + kariyer golü listesini görmeye devam eder (kodlandı, dağıtılmadı).
   - Piyasa değeri verisi 2004 sonrasını kapsadığı için ayrıca dönem sınırı gerekmez.
-  - Kolay seviyede büyük kulüplerle sınırlama henüz kodlanmadı.
+  - **Kolay seviyede büyük kulüpler (kodlandı, 14 Kasım).** Kulüp listeleri, tanınmış oyuncu sayısına göre ilk 16 kulüpten gelir (`EASY_TOP_TEN_CLUBS`). Türkiye pazarında bunlar Fenerbahçe, Galatasaray, Beşiktaş, Trabzonspor, Barcelona, Real Madrid, Juventus, Chelsea, Milan, Inter, Manchester United, Bayern, PSG, Liverpool, Manchester City ve Arsenal. Ülke listeleri zaten yalnızca 9–10 tanınmış ülkeden oluştuğu için sınırlanmadı.
 - **İpucu.** Boş satırlarda Kolay seviyede uyruk ve mevki, Orta seviyede yalnızca mevki, Zor seviyede ipucu yok.
+  - Kodlandı (14 Kasım). Ülke listelerinde uyruk ipucu verilmez, çünkü bütün satırlarda aynı bayrak çıkardı. Bayrak, satırın sağında mevki kısaltmasıyla birlikte görünür. İngiltere, İskoçya ve Galler'in bayrakları da artık çiziliyor; Kuzey İrlanda'da ülke adı yazar.
+  - Uygulama `top-ten-hints` özelliğini bildirir. Maçtaki bütün oyuncular desteklemiyorsa kimseye ipucu gitmez.
 - **Şık.** Kolay seviyede sırası gelen oyuncu 4 isimden listede olanı seçer. Çeldiriciler listenin hemen altından gelir (11.–25. sıra).
+  - Kodlandı (14 Kasım). Şıklar her turda yeniden çekilir: listede henüz bulunmamış bir isim ve o turda söylenmemiş üç çeldirici. Şıklar yalnızca sırası gelen oyuncuya gönderilir.
+  - Şıklarda bayrak yok. Emülatör denemesinde bayraklı şıkta doğru cevap, satırdaki uyruk ipucuyla eşleşerek bilgi gerektirmeden bulunuyordu.
+  - Bot yine yazarak oynar. Uygulama `top-ten-choices` özelliğini bildirir.
+  - Kolay seviyede en az 3 çeldiricisi olmayan liste seçilmez.
 - **Bot.** Değişmez (Kolay bot %30; kolay bot yüzdesini düşürme önerisinden vazgeçildi).
 - **Can bitince.** Canı biten oyuncunun listesi kapanmaz: rakip ilk hatasına kadar devam eder, canı kalan oyuncu ilk yanlışını yapınca liste kapanır.
 - **Veri ön koşulları.** Veride 1990 öncesi eksik (Galatasaray listesinde Metin Oktay yok): listenin başlığına bir dönem sınırı konur, sınır veri denetlenerek belirlenir. Ümit Karan veride Almanya uyruklu görünüyor, uyruk ipucundan önce düzeltilir. Bobô'nun Beşiktaş golleri kulüp istatistiğinde var ama kulüp yılları tablosunda yok; listeler iki tablonun uyduğu kayıtlardan kurulur.
@@ -216,8 +227,20 @@ Kariyer Yolu:
 
 - **Gizli futbolcu sayısı.** Maçta 3 (şimdi 4).
 - **Kulüp satırı.** Her kulübün yanında o kulüpteki maç ve gol sayısı yazar (veri 24 bin futbolcuda var).
+  - Kodlandı (14 Kasım). Sayılar kulüp adının altında "212 maç · 87 gol" biçiminde yazar ve `player_club_stats` tablosundan gelir. Verisi olmayan kulüpte satır boş kalır. Bütün seviyelerde gösterilir.
 - **İpucu.** Kolay ve Orta seviyede uyruk ve mevki baştan açık olur. Jokerler "Baş harf" ve "Doğum yılı" olur.
+  - Kodlandı (14 Kasım). Uyruk (bayrak ve ad) ve mevki, soru plakasının altında yazar.
+  - Yeni uygulama "Baş harf" ve "Doğum yılı" jokerlerini gösterir. Sunucu 1.1.0'ın gönderdiği "Uyruk" ve "Mevki" jokerlerini de kabul etmeye devam eder (`LEGACY_JOKERS`).
+  - Maç ve gol sayıları ile baştan açık bilgiler, uygulama `career-help` bildirdiğinde ve maçtaki bütün oyuncular desteklediğinde gönderilir.
 - **Şık.** Kolay seviyede 4 şık: çeldiriciler aynı ülkeden, aynı mevkiden ve açık kulüplerden birinde oynamış futbolcular. Yanlış şık silinir, yeni kulüp açılır, sıra geçer.
+  - Kodlandı (14 Kasım). Şıklar gizli futbolcu başına bir kez çekilir; uyruk ve mevki Kolay'da açık olduğu için çeldiriciler bunlarla uyuşmalı.
+  - Çeldiriciler, bilinirliği 40 ve üstü futbolculardan şu sırayla doldurulur:
+    1. Aynı ülke, aynı mevki ve ilk kulüpte oynamış olanlar.
+    2. Aynı ülke ve aynı mevki.
+    3. Aynı ülke.
+    4. Aynı mevki ve ilk kulüpte oynamış olanlar.
+    5. Herhangi biri.
+  - Yanlış tahmin edilen şık (botun yanlışı da) iki taraf için de silinir. Uygulama `career-choices` özelliğini bildirir.
 - **Bot.** Değişmez (Kolay bot ilk kulüpte %12, her yeni kulüpte +%15; yüzdeleri düşürme önerisinden vazgeçildi).
 
 Kart Düellosu (değişiklikle onaylandı):

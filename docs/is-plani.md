@@ -360,7 +360,15 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
      - Kullanıcının seçtiği kulüp + piyasa değeri listesi.
      - Veri commit'lendi, yayını 1.2.0 ile.
      - Ülke ve kıta tablosu Gizli Futbolcu aşamasına kaldı.
-  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak (kodlandı, emülatörde denetlendi).
+  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak. (Kodlandı, 14 Kasım)
+     - İlk 10'un şıkları ve ipuçları emülatörde denendi.
+     - Kariyer Yolu'nun yeni ekranı testlerle doğrulandı, emülatörde henüz görülmedi; emülatör deneme sırasında kapandı.
+     - Yayın öncesi kalanlar:
+       - Kariyer Yolu'nu emülatörde Kolay seviyede oynamak.
+       - Mağaza ekran görüntülerini 5 kartlık düelloyla yeniden üretmek.
+       - Sürüm numarasını 1.2.0 yapmak.
+       - Derleme (kullanıcı onayıyla).
+       - Mağazada yayından sonra sunucu ve veri dağıtımı.
   6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
