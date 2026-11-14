@@ -1,4 +1,4 @@
-import type { DuelConcept } from '@sportapps/protocol';
+import type { DraftMetric, DuelConcept } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,8 +7,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Radius, Spacing } from '@/constants/theme';
-import { loadAssists, searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
+import { loadDraftValues, searchConceptFootballers, searchDraftFootballers, searchFootballers } from '@/data/queries';
 import type { FootballerSummary } from '@/data/types';
+import { draftValueText } from '@/features/draft/labels';
 import { ReactionBursts } from '@/features/reactions/reaction-layer';
 import { haptics } from '@/feedback/haptics';
 import { useUppercase } from '@/i18n/uppercase';
@@ -21,7 +22,7 @@ const FOCUS_DELAYS = Platform.OS === 'android' ? [300, 800] : [];
 
 export type SearchFilter =
   | { kind: 'concept'; concept: DuelConcept }
-  | { kind: 'draft'; clubId: number; positions: readonly string[]; excludedIds: readonly number[] };
+  | { kind: 'draft'; clubId: number; positions: readonly string[]; excludedIds: readonly number[]; metric: DraftMetric };
 
 function runSearch(
   database: Parameters<typeof searchFootballers>[0],
@@ -34,7 +35,27 @@ function runSearch(
   }
   return filter.kind === 'concept'
     ? searchConceptFootballers(database, market, filter.concept, text)
-    : searchDraftFootballers(database, market, filter.clubId, filter.positions, filter.excludedIds, text);
+    : searchDraftFootballers(database, market, filter.clubId, filter.positions, filter.excludedIds, text, filter.metric);
+}
+
+function ResultDetail({
+  value,
+  birthYear,
+  uppercase,
+}: {
+  value: string | null;
+  birthYear: number | null;
+  uppercase: (text: string) => string;
+}) {
+  return value !== null ? (
+    <ThemedText type="label" themeColor="volt">
+      {uppercase(value)}
+    </ThemedText>
+  ) : (
+    <ThemedText type="label" themeColor="textSecondary">
+      {birthYear ?? ''}
+    </ThemedText>
+  );
 }
 
 interface FootballerSearchProps {
@@ -47,7 +68,7 @@ interface FootballerSearchProps {
   closeLabel?: string;
   toolbar?: ReactNode;
   footer?: ReactNode;
-  showAssists?: boolean;
+  valueMetric?: DraftMetric | null;
   onSelect: (footballer: FootballerSummary) => void;
   onClose: () => void;
 }
@@ -62,12 +83,12 @@ export function FootballerSearch({
   closeLabel,
   toolbar,
   footer,
-  showAssists = false,
+  valueMetric = null,
   onSelect,
   onClose,
 }: FootballerSearchProps) {
   const database = useSQLiteContext();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const uppercase = useUppercase();
   const input = useRef<TextInput>(null);
   const [text, setText] = useState('');
@@ -106,25 +127,28 @@ export function FootballerSearch({
 
   const results = found.footballers.filter((footballer) => !excludedIds.includes(footballer.id));
   const resultKey = results.map((footballer) => footballer.id).join(',');
-  const [assists, setAssists] = useState<{ key: string; values: Record<number, number> }>({ key: '', values: {} });
+  const valuesKey = valueMetric ? `${valueMetric}:${resultKey}` : '';
+  const [values, setValues] = useState<{ key: string; values: Record<number, number> }>({ key: '', values: {} });
 
   useEffect(() => {
-    if (!showAssists || resultKey === '') {
+    if (!valueMetric || resultKey === '') {
       return undefined;
     }
     let cancelled = false;
-    void loadAssists(database, resultKey.split(',').map(Number)).then((values) => {
+    void loadDraftValues(database, resultKey.split(',').map(Number), valueMetric).then((loaded) => {
       if (!cancelled) {
-        setAssists({ key: resultKey, values });
+        setValues({ key: `${valueMetric}:${resultKey}`, values: loaded });
       }
     });
     return () => {
       cancelled = true;
     };
-  }, [database, showAssists, resultKey]);
+  }, [database, valueMetric, resultKey]);
 
-  const assistsOf = (footballerId: number) =>
-    showAssists && assists.key === resultKey ? (assists.values[footballerId] ?? null) : null;
+  const valueOf = (footballerId: number): string | null => {
+    const value = valueMetric && values.key === valuesKey ? (values.values[footballerId] ?? null) : null;
+    return valueMetric && value !== null ? draftValueText(t, valueMetric, value, i18n.language) : null;
+  };
   const searched = found.text === text && text.trim().length >= 2;
   const urgent = secondsLeft !== null && secondsLeft <= URGENT_SECONDS;
 
@@ -186,15 +210,7 @@ export function FootballerSearch({
                 <ThemedText style={styles.resultName} numberOfLines={1}>
                   {item.name}
                 </ThemedText>
-                {assistsOf(item.id) !== null ? (
-                  <ThemedText type="label" themeColor="volt">
-                    {uppercase(t('jokers.assistsValue', { value: assistsOf(item.id) }))}
-                  </ThemedText>
-                ) : (
-                  <ThemedText type="label" themeColor="textSecondary">
-                    {item.birthYear ?? ''}
-                  </ThemedText>
-                )}
+                <ResultDetail value={valueOf(item.id)} birthYear={item.birthYear} uppercase={uppercase} />
               </Pressable>
             )}
           />

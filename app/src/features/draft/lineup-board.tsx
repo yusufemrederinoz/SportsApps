@@ -1,5 +1,5 @@
 import type { Side } from '@sportapps/game-core';
-import type { DraftSlotView } from '@sportapps/protocol';
+import type { DraftMetric, DraftSlotView } from '@sportapps/protocol';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -13,6 +13,7 @@ import type { PlayedFootballer } from '@/features/match/session';
 import { useUppercase } from '@/i18n/uppercase';
 
 import { BOARD_PADDING, HEADER_HEIGHT, NAME_HEIGHT, ROW_GAP, VALUE_HEIGHT } from './board-size';
+import { draftValueText } from './labels';
 
 const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
 const ROWS: readonly DraftSlotView['position'][] = ['FW', 'MF', 'DF', 'GK'];
@@ -48,16 +49,19 @@ interface SlotProps {
   footballer: PlayedFootballer | null;
   side: Side;
   size: number;
+  metric: DraftMetric;
+  lost: boolean;
 }
 
-function Slot({ slot, footballer, side, size }: SlotProps) {
-  const { t } = useTranslation();
+function Slot({ slot, footballer, side, size, metric, lost }: SlotProps) {
+  const { t, i18n } = useTranslation();
   const finish = Finishes[side];
   const role = t(ROLE_KEYS[slot.position]);
   const filled = slot.footballerId !== null && footballer !== null;
   const portrait = filled && footballer.hasPortrait ? portraitUrl(footballer.id) : null;
+  const value = draftValueText(t, metric, slot.value, i18n.language);
   const label = filled
-    ? t('draft.slotLabel', { position: role, name: footballer.name, value: slot.value ?? 0 })
+    ? t('draft.slotLabel', { position: role, name: footballer.name, value })
     : t('draft.emptySlot', { position: role });
 
   return (
@@ -89,8 +93,12 @@ function Slot({ slot, footballer, side, size }: SlotProps) {
       <ThemedText style={styles.name} numberOfLines={1}>
         {filled ? shortName(footballer.name) : ' '}
       </ThemedText>
-      <ThemedText style={[styles.value, { color: finish.base }]} numberOfLines={1}>
-        {filled ? String(slot.value ?? 0) : ' '}
+      <ThemedText
+        style={[styles.value, { color: lost ? Colors.textSecondary : finish.base }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+        minimumFontScale={0.6}>
+        {filled ? value : ' '}
       </ThemedText>
     </View>
   );
@@ -103,9 +111,12 @@ interface LineupBoardProps {
   cards: Readonly<Record<number, PlayedFootballer>>;
   slotSize: number;
   active: boolean;
+  metric: DraftMetric;
+  metrics?: readonly DraftMetric[];
+  winners?: readonly (Side | null)[];
 }
 
-export function LineupBoard({ side, name, lineup, cards, slotSize, active }: LineupBoardProps) {
+export function LineupBoard({ side, name, lineup, cards, slotSize, active, metric, metrics, winners = [] }: LineupBoardProps) {
   const uppercase = useUppercase();
   const finish = Finishes[side];
 
@@ -128,6 +139,8 @@ export function LineupBoard({ side, name, lineup, cards, slotSize, active }: Lin
                 footballer={slot.footballerId === null ? null : (cards[slot.footballerId] ?? null)}
                 side={side}
                 size={slotSize}
+                metric={slot.round === null ? metric : (metrics?.[slot.round] ?? metric)}
+                lost={slot.round !== null && (winners[slot.round] ?? side) !== side}
               />
             ))}
         </View>

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
 import { emptyCells, createMatch, type Header } from '@sportapps/game-core';
+import { DRAFT_METRICS } from '@sportapps/protocol';
 import { afterAll, describe, expect, it } from 'vitest';
 
 import {
@@ -11,6 +12,7 @@ import {
   loadBotOptions,
   loadClubLabel,
   loadConceptLabel,
+  loadDraftValues,
   loadHeaderLabel,
   loadFootballer,
   loadGrid,
@@ -135,6 +137,19 @@ describe.skipIf(!available)('queries against the bundled database', () => {
     expect(await names(['FW'], [icardi], 'icardi')).toEqual([]);
     expect(await names([], [], 'icardi')).toEqual([]);
     expect((await searchDraftFootballers(runner, 'tr', REAL_MADRID.referenceId, ['FW'], [], 'icardi')).length).toBe(0);
+  });
+
+  it('lists only footballers with data for the stat of the round and loads that stat', async () => {
+    const icardi = await footballerId('mauro icardi');
+    for (const metric of DRAFT_METRICS) {
+      const found = await searchDraftFootballers(runner, 'tr', GALATASARAY.referenceId, ['FW'], [], 'icardi', metric);
+      expect(found.map((footballer) => footballer.id)).toContain(icardi);
+      const values = await loadDraftValues(runner, [icardi], metric);
+      expect(values[icardi]).toBeGreaterThan(0);
+    }
+    const goals = await loadDraftValues(runner, [icardi], 'goals');
+    const value = await loadDraftValues(runner, [icardi], 'marketValue');
+    expect(value[icardi]).toBeGreaterThan(goals[icardi] ?? 0);
   });
 
   it('names a club in the language of the player and knows whether it is local', async () => {

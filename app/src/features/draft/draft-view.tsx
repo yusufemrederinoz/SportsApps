@@ -1,4 +1,4 @@
-import { opponentOf, openPositions, type DraftSlot, type Side } from '@sportapps/game-core';
+import { opponentOf, openPositions, roundWinner, type DraftSlot, type Side } from '@sportapps/game-core';
 import { DRAFT_PICK_SECONDS, type DraftAction } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { use, useEffect, useState } from 'react';
@@ -15,6 +15,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Fonts, MinimumTouchSize, Motion, Spacing, type ThemeColor } from '@/constants/theme';
 import { loadClubLabel } from '@/data/queries';
 import type { ClubLabel } from '@/data/types';
+import { METRIC_KEYS, QUESTION_KEYS } from '@/features/duel/labels';
 import { JokerBar } from '@/features/jokers/joker-bar';
 import { JokerContext, ownReveals } from '@/features/jokers/joker-context';
 import { FootballerSearch } from '@/features/match/footballer-search';
@@ -102,7 +103,7 @@ export function DraftMatchView({
   const { result } = view;
   const running = view.phase === 'playing';
   const jokers = use(JokerContext);
-  const showAssists =
+  const showValues =
     jokers !== null &&
     ownReveals(jokers).some((entry) => entry.reveal?.kind === 'assists' && entry.reveal.round === view.round);
   const ownPicked = view.picked[side];
@@ -121,8 +122,26 @@ export function DraftMatchView({
   const roundKey = `${view.round}-${view.phase}`;
   const rivalPick = view.lineups[rival].find((slot) => slot.round === view.round - 1 && slot.footballerId !== null);
   const rivalFootballer = rivalPick?.footballerId ? (draft.cards[rivalPick.footballerId] ?? null) : null;
+  const variedMetrics = view.metrics !== undefined;
+  const settledRounds = !variedMetrics
+    ? 0
+    : view.phase === 'playing'
+      ? view.round - 1
+      : view.phase === 'pause'
+        ? view.round
+        : view.totalRounds;
+  const winners = Array.from({ length: Math.max(0, settledRounds) }, (_, round) => roundWinner(view.lineups, round));
 
   const status = (): { text: string; color: ThemeColor } => {
+    if (view.phase === 'pause' && variedMetrics) {
+      const winner = winners.at(-1) ?? null;
+      if (winner === null) {
+        return { text: uppercase(t('duel.roundDrawn')), color: 'textSecondary' };
+      }
+      return winner === side
+        ? { text: uppercase(t('duel.roundWon')), color: 'volt' }
+        : { text: uppercase(t('duel.roundLost')), color: 'negative' };
+    }
     if (view.phase === 'pause') {
       return { text: uppercase(t('draft.roundOver')), color: 'textSecondary' };
     }
@@ -142,6 +161,9 @@ export function DraftMatchView({
         ),
         color: 'gold',
       };
+    }
+    if (variedMetrics && view.picked[rival]) {
+      return { text: uppercase(t('draft.opponentReady')), color: 'gold' };
     }
     return { text: uppercase(t('draft.pickHint')), color: 'volt' };
   };
@@ -211,17 +233,26 @@ export function DraftMatchView({
 
         <Animated.View key={view.round} entering={FadeInDown.duration(Motion.slow)} style={styles.stretch}>
           <MetalPlate finish={null} cut="right" cutSize={20} radius={14} style={styles.plate}>
-            <ThemedText type="label" themeColor="volt">
-              {uppercase(t('draft.clubLabel'))}
-            </ThemedText>
+            <View style={styles.plateTop}>
+              <ThemedText type="label" themeColor="volt">
+                {uppercase(t('draft.clubLabel'))}
+              </ThemedText>
+              {variedMetrics ? (
+                <View style={styles.metric}>
+                  <ThemedText type="label" themeColor="onAccent" numberOfLines={1}>
+                    {uppercase(t(METRIC_KEYS[view.metric]))}
+                  </ThemedText>
+                </View>
+              ) : null}
+            </View>
             <View style={styles.clubRow}>
               {clubId !== null ? <ClubCrest clubId={clubId} size={CREST_SIZE} /> : null}
               <ThemedText style={styles.club} accessibilityRole="header" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                 {clubTitle}
               </ThemedText>
             </View>
-            <ThemedText type="small" themeColor="textSecondary">
-              {t('draft.target')}
+            <ThemedText type="small" themeColor={variedMetrics ? 'gold' : 'textSecondary'}>
+              {variedMetrics ? t(QUESTION_KEYS[view.metric]) : t('draft.target')}
             </ThemedText>
           </MetalPlate>
         </Animated.View>
@@ -238,6 +269,9 @@ export function DraftMatchView({
             cards={draft.cards}
             slotSize={slotSize}
             active={running && !view.picked[boardSide]}
+            metric={view.metric}
+            metrics={view.metrics}
+            winners={winners}
           />
         ))}
       </View>
@@ -279,9 +313,10 @@ export function DraftMatchView({
             clubId,
             positions: openPositions(view.lineups[side] as readonly DraftSlot[]),
             excludedIds: draftCardIds(view),
+            metric: view.metric,
           }}
           emptyLabel={t('draft.searchEmpty')}
-          showAssists={showAssists}
+          valueMetric={showValues ? view.metric : null}
           onSelect={(footballer) => {
             setSearching(null);
             onAct({ kind: 'pick', footballerId: footballer.id });
@@ -321,6 +356,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
     gap: Spacing.half,
+  },
+  plateTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.two,
+  },
+  metric: {
+    flexShrink: 1,
+    backgroundColor: Colors.gold,
+    borderRadius: 4,
+    paddingHorizontal: Spacing.two,
+    paddingVertical: Spacing.half,
   },
   clubRow: {
     flexDirection: 'row',

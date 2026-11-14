@@ -2,6 +2,7 @@ import {
   conceptCondition,
   correctAnswerStatement,
   draftEligible,
+  draftValuesStatement,
   gridAtOffsetStatement,
   gridCountStatement,
   gridOffset,
@@ -10,7 +11,7 @@ import {
   minimumFameStatement,
 } from '@sportapps/football-data';
 import { nameTokens, type BotOption, type CellPosition, type Grid, type Header } from '@sportapps/game-core';
-import type { DuelConcept } from '@sportapps/protocol';
+import type { DraftMetric, DuelConcept } from '@sportapps/protocol';
 
 import type {
   ClubLabel,
@@ -175,6 +176,7 @@ export function searchDraftFootballers(
   positions: readonly string[],
   excludedIds: readonly number[],
   text: string,
+  metric: DraftMetric = 'assists',
   limit = 20,
 ): Promise<FootballerSummary[]> {
   const wanted = positions.length > 0 ? positions : [''];
@@ -186,7 +188,7 @@ export function searchDraftFootballers(
     {
       sql: `p.position IN (${wanted.map(() => '?').join(', ')})
             AND p.id NOT IN (${excluded.map(() => '?').join(', ')})
-            AND ${draftEligible('p.id', '?')}`,
+            AND ${draftEligible('p.id', '?', metric)}`,
       parameters: [...wanted, ...excluded, clubId],
     },
     limit,
@@ -295,16 +297,17 @@ export async function loadFootballer(database: QueryRunner, footballerId: number
   return row ? toFootballer(row) : null;
 }
 
-export async function loadAssists(database: QueryRunner, footballerIds: readonly number[]): Promise<Record<number, number>> {
+export async function loadDraftValues(
+  database: QueryRunner,
+  footballerIds: readonly number[],
+  metric: DraftMetric,
+): Promise<Record<number, number>> {
   if (footballerIds.length === 0) {
     return {};
   }
-  const rows = await database.getAllAsync<{ id: number; assists: number }>(
-    `SELECT player_id AS id, assists FROM player_stats
-     WHERE assists IS NOT NULL AND player_id IN (${footballerIds.map(() => '?').join(', ')})`,
-    [...footballerIds],
-  );
-  return Object.fromEntries(rows.map((row) => [row.id, row.assists]));
+  const statement = draftValuesStatement(footballerIds, metric);
+  const rows = await database.getAllAsync<{ id: number; value: number }>(statement.sql, [...statement.parameters]);
+  return Object.fromEntries(rows.map((row) => [row.id, row.value]));
 }
 
 export async function loadPortraitCredits(database: QueryRunner): Promise<PortraitCredit[]> {
