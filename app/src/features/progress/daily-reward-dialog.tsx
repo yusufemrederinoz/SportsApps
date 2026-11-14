@@ -27,7 +27,7 @@ export function DailyRewardDialog({ reward, onClose }: { reward: DailyReward; on
 
   useEffect(() => {
     haptics.success();
-    playSound('win');
+    playSound('reward');
   }, []);
 
   return (

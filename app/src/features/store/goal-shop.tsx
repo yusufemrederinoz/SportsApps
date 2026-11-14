@@ -64,7 +64,7 @@ export function GoalShop({ token, onGoals }: GoalShopProps) {
         await finishTransaction({ purchase, isConsumable: true }).catch(() => undefined);
         onGoals(goals);
         if (granted > 0) {
-          playSound('win');
+          playSound('reward');
           haptics.success();
           setNotice({ text: t('store.granted', { goals: granted }), good: true });
         }

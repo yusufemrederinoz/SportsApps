@@ -82,7 +82,7 @@ export function RewardedGoals({ token, userId, unitId, onGoals }: RewardedGoalsP
         latest.current = current;
         setStatus(current);
         onGoals(current.goals);
-        playSound('win');
+        playSound('reward');
         haptics.success();
         setNotice({ text: t('store.granted', { goals: current.goals - before.goals }), good: true });
       } else {

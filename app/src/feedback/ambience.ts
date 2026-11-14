@@ -5,6 +5,8 @@ import { AppState } from 'react-native';
 import stadium from '@/assets/sounds/ambience.m4a';
 import { secureStore } from '@/auth/storage';
 
+import { configureAudio } from './audio-mode';
+
 const KEY = 'ambience-muted';
 const MUTED = '1';
 const VOLUME = 0.9;
@@ -93,6 +95,7 @@ export function startAmbience(): void {
   if (muted !== false) {
     return;
   }
+  configureAudio();
   try {
     if (!player) {
       player = createAudioPlayer(stadium);
