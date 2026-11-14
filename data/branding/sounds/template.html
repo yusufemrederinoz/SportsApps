@@ -1,0 +1,489 @@
+<title>ChallengeGoal Ses Seçimi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,700;1,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #0a0e13;
+    --panel: #121922;
+    --panel-raised: #18212c;
+    --line: #243140;
+    --fg: #eaf0f6;
+    --muted: #8d9bab;
+    --volt: #c8ff2e;
+    --volt-ink: #10160a;
+    --gold: #f5c04a;
+    --red: #ff5a6a;
+    --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto;
+    height: env(safe-area-inset-top, 0px);
+    z-index: 10;
+    background: var(--bg);
+  }
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-block: 28px 64px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  header { display: flex; flex-direction: column; gap: 8px; }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--volt);
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 800;
+    font-size: clamp(34px, 8vw, 48px);
+    line-height: 1;
+    text-transform: uppercase;
+    text-wrap: balance;
+  }
+  .lead { margin: 0; color: var(--muted); max-width: 62ch; }
+  .status {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 16px;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel-raised);
+  }
+  .progress { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .progress b { color: var(--volt); }
+  .saved { font-size: 13px; color: var(--muted); }
+  .saved[data-tone="ok"] { color: var(--volt); }
+  .saved[data-tone="warn"] { color: var(--gold); }
+  .slots { display: flex; flex-direction: column; gap: 14px; }
+  .slot {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .slot[data-picked="true"] { border-color: color-mix(in srgb, var(--volt) 45%, var(--line)); }
+  .slot-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; }
+  h2 {
+    margin: 0;
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.05;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--gold);
+    color: var(--volt-ink);
+  }
+  .where { margin: 0; color: var(--muted); font-size: 14px; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 8px 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: var(--panel-raised);
+  }
+  .row.current { background: transparent; border-color: var(--line); border-style: dashed; }
+  .row[data-chosen="true"] { border-color: var(--volt); }
+  .play {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1.5px solid var(--volt);
+    background: transparent;
+    color: var(--volt);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+  }
+  .play svg { width: 18px; height: 18px; fill: currentColor; }
+  .play[data-playing="true"] { background: var(--volt); color: var(--volt-ink); }
+  .row.current .play { border-color: var(--muted); color: var(--muted); }
+  .row.current .play[data-playing="true"] { background: var(--muted); color: var(--bg); }
+  .letter {
+    font-family: var(--display);
+    font-style: italic;
+    font-weight: 800;
+    font-size: 26px;
+    width: 1.1em;
+    text-align: center;
+    color: var(--fg);
+  }
+  .row.current .letter { font-size: 13px; width: auto; font-family: var(--body); font-style: normal; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .info { min-width: 0; display: flex; flex-direction: column; }
+  .info .title { font-weight: 500; overflow-wrap: anywhere; }
+  .info .meta { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .info a { color: inherit; }
+  .choose {
+    min-height: 40px;
+    padding: 0 14px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--fg);
+    font: 600 13px var(--body);
+    cursor: pointer;
+  }
+  .choose[aria-pressed="true"] { background: var(--volt); border-color: var(--volt); color: var(--volt-ink); }
+  .slot-foot { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .none[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: var(--bg); }
+  .note {
+    flex: 1 1 220px;
+    min-width: 0;
+    min-height: 40px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--fg);
+    font: 400 14px var(--body);
+  }
+  .note::placeholder { color: var(--muted); }
+  button:focus-visible, .note:focus-visible, a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  footer { color: var(--muted); font-size: 13px; display: flex; flex-direction: column; gap: 6px; }
+  @media (max-width: 480px) {
+    .row { grid-template-columns: auto auto minmax(0, 1fr); }
+    .choose.pick { grid-column: 1 / -1; width: 100%; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .play, .choose { transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease; }
+  }
+</style>
+
+<div class="page">
+  <header>
+    <span class="eyebrow">ChallengeGoal · 1.2.0 sonrası</span>
+    <h1>Ses seçimi</h1>
+    <p class="lead">Her ses için adayları dinle ve birini seç. Karşılaştırmak için bugünkü ses de en üstte. Bütün adaylar kesildi ve aynı ses düzeyine getirildi. Seçimin kendiliğinden kaydedilir; ben seçtiklerini uygulamaya bağlarım. Hiçbiri olmadıysa "Hiçbiri olmadı" de, istersen ne aradığını not olarak yaz.</p>
+  </header>
+
+  <div class="status" role="status">
+    <span class="progress" id="progress"></span>
+    <span class="saved" id="saved">Seçimler yükleniyor…</span>
+  </div>
+
+  <div class="slots" id="slots"></div>
+
+  <footer>
+    <span>Adayların hepsi CC0 lisanslı (Kenney ve Freesound): ticari kullanım serbest, atıf gerekmez. Kaynaklar yine de projede kayda geçecek.</span>
+    <span>Telefonda dinlemek en doğrusu; uygulama da telefon hoparlöründen çalacak.</span>
+  </footer>
+</div>
+
+<script type="application/json" id="sound-data">__DATA__</script>
+<script>
+  const DATA = JSON.parse(document.getElementById("sound-data").textContent);
+  const ROLES = DATA.roles;
+  const CANDIDATES = DATA.candidates;
+  const DOC_PATH = "sound-picks/main";
+  const STORAGE_KEY = "challengegoal-sound-picks";
+  const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>';
+  const STOP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5"/></svg>';
+
+  let state = { picks: {}, notes: {} };
+  let db = null;
+  let docRef = null;
+  let writing = Promise.resolve();
+  let pendingWrite = false;
+  const player = new Audio();
+  let playingButton = null;
+
+  function readLocal() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeLocal() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {}
+  }
+
+  function setSaved(text, tone) {
+    const saved = document.getElementById("saved");
+    saved.textContent = text;
+    saved.dataset.tone = tone || "";
+  }
+
+  function stopPlayback() {
+    player.pause();
+    player.loop = false;
+    if (playingButton) {
+      playingButton.dataset.playing = "false";
+      playingButton.innerHTML = PLAY_ICON;
+      playingButton.setAttribute("aria-label", playingButton.dataset.label);
+      playingButton = null;
+    }
+  }
+
+  function toggle(button, src, loop) {
+    if (playingButton === button) {
+      stopPlayback();
+      return;
+    }
+    stopPlayback();
+    player.src = src;
+    player.loop = loop;
+    player.currentTime = 0;
+    player.play().catch(() => setSaved("Ses çalınamadı; sayfaya bir kez dokunup yeniden dene.", "warn"));
+    playingButton = button;
+    button.dataset.playing = "true";
+    button.innerHTML = STOP_ICON;
+    button.setAttribute("aria-label", "Durdur");
+  }
+
+  player.addEventListener("ended", () => {
+    if (!player.loop) stopPlayback();
+  });
+
+  function formatDuration(seconds) {
+    return seconds >= 10 ? `${Math.round(seconds)} sn` : `${seconds.toFixed(seconds < 1 ? 2 : 1).replace(".", ",")} sn`;
+  }
+
+  function playButton(label, src, loop) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "play";
+    button.innerHTML = PLAY_ICON;
+    button.dataset.label = label;
+    button.dataset.playing = "false";
+    button.setAttribute("aria-label", label);
+    button.addEventListener("click", () => toggle(button, src, loop));
+    return button;
+  }
+
+  function render() {
+    const host = document.getElementById("slots");
+    host.replaceChildren();
+    for (const role of ROLES) {
+      const slot = document.createElement("section");
+      slot.className = "slot";
+      slot.id = `slot-${role.id}`;
+      slot.dataset.picked = state.picks[role.id] ? "true" : "false";
+
+      const head = document.createElement("div");
+      head.className = "slot-head";
+      const title = document.createElement("h2");
+      title.textContent = role.name;
+      head.append(title);
+      if (role.tag) {
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = role.tag;
+        head.append(tag);
+      }
+      const where = document.createElement("p");
+      where.className = "where";
+      where.textContent = role.where;
+
+      const rows = document.createElement("div");
+      rows.className = "rows";
+      if (role.current) {
+        const row = document.createElement("div");
+        row.className = "row current";
+        const letter = document.createElement("span");
+        letter.className = "letter";
+        letter.textContent = "Şimdiki";
+        const info = document.createElement("div");
+        info.className = "info";
+        info.innerHTML = '<span class="meta">Uygulamadaki bugünkü ses, karşılaştırmak için</span>';
+        row.append(playButton(`${role.name}: bugünkü sesi çal`, `audio/current-${role.current}.mp3`, false), letter, info);
+        rows.append(row);
+      }
+      for (const candidate of CANDIDATES.filter((item) => item.role === role.id)) {
+        const letterText = candidate.name.split("-").pop().toUpperCase();
+        const chosen = state.picks[role.id] === candidate.name;
+        const row = document.createElement("div");
+        row.className = "row";
+        row.dataset.chosen = chosen ? "true" : "false";
+        const letter = document.createElement("span");
+        letter.className = "letter";
+        letter.textContent = letterText;
+        const info = document.createElement("div");
+        info.className = "info";
+        const name = document.createElement("span");
+        name.className = "title";
+        name.textContent = candidate.title.replace(/\.(wav|aiff?|flac|mp3|ogg|m4a)$/i, "");
+        const meta = document.createElement("span");
+        meta.className = "meta";
+        let credit;
+        if (candidate.page) {
+          credit = document.createElement("a");
+          credit.href = candidate.page;
+          credit.target = "_blank";
+          credit.rel = "noopener";
+          credit.textContent = candidate.source === "Kenney" ? "Kenney" : `${candidate.author} · Freesound`;
+        } else {
+          credit = "Kendi üretimimiz";
+        }
+        meta.append(`${formatDuration(candidate.duration)}${role.loop ? " döngü" : ""} · `, credit);
+        info.append(name, meta);
+        const choose = document.createElement("button");
+        choose.type = "button";
+        choose.className = "choose pick";
+        choose.setAttribute("aria-pressed", chosen ? "true" : "false");
+        choose.textContent = chosen ? "Seçildi" : "Bunu seç";
+        choose.addEventListener("click", () => pick(role.id, chosen ? null : candidate.name));
+        row.append(playButton(`${role.name} ${letterText} adayını çal`, `audio/${candidate.name}.mp3`, Boolean(role.loop)), letter, info, choose);
+        rows.append(row);
+      }
+
+      const foot = document.createElement("div");
+      foot.className = "slot-foot";
+      const none = document.createElement("button");
+      none.type = "button";
+      none.className = "choose none";
+      const rejected = state.picks[role.id] === "none";
+      none.setAttribute("aria-pressed", rejected ? "true" : "false");
+      none.textContent = "Hiçbiri olmadı";
+      none.addEventListener("click", () => pick(role.id, rejected ? null : "none"));
+      const note = document.createElement("input");
+      note.type = "text";
+      note.className = "note";
+      note.id = `note-${role.id}`;
+      note.placeholder = "Not (isteğe bağlı): ne arıyorsun?";
+      note.value = state.notes[role.id] || "";
+      note.addEventListener("change", () => setNote(role.id, note.value.trim()));
+      foot.append(none, note);
+
+      slot.append(head, where, rows, foot);
+      host.append(slot);
+    }
+    const done = ROLES.filter((role) => state.picks[role.id]).length;
+    document.getElementById("progress").innerHTML = `<b>${done}</b> / ${ROLES.length} ses kararlaştırıldı`;
+  }
+
+  function persist() {
+    writeLocal();
+    if (!docRef) {
+      setSaved("Seçimler yalnızca bu cihazda tutuluyor; bitince bana yazman yeterli.", "warn");
+      return;
+    }
+    pendingWrite = true;
+    setSaved("Kaydediliyor…", "");
+    const body = { picks: { ...state.picks }, notes: { ...state.notes }, updatedAt: new Date().toISOString() };
+    writing = writing
+      .then(() => docRef.set(body))
+      .then(() => {
+        pendingWrite = false;
+        setSaved("Kaydedildi", "ok");
+      })
+      .catch(() => {
+        pendingWrite = false;
+        setSaved("Kaydedilemedi; seçimler bu cihazda duruyor.", "warn");
+      });
+  }
+
+  function pick(roleId, value) {
+    const picks = { ...state.picks };
+    if (value) picks[roleId] = value;
+    else delete picks[roleId];
+    state = { ...state, picks };
+    render();
+    persist();
+  }
+
+  function setNote(roleId, value) {
+    if ((state.notes[roleId] || "") === value) return;
+    const notes = { ...state.notes };
+    if (value) notes[roleId] = value;
+    else delete notes[roleId];
+    state = { ...state, notes };
+    persist();
+  }
+
+  function adopt(body) {
+    if (!body || typeof body !== "object") return;
+    const picks = body.picks && typeof body.picks === "object" ? body.picks : {};
+    const notes = body.notes && typeof body.notes === "object" ? body.notes : {};
+    const clean = (record) =>
+      Object.fromEntries(Object.entries(record).filter(([key, value]) => ROLES.some((role) => role.id === key) && typeof value === "string"));
+    state = { picks: clean(picks), notes: clean(notes) };
+    writeLocal();
+    render();
+  }
+
+  const local = readLocal();
+  if (local) adopt(local);
+  else render();
+
+  (async () => {
+    const timer = setTimeout(() => setSaved("Kayıt yerine ulaşılamıyor; seçimler bu cihazda tutuluyor.", "warn"), 10000);
+    try {
+      db = window.claude && typeof window.claude.use === "function" ? await window.claude.use("db") : null;
+    } catch {
+      db = null;
+    }
+    if (!db) {
+      clearTimeout(timer);
+      setSaved("Seçimler yalnızca bu cihazda tutuluyor; bitince bana yazman yeterli.", "warn");
+      return;
+    }
+    docRef = db.doc(DOC_PATH);
+    docRef.onSnapshot(
+      (snap) => {
+        if (!snap.metadata.fromCache) clearTimeout(timer);
+        if (pendingWrite || snap.metadata.hasPendingWrites) return;
+        if (snap.exists) {
+          const active = document.activeElement;
+          const typing = active && active.classList && active.classList.contains("note");
+          if (!typing) adopt(snap.data());
+          setSaved("Kaydedildi", "ok");
+        } else {
+          setSaved("Henüz seçim yok", "");
+        }
+      },
+      () => {
+        clearTimeout(timer);
+        setSaved("Kayıt bağlantısı kesildi; seçimler bu cihazda duruyor.", "warn");
+      },
+    );
+  })();
+</script>

@@ -1,0 +1,157 @@
+{
+  "whistle.wav": {
+    "candidate": "whistle-a",
+    "source": "Freesound",
+    "title": "Referee whistle blow, gymnasium.wav",
+    "author": "SpliceSound",
+    "page": "https://freesound.org/people/SpliceSound/sounds/218318/",
+    "license": "CC0",
+    "start_seconds": 0.1,
+    "duration_seconds": 1.3,
+    "gain_db": -4.6
+  },
+  "win.wav": {
+    "candidate": "win-i",
+    "source": "Freesound",
+    "title": "Win Spacey",
+    "author": "GameAudio",
+    "page": "https://freesound.org/people/GameAudio/sounds/220184/",
+    "license": "CC0",
+    "start_seconds": 0.0,
+    "duration_seconds": 0.99,
+    "gain_db": 5.1
+  },
+  "reward.wav": {
+    "candidate": "reward-h",
+    "source": "Freesound",
+    "title": "achievement-sparkle",
+    "author": "SkySpeira",
+    "page": "https://freesound.org/people/SkySpeira/sounds/715067/",
+    "license": "CC0",
+    "start_seconds": 0.07,
+    "duration_seconds": 1.5,
+    "gain_db": 22.2
+  },
+  "correct.wav": {
+    "candidate": "correct-a",
+    "source": "Kenney",
+    "title": "confirmation_002.ogg",
+    "author": "Kenney",
+    "page": "https://opengameart.org/content/interface-sounds",
+    "license": "CC0",
+    "start_seconds": 0.0,
+    "duration_seconds": 0.54,
+    "gain_db": -4.1
+  },
+  "impact.wav": {
+    "candidate": "impact-a",
+    "source": "Freesound",
+    "title": "Soccer Ball Kick",
+    "author": "bittermelonheart",
+    "page": "https://freesound.org/people/bittermelonheart/sounds/555042/",
+    "license": "CC0",
+    "start_seconds": 0.02,
+    "duration_seconds": 0.6,
+    "gain_db": -3.4
+  },
+  "impact-2.wav": {
+    "candidate": "impact-a",
+    "source": "Freesound",
+    "title": "Soccer Ball Kick",
+    "author": "bittermelonheart",
+    "page": "https://freesound.org/people/bittermelonheart/sounds/555042/",
+    "license": "CC0",
+    "start_seconds": 0.02,
+    "duration_seconds": 0.6,
+    "gain_db": -3.4,
+    "note": "Perdesi %4 düşürülmüş çeşit"
+  },
+  "impact-3.wav": {
+    "candidate": "impact-a",
+    "source": "Freesound",
+    "title": "Soccer Ball Kick",
+    "author": "bittermelonheart",
+    "page": "https://freesound.org/people/bittermelonheart/sounds/555042/",
+    "license": "CC0",
+    "start_seconds": 0.02,
+    "duration_seconds": 0.6,
+    "gain_db": -3.4,
+    "note": "Perdesi %4 yükseltilmiş çeşit"
+  },
+  "tick.wav": {
+    "candidate": "tick-a",
+    "source": "Kenney",
+    "title": "tick_004.ogg",
+    "author": "Kenney",
+    "page": "https://opengameart.org/content/interface-sounds",
+    "license": "CC0",
+    "start_seconds": 0.0,
+    "duration_seconds": 0.06,
+    "gain_db": 1.8
+  },
+  "whoosh.wav": {
+    "candidate": "whoosh-a",
+    "source": "Freesound",
+    "title": "Whoosh",
+    "author": "qubodup",
+    "page": "https://freesound.org/people/qubodup/sounds/60013/",
+    "license": "CC0",
+    "start_seconds": 0.0,
+    "duration_seconds": 0.43,
+    "gain_db": -3.6
+  },
+  "ambience.m4a": {
+    "candidate": "ambience-b",
+    "source": "Freesound",
+    "title": "Norwegian football match / soccer game ambience XY to ORTF, AB and Binaural",
+    "author": "Vogyik",
+    "page": "https://freesound.org/people/Vogyik/sounds/868982/",
+    "license": "CC0",
+    "start_seconds": 23.0,
+    "duration_seconds": 40.0,
+    "gain_db": 5.9,
+    "note": "Kaydın en durgun 40 saniyesi, 2 saniyelik çapraz geçişle döngü; AAC 128 kb/sn stereo"
+  },
+  "boing.wav": {
+    "candidate": "boing-b",
+    "source": "Freesound",
+    "title": "Boing 2",
+    "author": "magnuswaker",
+    "page": "https://freesound.org/people/magnuswaker/sounds/540790/",
+    "license": "CC0",
+    "start_seconds": 0.01,
+    "duration_seconds": 1.0,
+    "gain_db": -3.7
+  },
+  "pop.wav": {
+    "candidate": "pop-a",
+    "source": "Freesound",
+    "title": "Pop sound",
+    "author": "deraj",
+    "page": "https://freesound.org/people/deraj/sounds/202230/",
+    "license": "CC0",
+    "start_seconds": 0.19,
+    "duration_seconds": 0.46,
+    "gain_db": -0.8
+  },
+  "sad.wav": {
+    "candidate": "sad-c",
+    "source": "Freesound",
+    "title": "Trumpet_Cry.wav",
+    "author": "sweet_niche",
+    "page": "https://freesound.org/people/sweet_niche/sounds/543966/",
+    "license": "CC0",
+    "start_seconds": 0.06,
+    "duration_seconds": 3.5,
+    "gain_db": -1.0
+  },
+  "wrong.wav": {
+    "candidate": "current",
+    "source": "ChallengeGoal",
+    "title": "Kodla üretilen ilk ses (7 Ekim 2026)",
+    "author": "ChallengeGoal",
+    "page": "",
+    "license": "Kendi üretimimiz",
+    "note": "Kullanıcı şimdiki sesi tuttu; yalnızca düzeyi −20 dBFS hedefine getirildi (−3,2 dB)"
+  }
+}
