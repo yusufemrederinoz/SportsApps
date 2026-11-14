@@ -1336,7 +1336,7 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - 1.1.0 eski listeyi görmeye devam ediyor; protokol numarası artmadı.
 - Altı dilde başlık eklendi.
 
-**Bayraklar.** XOX başlıklarındaki bayrak emojisi 18'den 28 puntoya çıktı (satır yüksekliği arma boyu + 2). Ekranda henüz denetlenmedi.
+**Bayraklar.** XOX başlıklarındaki bayrak emojisi 18'den 28 puntoya çıktı (satır yüksekliği arma boyu + 2). Emülatörde günün bulmacası tahtasında denetlendi: Türkiye bayrağı Galatasaray ve Fenerbahçe armalarıyla aynı boyda, alttaki adlar aynı çizgide.
 
 **Testler.** Veri hattı 94, sunucu 305, uygulama 155 test geçiyor; tür denetimi ve lint temiz.
 

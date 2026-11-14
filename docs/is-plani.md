@@ -360,7 +360,7 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
      - Kullanıcının seçtiği kulüp + piyasa değeri listesi.
      - Veri commit'lendi, yayını 1.2.0 ile.
      - Ülke ve kıta tablosu Gizli Futbolcu aşamasına kaldı.
-  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak (kodlandı, ekranda denetlenecek).
+  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak (kodlandı, emülatörde denetlendi).
   6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
