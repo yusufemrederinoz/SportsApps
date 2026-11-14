@@ -5,6 +5,7 @@ export function careerCardIds(view: CareerView): number[] {
     new Set([
       ...(view.lastGuess?.footballerId == null ? [] : [view.lastGuess.footballerId]),
       ...(view.answer === null ? [] : [view.answer]),
+      ...(view.choices ?? []),
     ]),
   );
 }

@@ -17,6 +17,7 @@ export const JOKER_IDS = [
   'first-letter',
   'nationality',
   'position',
+  'birth-year',
 ] as const;
 
 export type JokerId = (typeof JOKER_IDS)[number];
@@ -30,7 +31,7 @@ export const GAME_JOKERS: Readonly<Record<GameId, readonly JokerId[]>> = {
   rare: ['extra-time', 'hint'],
   auction: ['answer-count', 'extra-time'],
   'top-ten': ['extra-life', 'first-letter'],
-  career: ['nationality', 'position'],
+  career: ['first-letter', 'birth-year'],
 };
 
 export const EXTRA_TIME_SECONDS: Readonly<Partial<Record<GameId, number>>> = {
@@ -55,6 +56,7 @@ export type JokerReveal =
   | { kind: 'count'; count: number }
   | { kind: 'country'; countryId: number | null }
   | { kind: 'position'; position: string | null; birthYear: number | null }
+  | { kind: 'birth-year'; birthYear: number | null }
   | { kind: 'swap'; from: number; to: number }
   | { kind: 'assists'; round: number }
   | { kind: 'pass' }

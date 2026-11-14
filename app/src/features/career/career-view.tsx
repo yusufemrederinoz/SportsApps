@@ -1,5 +1,6 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
-import { CAREER_TURN_SECONDS, type RareAction } from '@sportapps/protocol';
+import { CAREER_TURN_SECONDS, type CareerFactsView, type RareAction } from '@sportapps/protocol';
+import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
@@ -11,8 +12,12 @@ import { MetalPlate } from '@/components/metal-plate';
 import { Screen } from '@/components/screen';
 import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing, type ThemeColor } from '@/constants/theme';
+import { loadHeaderLabel } from '@/data/queries';
+import type { HeaderView } from '@/data/types';
 import { useClubLabels } from '@/features/chain/chain-view';
 import { JokerBar } from '@/features/jokers/joker-bar';
+import { ChoiceGrid } from '@/features/match/choice-grid';
+import { flagEmoji } from '@/features/match/flags';
 import { FootballerCard } from '@/features/match/footballer-card';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
@@ -29,6 +34,7 @@ const CARD_HEIGHT_SHARE = 0.17;
 const MAXIMUM_CARD_SIZE = 150;
 const DOT_SIZE = 12;
 const CREST_SIZE = 26;
+const ROLE_NAMES = { GK: 'jokers.roleGK', DF: 'jokers.roleDF', MF: 'jokers.roleMF', FW: 'jokers.roleFW' } as const;
 
 interface CareerMatchViewProps {
   career: OnlineCareer;
@@ -39,6 +45,44 @@ interface CareerMatchViewProps {
   onAct: (action: RareAction) => void;
   onPlayAgain: () => void;
   onQuit: () => void;
+}
+
+function useFactsCountry(facts: CareerFactsView | undefined, market: string): HeaderView | null {
+  const database = useSQLiteContext();
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+  const countryId = facts?.countryId ?? null;
+  const [loaded, setLoaded] = useState<HeaderView | null>(null);
+
+  useEffect(() => {
+    if (countryId === null) {
+      return;
+    }
+    let cancelled = false;
+    void loadHeaderLabel(database, { kind: 'country', referenceId: countryId }, market, language).then((label) => {
+      if (!cancelled) {
+        setLoaded(label);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [database, countryId, market, language]);
+
+  return countryId !== null && loaded?.referenceId === countryId ? loaded : null;
+}
+
+function FactsLine({ facts, market }: { facts: CareerFactsView; market: string }) {
+  const { t } = useTranslation();
+  const country = useFactsCountry(facts, market);
+  const flag = flagEmoji(country?.countryCode ?? null);
+  const role = facts.position && facts.position in ROLE_NAMES ? t(ROLE_NAMES[facts.position as keyof typeof ROLE_NAMES]) : null;
+  const parts = [country ? `${flag ? `${flag} ` : ''}${country.name}` : null, role].filter(Boolean);
+  return parts.length > 0 ? (
+    <ThemedText type="smallBold" themeColor="volt" style={styles.facts}>
+      {parts.join('  ·  ')}
+    </ThemedText>
+  ) : null;
 }
 
 function useCareerEffects(career: OnlineCareer, secondsLeft: number) {
@@ -107,7 +151,9 @@ export function CareerMatchView({
   const uppercaseAround = useUppercaseAround();
   const { height } = useWindowDimensions();
   const [searching, setSearching] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
   const { view, side } = career;
+  const choices = view.choices ?? [];
   const rival = opponentOf(side);
   const clubs = useClubLabels(
     view.clues.map((clue) => clue.clubId),
@@ -126,6 +172,7 @@ export function CareerMatchView({
   const won = result?.winner === side;
   const answer = view.answer === null ? null : (career.cards[view.answer] ?? null);
   const turnKey = `${view.round}-${view.clues.length}-${view.phase}`;
+  const pickKey = `${turnKey}-${view.attemptsLeft}-${view.turn}`;
   const homeCountry = career.market.code.toUpperCase();
 
   const status = (): { text: string; color: ThemeColor } => {
@@ -149,7 +196,7 @@ export function CareerMatchView({
       };
     }
     return myTurn
-      ? { text: uppercase(t('career.yourTurn')), color: 'volt' }
+      ? { text: uppercase(t(choices.length > 0 ? 'career.pick' : 'career.yourTurn')), color: 'volt' }
       : { text: uppercase(t('career.opponentTurn')), color: 'textSecondary' };
   };
   const current = status();
@@ -222,6 +269,7 @@ export function CareerMatchView({
           <ThemedText type="small" themeColor="textSecondary">
             {playing ? t('career.rule', { points: view.points }) : t('career.scope')}
           </ThemedText>
+          {view.facts ? <FactsLine facts={view.facts} market={career.market.code} /> : null}
         </MetalPlate>
       </Animated.View>
 
@@ -238,9 +286,16 @@ export function CareerMatchView({
                     {clue.lastYear && clue.lastYear !== clue.firstYear ? `${clue.firstYear}–${clue.lastYear}` : String(clue.firstYear)}
                   </ThemedText>
                   <ClubCrest clubId={clue.clubId} size={CREST_SIZE} />
-                  <ThemedText type="smallBold" numberOfLines={1} style={styles.club}>
-                    {club ? nameUppercase(club.name, club.local) : ''}
-                  </ThemedText>
+                  <View style={styles.club}>
+                    <ThemedText type="smallBold" numberOfLines={1}>
+                      {club ? nameUppercase(club.name, club.local) : ''}
+                    </ThemedText>
+                    {clue.appearances != null ? (
+                      <ThemedText type="label" themeColor="textSecondary" numberOfLines={1}>
+                        {t('career.clubStats', { appearances: clue.appearances, goals: clue.goals ?? 0 })}
+                      </ThemedText>
+                    ) : null}
+                  </View>
                 </Animated.View>
               ) : (
                 <ThemedText type="smallBold" themeColor="strokeBright">
@@ -270,10 +325,22 @@ export function CareerMatchView({
       </View>
 
       <View style={styles.action}>
-        {canGuess ? <ActionButton label={t('career.guess', { points: view.points })} onPress={() => setSearching(turnKey)} /> : null}
+        {canGuess && choices.length > 0 ? (
+          <ChoiceGrid
+            choices={choices}
+            cards={career.cards}
+            disabled={picked === pickKey}
+            onPick={(footballerId) => {
+              setPicked(pickKey);
+              onAct({ kind: 'name', footballerId });
+            }}
+          />
+        ) : canGuess ? (
+          <ActionButton label={t('career.guess', { points: view.points })} onPress={() => setSearching(turnKey)} />
+        ) : null}
       </View>
 
-      {canGuess && searching === turnKey ? (
+      {canGuess && choices.length === 0 && searching === turnKey ? (
         <FootballerSearch
           title={t('career.question')}
           market={career.market.code}
@@ -326,6 +393,9 @@ const styles = StyleSheet.create({
     fontSize: 26,
     lineHeight: 28,
     color: Colors.text,
+  },
+  facts: {
+    marginTop: Spacing.half,
   },
   path: {
     alignSelf: 'stretch',

@@ -21,6 +21,8 @@ export const PLAY_FEATURES = [
   'club-value-lists',
   'top-ten-hints',
   'top-ten-choices',
+  'career-help',
+  'career-choices',
 ] as const;
 export type PlayFeature = (typeof PLAY_FEATURES)[number];
 export const REMATCH_WINDOW_MILLISECONDS = 30000;

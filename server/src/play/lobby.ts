@@ -15,6 +15,7 @@ import {
   normalizeRoomCode,
   type ClientMessage,
   type GameId,
+  type JokerId,
   type JokerUse,
   type MatchOutcome,
   type PlayDifficulty,
@@ -46,6 +47,7 @@ import type { BotRoster } from './roster';
 const ADAPTATION_MATCHES = 5;
 const DIFFICULTIES: readonly number[] = [1, 2, 3];
 const DEFAULT_GAME: GameId = 'grid';
+const LEGACY_JOKERS: Readonly<Partial<Record<GameId, readonly JokerId[]>>> = { career: ['nationality', 'position'] };
 const CHOSEN_BOT_NAME = 'Bot';
 const BOT_RATING_SPREAD = 60;
 const MATCH_WINDOW_BASE = 150;
@@ -677,7 +679,8 @@ export function createLobby(options: LobbyOptions) {
       return;
     }
     const { active, side } = found;
-    if (!GAME_JOKERS[active.room.game].includes(message.joker)) {
+    const game = active.room.game;
+    if (!GAME_JOKERS[game].includes(message.joker) && !(LEGACY_JOKERS[game]?.includes(message.joker) ?? false)) {
       fail(userId, 'joker-unavailable');
       return;
     }

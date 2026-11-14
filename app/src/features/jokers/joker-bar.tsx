@@ -57,6 +57,7 @@ const LABEL_KEYS = {
   'first-letter': 'jokers.first-letter',
   nationality: 'jokers.nationality',
   position: 'jokers.position',
+  'birth-year': 'jokers.birth-year',
 } as const satisfies Record<JokerId, string>;
 
 export function jokerLabelKey(joker: JokerId) {

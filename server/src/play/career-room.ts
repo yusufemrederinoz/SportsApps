@@ -1,4 +1,4 @@
-import type { CareerStepRow } from '@sportapps/football-data';
+import type { CareerDecoyFilter, CareerStepRow } from '@sportapps/football-data';
 import {
   CareerError,
   attemptsLeft,
@@ -14,6 +14,7 @@ import {
 } from '@sportapps/game-core';
 import {
   CAREER_TURN_SECONDS,
+  type CareerFactsView,
   type CareerView,
   type CareerViewPhase,
   type PlayDifficulty,
@@ -33,6 +34,8 @@ const MAXIMUM_CLUBS = 8;
 const CANDIDATES = 300;
 const DECOYS = 20;
 const DECOY_FAME = 40;
+const CHOICES = 4;
+const CHOICE_POOL = 12;
 const MYSTERY_FAME: Record<PlayDifficulty, number> = { 1: 65, 2: 55, 3: 45 };
 const BOT_BASE: Record<BotLevel, number> = { 1: 0.12, 2: 0.22, 3: 0.32 };
 const BOT_STEP = 0.15;
@@ -50,13 +53,48 @@ export const DEFAULT_CAREER_TIMING: CareerTiming = {
   botThinkMilliseconds: { minimum: 3000, maximum: 7000 },
 };
 
-export type CareerLibrary = Pick<FootballLibrary, 'careerCandidates' | 'careerPath' | 'chainCandidates' | 'footballerFacts'>;
+export type CareerLibrary = Pick<
+  FootballLibrary,
+  'careerCandidates' | 'careerPath' | 'chainCandidates' | 'footballerFacts' | 'careerClubStats' | 'careerDecoys'
+>;
 
 type Timer = ReturnType<typeof setTimeout>;
 
 interface Mystery {
   footballerId: number;
   path: CareerStepRow[];
+}
+
+interface MysteryHelp {
+  facts: CareerFactsView;
+  stats: ReadonlyMap<number, { appearances: number | null; goals: number | null }>;
+  choices: number[];
+}
+
+export function chooseChoices(
+  library: CareerLibrary,
+  market: string,
+  mystery: Mystery,
+  facts: CareerFactsView,
+  random: () => number,
+): number[] {
+  const firstClub = mystery.path[0]?.clubId ?? null;
+  const filters: CareerDecoyFilter[] = [
+    { countryId: facts.countryId, position: facts.position, clubId: firstClub },
+    { countryId: facts.countryId, position: facts.position },
+    { countryId: facts.countryId },
+    { position: facts.position, clubId: firstClub },
+    {},
+  ];
+  const decoys: number[] = [];
+  for (const filter of filters) {
+    if (decoys.length >= CHOICES - 1) {
+      break;
+    }
+    const found = library.careerDecoys(market, DECOY_FAME, filter, [mystery.footballerId, ...decoys], CHOICE_POOL);
+    decoys.push(...shuffle(found, random).slice(0, CHOICES - 1 - decoys.length));
+  }
+  return shuffle([mystery.footballerId, ...decoys], random);
 }
 
 function pick<T>(items: readonly T[], random: () => number): T {
@@ -103,6 +141,25 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
     if (mysteries.length < ROUNDS) {
       return null;
     }
+    const features = context.features ?? [];
+    const helps = features.includes('career-help');
+    const offersChoices = difficulty === 1 && features.includes('career-choices');
+    const showsFacts = helps && difficulty <= 2;
+    const help: MysteryHelp[] = mysteries.map((mystery) => {
+      const known = library.footballerFacts(mystery.footballerId);
+      const facts = { countryId: known?.countryId ?? null, position: known?.position ?? null };
+      return {
+        facts,
+        stats: new Map(
+          helps
+            ? library
+                .careerClubStats(mystery.footballerId)
+                .map((row) => [row.clubId, { appearances: row.appearances, goals: row.goals }] as const)
+            : [],
+        ),
+        choices: offersChoices ? chooseChoices(library, market, mystery, facts, random) : [],
+      };
+    });
 
     const startedAt = now();
     const { botLevel } = context;
@@ -119,15 +176,24 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
     let phaseTimer: Timer | null = null;
     let botTimer: Timer | null = null;
 
+    const remainingChoices = (): number[] => {
+      const missed = new Set(
+        state.guesses.filter((entry) => entry.round === state.round && !entry.correct).map((entry) => entry.footballerId),
+      );
+      return (help[state.round]?.choices ?? []).filter((footballerId) => !missed.has(footballerId));
+    };
+
     const view = (): CareerView => {
       const mystery = mysteries[state.round];
+      const aid = help[state.round];
       const open = stage === 'playing' ? state.revealed : (mystery?.path.length ?? 0);
       const last = state.guesses.at(-1);
+      const choices = stage === 'playing' ? remainingChoices() : [];
       return {
         phase: stage,
         round: state.round + 1,
         totalRounds: state.mysteries.length,
-        clues: (mystery?.path ?? []).slice(0, open).map((step) => ({ ...step })),
+        clues: (mystery?.path ?? []).slice(0, open).map((step) => ({ ...step, ...aid?.stats.get(step.clubId) })),
         totalClues: mystery?.path.length ?? 0,
         turn: state.turn,
         attemptsLeft: stage === 'playing' ? attemptsLeft(state) : 0,
@@ -138,6 +204,8 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
         deadlineIn: stage === 'finished' ? 0 : Math.max(0, deadline - now()),
         scores: { ...state.scores },
         result,
+        ...(showsFacts && aid ? { facts: { ...aid.facts } } : {}),
+        ...(choices.length > 0 ? { choices } : {}),
       };
     };
 
@@ -267,6 +335,12 @@ export function createCareerRoomFactory(library: CareerLibrary, timing: CareerTi
           return { error: 'invalid-action' };
         }
         const facts = library.footballerFacts(mystery.footballerId);
+        if (joker === 'first-letter') {
+          return { reveal: { kind: 'initials', footballerId: mystery.footballerId, birthYear: false } };
+        }
+        if (joker === 'birth-year') {
+          return { reveal: { kind: 'birth-year', birthYear: facts?.birthYear ?? null } };
+        }
         if (joker === 'nationality') {
           return { reveal: { kind: 'country', countryId: facts?.countryId ?? null } };
         }

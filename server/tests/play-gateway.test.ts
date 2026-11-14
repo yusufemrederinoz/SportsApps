@@ -582,6 +582,25 @@ describe.skipIf(!available)('play gateway', () => {
     expect(football.footballerFacts(first?.id ?? 0)).toMatchObject({ countryId: expect.any(Number), position: expect.any(String) });
   });
 
+  it('finds club numbers and look-alike names for real career paths', () => {
+    const [mystery] = football.careerCandidates('tr', 65, 3, 1);
+    const facts = football.footballerFacts(mystery ?? 0);
+    const firstClub = football.careerPath(mystery ?? 0)[0]?.clubId ?? null;
+    const decoys = football.careerDecoys(
+      'tr',
+      40,
+      { countryId: facts?.countryId ?? null, position: facts?.position ?? null },
+      [mystery ?? 0],
+      12,
+    );
+    expect(decoys.length).toBeGreaterThan(3);
+    expect(decoys).not.toContain(mystery);
+    decoys.forEach((id) => expect(football.footballerFacts(id)).toMatchObject({ countryId: facts?.countryId, position: facts?.position }));
+    const atClub = football.careerDecoys('tr', 40, { clubId: firstClub }, [mystery ?? 0], 12);
+    expect(atClub.length).toBeGreaterThan(0);
+    expect(football.careerClubStats(mystery ?? 0).some((row) => row.appearances !== null && row.appearances > 0)).toBe(true);
+  });
+
   it('walks real career paths against the bot', async () => {
     const human = await ready();
     human.send({ type: 'queue', market: 'tr', difficulty: 2, game: 'career' });

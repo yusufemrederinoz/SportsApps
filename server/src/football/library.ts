@@ -5,6 +5,8 @@ import { DatabaseSync } from 'node:sqlite';
 import {
   answerCountStatement,
   careerCandidatesStatement,
+  careerClubStatsStatement,
+  careerDecoysStatement,
   careerPathStatement,
   footballerFactsStatement,
   chainCandidatesStatement,
@@ -36,7 +38,9 @@ import {
   topClubValuesStatement,
   topCountryGoalsStatement,
   topValuesStatement,
+  type CareerDecoyFilter,
   type CareerStepRow,
+  type ClubStatsRow,
   type FootballerFactsRow,
   type DraftCandidateRow,
   type DraftEntryRow,
@@ -83,6 +87,14 @@ export interface FootballLibrary {
   careerCandidates(market: string, minimumFame: number, minimumClubs: number, limit: number): number[];
   careerPath(footballerId: number): CareerStepRow[];
   footballerFacts(footballerId: number): FootballerFactsRow | null;
+  careerClubStats(footballerId: number): ClubStatsRow[];
+  careerDecoys(
+    market: string,
+    minimumFame: number,
+    filter: CareerDecoyFilter,
+    excludedIds: readonly number[],
+    limit: number,
+  ): number[];
   ranking(list: TopTenListView, limit: number): RankedRow[];
   duelConcepts(market: string): readonly DuelConcept[];
   conceptPlayers(concept: DuelConcept, market: string, minimumFame: number, limit: number): number[];
@@ -237,6 +249,14 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
 
     footballerFacts(footballerId) {
       return first<FootballerFactsRow>(footballerFactsStatement(footballerId)) ?? null;
+    },
+
+    careerClubStats(footballerId) {
+      return all<ClubStatsRow>(careerClubStatsStatement(footballerId));
+    },
+
+    careerDecoys(market, minimumFame, filter, excludedIds, limit) {
+      return ids(careerDecoysStatement(market, minimumFame, filter, excludedIds, limit));
     },
 
     ranking(list, limit) {

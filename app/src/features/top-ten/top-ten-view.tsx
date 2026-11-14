@@ -15,6 +15,7 @@ import { loadHeaderLabel } from '@/data/queries';
 import type { HeaderView } from '@/data/types';
 import { metricValueText } from '@/features/duel/labels';
 import { JokerBar } from '@/features/jokers/joker-bar';
+import { ChoiceGrid } from '@/features/match/choice-grid';
 import { flagEmoji } from '@/features/match/flags';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
@@ -26,8 +27,6 @@ import type { OnlineTopTen } from '@/features/match/use-online-match';
 import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
-
-import { ChoiceGrid } from './choice-grid';
 
 const LIST_TITLES = {
   value: 'topTen.listValue',

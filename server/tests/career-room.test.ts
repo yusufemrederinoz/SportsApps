@@ -1,4 +1,4 @@
-import type { CareerView, GameView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
+import type { CareerView, GameView, PlayFeature, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -29,6 +29,13 @@ const library: CareerLibrary = {
     Array.from({ length: clubsOf(id) }, (_, index) => ({ clubId: id * 10 + index, firstYear: 2000 + index * 3, lastYear: 2002 + index * 3 })),
   chainCandidates: (_, id) => [id + 100, id + 200],
   footballerFacts: (id) => ({ countryId: id * 2, position: 'FW', birthYear: 1990 + id }),
+  careerClubStats: (id) =>
+    Array.from({ length: clubsOf(id) - 1 }, (_, index) => ({ clubId: id * 10 + index, appearances: 30 + index, goals: index })),
+  careerDecoys: (_, __, filter, excludedIds) =>
+    [500, 501, 502, 503, 504, 505]
+      .map((id) => id + (filter.clubId != null ? 0 : filter.position != null ? 10 : filter.countryId != null ? 20 : 30))
+      .filter((id) => !excludedIds.includes(id))
+      .slice(0, filter.clubId != null ? 1 : 6),
 };
 
 interface Client extends Connection {
@@ -58,10 +65,10 @@ function careerOf(state: GameView): CareerView {
   return state.view;
 }
 
-function join(): Client {
+function join(features?: PlayFeature[]): Client {
   const { account } = createAccountService(database, { sessionDays: 90 }).createGuest();
   const client: Client = {
-    player: { id: account.id, username: account.username },
+    player: { id: account.id, username: account.username, ...(features ? { features } : {}) },
     received: [],
     send(message) {
       client.received.push(message);
@@ -191,11 +198,14 @@ describe('career path matches', () => {
     expect(history.list(second.player.id)[0]).toMatchObject({ game: 'career', outcome: 'loss', ownCells: 0 });
   });
 
-  it('reveals the nationality and position of the hidden footballer only while it is hidden', () => {
+  it('reveals the first letter and birth year, and still the nationality and position for older apps', () => {
     const { first } = pair();
     const side = first.session().side;
-    const room = (joker: 'nationality' | 'position' | 'pass') => lobbyRoom().useJoker(side, joker, {});
+    const room = (joker: 'first-letter' | 'birth-year' | 'nationality' | 'position' | 'pass') =>
+      lobbyRoom().useJoker(side, joker, {});
     const mystery = mysteryOf(first.view());
+    expect(room('first-letter')).toEqual({ reveal: { kind: 'initials', footballerId: mystery, birthYear: false } });
+    expect(room('birth-year')).toEqual({ reveal: { kind: 'birth-year', birthYear: 1990 + mystery } });
     expect(room('nationality')).toEqual({ reveal: { kind: 'country', countryId: mystery * 2 } });
     expect(room('position')).toEqual({ reveal: { kind: 'position', position: 'FW', birthYear: 1990 + mystery } });
     expect(room('pass')).toEqual({ error: 'joker-unavailable' });
@@ -219,11 +229,89 @@ describe('career path matches', () => {
     expect(client.view().scores[rival]).toBeGreaterThan(0);
   });
 
+  it('keeps the new help away from apps that do not support it', () => {
+    const { first } = pair();
+    const view = first.view();
+    expect(view.facts).toBeUndefined();
+    expect(view.choices).toBeUndefined();
+    expect(view.clues[0]).toEqual({ clubId: view.clues[0]?.clubId, firstYear: 2000, lastYear: 2002 });
+  });
+
   it('reports that no match can be made without careers', () => {
     const first = join();
     const second = join();
     queue(first, 'empty');
     queue(second, 'empty');
     expect(first.of('error').at(-1)?.code).toBe('no-grid');
+  });
+});
+
+describe('career path help on easier levels', () => {
+  const HELP: PlayFeature[] = ['career-help', 'career-choices'];
+
+  function helpedPair(difficulty: 1 | 2 | 3, features: PlayFeature[] = HELP) {
+    const first = join(features);
+    const second = join(features);
+    [first, second].forEach((client) =>
+      lobby.handle(client.player.id, { type: 'queue', market: 'tr', difficulty, game: 'career' }),
+    );
+    const active = () => (first.view().turn === first.session().side ? first : second);
+    return { first, second, active };
+  }
+
+  it('shows appearances and goals beside each club that has them', () => {
+    const { first, active } = helpedPair(3);
+    expect(first.view().clues[0]).toMatchObject({ appearances: 30, goals: 0 });
+    name(active(), 9999);
+    name(active(), 9998);
+    name(active(), 9997);
+    const clues = first.view().clues;
+    expect(clues[1]).toMatchObject({ appearances: 31, goals: 1 });
+    expect(clues[3]?.appearances).toBeUndefined();
+  });
+
+  it('opens nationality and position from the start on easy and medium but not on hard', () => {
+    const mystery = (difficulty: 1 | 2 | 3) => {
+      lobby.shutdown();
+      lobby = createLobby({
+        games: { career: capturing(createCareerRoomFactory(library, TIMING), rooms) },
+        hasMarket: (market) => market === 'tr',
+        history,
+        random,
+        now: () => Date.now(),
+        botWaitMilliseconds: BOT_WAIT,
+      });
+      const view = helpedPair(difficulty).first.view();
+      return { facts: view.facts, id: mysteryOf(view) };
+    };
+    const easy = mystery(1);
+    expect(easy.facts).toEqual({ countryId: easy.id * 2, position: 'FW' });
+    const medium = mystery(2);
+    expect(medium.facts).toEqual({ countryId: medium.id * 2, position: 'FW' });
+    expect(mystery(3).facts).toBeUndefined();
+  });
+
+  it('offers four names on easy, led by players who match the open facts and club', () => {
+    const { first } = helpedPair(1);
+    const view = first.view();
+    const choices = view.choices ?? [];
+    expect(choices).toHaveLength(4);
+    expect(choices).toContain(mysteryOf(view));
+    expect(choices).toContain(500);
+    expect(choices.filter((id) => id >= 510 && id < 520)).toHaveLength(2);
+    expect(helpedPair(2).first.view().choices).toBeUndefined();
+  });
+
+  it('drops a wrong pick, opens the next club and passes the turn', () => {
+    const { first, active } = helpedPair(1);
+    const player = active();
+    const before = first.view();
+    const wrong = (before.choices ?? []).find((id) => id !== mysteryOf(before)) as number;
+    name(player, wrong);
+    const after = first.view();
+    expect(after.choices).toHaveLength(3);
+    expect(after.choices).not.toContain(wrong);
+    expect(after.clues).toHaveLength(2);
+    expect(active()).not.toBe(player);
   });
 });

@@ -21,6 +21,12 @@ const view: CareerView = {
   result: null,
 };
 
+describe('career choices', () => {
+  it('loads the names offered as choices', () => {
+    expect(careerCardIds({ ...view, lastGuess: null, answer: null, choices: [40, 41] })).toEqual([40, 41]);
+  });
+});
+
 describe('career path views', () => {
   it('collects the last guess and the answer once', () => {
     expect(careerCardIds(view)).toEqual([5, 9]);

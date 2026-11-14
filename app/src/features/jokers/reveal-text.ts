@@ -66,6 +66,8 @@ export function useRevealText(reveal: JokerReveal, market: string, metric: DuelM
             ? t('jokers.positionYear', { position, year: reveal.birthYear })
             : t('jokers.positionOnly', { position });
         }
+        case 'birth-year':
+          return t('jokers.birthYear', { year: reveal.birthYear ?? t('jokers.unknown') });
         case 'swap': {
           const [from, to] = await Promise.all([loadFootballer(database, reveal.from), loadFootballer(database, reveal.to)]);
           return t('jokers.swap', { from: from?.name ?? '?', to: to?.name ?? '?' });

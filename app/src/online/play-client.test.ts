@@ -1,4 +1,4 @@
-import type { ServerMessage } from '@sportapps/protocol';
+import { PLAY_FEATURES, type ServerMessage } from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createPlayClient, playUrl, type ConnectionStatus, type SocketLike } from './play-client';
@@ -67,7 +67,7 @@ describe('createPlayClient', () => {
 
     socket?.onopen?.();
     expect(socket?.sent).toEqual([
-      { type: 'hello', token: 'token-1', protocol: 1, dataVersion: 'v1', features: ['reactions', 'rematch', 'ranked-rooms', 'club-value-lists', 'top-ten-hints', 'top-ten-choices'] },
+      { type: 'hello', token: 'token-1', protocol: 1, dataVersion: 'v1', features: [...PLAY_FEATURES] },
     ]);
 
     socket?.receive({ type: 'ready' });

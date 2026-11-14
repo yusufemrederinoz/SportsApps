@@ -6,6 +6,13 @@ export interface CareerClueView {
   clubId: number;
   firstYear: number;
   lastYear: number | null;
+  appearances?: number | null;
+  goals?: number | null;
+}
+
+export interface CareerFactsView {
+  countryId: number | null;
+  position: string | null;
 }
 
 export interface CareerGuessView {
@@ -30,4 +37,6 @@ export interface CareerView {
   deadlineIn: number;
   scores: Record<PlaySide, number>;
   result: PlayResult | null;
+  facts?: CareerFactsView;
+  choices?: number[];
 }
