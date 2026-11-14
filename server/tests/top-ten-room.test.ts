@@ -40,7 +40,13 @@ const library: TopTenLibrary = {
     keyOf(list) === 4
       ? []
       : Array.from({ length: Math.min(limit, 15) }, (_, index) => ({ id: keyOf(list) * 100 + index + 1, value: 500 - index })),
+  footballerFacts: (footballerId) => ({ countryId: footballerId % 7, position: 'FW', birthYear: 1990 }),
 };
+const CLUB_LISTS: TopTenListView[] = [
+  { kind: 'clubValue', clubId: 3 },
+  { kind: 'clubValue', clubId: 5 },
+];
+const clubLibrary: TopTenLibrary = { ...library, topTenLists: () => CLUB_LISTS };
 
 interface Client extends Connection {
   player: Player;
@@ -159,9 +165,9 @@ describe('top ten setup', () => {
       { kind: 'clubGoals', clubId: 5 },
       { kind: 'clubValue', clubId: 5 },
     ];
-    const clubLibrary: TopTenLibrary = { ...library, topTenLists: () => clubLists };
-    const kinds = (features: Parameters<typeof prepareLists>[3]) =>
-      prepareLists(clubLibrary, 'tr', () => 0.5, features).map((list) => list.round.list.kind);
+    const mixedLibrary: TopTenLibrary = { ...library, topTenLists: () => clubLists };
+    const kinds = (features: readonly PlayFeature[]) =>
+      prepareLists(mixedLibrary, 'tr', () => 0.5, { features }).map((list) => list.round.list.kind);
     expect(kinds([])).toEqual(['clubGoals', 'clubGoals']);
     expect(kinds(['rematch', 'club-value-lists'])).toEqual(['clubValue', 'clubValue']);
   });
@@ -181,6 +187,86 @@ describe('top ten setup', () => {
     mixed.forEach((client) => queue(client));
     expect(modern.map((client) => client.view().list.kind)).toEqual(['clubValue', 'clubValue']);
     expect(mixed.map((client) => client.view().list.kind)).toEqual(['clubGoals', 'clubGoals']);
+  });
+
+  it('asks the library for the easy topics on easy and skips lists without enough distractors', () => {
+    const asked: (number | undefined)[] = [];
+    const tracking: TopTenLibrary = {
+      ...library,
+      topTenLists: (_, difficulty) => {
+        asked.push(difficulty);
+        return LISTS;
+      },
+    };
+    const prepared = prepareLists(tracking, 'tr', () => 0.99, { difficulty: 1, distractors: 3 });
+    expect(asked).toEqual([1]);
+    expect(prepared).toHaveLength(2);
+    prepared.forEach((list) => expect(list.distractors).toHaveLength(5));
+    const shortLibrary: TopTenLibrary = {
+      ...library,
+      ranking: (list, limit) => library.ranking(list, Math.min(limit, 12)),
+    };
+    expect(prepareLists(shortLibrary, 'tr', () => 0.99, { distractors: 3 })).toHaveLength(0);
+  });
+});
+
+describe('top ten help on easier levels', () => {
+  const HELP: PlayFeature[] = ['club-value-lists', 'top-ten-hints', 'top-ten-choices'];
+
+  function easyPair(difficulty: 1 | 2 | 3, features: PlayFeature[] | undefined = HELP) {
+    lobby.shutdown();
+    lobby = openLobby(clubLibrary);
+    const first = join(features);
+    const second = join(features);
+    [first, second].forEach((client) =>
+      lobby.handle(client.player.id, { type: 'queue', market: 'tr', difficulty, game: 'top-ten' }),
+    );
+    const active = () => (first.view().turn === first.session().side ? first : second);
+    const waiting = () => (active() === first ? second : first);
+    return { first, second, active, waiting };
+  }
+
+  it('gives the player on turn four names on easy, one of them from the list and three from just below it', () => {
+    const { active, waiting } = easyPair(1);
+    const view = active().view();
+    const choices = view.choices ?? [];
+    const key = keyOf(view.list);
+    expect(choices).toHaveLength(4);
+    expect(choices.filter((id) => id - key * 100 <= 10)).toHaveLength(1);
+    expect(choices.filter((id) => id - key * 100 > 10).every((id) => id - key * 100 <= 25)).toBe(true);
+    expect(waiting().view().choices).toBeUndefined();
+  });
+
+  it('accepts a picked name and draws new names for the next player', () => {
+    const { active } = easyPair(1);
+    const player = active();
+    const choices = player.view().choices ?? [];
+    const key = keyOf(player.view().list);
+    const right = choices.find((id) => id - key * 100 <= 10) as number;
+    name(player, right);
+    expect(player.view().entries.some((entry) => entry.footballerId === right)).toBe(true);
+    const next = active();
+    expect(next).not.toBe(player);
+    expect(next.view().choices).toHaveLength(4);
+    expect(next.view().choices).not.toContain(right);
+  });
+
+  it('shows nationality and position on easy, only position on medium and nothing on hard', () => {
+    const firstRow = (difficulty: 1 | 2 | 3) => {
+      const view = easyPair(difficulty).active().view();
+      return { hint: view.entries[0]?.hint, top: keyOf(view.list) * 100 + 1 };
+    };
+    const easy = firstRow(1);
+    expect(easy.hint).toEqual({ countryId: easy.top % 7, position: 'FW' });
+    expect(firstRow(2).hint).toEqual({ countryId: null, position: 'FW' });
+    expect(firstRow(3).hint).toBeUndefined();
+  });
+
+  it('keeps names and hints away from apps that do not support them', () => {
+    const { active } = easyPair(1, ['club-value-lists']);
+    const view = active().view();
+    expect(view.choices).toBeUndefined();
+    expect(view.entries.every((entry) => entry.hint === undefined)).toBe(true);
   });
 });
 

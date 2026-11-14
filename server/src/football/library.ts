@@ -46,12 +46,13 @@ import {
   type Statement,
 } from '@sportapps/football-data';
 import type { BotOption, CellPosition, Grid, Header } from '@sportapps/game-core';
-import type { DuelConcept, TopTenListView } from '@sportapps/protocol';
+import type { DuelConcept, PlayDifficulty, TopTenListView } from '@sportapps/protocol';
 
 const VERSION_FILE = 'version.json';
 const KNOWN_ANSWER_LIMIT = 8;
 const CONCEPT_FAME = 45;
 const CONCEPT_PLAYERS = 25;
+const EASY_TOP_TEN_CLUBS = 16;
 const DRAFT_FAME = 32;
 const DRAFT_PER_POSITION = 4;
 const CHAIN_SEED_FAME = 55;
@@ -78,7 +79,7 @@ export interface FootballLibrary {
   fameOf(market: string, footballerId: number): number;
   answerCount(market: string, row: Header, column: Header, minimumFame: number): number;
   answersFor(market: string, row: Header, column: Header, minimumFame: number, limit: number): number[];
-  topTenLists(market: string): readonly TopTenListView[];
+  topTenLists(market: string, difficulty?: PlayDifficulty): readonly TopTenListView[];
   careerCandidates(market: string, minimumFame: number, minimumClubs: number, limit: number): number[];
   careerPath(footballerId: number): CareerStepRow[];
   footballerFacts(footballerId: number): FootballerFactsRow | null;
@@ -207,20 +208,22 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
       return ids(knownAnswersStatement(market, row, column, minimumFame, limit));
     },
 
-    topTenLists(market) {
-      const known = topTenLists.get(market);
+    topTenLists(market, difficulty) {
+      const key = `${market}:${difficulty === 1 ? 'easy' : 'all'}`;
+      const known = topTenLists.get(key);
       if (known) {
         return known;
       }
       const countries = markets.has(market) ? ids(countryConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)) : [];
-      const clubs = markets.has(market) ? ids(clubConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)) : [];
+      const conceptClubs = markets.has(market) ? ids(clubConceptsStatement(market, CONCEPT_FAME, CONCEPT_PLAYERS)) : [];
+      const clubs = difficulty === 1 ? conceptClubs.slice(0, EASY_TOP_TEN_CLUBS) : conceptClubs;
       const loaded: TopTenListView[] = [
         ...countries.map((countryId): TopTenListView => ({ kind: 'value', countryId })),
         ...countries.map((countryId): TopTenListView => ({ kind: 'goals', countryId })),
         ...clubs.map((clubId): TopTenListView => ({ kind: 'clubGoals', clubId })),
         ...clubs.map((clubId): TopTenListView => ({ kind: 'clubValue', clubId })),
       ];
-      topTenLists.set(market, loaded);
+      topTenLists.set(key, loaded);
       return loaded;
     },
 

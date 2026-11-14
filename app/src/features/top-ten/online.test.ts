@@ -26,6 +26,7 @@ const view: TopTenView = {
 describe('top ten views', () => {
   it('collects the found names and the last guess once', () => {
     expect(topTenCardIds(view)).toEqual([7, 12]);
+    expect(topTenCardIds({ ...view, choices: [12, 31, 7, 44] })).toEqual([7, 12, 31, 44]);
     expect(gameCardIds({ game: 'top-ten', view: { ...view, lastGuess: null } })).toEqual([7]);
   });
 

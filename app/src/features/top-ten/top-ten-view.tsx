@@ -1,5 +1,5 @@
 import { opponentOf, type Side } from '@sportapps/game-core';
-import { TOP_TEN_TURN_SECONDS, type RareAction, type TopTenListView } from '@sportapps/protocol';
+import { TOP_TEN_TURN_SECONDS, type RareAction, type TopTenListView, type TopTenView } from '@sportapps/protocol';
 import { useSQLiteContext } from 'expo-sqlite';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import { loadHeaderLabel } from '@/data/queries';
 import type { HeaderView } from '@/data/types';
 import { metricValueText } from '@/features/duel/labels';
 import { JokerBar } from '@/features/jokers/joker-bar';
+import { flagEmoji } from '@/features/match/flags';
 import { FootballerSearch } from '@/features/match/footballer-search';
 import { ResultOverlay } from '@/features/match/result-overlay';
 import { Scoreboard } from '@/features/match/scoreboard';
@@ -26,12 +27,16 @@ import { haptics } from '@/feedback/haptics';
 import { playSound } from '@/feedback/sounds';
 import { NAME_SLOT, useNameUppercase, useUppercase, useUppercaseAround } from '@/i18n/uppercase';
 
+import { ChoiceGrid } from './choice-grid';
+
 const LIST_TITLES = {
   value: 'topTen.listValue',
   goals: 'topTen.listGoals',
   clubGoals: 'topTen.listClubGoals',
   clubValue: 'topTen.listClubValue',
 } as const satisfies Record<TopTenListView['kind'], string>;
+const ROLE_KEYS = { GK: 'role.GK', DF: 'role.DF', MF: 'role.MF', FW: 'role.FW' } as const;
+const ROLE_NAMES = { GK: 'jokers.roleGK', DF: 'jokers.roleDF', MF: 'jokers.roleMF', FW: 'jokers.roleFW' } as const;
 const LIFE_SIZE = 12;
 const RANK_SIZE = 30;
 
@@ -73,6 +78,44 @@ function useListSubject(list: TopTenListView, market: string): HeaderView | null
   }, [database, key, market, language]);
 
   return loaded?.key === key ? loaded.label : null;
+}
+
+function useHintCountries(view: TopTenView, market: string): Readonly<Record<number, HeaderView>> {
+  const database = useSQLiteContext();
+  const { i18n } = useTranslation();
+  const language = i18n.language;
+  const key = Array.from(
+    new Set(view.entries.flatMap((entry) => (entry.hint?.countryId == null ? [] : [entry.hint.countryId]))),
+  ).join(',');
+  const [loaded, setLoaded] = useState<Record<number, HeaderView>>({});
+
+  useEffect(() => {
+    const missing = key
+      .split(',')
+      .filter(Boolean)
+      .map(Number)
+      .filter((countryId) => !loaded[countryId]);
+    if (missing.length === 0) {
+      return;
+    }
+    let cancelled = false;
+    void Promise.all(
+      missing.map((countryId) => loadHeaderLabel(database, { kind: 'country', referenceId: countryId }, market, language)),
+    ).then((labels) => {
+      if (!cancelled) {
+        setLoaded((current) => ({ ...current, ...Object.fromEntries(labels.map((label) => [label.referenceId, label])) }));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [database, key, loaded, market, language]);
+
+  return loaded;
+}
+
+function isRole(position: string | null | undefined): position is keyof typeof ROLE_KEYS {
+  return position != null && position in ROLE_KEYS;
 }
 
 function useTopTenEffects(topTen: OnlineTopTen, secondsLeft: number) {
@@ -140,9 +183,12 @@ export function TopTenMatchView({
   const nameUppercase = useNameUppercase();
   const uppercaseAround = useUppercaseAround();
   const [searching, setSearching] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
   const { view, side } = topTen;
   const rival = opponentOf(side);
   const subject = useListSubject(view.list, topTen.market.code);
+  const hintCountries = useHintCountries(view, topTen.market.code);
+  const choices = view.choices ?? [];
 
   useTopTenEffects(topTen, secondsLeft);
 
@@ -183,7 +229,7 @@ export function TopTenMatchView({
       };
     }
     return myTurn
-      ? { text: uppercase(t('topTen.yourTurn')), color: 'volt' }
+      ? { text: uppercase(t(choices.length > 0 ? 'topTen.pick' : 'topTen.yourTurn')), color: 'volt' }
       : { text: uppercase(t('topTen.opponentTurn')), color: 'textSecondary' };
   };
   const current = status();
@@ -279,12 +325,18 @@ export function TopTenMatchView({
         {view.entries.map((entry) => {
           const footballer = entry.footballerId === null ? null : topTen.cards[entry.footballerId];
           const owner = entry.foundBy;
+          const country = entry.hint?.countryId == null ? null : (hintCountries[entry.hint.countryId] ?? null);
+          const role = isRole(entry.hint?.position) ? entry.hint.position : null;
+          const flag = flagEmoji(country?.countryCode ?? null);
+          const hintLabel = [country?.name, role ? t(ROLE_NAMES[role]) : null].filter(Boolean).join(', ');
           return (
             <View
               key={`${view.round}-${entry.rank}`}
               style={[styles.row, owner && { borderColor: Finishes[owner].base }]}
               accessible
-              accessibilityLabel={footballer ? `${entry.rank}. ${footballer.name}` : `${entry.rank}. ?`}>
+              accessibilityLabel={
+                footballer ? `${entry.rank}. ${footballer.name}` : `${entry.rank}. ?${hintLabel ? `, ${hintLabel}` : ''}`
+              }>
               <View style={[styles.rank, owner && { backgroundColor: Finishes[owner].base }]}>
                 <ThemedText style={[styles.rankText, owner && { color: Finishes[owner].ink }]}>{String(entry.rank)}</ThemedText>
               </View>
@@ -298,9 +350,27 @@ export function TopTenMatchView({
                   </ThemedText>
                 </Animated.View>
               ) : (
-                <ThemedText type="smallBold" themeColor="strokeBright" style={styles.rowName}>
-                  ?
-                </ThemedText>
+                <View style={styles.rowBody}>
+                  <ThemedText type="smallBold" themeColor="strokeBright" style={styles.rowName}>
+                    ?
+                  </ThemedText>
+                  {country ? (
+                    flag ? (
+                      <ThemedText style={styles.hintFlag}>{flag}</ThemedText>
+                    ) : (
+                      <ThemedText type="label" themeColor="textSecondary" numberOfLines={1}>
+                        {country.name}
+                      </ThemedText>
+                    )
+                  ) : null}
+                  {role ? (
+                    <View style={styles.hintRole}>
+                      <ThemedText type="label" themeColor="textSecondary">
+                        {t(ROLE_KEYS[role])}
+                      </ThemedText>
+                    </View>
+                  ) : null}
+                </View>
               )}
             </View>
           );
@@ -319,10 +389,22 @@ export function TopTenMatchView({
       </View>
 
       <View style={styles.action}>
-        {canName ? <ActionButton label={t('topTen.say')} onPress={() => setSearching(turnKey)} /> : null}
+        {canName && choices.length > 0 ? (
+          <ChoiceGrid
+            choices={choices}
+            cards={topTen.cards}
+            disabled={picked === turnKey}
+            onPick={(footballerId) => {
+              setPicked(turnKey);
+              onAct({ kind: 'name', footballerId });
+            }}
+          />
+        ) : canName ? (
+          <ActionButton label={t('topTen.say')} onPress={() => setSearching(turnKey)} />
+        ) : null}
       </View>
 
-      {canName && searching === turnKey ? (
+      {canName && choices.length === 0 && searching === turnKey ? (
         <FootballerSearch
           title={title}
           market={topTen.market.code}
@@ -440,6 +522,18 @@ const styles = StyleSheet.create({
   },
   unclaimed: {
     color: Colors.textSecondary,
+  },
+  hintFlag: {
+    fontSize: 18,
+    lineHeight: 22,
+  },
+  hintRole: {
+    minWidth: 30,
+    alignItems: 'center',
+    paddingHorizontal: Spacing.one,
+    borderRadius: Radius.small,
+    borderWidth: 1,
+    borderColor: Colors.stroke,
   },
   status: {
     flexGrow: 1,

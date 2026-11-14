@@ -429,6 +429,7 @@
     "lives": "{{name}}: {{lives}} lives",
     "goals": "{{goals}} goals",
     "say": "Name a footballer",
+    "pick": "Pick the one on the list",
     "yourTurn": "Your turn",
     "opponentTurn": "Your opponent's turn",
     "hit": "{{name}}: number {{rank}}!",

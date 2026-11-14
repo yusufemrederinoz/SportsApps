@@ -429,6 +429,7 @@
     "lives": "{{name}}: {{lives}} vite",
     "goals": "{{goals}} gol",
     "say": "Scrivi un calciatore",
+    "pick": "Scegli quello che è nella lista",
     "yourTurn": "Tocca a te",
     "opponentTurn": "Tocca all'avversario",
     "hit": "{{name}}: numero {{rank}}!",

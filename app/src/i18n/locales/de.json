@@ -429,6 +429,7 @@
     "lives": "{{name}}: {{lives}} Leben",
     "goals": "{{goals}} Tore",
     "say": "Fußballer nennen",
+    "pick": "Wähle den, der auf der Liste steht",
     "yourTurn": "Du bist dran",
     "opponentTurn": "Gegner ist dran",
     "hit": "{{name}}: Platz {{rank}}!",

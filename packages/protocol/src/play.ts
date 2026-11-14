@@ -14,7 +14,14 @@ export const PLAY_PATH = '/play';
 export const PLAY_PROTOCOL_VERSION = 1;
 export const ROOM_CODE_LENGTH = 5;
 export const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-export const PLAY_FEATURES = ['reactions', 'rematch', 'ranked-rooms', 'club-value-lists'] as const;
+export const PLAY_FEATURES = [
+  'reactions',
+  'rematch',
+  'ranked-rooms',
+  'club-value-lists',
+  'top-ten-hints',
+  'top-ten-choices',
+] as const;
 export type PlayFeature = (typeof PLAY_FEATURES)[number];
 export const REMATCH_WINDOW_MILLISECONDS = 30000;
 export type RematchState = 'waiting' | 'offered' | 'declined' | 'expired';

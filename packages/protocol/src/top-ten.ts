@@ -8,11 +8,17 @@ export type TopTenListView =
   | { kind: 'clubGoals'; clubId: number }
   | { kind: 'clubValue'; clubId: number };
 
+export interface TopTenHintView {
+  countryId: number | null;
+  position: string | null;
+}
+
 export interface TopTenEntryView {
   rank: number;
   footballerId: number | null;
   value: number | null;
   foundBy: PlaySide | null;
+  hint?: TopTenHintView;
 }
 
 export interface TopTenGuessView {
@@ -36,4 +42,5 @@ export interface TopTenView {
   deadlineIn: number;
   scores: Record<PlaySide, number>;
   result: PlayResult | null;
+  choices?: number[];
 }

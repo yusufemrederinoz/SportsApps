@@ -6,6 +6,7 @@ export function topTenCardIds(view: TopTenView): number[] {
     new Set([
       ...view.entries.flatMap((entry) => (entry.footballerId === null ? [] : [entry.footballerId])),
       ...(guessed === null ? [] : [guessed]),
+      ...(view.choices ?? []),
     ]),
   );
 }

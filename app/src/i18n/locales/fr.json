@@ -429,6 +429,7 @@
     "lives": "{{name}} · vies : {{lives}}",
     "goals": "{{goals}} buts",
     "say": "Citer un footballeur",
+    "pick": "Choisis celui qui est dans la liste",
     "yourTurn": "À toi de jouer",
     "opponentTurn": "Tour de l'adversaire",
     "hit": "{{name}} : n° {{rank}} !",

@@ -429,6 +429,7 @@
     "lives": "{{name}}: {{lives}} can",
     "goals": "{{goals}} gol",
     "say": "Futbolcu söyle",
+    "pick": "Listede olanı seç",
     "yourTurn": "Sıra sende",
     "opponentTurn": "Sıra rakipte",
     "hit": "{{name}}: {{rank}}. sırada!",

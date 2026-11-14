@@ -12,6 +12,7 @@ import {
   type MatchHistoryResponse,
   type MatchSnapshot,
   type ServerMessage,
+  type TopTenListView,
 } from '@sportapps/protocol';
 import type { FastifyInstance } from 'fastify';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -567,6 +568,18 @@ describe.skipIf(!available)('play gateway', () => {
     expect(view.result?.reason).toBe('score');
     expect(view.scores[side]).toBeGreaterThan(0);
     human.socket.close();
+  });
+
+  it('limits easy top ten club lists to the best known clubs and finds hints for real footballers', () => {
+    const clubsOf = (lists: readonly TopTenListView[]) =>
+      new Set(lists.flatMap((list) => (list.kind === 'clubValue' ? [list.clubId] : [])));
+    const all = clubsOf(football.topTenLists('tr'));
+    const easy = clubsOf(football.topTenLists('tr', 1));
+    expect(easy.size).toBe(16);
+    expect(all.size).toBeGreaterThan(easy.size);
+    expect([...easy].every((clubId) => all.has(clubId))).toBe(true);
+    const [first] = football.ranking({ kind: 'clubValue', clubId: [...easy][0] as number }, 1);
+    expect(football.footballerFacts(first?.id ?? 0)).toMatchObject({ countryId: expect.any(Number), position: expect.any(String) });
   });
 
   it('walks real career paths against the bot', async () => {
