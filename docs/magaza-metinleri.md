@@ -1,6 +1,6 @@
 # Mağaza Metinleri
 
-Son güncelleme: 31 Ekim 2026 (sürüm 1.1.0)
+Son güncelleme: 14 Kasım 2026 (sürüm 1.2.0 hazırlığı)
 
 Google Play ve App Store sayfalarındaki metinler. Bu dosya mağazada duranla aynı tutulur; mağazada bir şey değişirse burası da değişir. Sınırlar: Google Play'de ad 30, kısa açıklama 80, tam açıklama 4.000, sürüm notu 500 karakter. App Store'da ad ve alt başlık 30 karakter, anahtar kelimeler 100 bayt (Türkçe harfler iki bayt sayılır), tanıtım metni 170 karakter. Metinler altı dilde: Türkçe, İngilizce, Almanca, İspanyolca, Fransızca ve İtalyanca. Son dördü çeviridir; o dili bilen biri okumalı.
 
@@ -91,7 +91,7 @@ Maçın ortasında reklam çıkmaz. Reklamı yalnızca sen istersen, gol kazanma
 
 SEKİZ OYUN, TEK UYGULAMA
 • XOX: Satır ve sütundaki iki ölçüte uyan futbolcuyu yaz, üç hücreyi yan yana getir.
-• Kart Düellosu: Konsepte uyan 7 futbolcunu seç. Sorular gizli; her turda bir kartını rakibinkiyle kapıştır.
+• Kart Düellosu: Konsepte uyan futbolcularını seç. Sorular gizli; her turda bir kartını rakibinkiyle kapıştır.
 • Kadro Kur: Her turda çıkan kulüpten bir oyuncu al, hedef istatistikte en güçlü kadroyu kur.
 • Hangisi Yüksek: İki futbolcu, bir ölçüt. Değeri yüksek olanı bil, seriyi sürdür.
 • Zincir: Bir öncekiyle aynı kulüpte oynamış bir futbolcu söyle. Zinciri koparan turu kaybeder.
@@ -134,7 +134,7 @@ Maçın ortasında reklam çıkmaz. Reklamı yalnızca sen istersen, gol kazanma
 
 SEKİZ OYUN, TEK UYGULAMA
 • XOX: Satır ve sütundaki iki ölçüte uyan futbolcuyu yaz, üç hücreyi yan yana getir.
-• Kart Düellosu: Konsepte uyan 7 futbolcunu seç. Sorular gizli; her turda bir kartını rakibinkiyle kapıştır.
+• Kart Düellosu: Konsepte uyan futbolcularını seç. Sorular gizli; her turda bir kartını rakibinkiyle kapıştır.
 • Kadro Kur: Her turda çıkan kulüpten bir oyuncu al, hedef istatistikte en güçlü kadroyu kur.
 • Hangisi Yüksek: İki futbolcu, bir ölçüt. Değeri yüksek olanı bil, seriyi sürdür.
 • Zincir: Bir öncekiyle aynı kulüpte oynamış bir futbolcu söyle. Zinciri koparan turu kaybeder.
@@ -175,6 +175,17 @@ Destek: destek@challengegoal.app
 • Jokerler artık futbolcu arama ekranında da görünüyor. Süre bitmek üzereyken büyük bir +15 saniye düğmesi çıkıyor.
 • Kaybettiğin maçın puanını artık 5 golle de geri alabilirsin.
 • Zincir'de 13 yeni ligin kulüpleri de bağlantı sayılıyor.
+```
+
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• Kolay seviyede İlk 10 ve Kariyer Yolu'nda yazmak yerine dört isimden doğrusunu seç.
+• İlk 10'da boş satırlar uyruk ve mevki ipucu veriyor; kulüp listeleri en yüksek piyasa değerine göre.
+• Kariyer Yolu'nda her kulübün maç ve gol sayısı yazıyor. Yeni jokerler: Baş harf ve Doğum yılı.
+• Daha kısa maçlar: Kart Düellosu 5 kart, Kariyer Yolu 3 futbolcu.
+• İlk 10'da canı biten oyuncunun rakibi ilk hatasına kadar devam ediyor.
+• Güncel futbolcu verisi ve daha büyük bayraklar.
 ```
 
 ## İngilizce (en-US, en-GB)
@@ -249,7 +260,7 @@ No ad pops up in the middle of a match. You only watch an ad when you choose to,
 
 EIGHT GAMES, ONE APP
 • XOX: Name a footballer who fits both the row and the column, and line up three cells.
-• Card Duel: Pick 7 footballers who fit the theme. The questions are hidden; play one card against your opponent's each round.
+• Card Duel: Pick footballers who fit the theme. The questions are hidden; play one card against your opponent's each round.
 • Lineup Draft: Take one player from the club of each round and build the strongest squad for the target stat.
 • Higher or Lower: Two footballers, one measure. Pick the higher one and keep your streak.
 • Club Chain: Name a footballer who shared a club with the previous one. Break the chain and you lose the round.
@@ -292,7 +303,7 @@ No ad pops up in the middle of a match. You only watch an ad when you choose to,
 
 EIGHT GAMES, ONE APP
 • XOX: Name a footballer who fits both the row and the column, and line up three cells.
-• Card Duel: Pick 7 footballers who fit the theme. The questions are hidden; play one card against your opponent's each round.
+• Card Duel: Pick footballers who fit the theme. The questions are hidden; play one card against your opponent's each round.
 • Lineup Draft: Take one player from the club of each round and build the strongest squad for the target stat.
 • Higher or Lower: Two footballers, one measure. Pick the higher one and keep your streak.
 • Club Chain: Name a footballer who shared a club with the previous one. Break the chain and you lose the round.
@@ -333,6 +344,17 @@ Support: destek@challengegoal.app
 • Jokers now also show on the footballer search screen, and a big +15 seconds button appears when time is running out.
 • You can now also win back the points of a lost match with 5 goals.
 • Club Chain now counts clubs from 13 more leagues.
+```
+
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• On Easy, Top Ten and Career Path let you pick the right one of four names instead of typing.
+• Top Ten gives nationality and position hints on empty rows; club lists rank by peak market value.
+• Career Path shows appearances and goals at each club. New jokers: First letters and Birth year.
+• Shorter matches: Card Duel uses 5 cards, Career Path 3 footballers.
+• In Top Ten, when a player runs out of lives, the opponent plays on until their first miss.
+• Updated football data and bigger flags.
 ```
 
 ## Almanca (de-DE)
@@ -383,7 +405,7 @@ Mitten im Match erscheint keine Werbung. Werbung siehst du nur, wenn du es wills
 
 ACHT SPIELE, EINE APP
 • XOX: Nenn einen Fußballer, der zu Zeile und Spalte passt, und bring drei Felder in eine Reihe.
-• Kartenduell: Wähl 7 Fußballer, die zum Thema passen. Die Fragen sind geheim; in jeder Runde spielst du eine Karte gegen die deines Gegners.
+• Kartenduell: Wähl Fußballer, die zum Thema passen. Die Fragen sind geheim; in jeder Runde spielst du eine Karte gegen die deines Gegners.
 • Kader-Draft: Hol dir in jeder Runde einen Spieler vom Verein der Runde und stell den stärksten Kader für den Zielwert zusammen.
 • Höher oder tiefer: Zwei Fußballer, ein Wert. Tipp auf den höheren und halt deine Serie am Laufen.
 • Vereinskette: Nenn einen Fußballer, der beim selben Verein gespielt hat wie der vorherige. Wer die Kette reißen lässt, verliert die Runde.
@@ -426,7 +448,7 @@ Mitten im Match erscheint keine Werbung. Werbung siehst du nur, wenn du es wills
 
 ACHT SPIELE, EINE APP
 • XOX: Nenn einen Fußballer, der zu Zeile und Spalte passt, und bring drei Felder in eine Reihe.
-• Kartenduell: Wähl 7 Fußballer, die zum Thema passen. Die Fragen sind geheim; in jeder Runde spielst du eine Karte gegen die deines Gegners.
+• Kartenduell: Wähl Fußballer, die zum Thema passen. Die Fragen sind geheim; in jeder Runde spielst du eine Karte gegen die deines Gegners.
 • Kader-Draft: Hol dir in jeder Runde einen Spieler vom Verein der Runde und stell den stärksten Kader für den Zielwert zusammen.
 • Höher oder tiefer: Zwei Fußballer, ein Wert. Tipp auf den höheren und halt deine Serie am Laufen.
 • Vereinskette: Nenn einen Fußballer, der beim selben Verein gespielt hat wie der vorherige. Wer die Kette reißen lässt, verliert die Runde.
@@ -467,6 +489,17 @@ Support: destek@challengegoal.app
 • Joker gibt es jetzt auch in der Spielersuche, und kurz vor Ablauf der Zeit erscheint ein großer +15-Sekunden-Knopf.
 • Die Punkte eines verlorenen Matches holst du dir jetzt auch für 5 Tore zurück.
 • In der Vereinskette zählen jetzt auch Vereine aus 13 weiteren Ligen.
+```
+
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• Auf Leicht wählst du bei Top 10 und Karriereweg aus vier Namen, statt zu tippen.
+• Top 10 zeigt in leeren Zeilen Nationalität und Position; Vereinslisten zählen den Rekordmarktwert.
+• Der Karriereweg zeigt Spiele und Tore bei jedem Verein. Neue Joker: Initialen und Geburtsjahr.
+• Kürzere Matches: Kartenduell mit 5 Karten, Karriereweg mit 3 Fußballern.
+• Bei Top 10 spielt der Gegner nach deinem letzten Leben bis zu seinem ersten Fehler weiter.
+• Neue Fußballdaten und größere Flaggen.
 ```
 
 ## İspanyolca (es-ES)
@@ -517,7 +550,7 @@ No aparecen anuncios en mitad de un partido. Solo ves un anuncio cuando tú quie
 
 OCHO JUEGOS, UNA APP
 • XOX: Escribe un futbolista que encaje con la fila y la columna, y haz tres en raya.
-• Duelo de Cartas: Elige 7 futbolistas que encajen con el tema. Las preguntas son secretas; en cada ronda juegas una carta contra la de tu rival.
+• Duelo de Cartas: Elige futbolistas que encajen con el tema. Las preguntas son secretas; en cada ronda juegas una carta contra la de tu rival.
 • Draft de Alineación: Ficha a un jugador del club de cada ronda y monta el equipo más fuerte en la estadística objetivo.
 • Mayor o Menor: Dos futbolistas, un criterio. Elige al que gana y mantén la racha.
 • Cadena de Clubes: Di un futbolista que haya compartido club con el anterior. Si rompes la cadena, pierdes la ronda.
@@ -560,7 +593,7 @@ No aparecen anuncios en mitad de un partido. Solo ves un anuncio cuando tú quie
 
 OCHO JUEGOS, UNA APP
 • XOX: Escribe un futbolista que encaje con la fila y la columna, y haz tres en raya.
-• Duelo de Cartas: Elige 7 futbolistas que encajen con el tema. Las preguntas son secretas; en cada ronda juegas una carta contra la de tu rival.
+• Duelo de Cartas: Elige futbolistas que encajen con el tema. Las preguntas son secretas; en cada ronda juegas una carta contra la de tu rival.
 • Draft de Alineación: Ficha a un jugador del club de cada ronda y monta el equipo más fuerte en la estadística objetivo.
 • Mayor o Menor: Dos futbolistas, un criterio. Elige al que gana y mantén la racha.
 • Cadena de Clubes: Di un futbolista que haya compartido club con el anterior. Si rompes la cadena, pierdes la ronda.
@@ -601,6 +634,17 @@ Soporte: destek@challengegoal.app
 • Los comodines también aparecen en la búsqueda de futbolistas, y cuando se acaba el tiempo sale un botón grande de +15 segundos.
 • Ahora también puedes recuperar los puntos de un partido perdido con 5 goles.
 • En Cadena de Clubes cuentan también los clubes de 13 ligas más.
+```
+
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• En Fácil, en Top 10 y Trayectoria eliges entre cuatro nombres en lugar de escribir.
+• Top 10 da pistas de nacionalidad y posición; las listas de clubes usan el mayor valor de mercado.
+• Trayectoria muestra partidos y goles por club. Nuevos comodines: Iniciales y Año de nacimiento.
+• Partidas más cortas: Duelo de Cartas con 5 cartas, Trayectoria con 3 futbolistas.
+• En Top 10, si un jugador se queda sin vidas, su rival sigue hasta su primer fallo.
+• Datos actualizados y banderas más grandes.
 ```
 
 ## Fransızca (fr-FR)
@@ -651,7 +695,7 @@ Aucune pub ne s'affiche en plein match. Tu regardes une pub uniquement si tu le 
 
 HUIT JEUX, UNE SEULE APPLI
 • XOX : Trouve un footballeur qui correspond à la ligne et à la colonne, et aligne trois cases.
-• Duel de cartes : Choisis 7 footballeurs qui collent au thème. Les questions sont cachées ; à chaque manche, joue une carte contre celle de ton adversaire.
+• Duel de cartes : Choisis des footballeurs qui collent au thème. Les questions sont cachées ; à chaque manche, joue une carte contre celle de ton adversaire.
 • Fais ta compo : Prends un joueur du club de chaque manche et monte l'effectif le plus fort sur la stat visée.
 • Plus ou moins : Deux footballeurs, un critère. Choisis le plus élevé et garde ta série.
 • Chaîne de clubs : Cite un footballeur passé par le même club que le précédent. Si tu casses la chaîne, tu perds la manche.
@@ -694,7 +738,7 @@ Aucune pub ne s'affiche en plein match. Tu regardes une pub uniquement si tu le 
 
 HUIT JEUX, UNE SEULE APPLI
 • XOX : Trouve un footballeur qui correspond à la ligne et à la colonne, et aligne trois cases.
-• Duel de cartes : Choisis 7 footballeurs qui collent au thème. Les questions sont cachées ; à chaque manche, joue une carte contre celle de ton adversaire.
+• Duel de cartes : Choisis des footballeurs qui collent au thème. Les questions sont cachées ; à chaque manche, joue une carte contre celle de ton adversaire.
 • Fais ta compo : Prends un joueur du club de chaque manche et monte l'effectif le plus fort sur la stat visée.
 • Plus ou moins : Deux footballeurs, un critère. Choisis le plus élevé et garde ta série.
 • Chaîne de clubs : Cite un footballeur passé par le même club que le précédent. Si tu casses la chaîne, tu perds la manche.
@@ -735,6 +779,17 @@ Assistance : destek@challengegoal.app
 • Les jokers s'affichent aussi dans la recherche de footballeurs, et un grand bouton +15 secondes apparaît quand le temps presse.
 • Tu peux maintenant aussi récupérer les points d'un match perdu avec 5 buts.
 • La Chaîne de clubs compte désormais les clubs de 13 championnats de plus.
+```
+
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• En Facile, dans Top 10 et Parcours de carrière, choisis parmi quatre noms au lieu d'écrire.
+• Top 10 indique nationalité et poste ; les listes de clubs suivent la valeur marchande maximale.
+• Parcours de carrière montre matchs et buts par club. Jokers : Initiales, Année de naissance.
+• Matchs plus courts : 5 cartes au Duel de cartes, 3 footballeurs au Parcours.
+• Dans Top 10, si tu n'as plus de vie, l'adversaire joue jusqu'à sa première erreur.
+• Données à jour et drapeaux plus grands.
 ```
 
 ## İtalyanca (it-IT, it)
@@ -785,7 +840,7 @@ Nessuna pubblicità compare a metà partita. Guardi un annuncio solo se vuoi, pe
 
 OTTO GIOCHI, UNA SOLA APP
 • XOX: Trova un calciatore che va bene sia per la riga sia per la colonna e metti in fila tre caselle.
-• Duello di Carte: Scegli 7 calciatori in tema. Le domande sono nascoste: a ogni round giochi una carta contro quella dell'avversario.
+• Duello di Carte: Scegli calciatori in tema. Le domande sono nascoste: a ogni round giochi una carta contro quella dell'avversario.
 • Fai la Formazione: A ogni round prendi un calciatore dal club di turno e costruisci la formazione più forte nella statistica obiettivo.
 • Chi di Più: Due calciatori, un criterio. Scegli chi ha il valore più alto e allunga la serie.
 • Catena di Club: Scrivi un calciatore che ha giocato nello stesso club del precedente. Chi spezza la catena perde il round.
@@ -828,7 +883,7 @@ Nessuna pubblicità compare a metà partita. Guardi un annuncio solo se vuoi, pe
 
 OTTO GIOCHI, UNA SOLA APP
 • XOX: Trova un calciatore che va bene sia per la riga sia per la colonna e metti in fila tre caselle.
-• Duello di Carte: Scegli 7 calciatori in tema. Le domande sono nascoste: a ogni round giochi una carta contro quella dell'avversario.
+• Duello di Carte: Scegli calciatori in tema. Le domande sono nascoste: a ogni round giochi una carta contro quella dell'avversario.
 • Fai la Formazione: A ogni round prendi un calciatore dal club di turno e costruisci la formazione più forte nella statistica obiettivo.
 • Chi di Più: Due calciatori, un criterio. Scegli chi ha il valore più alto e allunga la serie.
 • Catena di Club: Scrivi un calciatore che ha giocato nello stesso club del precedente. Chi spezza la catena perde il round.
@@ -871,7 +926,41 @@ Assistenza: destek@challengegoal.app
 • Nella Catena di Club contano anche i club di 13 campionati in più.
 ```
 
+**1.2.0 sürüm notu** (iki mağazada aynı; Google Play sınırı 500 karakter)
+
+```
+• In Facile, in Top 10 e Carriera Misteriosa scegli tra quattro nomi invece di scrivere.
+• Top 10 dà indizi su nazionalità e ruolo; le liste dei club seguono il valore di mercato massimo.
+• Carriera Misteriosa mostra presenze e gol per club. Nuovi jolly: Iniziali e Anno di nascita.
+• Partite più brevi: Duello di Carte con 5 carte, Carriera Misteriosa con 3 calciatori.
+• In Top 10, chi resta senza vite lascia giocare l'avversario fino al suo primo errore.
+• Dati aggiornati e bandiere più grandi.
+```
+
 ## App Store inceleme notu (İngilizce)
+
+### 1.2.0
+
+Sürüm sayfasındaki App Review Information → Notes alanına girilecek metin (14 Kasım 2026'da hazırlandı). Yalnızca bu sürümde değişenleri anlatır.
+
+```
+Hello, and thank you for reviewing this update.
+
+ChallengeGoal is a football (soccer) trivia game. A demo member account is in the Sign-In Information fields. You can also tap "Continue as guest" on the first screen.
+
+What is new in 1.2.0:
+- Easy level: in Top Ten and Career Path the player picks one of four names instead of typing a name.
+- Top Ten shows nationality and position hints on empty rows (Easy) or position hints (Medium). Club lists now rank the club's footballers by peak market value.
+- Career Path shows appearances and goals for each club and, on Easy and Medium, the nationality and position of the hidden footballer from the start. Its two jokers are now "First letters" and "Birth year".
+- Shorter matches: Card Duel uses 5 cards and Career Path 3 footballers.
+- Updated football data and larger flags.
+
+As described in our earlier notes, if nobody is waiting for a match, a computer-controlled opponent joins after a short wait.
+
+Nothing changed in accounts, purchases, ads or data collection. The App Tracking Transparency request is still shown on first launch, before the ads SDK starts or any ad is requested. The four goal packs (goals_cg_30, goals_cg_100, goals_cg_250, goals_cg_600) are consumable. Goals are also earned for free by playing, with the daily reward and with optional rewarded ads. Nothing is locked behind payment.
+
+The app is not affiliated with any club, league, federation or footballer and uses no official logos. Club crests are our own original drawings. On first launch the app may show "Updating data" for a few seconds while it downloads the current football database.
+```
 
 ### 1.1.0
 
