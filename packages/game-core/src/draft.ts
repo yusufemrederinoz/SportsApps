@@ -18,14 +18,20 @@ export interface DraftPick {
   value: number;
 }
 
+export type DraftScoring = 'total' | 'rounds';
+
 export interface DraftState {
   phase: 'playing' | 'finished';
+  scoring: DraftScoring;
   clubs: readonly number[];
   round: number;
   lineups: Record<Side, readonly DraftSlot[]>;
   picked: Record<Side, boolean>;
   scores: Record<Side, number>;
+  winners: readonly (Side | null)[];
 }
+
+type RoundSlot = Pick<DraftSlot, 'footballerId' | 'value' | 'round'>;
 
 export type DraftErrorCode = 'wrong-phase' | 'already-picked' | 'taken' | 'no-slot';
 
@@ -45,14 +51,20 @@ function emptyLineup(formation: readonly DraftPosition[]): DraftSlot[] {
   return formation.map((position) => ({ position, footballerId: null, value: null, round: null }));
 }
 
-export function createDraft(clubs: readonly number[], formation: readonly DraftPosition[] = DRAFT_FORMATION): DraftState {
+export function createDraft(
+  clubs: readonly number[],
+  formation: readonly DraftPosition[] = DRAFT_FORMATION,
+  scoring: DraftScoring = 'total',
+): DraftState {
   return {
     phase: clubs.length > 0 ? 'playing' : 'finished',
+    scoring,
     clubs: [...clubs],
     round: 0,
     lineups: { x: emptyLineup(formation), o: emptyLineup(formation) },
     picked: { x: false, o: false },
     scores: { x: 0, o: 0 },
+    winners: [],
   };
 }
 
@@ -72,6 +84,46 @@ export function draftedIds(state: DraftState): number[] {
   );
 }
 
+export function takenIds(state: DraftState): number[] {
+  if (state.scoring === 'total') {
+    return draftedIds(state);
+  }
+  return SIDES.flatMap((side) =>
+    state.lineups[side].flatMap((slot) =>
+      slot.footballerId === null || slot.round === state.round ? [] : [slot.footballerId],
+    ),
+  );
+}
+
+export function roundWinner(lineups: Record<Side, readonly RoundSlot[]>, round: number): Side | null {
+  const valueOf = (side: Side) =>
+    lineups[side].find((slot) => slot.round === round && slot.footballerId !== null)?.value ?? null;
+  const x = valueOf('x');
+  const o = valueOf('o');
+  if (x === o) {
+    return null;
+  }
+  if (o === null) {
+    return 'x';
+  }
+  if (x === null) {
+    return 'o';
+  }
+  return x > o ? 'x' : 'o';
+}
+
+export function settleRound(state: DraftState): DraftState {
+  if (state.phase !== 'playing' || state.scoring !== 'rounds' || state.winners.length > state.round) {
+    return state;
+  }
+  const winner = roundWinner(state.lineups, state.round);
+  return {
+    ...state,
+    winners: [...state.winners, winner],
+    scores: winner ? { ...state.scores, [winner]: state.scores[winner] + 1 } : state.scores,
+  };
+}
+
 export function pickFootballer(state: DraftState, side: Side, pick: DraftPick): DraftState {
   if (state.phase !== 'playing') {
     throw new DraftError('wrong-phase');
@@ -79,7 +131,7 @@ export function pickFootballer(state: DraftState, side: Side, pick: DraftPick): 
   if (state.picked[side]) {
     throw new DraftError('already-picked');
   }
-  if (draftedIds(state).includes(pick.footballerId)) {
+  if (takenIds(state).includes(pick.footballerId)) {
     throw new DraftError('taken');
   }
   const lineup = state.lineups[side];
@@ -94,7 +146,7 @@ export function pickFootballer(state: DraftState, side: Side, pick: DraftPick): 
     ...state,
     lineups: { ...state.lineups, [side]: filled },
     picked: { ...state.picked, [side]: true },
-    scores: { ...state.scores, [side]: state.scores[side] + pick.value },
+    scores: state.scoring === 'total' ? { ...state.scores, [side]: state.scores[side] + pick.value } : state.scores,
   };
 }
 
@@ -113,11 +165,12 @@ export function nextRound(state: DraftState): DraftState {
   if (state.phase !== 'playing') {
     throw new DraftError('wrong-phase');
   }
-  const round = state.round + 1;
+  const settled = settleRound(state);
+  const round = settled.round + 1;
   return {
-    ...state,
-    phase: round >= state.clubs.length ? 'finished' : 'playing',
-    round: Math.min(round, state.clubs.length),
+    ...settled,
+    phase: round >= settled.clubs.length ? 'finished' : 'playing',
+    round: Math.min(round, settled.clubs.length),
     picked: { x: false, o: false },
   };
 }

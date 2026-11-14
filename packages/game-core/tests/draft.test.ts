@@ -12,6 +12,9 @@ import {
   passRound,
   pickFootballer,
   roundComplete,
+  roundWinner,
+  settleRound,
+  takenIds,
   type DraftState,
 } from '../src/draft';
 
@@ -80,5 +83,51 @@ describe('draft', () => {
     expect(draftWinner(state)).toBe('o');
     expect(errorOf(() => passRound(state, 'x'))).toBe('wrong-phase');
     expect(draftWinner({ ...state, scores: { x: 3, o: 3 } })).toBeNull();
+  });
+});
+
+describe('draft scored by rounds', () => {
+  const start = () => createDraft(CLUBS, DRAFT_FORMATION, 'rounds');
+
+  it('keeps picks out of the score until the round is settled, then gives the higher value one point', () => {
+    let state = start();
+    state = pickFootballer(state, 'x', { footballerId: 1, position: 'FW', value: 40 });
+    state = pickFootballer(state, 'o', { footballerId: 2, position: 'FW', value: 12 });
+    expect(state.scores).toEqual({ x: 0, o: 0 });
+    state = settleRound(state);
+    expect(state.scores).toEqual({ x: 1, o: 0 });
+    expect(state.winners).toEqual(['x']);
+    expect(settleRound(state)).toBe(state);
+    state = nextRound(state);
+    expect(state.scores).toEqual({ x: 1, o: 0 });
+    expect(state.winners).toEqual(['x']);
+  });
+
+  it('settles a round that was not settled before moving on', () => {
+    let state = start();
+    state = pickFootballer(state, 'o', { footballerId: 2, position: 'GK', value: 0 });
+    state = nextRound(passRound(state, 'x'));
+    expect(state.scores).toEqual({ x: 0, o: 1 });
+    expect(state.round).toBe(1);
+  });
+
+  it('calls equal values and two missed turns even', () => {
+    const lineups = start().lineups;
+    expect(roundWinner(lineups, 0)).toBeNull();
+    let state = start();
+    state = pickFootballer(state, 'x', { footballerId: 1, position: 'MF', value: 7 });
+    state = pickFootballer(state, 'o', { footballerId: 1, position: 'MF', value: 7 });
+    expect(settleRound(state).scores).toEqual({ x: 0, o: 0 });
+    expect(settleRound(state).winners).toEqual([null]);
+  });
+
+  it('lets both sides take the same footballer only within one round', () => {
+    let state = start();
+    state = pickFootballer(state, 'x', { footballerId: 5, position: 'MF', value: 7 });
+    expect(takenIds(state)).toEqual([]);
+    state = pickFootballer(state, 'o', { footballerId: 5, position: 'MF', value: 7 });
+    state = nextRound(state);
+    expect(takenIds(state)).toEqual([5, 5]);
+    expect(errorOf(() => pickFootballer(state, 'x', { footballerId: 5, position: 'MF', value: 7 }))).toBe('taken');
   });
 });

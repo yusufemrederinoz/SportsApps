@@ -23,6 +23,7 @@ export const PLAY_FEATURES = [
   'top-ten-choices',
   'career-help',
   'career-choices',
+  'draft-metrics',
 ] as const;
 export type PlayFeature = (typeof PLAY_FEATURES)[number];
 export const REMATCH_WINDOW_MILLISECONDS = 30000;
