@@ -89,7 +89,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 | Kaynak | Ne alınır | Nasıl |
 |---|---|---|
 | transfermarkt-datasets | Oyuncular, kulüpler, transferler, maç kayıtları | Açık depolama adresinden sıkıştırılmış CSV |
-| Wikidata | Futbolcular, takım kayıtları, uyruk, mevki, doğum tarihi, fotoğraf adı, adlar | QLever aynası üzerinden SPARQL |
+| Wikidata | Futbolcular, takım kayıtları, uyruk, A millî takım kayıtları ve maç sayıları, mevki, doğum tarihi, fotoğraf adı, adlar | QLever aynası üzerinden SPARQL |
 | Wikipedia | Oyuncu maddelerinin okunma sayısı | MediaWiki Action API (son 60 gün, istek başına 50 başlık) ya da aylık okunma dökümü |
 | Wikipedia (İngilizce) | Kulüplerin güncel kadroları | MediaWiki Action API ile kulüp maddesinin metni; kadro şablonlarındaki oyuncu bağlantıları Wikidata kimliğine çevrilir (`data/pipeline/squads.py`) |
 
@@ -104,7 +104,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 1. **Kapsam.** Ligler `data/overrides/leagues.csv` içinde, her birinin rolüyle. **Ana ligler** (`core`): Süper Lig, Premier League, La Liga, Serie A, Bundesliga, Ligue 1; 219 kulüp. Oyuncu evrenini bunlar belirler: veritabanındaki her oyuncu bu liglerden birinde oynamıştır. **Bağlantı ligleri** (`link`, 30 Ekim 2026): Portekiz, Hollanda, Belçika, Yunanistan, İskoçya, İsviçre, Avusturya, Rusya, Ukrayna, Brezilya, Arjantin, MLS ve Suudi Arabistan; 344 kulüp. Bunlardan yeni oyuncu alınmaz, yalnızca evrendeki oyuncuların bu kulüplerdeki kayıtları eklenir (Transfermarkt ve Wikidata; Vikipedi kadroları yalnızca ana liglerde okunur). Ana liglerin sorguları değişmediği için önbellekten okunur ve bu eklemeden etkilenmez.
 2. **Kulüp eşleştirme.** Wikidata'daki Transfermarkt takım kimliği (P7223) ile kulüpler bağlanır. Aynı kulübün birden fazla Wikidata kaydı varsa (çok branşlı kulüp kaydı gibi) en çok futbolcusu olan esas alınır, diğerleri ona bağlanır.
 3. **Oyuncu eşleştirme.** Wikidata'daki Transfermarkt oyuncu kimliği (P2446) ile bağlanır. Kimliği olmayan oyuncularda doğum tarihi ve isim kullanılır.
-4. **Kulüp kayıtlarını birleştirme.** Üç kaynaktaki (Transfermarkt, Wikidata, Vikipedi güncel kadroları) "şu oyuncu şu kulüpteydi" kayıtları tek satıra indirilir.
+4. **Kulüp kayıtlarını birleştirme.** Üç kaynaktaki (Transfermarkt, Wikidata, Vikipedi güncel kadroları) "şu oyuncu şu kulüpteydi" kayıtları tek satıra indirilir. 14 Kasım 2026'dan beri Transfermarkt'ın maç kayıtlarında (`player_performances.csv`) bir kulüp için sahaya çıkılan her sezon da kayıt sayılır. Bu kayıtlar ilk ve son yılı ve maç sayısını verir. Öncesinde transfer kaydı eksik oyuncuların kulüp istatistiği olup kulüp kaydı olmayabiliyordu: Bobô'nun Beşiktaş'taki 222 maçı istatistikte vardı, kulüp yılları tablosunda yoktu. Bu düzeltme 4.597 kayıt ve 229 oyuncu ekledi; kaydı olmayan istatistik satırları 6.094'ten 2.252'ye indi.
 5. **Bilinirlik puanı.** Pazar bazında hesaplanır.
 6. **Izgara üretimi.** Pazar ve zorluk seviyesi bazında.
 7. **Çıktılar.** Tam veritabanı, kalite raporu ve uygulamaya gömülen küçültülmüş veritabanı.
@@ -114,7 +114,7 @@ SDK'ya paket eklemek için `sdkmanager` JDK 17 ister; `JAVA_HOME` yalnızca o ko
 | Kural | Açıklama |
 |---|---|
 | "Oynadı" | Kadroda olması yeter; kiralık dönemler dahil her resmî kulüp kaydı sayılır |
-| Uyruk | Yalnızca ana uyruk geçerlidir. Transfermarkt'ta varsa oradaki değer, yoksa Wikidata'daki millî takım ülkesi, o da yoksa tek vatandaşlık |
+| Uyruk | Yalnızca ana uyruk geçerlidir. Transfermarkt'ta varsa oradaki değer, yoksa Wikidata'daki millî takım ülkesi, o da yoksa tek vatandaşlık. Ardından A millî takım kuralı uygulanır (14 Kasım 2026, `represented_country`). Oyuncu ana uyruğunun A millî takımında hiç oynamamışsa ve başka bir uyruğunun A millî takımında en az 3 maçı varsa ana uyruk o ülke olur. Bunun için o ülkenin maçlarının bir sonraki ülkenin en az iki katı olması gerekir. Genç, B, olimpik ve bölge takımları sayılmaz. Rakip ülkenin maç sayısı bilinmiyorsa uyruk değişmez. Takımın Wikidata ülkesi ana uyruksa ya da takımın adında ana uyruğun adı geçiyorsa oyuncu o ülkede oynamış sayılır; Faroe Adaları ve Martinik takımlarının Wikidata ülkesi Danimarka ve Fransa olduğu için ad denetimi gerekir. Birleşik Krallık ülkelerine bu kural uygulanmaz. Tarihî devletler yalnızca hiç uyruğu olmayan oyuncuya verilir. İlk derlemede 51 oyuncunun uyruğu değişti (Ümit Davala, Mehmet Aurélio, Ümit Karan dahil 12 Türk millî oyuncu Türkiye'ye geçti), uyruğu olmayan 344 oyuncu uyruk aldı (Di Stéfano, Puskás, Nedvěd). Bilinen tek hata: Marama Vahirua Fransız Polinezyası yerine Fransa, çünkü Tahiti takımının adı ülkenin adını taşımıyor |
 | Söylenti kayıtları | Yalnızca Wikidata'dan gelen ve içinde bulunulan yıl başlayan kayıtlar atılır. Aynı kayıt kulübün Vikipedi'deki güncel kadrosunda da görülüyorsa doğrulanmış sayılır ve kalır |
 | Doğrulanmış kayıt | Transfermarkt'ta görülen ya da Wikidata'da yılı olan kayıt doğrulanmış sayılır. Tarihsiz Wikidata kayıtları cevap olarak kabul edilir ama ızgara kurarken sayılmaz |
 | Kadın oyuncular | Erkek takımına bağlanmış kadın futbolcular kapsam dışıdır |
@@ -175,7 +175,7 @@ Birden fazla dille ölçülen pazar (`int`): beş dilin okunma sayıları toplan
 
 - Türkiye pazarının puanları bu değişiklikten etkilenmedi (13.143 satırın hiçbiri değişmedi).
 - Uluslararası pazarın en tanınmış 300 oyuncusunun 124'ü Türkiye pazarının ilk 300'ünde de var.
-- Okunma sayıları beş dilde yaklaşık 171 bin madde ediyor; API ile dakikada 60 madde alınabildiği için aylık döküm kullanılır: `pageviews-YYYYMM-user.bz2` (6 GB, `dumps.wikimedia.org/other/pageview_complete/monthly/`) `data/.cache/wikipedia/` altına indirilir ve `python -m pipeline build --views-month YYYY-MM` ile okutulur (yaklaşık 9 dakika). Önbellek ay bazında olduğu için her ayın ilk çalıştırmasında bu adım gerekir; atlanırsa hat yavaş API'ye düşer.
+- Okunma sayıları beş dilde yaklaşık 171 bin madde ediyor; API ile dakikada 60 madde alınabildiği için aylık döküm kullanılır: `pageviews-YYYYMM-user.bz2` (6 GB, `dumps.wikimedia.org/other/pageview_complete/monthly/`) `data/.cache/wikipedia/` altına indirilir ve `python -m pipeline build --views-month YYYY-MM` ile okutulur (yaklaşık 9 dakika). Önbellek ay bazında olduğu için her ayın ilk çalıştırmasında bu adım gerekir; atlanırsa hat yavaş API'ye düşer. 14 Kasım 2026'da atlandı: Türkçe 26, İngilizce 70 dakika sürdü, kalan dört dil iki saati aşacaktı. Derleme durduruldu, Ekim dosyaları Kasım adıyla kopyalandı, böylece bilinirlik puanları değişmedi. Okunmaları tazelemek istenmeyen bir düzeltme derlemesinde bu kopyalama yöntemi kullanılabilir.
 
 ### Izgara üretimi
 
@@ -599,7 +599,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 
 | Uygulamadan sunucuya | Anlamı |
 |---|---|
-| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü ve uygulamanın desteklediği özellikler (`reactions`, `rematch`, `ranked-rooms`) |
+| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü ve uygulamanın desteklediği özellikler (`reactions`, `rematch`, `ranked-rooms`, `club-value-lists`). Oda kurulurken maçtaki bütün oyuncuların ortak özellikleri oda bağlamına (`RoomContext.features`) geçer; örneğin İlk 10, kulüp + piyasa değeri listesini yalnızca `club-value-lists` ortaksa sorar, değilse eski kulüp + kariyer golü listesini sorar. Böylece eski sürüm bozulmaz, protokol numarası da artmaz |
 | `queue` | Rastgele rakip sırasına gir (mod, pazar, zorluk; mod verilmezse XOX) |
 | `play-bot` | Sıraya girmeden bota karşı maç aç (mod, pazar, zorluk) |
 | `create-room` | Arkadaş odası kur (mod, pazar, zorluk) |
@@ -659,7 +659,7 @@ Online sırada 6-11 saniyede gerçek rakip bulunamazsa karşıya bot gelir ve oy
 | `src/play/chain-room.ts` | Zincir oda üreticisi: başlangıç futbolcuları, ortak kulüp denetimi, kısalan süre, turlar, bot |
 | `src/play/rare-room.ts` | En Az Bilinen oda üreticisi: ızgaradan ölçütler, gizli cevaplar, doğruluk ve bilinirlik, bot |
 | `src/play/auction-room.ts` | Açık Artırma oda üreticisi: zengin hücre seçimi, teklif ve "Say bakalım", ispat süresi, bot |
-| `src/play/top-ten-room.ts` | İlk 10 oda üreticisi: liste seçimi, sıralama ve yakın ıskalar, canlar, bot |
+| `src/play/top-ten-room.ts` | İlk 10 oda üreticisi: liste seçimi (oyuncuların özelliklerine göre kulüp listesi türü), sıralama ve yakın ıskalar, canlar, bot |
 | `src/play/career-room.ts` | Kariyer Yolu oda üreticisi: gizli futbolcu seçimi, yıllara göre kulüp sırası, puan, bot |
 | `src/play/bot.ts` | Bot rakip: ad üretimi, seviye seçimi, hamle zamanlaması |
 | `src/play/history.ts` | Biten maçları kaydeder ve oyuncuya listeler (oyuna göre süzme, sayfalama, maçtan kazanılan gol) |

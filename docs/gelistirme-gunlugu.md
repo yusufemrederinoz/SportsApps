@@ -1296,6 +1296,50 @@ Kullanıcı mevcut sunucunun kaç aktif kullanıcı kaldıracağını sordu. Bak
 - **Not.** Kart Düellosu'nda el 5'e inince Orta botun "güçlü kart" sayısı (4) ile Zor botunki (5) birbirine yaklaştı; bu eski sayıların küçük ele uygulanmasının sonucu, bilerek değiştirilmedi.
 - **Testler.** Sunucu 303, game-core 70 test geçiyor; tür denetimleri temiz. İki düzey inme testi ve Kolay Kariyer botu yüzdesi doğrulamaları kaldırıldı.
 
+### Veri düzeltmeleri ve İlk 10 kulüp listeleri (14 Kasım 2026)
+
+**Uyruk.**
+
+- Wikidata'daki A millî takım kayıtları (P54, maç sayısı P1350) veri hattına eklendi.
+- Kural: oyuncu ana uyruğunun A millî takımında hiç oynamamışsa ve başka bir uyruğunun A millî takımında en az 3 maçı varsa (bir sonraki ülkenin en az iki katı) ana uyruk o ülke olur. Ayrıntılı kural teknik mimaride, "Veri kuralları" tablosunda.
+- Sonuç: 51 oyuncunun uyruğu değişti, uyruğu olmayan 344 oyuncu uyruk aldı.
+  - 12 Türk millî oyuncu Almanya ya da Brezilya'dan Türkiye'ye geçti: Ümit Davala, Mehmet Aurélio, Serhat Akın, Yıldıray Baştürk, Ali Güneş, Tayfun Korkut, Ersen Martin, Mehmet Yozgatlı, Volkan Ünlü, Ümit Karan ve diğerleri.
+  - Diğer örnekler: Subotić Sırbistan, Maldonado Şili.
+  - Uyruk alanlar: Di Stéfano İspanya, Puskás Macaristan, Nedvěd Çekya, İlhan Mansız Türkiye.
+  - Özil, Emre Can ve Kenan Karaman değişmedi.
+- İlk deneme 84 değişiklik vermişti; aralarında yanlışlar vardı ve kural sıkılaştırıldı:
+  - Kondogbia (Orta Afrika → Fransa) gibi millî takım değiştirenlerin maç sayısı Wikidata'da eksikti. Artık rakip ülkenin sayısı bilinmiyorsa uyruk değişmez; oyuncu ana uyruğunun takımında oynamışsa da değişmez.
+  - Faroe oyuncuları Danimarka'ya, Martinik ve Guadeloupe oyuncuları Fransa'ya geçmişti, çünkü bu takımların Wikidata ülkesi bağlı oldukları devlet. Takım adında ana uyruğun adı geçiyorsa artık değişmez.
+  - Bask bölge takımı sayılmıyor.
+  - Yugoslavya, eski Yugoslavya kimliklerinin birleştirildiği kayıttan geçtiği için tarihî devlet istisnasına takılmıyordu. Artık tarihî devletler yalnızca uyruğu olmayan oyuncuya veriliyor.
+- Kalan bilinen hata: Marama Vahirua Fransa'ya geçti (Tahiti takımının adı ülkenin adını taşımıyor).
+
+**Kulüp yılları.**
+
+- transfermarkt-datasets'in maç kayıtlarında bir kulüp için sahaya çıkılan her sezon kulüp kaydı sayılıyor.
+- 4.597 kayıt ve 229 oyuncu eklendi.
+- Kulüp istatistiği olup kulüp kaydı olmayan satırlar 6.094'ten 2.252'ye indi. Bobô'nun Beşiktaş kaydı (2005–2011, 222 maç) geldi.
+
+**Derleme.**
+
+- Ayın ilk derlemesi `--views-month` verilmeden başlatıldı. Hat okunmaları API'den çekmeye başladı: Türkçe 26, İngilizce 70 dakika sürdü, kalan dört dil iki saati aşacaktı.
+- Derleme durduruldu. Ekim önbelleği Kasım adıyla kopyalanıp derlendi; böylece bilinirlik puanları tazelenmedi ve fark yalnızca bu düzeltmelerden geldi.
+- Çekilen Kasım dosyaları oturumun geçici klasöründe duruyor.
+- Bilinirlik 603 oyuncuda kaydı (yeni oyuncular pazar dağılımını değiştirdi). Izgaraların neredeyse hepsi yeniden üretildi: 54.000 başlığın 2.962'si aynı.
+- Uygulama veritabanı commit'lendi (`20261114000107`) ama sunucuya yayımlanmadı. Veri yayını indirme özelliği olmayan eski derlemeleri mağaza güncellemesine zorlar; 1.2.0 ile yapılacak.
+
+**İlk 10 kulüp listeleri.**
+
+- Kulüp golleri eksik ölçüldü: Süper Lig'de sezon başına gollerin yaklaşık %80'i, LaLiga ve Serie A'da %90–95'i kayıtlı.
+- Kullanıcı "kulüp + piyasa değeri" listesini seçti.
+- Yeni liste türü `clubValue`. Uygulama 1.2.0 `club-value-lists` özelliğini bildiriyor; sunucu yalnızca maçtaki bütün oyuncular destekliyorsa kulüp gol listesinin yerine bunu soruyor.
+- 1.1.0 eski listeyi görmeye devam ediyor; protokol numarası artmadı.
+- Altı dilde başlık eklendi.
+
+**Bayraklar.** XOX başlıklarındaki bayrak emojisi 18'den 28 puntoya çıktı (satır yüksekliği arma boyu + 2). Ekranda henüz denetlenmedi.
+
+**Testler.** Veri hattı 94, sunucu 305, uygulama 155 test geçiyor; tür denetimi ve lint temiz.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

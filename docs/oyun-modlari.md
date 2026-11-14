@@ -189,7 +189,7 @@ Kaynak: 1 Kasım'da hazırlanan 17 kararlık sayfa (`Mod Yenileme Kararları` Ar
 
 **Botlar eski zorluğunda kalır (kullanıcı 14 Kasım'da bot değişikliklerinden vazgeçti).** Sayfadaki bot tabanı kararı ve iki modun Kolay bot yüzdeleri (İlk 10 %15 ve önce en tanınmış isimler, Kariyer Yolu %5 ve her kulüpte +%8) uygulanmaz. Bot düzeyleri 1–3 olarak, bot tabloları ve uyarlama mantığı kararlardan önceki hâliyle kalır.
 
-Kodlanan, henüz dağıtılmayan (14 Kasım): Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`); Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam". Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
+Kodlanan, henüz dağıtılmayan (14 Kasım): Kart Düellosu'nda el 5, seçim 60 saniye, maç 5 soru, Kolay seviyede soru kümesi (`DUEL_EASY_METRICS`); Kariyer Yolu'nda 3 gizli futbolcu; İlk 10'da "ilk hataya kadar devam" ve kulüp + piyasa değeri listeleri. Dağıtım uygulama güncellemesine bırakıldı: 1.1.0'daki sabit metinler ("Yedi kart seç", "Yedi tur tamamlandı", "Dört futbolcu da soruldu") yeni sayılarla uyuşmaz, 1.2.0 metinleri sayıdan bağımsız yazılacak.
 
 Genel:
 
@@ -200,11 +200,17 @@ Genel:
 İlk 10:
 
 - **Listeler.** Tanıdık konular: "Galatasaray formasıyla en çok gol atan 10 futbolcu" gibi; sayılan gol o kulüpte atılan gol. Kolay seviyede Türkiye'nin büyük kulüpleri ve Avrupa'nın en bilinen kulüpleri çıkar.
+  - **Değişti (14 Kasım): kulüp + piyasa değeri.** Kulüp golleri eksik: maç kayıtlarında Süper Lig'de sezon başına gollerin yaklaşık %80'i, LaLiga ve Serie A'da %90–95'i var. Sıra yanlış çıkar, doğru cevap veren oyuncu can kaybedebilirdi. Kullanıcı üç seçenekten (kulüp + piyasa değeri, dönem sınırlı kulüp golleri, bugünkü liste) kulüp + piyasa değerini seçti.
+  - Liste başlığı: "{kulüp} forması giymiş, en yüksek piyasa değerine ulaşmış 10 futbolcu". Kulüp gol listesinin yerini alır; ülke listeleri (piyasa değeri, kariyer golü) aynen kalır. Örnek: Galatasaray listesi Osimhen 120M, Icardi 100M, Sané 100M, Leão 90M ile başlıyor.
+  - Liste türü `clubValue`. Uygulama 1.2.0 `club-value-lists` özelliğini bildirir; sunucu bu listeyi yalnızca maçtaki bütün oyuncular destekliyorsa sorar, 1.1.0 kulüp + kariyer golü listesini görmeye devam eder (kodlandı, dağıtılmadı).
+  - Piyasa değeri verisi 2004 sonrasını kapsadığı için ayrıca dönem sınırı gerekmez.
+  - Kolay seviyede büyük kulüplerle sınırlama henüz kodlanmadı.
 - **İpucu.** Boş satırlarda Kolay seviyede uyruk ve mevki, Orta seviyede yalnızca mevki, Zor seviyede ipucu yok.
 - **Şık.** Kolay seviyede sırası gelen oyuncu 4 isimden listede olanı seçer. Çeldiriciler listenin hemen altından gelir (11.–25. sıra).
 - **Bot.** Değişmez (Kolay bot %30; kolay bot yüzdesini düşürme önerisinden vazgeçildi).
 - **Can bitince.** Canı biten oyuncunun listesi kapanmaz: rakip ilk hatasına kadar devam eder, canı kalan oyuncu ilk yanlışını yapınca liste kapanır.
 - **Veri ön koşulları.** Veride 1990 öncesi eksik (Galatasaray listesinde Metin Oktay yok): listenin başlığına bir dönem sınırı konur, sınır veri denetlenerek belirlenir. Ümit Karan veride Almanya uyruklu görünüyor, uyruk ipucundan önce düzeltilir. Bobô'nun Beşiktaş golleri kulüp istatistiğinde var ama kulüp yılları tablosunda yok; listeler iki tablonun uyduğu kayıtlardan kurulur.
+  - **Durum (14 Kasım).** Dönem sınırı kulüp golü listesi için gerekiyordu, piyasa değeri listesine geçilince gereksiz kaldı. Ümit Karan ve 11 Türk millî oyuncu artık Türkiye uyruklu (A millî takım kuralı). Bobô'nun Beşiktaş kaydı maç kayıtlarından geliyor (2005–2011). Veri commit'lendi, sunucuya 1.2.0 ile yayımlanacak.
 
 Kariyer Yolu:
 

@@ -354,8 +354,13 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
   1. Kart Düellosu: el 5, seçim 60 saniye, Kolay seviyede soru kümesi. (Kodlandı, dağıtılmadı)
   2. Kariyer Yolu: 3 gizli futbolcu. (Kodlandı, dağıtılmadı)
   3. İlk 10: can bitince "ilk hataya kadar devam" kuralı. (Kodlandı, dağıtılmadı)
-  4. Veri düzeltmeleri, sonra İlk 10 kulüp listeleri.
-  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri.
+  4. Veri düzeltmeleri, sonra İlk 10 kulüp listeleri. (Kodlandı, dağıtılmadı)
+     - A millî takım kuralıyla uyruk: Ümit Karan dahil 12 Türk millî oyuncu düzeldi.
+     - Maç kayıtlarından kulüp yılları: Bobô'nun Beşiktaş kaydı geldi.
+     - Kullanıcının seçtiği kulüp + piyasa değeri listesi.
+     - Veri commit'lendi, yayını 1.2.0 ile.
+     - Ülke ve kıta tablosu Gizli Futbolcu aşamasına kaldı.
+  5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak (kodlandı, ekranda denetlenecek).
   6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
