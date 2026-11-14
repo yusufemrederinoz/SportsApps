@@ -1368,6 +1368,27 @@ Ayrıntılar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde.
   - 1.1.0 el boyutunu ve tur sayısını sunucudan okuduğu için dağıtımdan sonra yalnızca metinleri yanlış kalır, oyun bozulmaz.
 - **Testler.** Sunucu 317, uygulama 157 test geçiyor; tür denetimi ve lint temiz.
 
+### 1.2.0 yayın hazırlığı (14 Kasım 2026, gece)
+
+Kullanıcı "yayına hazır olana kadar en optimize kararı seç ve devam et, bana bir şey sorma" dedi.
+
+- **Kapsam kararı.** Derleme ve dağıtım kullanıcı onayına bağlı kaldı (EAS kuralı).
+- **Yeni modlar ertelendi.** Tombala ve Gizli Futbolcu, karar sayfasında ayrı güncellemeye ayrıldığı için 1.2.0'a girmedi; 1.2.0'ı geciktirmesinler diye dokunulmadı.
+- **Emülatör denemeleri.**
+  - Kariyer Yolu Kolay seviyede oynandı. Sonuçlar:
+    - "Türkiye · Defans" baştan açık geliyor, şıklar dört Türk defans oyuncusu.
+    - Pogba sorusunda kulüp satırları "233 maç · 39 gol" yazıyor; şıkların hepsi Fransız orta saha oyuncusu.
+    - Kapsam metni yeni hâliyle görünüyor.
+  - Kart Düellosu'nda 5 kart yeri, "0/5 KART", "TUR 1/5" ve bitişte "BÜTÜN TURLAR TAMAMLANDI" görüldü. İngiltere bayrakları kartlarda çiziliyor.
+  - İlk 10 İngilizcede oynandı: şıklarda bayrak yok, kural tek cümle. Uluslararası pazarın Kolay kulüp listesinde AS Monaco çıktı; o pazarın ilk 16'sı farklı.
+- **Bulunan metin hatası.** Kart seçim ekranı "Gol, asist, maç sayısı, yaş gibi her şey sorulabilir" diyordu. Kolay seviyede asist sorulmadığı için altı dilde "asist" yerine "piyasa değeri" yazıldı.
+- **Mağaza.**
+  - Kart Düellosu görselleri iki dilde 5 kartla yeniden çekildi. Yöntem teknik mimaride: Expo Go, yerel sunucu, Tools düğmesi kapalı, sürekli kayıt.
+  - Altı dilin mağaza açıklamalarındaki "7 futbolcunu seç" ifadesi sayısız oldu.
+  - Altı dilde 1.2.0 sürüm notu (her biri 500 karakterin altında) ve App Store inceleme notu yazıldı.
+- **Sürüm.** `app.json` 1.2.0.
+- **Yayın adımları.** `is-plani.md` içinde "1.2.0 yayın adımları".
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -361,14 +361,32 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
      - Veri commit'lendi, yayını 1.2.0 ile.
      - Ülke ve kıta tablosu Gizli Futbolcu aşamasına kaldı.
   5. 1.2.0 uygulaması: şıklar, ipuçları, kulüp başına maç ve gol, tek cümlelik kural metinleri, XOX başlıklarında arma boyunda bayrak. (Kodlandı, 14 Kasım)
-     - İlk 10'un şıkları ve ipuçları emülatörde denendi.
-     - Kariyer Yolu'nun yeni ekranı testlerle doğrulandı, emülatörde henüz görülmedi; emülatör deneme sırasında kapandı.
-     - Yayın öncesi kalanlar:
-       - Kariyer Yolu'nu emülatörde Kolay seviyede oynamak.
-       - Mağaza ekran görüntülerini 5 kartlık düelloyla yeniden üretmek.
-       - Sürüm numarasını 1.2.0 yapmak.
-       - Derleme (kullanıcı onayıyla).
-       - Mağazada yayından sonra sunucu ve veri dağıtımı.
+     - İlk 10, Kariyer Yolu ve 5 kartlık Kart Düellosu emülatörde Türkçe ve İngilizce oynandı.
+     - Sürüm 1.2.0 oldu. Sürüm notları ve App Store inceleme notu `magaza-metinleri.md` içinde.
+     - Kart Düellosu mağaza görselleri (Türkçe ve İngilizce, iki mağaza) 5 kartla yeniden üretildi ve teslim klasörüne kondu.
+     - **Yayına hazır (14 Kasım 2026).** Kalan adımlar kullanıcının onayına bağlı.
+
+**1.2.0 yayın adımları**
+
+1. **Derleme (kullanıcı onayıyla).** `eas build --platform all --profile production`.
+   - Expo'nun ücretsiz hakkı biterse Android için `python deploy/android_local_build.py <sürüm kodu>` kullanılır.
+   - Son Android sürüm kodu 17 (1.1.0).
+2. **App Store.**
+   - API ile 1.2.0 sürümünü aç.
+   - Altı dilde "Yenilikler" metnini gir (`magaza-metinleri.md`, "1.2.0 sürüm notu").
+   - Açıklamalardaki Kart Düellosu satırı artık sayı içermiyor; güncel metni gir.
+   - iPhone setinde 3. görseli (`03-duel.png`) Türkçe ve İngilizce yenisiyle değiştir. Diğer diller İngilizce görseli kullanır.
+   - İnceleme notunu gir, derlemeyi seç, incelemeye gönder.
+3. **Google Play.**
+   - AAB'yi yükle.
+   - Altı dilde sürüm notunu gir. Notlar 500 karakter sınırının altında.
+   - Türkçe ve İngilizce 3. görseli değiştir.
+   - Açıklamadaki Kart Düellosu satırını güncelle.
+4. **Sunucu ve veri.** İki mağazada da yayından birkaç saat sonra, canlı maç yokken:
+   - `sh deploy/deploy.sh` (sunucu kodu).
+   - `sh deploy/deploy.sh data` (14 Kasım verisi: uyruk düzeltmeleri, kulüp kayıtları).
+   - Sunucu dağıtılınca 1.1.0 kullananlar da 5 kartlık düello ve 3 futbolculuk Kariyer Yolu oynar; bu sürümde yalnızca eski metinler ("Yedi kart seç") yanlış kalır.
+   - 1.2.0 eski sunucuyla da çalışır: yardımlar kapalı kalır, yeni Kariyer jokerleri gol düşmeden "kullanılamaz" der.
   6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)
