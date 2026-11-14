@@ -281,7 +281,7 @@
     "conceptClub": "{{name}}: chi ci ha giocato",
     "conceptCountry": "Calciatori: {{name}}",
     "conceptLeague": "Calciatori della {{name}}",
-    "pickHint": "Scegli prima di conoscere le domande: gol, assist, presenze, età… può uscire di tutto.",
+    "pickHint": "Scegli prima di conoscere le domande: gol, presenze, valore di mercato, età… può uscire di tutto.",
     "pickCount": "{{picked}}/{{total}} carte",
     "addCard": "Aggiungi carta",
     "removeCard": "Togli {{name}}",

@@ -281,7 +281,7 @@
     "conceptClub": "Passés par {{name}}",
     "conceptCountry": "Pays : {{name}}",
     "conceptLeague": "Joueurs de {{name}}",
-    "pickHint": "Tu choisis sans connaître les questions : buts, passes décisives, matchs, âge… tout peut tomber.",
+    "pickHint": "Tu choisis sans connaître les questions : buts, matchs, valeur marchande, âge… tout peut tomber.",
     "pickCount": "{{picked}}/{{total}} cartes",
     "addCard": "Ajouter une carte",
     "removeCard": "Retirer {{name}}",

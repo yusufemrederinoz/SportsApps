@@ -281,7 +281,7 @@
     "conceptClub": "Spielte für {{name}}",
     "conceptCountry": "Nation: {{name}}",
     "conceptLeague": "Spieler der {{name}}",
-    "pickHint": "Du wählst, bevor du die Fragen kennst: Tore, Vorlagen, Einsätze, Alter … alles kann drankommen.",
+    "pickHint": "Du wählst, bevor du die Fragen kennst: Tore, Einsätze, Marktwert, Alter … alles kann drankommen.",
     "pickCount": "{{picked}}/{{total}} Karten",
     "addCard": "Karte hinzufügen",
     "removeCard": "{{name}} entfernen",

@@ -281,7 +281,7 @@
     "conceptClub": "{{name}} forması giymiş oyuncular",
     "conceptCountry": "{{name}} futbolcuları",
     "conceptLeague": "{{name}} oyuncuları",
-    "pickHint": "Soruları bilmeden seçiyorsun. Gol, asist, maç sayısı, yaş gibi her şey sorulabilir.",
+    "pickHint": "Soruları bilmeden seçiyorsun; gol, maç sayısı, piyasa değeri, yaş gibi her şey sorulabilir.",
     "pickCount": "{{picked}}/{{total}} kart",
     "addCard": "Kart ekle",
     "removeCard": "{{name}} kartını çıkar",
