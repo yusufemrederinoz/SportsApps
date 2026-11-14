@@ -60,6 +60,7 @@ const library: FootballLibrary = {
   draftClubs: () => [],
   draftEntry: () => null,
   draftCandidates: () => [],
+  draftMetricCount: () => 0,
   close: () => undefined,
 };
 

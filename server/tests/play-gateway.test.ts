@@ -4,6 +4,7 @@ import { gunzipSync } from 'node:zlib';
 
 import { DRAFT_FORMATION, DUEL_HAND_SIZE, emptyCells, headersAt, openPositions, type Grid } from '@sportapps/game-core';
 import {
+  DRAFT_METRICS,
   PLAY_PROTOCOL_VERSION,
   type AuthResponse,
   type DraftView,
@@ -580,6 +581,24 @@ describe.skipIf(!available)('play gateway', () => {
     expect([...easy].every((clubId) => all.has(clubId))).toBe(true);
     const [first] = football.ranking({ kind: 'clubValue', clubId: [...easy][0] as number }, 1);
     expect(football.footballerFacts(first?.id ?? 0)).toMatchObject({ countryId: expect.any(Number), position: expect.any(String) });
+  });
+
+  it('has every draft stat for the best known draft clubs and ranks real candidates by it', () => {
+    const clubs = football.draftClubs('tr').slice(0, 16);
+    for (const clubId of clubs) {
+      for (const metric of DRAFT_METRICS) {
+        expect(football.draftMetricCount(clubId, metric)).toBeGreaterThanOrEqual(12);
+      }
+    }
+    const [clubId] = clubs;
+    const candidates = football.draftCandidates('tr', clubId ?? 0, ['FW'], [], 5, 'marketValue');
+    expect(candidates.length).toBe(5);
+    candidates.forEach((candidate) => {
+      expect(candidate.value).toBeGreaterThan(0);
+      expect(football.draftEntry(candidate.id, clubId ?? 0, 'marketValue')).toMatchObject({ value: candidate.value });
+    });
+    const goals = football.draftEntry(candidates[0]?.id ?? 0, clubId ?? 0, 'goals');
+    expect(goals?.value).toEqual(expect.any(Number));
   });
 
   it('finds club numbers and look-alike names for real career paths', () => {

@@ -20,6 +20,7 @@ import {
   draftCandidatesStatement,
   draftClubsStatement,
   draftEntryStatement,
+  draftMetricCountStatement,
   fameStatement,
   gridAtOffsetStatement,
   gridCountStatement,
@@ -50,7 +51,7 @@ import {
   type Statement,
 } from '@sportapps/football-data';
 import type { BotOption, CellPosition, Grid, Header } from '@sportapps/game-core';
-import type { DuelConcept, PlayDifficulty, TopTenListView } from '@sportapps/protocol';
+import type { DraftMetric, DuelConcept, PlayDifficulty, TopTenListView } from '@sportapps/protocol';
 
 const VERSION_FILE = 'version.json';
 const KNOWN_ANSWER_LIMIT = 8;
@@ -111,13 +112,15 @@ export interface FootballLibrary {
     limit: number,
   ): number[];
   draftClubs(market: string): readonly number[];
-  draftEntry(footballerId: number, clubId: number): DraftEntryRow | null;
+  draftEntry(footballerId: number, clubId: number, metric?: DraftMetric): DraftEntryRow | null;
+  draftMetricCount(clubId: number, metric: DraftMetric): number;
   draftCandidates(
     market: string,
     clubId: number,
     positions: readonly string[],
     excludedIds: readonly number[],
     limit: number,
+    metric?: DraftMetric,
   ): DraftCandidateRow[];
   close(): void;
 }
@@ -136,6 +139,7 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
   const markets = new Set(all<{ code: string }>(marketsStatement()).map((market) => market.code));
   const concepts = new Map<string, readonly DuelConcept[]>();
   const draftClubs = new Map<string, readonly number[]>();
+  const draftMetricCounts = new Map<string, number>();
   const chainSeeds = new Map<string, readonly number[]>();
   const topTenLists = new Map<string, readonly TopTenListView[]>();
   const ids = (statement: Statement) => all<{ id: number }>(statement).map((row) => row.id);
@@ -332,12 +336,23 @@ export function openFootballLibrary(databasePath: string, manifest: DataManifest
       return loaded;
     },
 
-    draftEntry(footballerId, clubId) {
-      return first<DraftEntryRow>(draftEntryStatement(footballerId, clubId)) ?? null;
+    draftEntry(footballerId, clubId, metric) {
+      return first<DraftEntryRow>(draftEntryStatement(footballerId, clubId, metric)) ?? null;
     },
 
-    draftCandidates(market, clubId, positions, excludedIds, limit) {
-      return all<DraftCandidateRow>(draftCandidatesStatement(market, clubId, positions, excludedIds, limit));
+    draftMetricCount(clubId, metric) {
+      const key = `${clubId}:${metric}`;
+      const known = draftMetricCounts.get(key);
+      if (known !== undefined) {
+        return known;
+      }
+      const count = first<{ count: number }>(draftMetricCountStatement(clubId, metric))?.count ?? 0;
+      draftMetricCounts.set(key, count);
+      return count;
+    },
+
+    draftCandidates(market, clubId, positions, excludedIds, limit, metric) {
+      return all<DraftCandidateRow>(draftCandidatesStatement(market, clubId, positions, excludedIds, limit, metric));
     },
 
     close() {

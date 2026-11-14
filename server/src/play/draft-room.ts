@@ -12,13 +12,18 @@ import {
   passRound,
   pickFootballer,
   roundComplete,
+  settleRound,
+  takenIds,
   type BotLevel,
   type DraftPosition,
   type Side,
 } from '@sportapps/game-core';
 import {
+  DRAFT_METRICS,
   DRAFT_PICK_SECONDS,
   EXTRA_TIME_SECONDS,
+  type DraftMetric,
+  type DraftSlotView,
   type DraftView,
   type DraftViewPhase,
   type PlayDifficulty,
@@ -36,6 +41,9 @@ const CLUB_POOL: Record<PlayDifficulty, number> = { 1: 16, 2: 32, 3: Number.POSI
 const BOT_CANDIDATES = 40;
 const BOT_SHORTLIST = 4;
 const FAMOUS = 45;
+const LEGACY_METRIC: DraftMetric = 'assists';
+const FALLBACK_METRIC: DraftMetric = 'goals';
+const METRIC_MINIMUM_CANDIDATES = 12;
 
 export interface DraftTiming {
   pickMilliseconds: number;
@@ -49,7 +57,7 @@ export const DEFAULT_DRAFT_TIMING: DraftTiming = {
   botPickMilliseconds: { minimum: 4000, maximum: 14000 },
 };
 
-export type DraftLibrary = Pick<FootballLibrary, 'draftClubs' | 'draftEntry' | 'draftCandidates'>;
+export type DraftLibrary = Pick<FootballLibrary, 'draftClubs' | 'draftEntry' | 'draftCandidates' | 'draftMetricCount'>;
 
 type Timer = ReturnType<typeof setTimeout>;
 
@@ -89,6 +97,24 @@ export function chooseBotPick(
   return pick(famous.length > 0 ? famous : candidates, random);
 }
 
+export function chooseDraftMetrics(
+  clubs: readonly number[],
+  random: () => number,
+  supports: (clubId: number, metric: DraftMetric) => boolean,
+): DraftMetric[] {
+  const chosen: DraftMetric[] = [];
+  let queue: DraftMetric[] = [];
+  clubs.forEach((clubId) => {
+    if (queue.length === 0) {
+      queue = shuffle(DRAFT_METRICS, random);
+    }
+    const previous = chosen.at(-1);
+    const index = queue.findIndex((metric) => metric !== previous && supports(clubId, metric));
+    chosen.push(index >= 0 ? (queue.splice(index, 1)[0] as DraftMetric) : FALLBACK_METRIC);
+  });
+  return chosen;
+}
+
 export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTiming = DEFAULT_DRAFT_TIMING): RoomFactory {
   return (context) => {
     const { id, kind, market, difficulty, seats, now, random } = context;
@@ -102,32 +128,43 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
     const { botLevel } = context;
     const botSides = SIDES.filter((side) => seats[side].userId === null);
     const clock = createThinkingClock(now);
-    let state = createDraft(shuffle(pool, random).slice(0, DRAFT_FORMATION.length));
+    const variedMetrics = (context.features ?? []).includes('draft-metrics');
+    const clubs = shuffle(pool, random).slice(0, DRAFT_FORMATION.length);
+    const metrics = variedMetrics
+      ? chooseDraftMetrics(clubs, random, (clubId, metric) => library.draftMetricCount(clubId, metric) >= METRIC_MINIMUM_CANDIDATES)
+      : clubs.map(() => LEGACY_METRIC);
+    let state = createDraft(clubs, DRAFT_FORMATION, variedMetrics ? 'rounds' : 'total');
     let stage: DraftViewPhase = 'playing';
     let deadline = startedAt + timing.pickMilliseconds;
     let result: PlayResult | null = null;
     let finishedAt: number | null = null;
     let phaseTimer: Timer | null = null;
 
-    const view = (): DraftView => ({
+    const roundMetric = (): DraftMetric => metrics[Math.min(state.round, metrics.length - 1)] ?? LEGACY_METRIC;
+
+    const lineupFor = (side: Side, forSide: Side): DraftSlotView[] =>
+      state.lineups[side].map((slot) =>
+        variedMetrics && stage === 'playing' && side !== forSide && slot.round === state.round
+          ? { position: slot.position, footballerId: null, value: null, round: null }
+          : { ...slot },
+      );
+
+    const view = (forSide: Side): DraftView => ({
       phase: stage,
-      metric: 'assists',
+      metric: roundMetric(),
+      ...(variedMetrics ? { metrics: metrics.slice(0, state.round + 1) } : {}),
       totalRounds: state.clubs.length,
       round: Math.min(state.round + 1, state.clubs.length),
       clubs: state.clubs.slice(0, state.round + 1),
       deadlineIn: stage === 'finished' ? 0 : Math.max(0, deadline - now()),
-      lineups: {
-        x: state.lineups.x.map((slot) => ({ ...slot })),
-        o: state.lineups.o.map((slot) => ({ ...slot })),
-      },
+      lineups: { x: lineupFor('x', forSide), o: lineupFor('o', forSide) },
       picked: { ...state.picked },
       scores: { ...state.scores },
       result,
     });
 
     const broadcast = () => {
-      const current = view();
-      SIDES.forEach((side) => context.send(side, { type: 'view', matchId: id, game: 'draft', view: current }));
+      SIDES.forEach((side) => context.send(side, { type: 'view', matchId: id, game: 'draft', view: view(side) }));
     };
 
     const stopBots = () => {
@@ -170,6 +207,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
 
     const pause = () => {
       stopBots();
+      state = settleRound(state);
       stage = 'pause';
       deadline = now() + timing.pauseMilliseconds;
       schedule(advance, timing.pauseMilliseconds);
@@ -189,7 +227,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
       if (stage !== 'playing' || club === null) {
         return 'invalid-action';
       }
-      const entry = library.draftEntry(footballerId, club);
+      const entry = library.draftEntry(footballerId, club, roundMetric());
       if (!entry || !isPosition(entry.position)) {
         return 'invalid-action';
       }
@@ -215,8 +253,9 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
         market,
         club,
         openPositions(state.lineups[side]),
-        draftedIds(state),
+        takenIds(state),
         BOT_CANDIDATES,
+        roundMetric(),
       );
       const choice = chooseBotPick(candidates, botLevel, random);
       if (!choice || choose(side, choice.id) !== null) {
@@ -275,7 +314,7 @@ export function createDraftRoomFactory(library: DraftLibrary, timing: DraftTimin
           side,
           usernames: { x: seats.x.username, o: seats.o.username },
           opponentConnected,
-          view: view(),
+          view: view(side),
         },
       }),
 

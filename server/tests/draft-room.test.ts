@@ -1,6 +1,14 @@
 import type { DraftCandidateRow } from '@sportapps/football-data';
 import { DRAFT_FORMATION } from '@sportapps/game-core';
-import type { DraftView, GameView, ServerMessage, SessionSnapshot } from '@sportapps/protocol';
+import {
+  DRAFT_METRICS,
+  type DraftMetric,
+  type DraftView,
+  type GameView,
+  type PlayFeature,
+  type ServerMessage,
+  type SessionSnapshot,
+} from '@sportapps/protocol';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createAccountService } from '../src/accounts/service';
@@ -8,6 +16,7 @@ import { openDatabase, type Database } from '../src/database';
 import {
   DEFAULT_DRAFT_TIMING,
   chooseBotPick,
+  chooseDraftMetrics,
   createDraftRoomFactory,
   type DraftLibrary,
   type DraftTiming,
@@ -30,15 +39,21 @@ const positionOf = (id: number) => POSITIONS[(id % 100) % 4] as string;
 const valueOf = (id: number) => id % 100;
 const clubOf = (id: number) => Math.floor(id / 100);
 
+const METRIC_FACTOR: Record<DraftMetric, number> = { goals: 1, assists: 1, appearances: 10, marketValue: 1_000_000 };
+const metricValueOf = (id: number, metric: DraftMetric = 'assists') => valueOf(id) * METRIC_FACTOR[metric];
+
 const library: DraftLibrary = {
   draftClubs: (market) => (market === 'tr' ? CLUBS : []),
-  draftEntry: (id, club) =>
-    clubOf(id) === club && id % 100 > 0 && id % 100 <= PER_CLUB ? { id, position: positionOf(id), value: valueOf(id) } : null,
-  draftCandidates: (_, club, positions, excluded, limit) =>
+  draftEntry: (id, club, metric) =>
+    clubOf(id) === club && id % 100 > 0 && id % 100 <= PER_CLUB
+      ? { id, position: positionOf(id), value: metricValueOf(id, metric) }
+      : null,
+  draftCandidates: (_, club, positions, excluded, limit, metric) =>
     Array.from({ length: PER_CLUB }, (__, index) => footballer(club, index + 1))
       .filter((id) => positions.includes(positionOf(id)) && !excluded.includes(id))
       .slice(0, limit)
-      .map((id) => ({ id, position: positionOf(id), value: valueOf(id), fame: 50 })),
+      .map((id) => ({ id, position: positionOf(id), value: metricValueOf(id, metric), fame: 50 })),
+  draftMetricCount: () => PER_CLUB,
 };
 
 interface Client extends Connection {
@@ -67,10 +82,10 @@ function draftOf(state: GameView): DraftView {
   return state.view;
 }
 
-function join(): Client {
+function join(features?: PlayFeature[]): Client {
   const { account } = createAccountService(database, { sessionDays: 90 }).createGuest();
   const client: Client = {
-    player: { id: account.id, username: account.username },
+    player: { id: account.id, username: account.username, ...(features ? { features } : {}) },
     received: [],
     send(message) {
       client.received.push(message);
@@ -293,6 +308,97 @@ describe('picking footballers', () => {
     const { first, second } = pair();
     lobby.handle(first.player.id, { type: 'leave', matchId: first.session().matchId });
     expect(second.of('finished')[0]?.result).toEqual({ winner: second.session().side, reason: 'forfeit' });
+  });
+});
+
+describe('a different stat in every round', () => {
+  const METRICS: PlayFeature[] = ['draft-metrics'];
+
+  function metricPair(firstFeatures: PlayFeature[] = METRICS, secondFeatures: PlayFeature[] = METRICS) {
+    const first = join(firstFeatures);
+    const second = join(secondFeatures);
+    queue(first);
+    queue(second);
+    return { first, second, side: first.session().side, other: second.session().side };
+  }
+
+  it('spreads the four stats over the rounds without repeating one back to back', () => {
+    const clubs = [1, 2, 3, 4, 5, 6, 7];
+    for (let run = 0; run < 20; run += 1) {
+      const metrics = chooseDraftMetrics(clubs, random, () => true);
+      expect(metrics).toHaveLength(clubs.length);
+      expect(new Set(metrics)).toEqual(new Set(DRAFT_METRICS));
+      metrics.slice(1).forEach((metric, index) => expect(metric).not.toBe(metrics[index]));
+    }
+  });
+
+  it('skips a stat the club has too little data for', () => {
+    const metrics = chooseDraftMetrics([1, 2, 3, 4], random, (_, metric) => metric !== 'marketValue');
+    expect(metrics).not.toContain('marketValue');
+    expect(chooseDraftMetrics([1], random, () => false)).toEqual(['goals']);
+  });
+
+  it('shows the stat of the round and keeps the old assists match for older apps', () => {
+    const { first } = metricPair();
+    const view = first.view();
+    expect(view.metrics).toEqual([view.metric]);
+    expect(DRAFT_METRICS).toContain(view.metric);
+
+    const mixed = metricPair(METRICS, []);
+    expect(mixed.first.view().metric).toBe('assists');
+    expect(mixed.first.view().metrics).toBeUndefined();
+  });
+
+  it('hides the rival pick until the round closes, then gives the round to the higher value', () => {
+    const { first, second, side, other } = metricPair();
+    const current = club(first);
+    const metric = first.view().metric;
+    choose(first, footballer(current, 10));
+    expect(first.view().lineups[side][3]).toMatchObject({ footballerId: footballer(current, 10) });
+    expect(second.view().lineups[side].every((slot) => slot.footballerId === null)).toBe(true);
+    expect(second.view().picked[side]).toBe(true);
+    expect(second.view().scores).toEqual({ x: 0, o: 0 });
+
+    choose(second, footballer(current, 5));
+    const paused = second.view();
+    expect(paused.phase).toBe('pause');
+    expect(paused.lineups[side][3]).toMatchObject({ footballerId: footballer(current, 10), value: metricValueOf(10, metric) });
+    expect(paused.scores[side]).toBe(1);
+    expect(paused.scores[other]).toBe(0);
+  });
+
+  it('lets both players take the same footballer in a round and calls that round even', () => {
+    const { first, second } = metricPair();
+    const pickId = footballer(club(first), 6);
+    choose(first, pickId);
+    choose(second, pickId);
+    expect(lastError(second)).toBeUndefined();
+    expect(second.view()).toMatchObject({ phase: 'pause', scores: { x: 0, o: 0 } });
+    vi.advanceTimersByTime(TIMING.pauseMilliseconds);
+    choose(first, pickId);
+    expect(lastError(first)).toBe('invalid-action');
+  });
+
+  it('gives the round to a pick over a missed turn and the match to the side with more rounds', () => {
+    const { first, second, side, other } = metricPair();
+    choose(first, footballer(club(first), 4));
+    vi.advanceTimersByTime(PICK_TIMEOUT);
+    expect(first.view().scores).toMatchObject({ [side]: 1, [other]: 0 });
+    vi.advanceTimersByTime(TIMING.pauseMilliseconds);
+
+    for (let round = 1; round < DRAFT_FORMATION.length; round += 1) {
+      playRound(first, second, round);
+      vi.advanceTimersByTime(TIMING.pauseMilliseconds);
+    }
+    const view = first.view();
+    expect(view.phase).toBe('finished');
+    expect(view.metrics).toHaveLength(DRAFT_FORMATION.length);
+    expect(view.scores[side] + view.scores[other]).toBeLessThanOrEqual(DRAFT_FORMATION.length);
+    const winner = view.scores[side] === view.scores[other] ? null : view.scores[side] > view.scores[other] ? side : other;
+    if (winner) {
+      expect(first.of('finished')[0]?.result).toEqual({ winner, reason: 'score' });
+    }
+    expect(history.list(first.player.id)[0]).toMatchObject({ ownCells: view.scores[side], opponentCells: view.scores[other] });
   });
 });
 
