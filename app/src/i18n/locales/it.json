@@ -176,6 +176,8 @@
     "credits": "Fonti delle immagini",
     "notifications": "Notifiche",
     "notificationsHint": "Sfida del giorno, inviti a giocare, risultato settimanale e promemoria della serie. Puoi disattivarle quando vuoi.",
+    "ambience": "Suono della curva",
+    "ambienceHint": "Durante le partite si sente in sottofondo il brusio leggero dello stadio.",
     "report": "Segnala un problema o un giocatore",
     "delete": "Elimina account",
     "deleteTitle": "Eliminare l'account?",

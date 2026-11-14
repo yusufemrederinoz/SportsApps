@@ -176,6 +176,8 @@
     "credits": "Görsel kaynakları",
     "notifications": "Bildirimler",
     "notificationsHint": "Günün bulmacası, maç davetleri, haftalık sonuç ve seri hatırlatmaları. İstediğin zaman kapatabilirsin.",
+    "ambience": "Tribün sesi",
+    "ambienceHint": "Maç sırasında arkada hafif bir tribün uğultusu çalar.",
     "report": "Sorun ya da oyuncu bildir",
     "delete": "Hesabı sil",
     "deleteTitle": "Hesap silinsin mi?",

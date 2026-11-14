@@ -176,6 +176,8 @@
     "credits": "Sources des images",
     "notifications": "Notifications",
     "notificationsHint": "Défi du jour, invitations à jouer, résultat de la semaine et rappels de série. Tu peux les désactiver à tout moment.",
+    "ambience": "Ambiance du stade",
+    "ambienceHint": "Pendant les matchs, une légère ambiance de tribune joue en fond.",
     "report": "Signaler un problème ou un joueur",
     "delete": "Supprimer le compte",
     "deleteTitle": "Supprimer le compte ?",

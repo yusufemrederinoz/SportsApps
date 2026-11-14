@@ -176,6 +176,8 @@
     "credits": "Bildquellen",
     "notifications": "Mitteilungen",
     "notificationsHint": "Tagesrätsel, Match-Einladungen, Wochenergebnis und Serien-Erinnerungen. Du kannst sie jederzeit ausschalten.",
+    "ambience": "Stadionkulisse",
+    "ambienceHint": "Während der Matches läuft leise eine Stadionkulisse im Hintergrund.",
     "report": "Problem oder Spieler melden",
     "delete": "Konto löschen",
     "deleteTitle": "Konto löschen?",

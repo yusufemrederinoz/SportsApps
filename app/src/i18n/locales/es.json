@@ -176,6 +176,8 @@
     "credits": "Fuentes de imágenes",
     "notifications": "Notificaciones",
     "notificationsHint": "Reto diario, invitaciones a jugar, resultado semanal y recordatorios de racha. Puedes desactivarlas cuando quieras.",
+    "ambience": "Sonido de grada",
+    "ambienceHint": "Durante los partidos suena de fondo el murmullo suave de la grada.",
     "report": "Informar de un problema o de un jugador",
     "delete": "Eliminar cuenta",
     "deleteTitle": "¿Eliminar la cuenta?",

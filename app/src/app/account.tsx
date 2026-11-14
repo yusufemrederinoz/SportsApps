@@ -15,6 +15,7 @@ import { ThemedText } from '@/components/themed-text';
 import { Colors, Finishes, Fonts, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
 import { AdPrivacyLink } from '@/features/account/ad-privacy-link';
 import { MatchHistory } from '@/features/account/match-history';
+import { AmbienceSetting } from '@/features/account/ambience-setting';
 import { NotificationSetting } from '@/features/account/notification-setting';
 import { useUppercase } from '@/i18n/uppercase';
 import { reportUrl } from '@/legal/links';
@@ -87,6 +88,7 @@ function AccountScreen() {
             {account.isGuest ? <ThemedText themeColor="textSecondary">{t('account.guestNote')}</ThemedText> : null}
             {state.status === 'signed-in' ? <MatchHistory token={state.token} /> : null}
             {state.status === 'signed-in' ? <NotificationSetting token={state.token} /> : null}
+            <AmbienceSetting />
             <Pressable
               accessibilityRole="link"
               onPress={() => void Linking.openURL(reportUrl(t('account.report'), account.username)).catch(() => undefined)}

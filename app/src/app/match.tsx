@@ -32,6 +32,7 @@ import { resultDetailKey } from '@/features/match/result-detail';
 import { BOT_SIDE, useMatch } from '@/features/match/use-match';
 import { useOnlineMatch, type OnlineEntry } from '@/features/match/use-online-match';
 import { useProgress } from '@/features/progress/use-progress';
+import { useMatchAmbience } from '@/feedback/ambience';
 import { useUppercase } from '@/i18n/uppercase';
 
 function BotMatch({ difficulty }: { difficulty: Difficulty }) {
@@ -40,6 +41,7 @@ function BotMatch({ difficulty }: { difficulty: Difficulty }) {
   const router = useRouter();
   const { unavailable, setup, session, secondsLeft, canPlay, answer, restart } = useMatch(difficulty);
   const leaveDialog = useLeaveGuard(session !== null && session.match.result === null, false);
+  useMatchAmbience(session !== null && session.match.result === null);
 
   if (unavailable || !setup || !session) {
     return (
@@ -106,6 +108,7 @@ function OnlineMatch({ entry, difficulty, game }: { entry: OnlineEntry; difficul
     online.phase === 'playing' &&
     (live ? live.view.result === null : session !== null && session.match.result === null);
   const leaveDialog = useLeaveGuard(running, entry.kind !== 'bot');
+  useMatchAmbience(running);
   const notice = online.reconnecting
     ? t('online.reconnecting')
     : online.opponentConnected

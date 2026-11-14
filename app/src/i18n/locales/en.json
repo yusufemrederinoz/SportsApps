@@ -176,6 +176,8 @@
     "credits": "Image sources",
     "notifications": "Notifications",
     "notificationsHint": "Daily puzzle, match invites, weekly result and streak reminders. You can turn them off at any time.",
+    "ambience": "Crowd sound",
+    "ambienceHint": "A soft stadium crowd plays in the background during matches.",
     "report": "Report a problem or a player",
     "delete": "Delete account",
     "deleteTitle": "Delete your account?",
