@@ -1410,6 +1410,29 @@ Kullanıcı emülatörde denerken Kadro Kur'un yalnızca asistle oynanmasını i
   - 1.2.0 sürüm notlarına Kadro Kur satırı eklendi. Sınıra sığması için İlk 10'un "ilk hataya kadar devam" satırı notlardan çıktı (her dil 464–498 karakter). App Store inceleme notuna da eklendi.
 - **Testler.** game-core 4, sunucu 7 (biri gerçek veriyle: Kolay'daki 16 kulübün her istatistikte en az 12 futbolcusu var), uygulama 2 yeni test.
 
+### Seslerin yenilenmesi: adaylar (15 Kasım 2026)
+
+Kullanıcı uygulamadaki seslerin amatör geldiğini söyledi. Sebebi: 10 sesin hepsi 7 Ekim'de kodla üretilmiş yer tutuculardı.
+
+**Kararlar** (seçenekli sorularla):
+- Kaynak: ücretsiz lisanslı paketler.
+- Kapsam: 10 efekt yenilenir, maç içi tribün uğultusu eklenir ve ayarlardan kapatılabilir. Menü müziği seçilmedi.
+
+**Kaynaklar** (hepsi CC0):
+- Kenney paketleri OpenGameArt'tan alındı; kenney.nl indirmeyi betiğe kapatıyor. Paketler: arayüz sesleri, kart sesleri, kısa jingle'lar.
+- Freesound'dan CC0 süzgeciyle ve en çok indirilene göre aranarak gerçek kayıtlar alındı: hakem düdüğü, tribün tepkileri, top vuruşu, stadyum ambiyansı.
+- Sonniss arşivi tek parça onlarca GB olduğu için kullanılmadı.
+
+**İşleme** (ffmpeg ve numpy, betikler oturumun çalışma klasöründe):
+- Baştaki sessizlik kesildi, role göre süre sınırı ve yumuşak bitiş kondu.
+- Ses düzeyi role göre eşitlendi: düdük ve kazanma −16, tik −24, uğultu −30 dBFS civarı.
+- Uğultu için kaydın en durgun 40 saniyesi seçildi ve 2 saniyelik çapraz geçişle döngü yapıldı.
+- Ölçümle elenenler: kırpılmış kayıtlar, gürültü tabanı yüksek olanlar.
+
+**Ödül sesi önerisi.** Kazanma sesi günlük ödül, gol satın alma ve ödüllü reklamda da çalıyor. Bunlar için ayrı bir "Ödül" sesi önerildi.
+
+**Dinleme sayfası.** 12 ses yerine 3–6 aday ve bugünkü ses var: "ChallengeGoal Ses Seçimi" Artifact'ı (https://claude.ai/artifact/1JAr1qAVoZUQp1a5tjd1ky). Seçimler sayfanın veri deposunda `sound-picks/main` belgesine yazılıyor. Sesleri dinleyemediğim için seçim kullanıcıda; seçilenler uygulamaya bağlanacak.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
