@@ -312,8 +312,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   flag: {
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 28,
+    lineHeight: CREST_SIZE + 2,
   },
   slot: {
     borderRadius: Radius.medium,
