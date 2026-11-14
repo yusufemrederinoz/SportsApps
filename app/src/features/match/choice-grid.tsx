@@ -3,7 +3,6 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed-text';
 import { Colors, MinimumTouchSize, Motion, Radius, Spacing } from '@/constants/theme';
-import { flagEmoji } from '@/features/match/flags';
 import type { PlayedFootballer } from '@/features/match/session';
 import { haptics } from '@/feedback/haptics';
 
@@ -21,7 +20,6 @@ export function ChoiceGrid({ choices, cards, disabled, onPick }: ChoiceGridProps
     <View style={styles.grid}>
       {choices.map((footballerId, index) => {
         const card = cards[footballerId] ?? null;
-        const flag = flagEmoji(card?.countryCode ?? null);
         return (
           <Animated.View key={footballerId} entering={FadeInDown.delay(index * STAGGER).duration(Motion.base)} style={styles.cell}>
             <Pressable
@@ -34,7 +32,6 @@ export function ChoiceGrid({ choices, cards, disabled, onPick }: ChoiceGridProps
                 onPick(footballerId);
               }}
               style={({ pressed }) => [styles.choice, pressed && styles.pressed, disabled && styles.disabled]}>
-              {flag ? <ThemedText style={styles.flag}>{flag}</ThemedText> : null}
               <ThemedText type="smallBold" numberOfLines={2} style={styles.name}>
                 {card?.name ?? '…'}
               </ThemedText>
@@ -73,10 +70,6 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
-  },
-  flag: {
-    fontSize: 20,
-    lineHeight: 26,
   },
   name: {
     flex: 1,
