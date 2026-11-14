@@ -599,7 +599,7 @@ Uygulama `/v1/play` adresine WebSocket ile bağlanır. Mesajlar JSON'dur; tipler
 
 | Uygulamadan sunucuya | Anlamı |
 |---|---|
-| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü ve uygulamanın desteklediği özellikler (`reactions`, `rematch`, `ranked-rooms`, `club-value-lists`, `top-ten-hints`, `top-ten-choices`, `career-help`, `career-choices`). Oda kurulurken maçtaki bütün oyuncuların ortak özellikleri oda bağlamına (`RoomContext.features`) geçer; yeni yardımlar yalnızca bütün oyuncular destekliyorsa açılır. Örneğin İlk 10, kulüp + piyasa değeri listesini yalnızca `club-value-lists` ortaksa sorar, değilse eski kulüp + kariyer golü listesini sorar. Böylece eski sürüm bozulmaz, protokol numarası da artmaz. 1.2.0 ile gelen alanlar: İlk 10 görünümünde boş satırların `hint` alanı (uyruk ve mevki) ve sırası gelen oyuncunun `choices` alanı; Kariyer Yolu görünümünde kulüp satırlarının `appearances` ve `goals` alanları, baştan açık `facts` (uyruk ve mevki) ve Kolay seviyede kalan `choices`. Kariyer Yolu'nun jokerleri "Baş harf" (`first-letter`) ve "Doğum yılı" (`birth-year`) oldu; sunucu 1.1.0'ın `nationality` ve `position` jokerlerini `LEGACY_JOKERS` ile kabul etmeye devam eder |
+| `hello` | Selamlama: jeton, protokol sürümü, veri sürümü ve uygulamanın desteklediği özellikler (`reactions`, `rematch`, `ranked-rooms`, `club-value-lists`, `top-ten-hints`, `top-ten-choices`, `career-help`, `career-choices`, `draft-metrics`). Oda kurulurken maçtaki bütün oyuncuların ortak özellikleri oda bağlamına (`RoomContext.features`) geçer; yeni yardımlar yalnızca bütün oyuncular destekliyorsa açılır. Örneğin İlk 10, kulüp + piyasa değeri listesini yalnızca `club-value-lists` ortaksa sorar, değilse eski kulüp + kariyer golü listesini sorar. Böylece eski sürüm bozulmaz, protokol numarası da artmaz. 1.2.0 ile gelen alanlar: İlk 10 görünümünde boş satırların `hint` alanı (uyruk ve mevki) ve sırası gelen oyuncunun `choices` alanı; Kariyer Yolu görünümünde kulüp satırlarının `appearances` ve `goals` alanları, baştan açık `facts` (uyruk ve mevki) ve Kolay seviyede kalan `choices`. Kariyer Yolu'nun jokerleri "Baş harf" (`first-letter`) ve "Doğum yılı" (`birth-year`) oldu; sunucu 1.1.0'ın `nationality` ve `position` jokerlerini `LEGACY_JOKERS` ile kabul etmeye devam eder |
 | `queue` | Rastgele rakip sırasına gir (mod, pazar, zorluk; mod verilmezse XOX) |
 | `play-bot` | Sıraya girmeden bota karşı maç aç (mod, pazar, zorluk) |
 | `create-room` | Arkadaş odası kur (mod, pazar, zorluk) |
@@ -654,7 +654,7 @@ Online sırada 6-11 saniyede gerçek rakip bulunamazsa karşıya bot gelir ve oy
 | `src/play/grid-room.ts` | XOX oda üreticisi: ızgara seçer, maç odasını ve botu bağlar |
 | `src/play/room.ts` | Tek bir XOX maçı: durum, cevap doğrulama, sıra süresi, sonuç |
 | `src/play/duel-room.ts` | Kart Düellosu oda üreticisi: konsept seçimi, el doğrulama ve tamamlama, soru seçimi, tur ve açılış süreleri, bot |
-| `src/play/draft-room.ts` | Kadro Kur oda üreticisi: kulüp sırası, seçim doğrulama (kulüp, mevki, asist verisi), tur süresi ve ara, bot |
+| `src/play/draft-room.ts` | Kadro Kur oda üreticisi: kulüp ve istatistik sırası (`chooseDraftMetrics`), seçim doğrulama (kulüp, mevki, turun istatistiğinin verisi), oyuncuya göre görünüm (`draft-metrics` açıkken rakibin o turdaki seçimi tur bitene kadar gizlenir), tur puanı (`settleRound`), tur süresi ve ara, bot |
 | `src/play/higher-room.ts` | Hangisi Yüksek oda üreticisi: soru havuzu (zorluk başına önbellekte), değer farkı kuralı, eller, bot |
 | `src/play/chain-room.ts` | Zincir oda üreticisi: başlangıç futbolcuları, ortak kulüp denetimi, kısalan süre, turlar, bot |
 | `src/play/rare-room.ts` | En Az Bilinen oda üreticisi: ızgaradan ölçütler, gizli cevaplar, doğruluk ve bilinirlik, bot |
@@ -1087,7 +1087,7 @@ Uygulama sorgu testleri, gömülü veritabanını Node'un kendi SQLite modülüy
 - Sunucu şifresiz HTTP ile çalışıyor; yayında önüne TLS sonlandıran bir katman gerekir.
 - Kart Düellosu yalnızca online; bota karşı internetsiz oynanamıyor. Turnuva konseptleri ("Dünya Kupası'nda oynamış") veri olmadığı için yok.
 - Düelloda Vikiveri kaynaklı oyuncuların sayıları yalnızca lig maçlarını kapsıyor; diğerleri bütün resmî maçları. Aynı soruda karşılaşabiliyorlar.
-- Kadro Kur'da asist verisi olmayan futbolcular seçilemiyor; bu, eski yıldızların bir kısmını dışarıda bırakıyor.
+- Kadro Kur'da turun istatistiğinde verisi olmayan futbolcular seçilemiyor. Asist ve piyasa değeri turlarında bu, eski yıldızların bir kısmını dışarıda bırakıyor; piyasa değeri 2004 sonrasını kapsıyor. Gol ve maç verisi bütün istatistik kayıtlarında var.
 - Zincir'de yalnızca veritabanındaki kulüpler (Süper Lig ve beş büyük lig) bağlantı sayılıyor; gerçekte başka bir kulüpte birlikte oynamış iki futbolcu yanlış sayılır.
 - Millî maç sayısı 2012 öncesi kariyerler için yok; bu yüzden İlk 10'da millî maç listesi kullanılmıyor, Kart Düellosu ve Hangisi Yüksek'te millî maç sorusu yalnızca iki kartta da değer varsa çıkıyor.
 - İlk 10'un gol listeleri iki kaynağı karıştırıyor (Vikiveri kaynaklı eski oyuncularda yalnızca lig golleri); ekranda "sıralama uygulamanın verisine göredir" notu var.

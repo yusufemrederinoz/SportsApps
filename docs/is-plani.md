@@ -374,19 +374,20 @@ Kararlar `oyun-modlari.md` içindeki "Mod yenileme kararları" bölümünde. Ama
 2. **App Store.**
    - API ile 1.2.0 sürümünü aç.
    - Altı dilde "Yenilikler" metnini gir (`magaza-metinleri.md`, "1.2.0 sürüm notu").
-   - Açıklamalardaki Kart Düellosu satırı artık sayı içermiyor; güncel metni gir.
+   - Açıklamalardaki Kart Düellosu satırı artık sayı içermiyor, Kadro Kur satırı her tura ayrı istatistiği anlatıyor; güncel metni gir.
    - iPhone setinde 3. görseli (`03-duel.png`) Türkçe ve İngilizce yenisiyle değiştir. Diğer diller İngilizce görseli kullanır.
    - İnceleme notunu gir, derlemeyi seç, incelemeye gönder.
 3. **Google Play.**
    - AAB'yi yükle.
    - Altı dilde sürüm notunu gir. Notlar 500 karakter sınırının altında.
    - Türkçe ve İngilizce 3. görseli değiştir.
-   - Açıklamadaki Kart Düellosu satırını güncelle.
+   - Açıklamadaki Kart Düellosu ve Kadro Kur satırlarını güncelle.
 4. **Sunucu ve veri.** İki mağazada da yayından birkaç saat sonra, canlı maç yokken:
    - `sh deploy/deploy.sh` (sunucu kodu).
    - `sh deploy/deploy.sh data` (14 Kasım verisi: uyruk düzeltmeleri, kulüp kayıtları).
    - Sunucu dağıtılınca 1.1.0 kullananlar da 5 kartlık düello ve 3 futbolculuk Kariyer Yolu oynar; bu sürümde yalnızca eski metinler ("Yedi kart seç") yanlış kalır.
-   - 1.2.0 eski sunucuyla da çalışır: yardımlar kapalı kalır, yeni Kariyer jokerleri gol düşmeden "kullanılamaz" der.
+   - 1.2.0 eski sunucuyla da çalışır: yardımlar kapalı kalır, yeni Kariyer jokerleri gol düşmeden "kullanılamaz" der, Kadro Kur eskisi gibi asistle oynanır.
+   - Site metni (`deploy/site`) Kadro Kur'u yeni kuralla anlatıyor; sunucu dağıtımıyla birlikte yayına çıkar.
   6. Tombala, Gizli Futbolcu, günlük oyunlar bölümü.
 
 ### Kariyer Yolu'nun kapsam metni (31 Ekim 2026)

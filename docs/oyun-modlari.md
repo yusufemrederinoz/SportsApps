@@ -28,7 +28,7 @@ Ne zaman kullanılabilir: sıra tabanlı modlarda kendi sıranda (Zincir, Hangis
 | Kart Düellosu | Kart değiştir | Elden seçilen kart, konsepte uyan rastgele bir kartla değişir (oynanmadan önce) |
 | Kart Düellosu | Değerleri gör | Bu turun sorusunda kendi kartlarının değerleri görünür |
 | Kadro Kur | Ek süre | Bu tura +15 saniye |
-| Kadro Kur | Asistleri gör | Bu turda arama sonuçlarında futbolcuların kariyer asistleri görünür |
+| Kadro Kur | Rakamları gör | Bu turda arama sonuçlarında futbolcuların o turun istatistiği görünür (1.2.0 öncesi: kariyer asisti) |
 | Hangisi Yüksek | Pas | Soru cevaplanmadan geçilir; seri bozulmaz, sıra oyuncuda kalır, yeni soru gelir |
 | Hangisi Yüksek | Bir değer | İki karttan birinin değeri açılır |
 | Zincir | Ek süre | Bu hamleye +10 saniye |
@@ -243,6 +243,19 @@ Kariyer Yolu:
   - Yanlış tahmin edilen şık (botun yanlışı da) iki taraf için de silinir. Uygulama `career-choices` özelliğini bildirir.
 - **Bot.** Değişmez (Kolay bot ilk kulüpte %12, her yeni kulüpte +%15; yüzdeleri düşürme önerisinden vazgeçildi).
 
+Kadro Kur (15 Kasım, kullanıcının isteği: "sadece asist sayısı üzerinden olmasın, her turda çeşitli parametreler olsun"):
+
+- **Her turun istatistiği farklı.** Kariyer golü, kariyer asisti, kariyer maç sayısı ve en yüksek piyasa değeri. Kullanıcı dört seçenekten bu dördünü seçti. Millî maç, tanınmış futbolcuların yarısında verisi olmadığı için dışarıda kaldı.
+- **İstatistik tur başında görünür.** Kulübün yanında yazar, plakanın altında "Kariyerinde daha çok gol atan kazanır" gibi bir satır çıkar. Sürpriz istatistik seçeneği Kart Düellosu'na fazla benzediği için seçilmedi.
+- **Puan: turu kazanan 1 puan.** İstatistikler toplanamadığı için her turda iki seçim o turun istatistiğiyle karşılaştırılır. Yüksek olan turu alır, en çok tur alan maçı kazanır. Eşit değer ya da iki taraf da süreyi kaçırırsa tur berabere biter. Seçim yapan, süreyi kaçıranı yener; değeri 0 olsa da.
+- **Kodlandı (15 Kasım), 1.2.0'a girer.**
+  - İstatistik sırası maç başında çekilir. Dört istatistik karıştırılır ve sırayla dağıtılır, sonra yeniden karıştırılır. 7 turda her istatistik en az bir kez çıkar, aynı istatistik arka arkaya gelmez.
+  - Kulüpte o istatistiğin verisi olan futbolcu sayısı 12'nin altındaysa o istatistik o kulübe verilmez. Hiçbiri uymazsa gol sorulur.
+  - Arama yalnızca o turun istatistiğinde verisi olan futbolcuları gösterir. "Asistleri gör" jokeri "Rakamları gör" oldu; turun istatistiğini gösterir.
+  - **Rakibin seçimi tur bitene kadar gizli.** Önce seçen, rakibin ne aldığını görüp ona göre oynayabilirdi. Rakibin seçtiği yalnızca "Rakip seçimini yaptı" diye görünür. Aynı turda iki oyuncu aynı futbolcuyu alabilir, o tur berabere biter; sonraki turlarda alınmış futbolcu yine seçilemez.
+  - Kadro yuvalarında değer o turun istatistiğiyle yazar ("134 gol", "35 mn €"). Kaybedilen turun değeri soluk görünür.
+  - Uygulama `draft-metrics` özelliğini bildirir. Maçtaki bütün oyuncular desteklemiyorsa maç eskisi gibi oynanır: her turda asist, kadro toplamı kazanır, seçim açık.
+
 Kart Düellosu (değişiklikle onaylandı):
 
 - **El ve süre.** El 5 kart, seçim süresi 60 saniye, maç 5 soru.
@@ -261,7 +274,7 @@ Yeni modlar:
 Yayın sırası:
 
 1. **Sunucu ayarları** (İlk 10 listeleri ve can kuralı, Kart Düellosu el, süre ve soru sayıları, Kariyer Yolu futbolcu sayısı): mağaza onayı beklemeden çıkar. Uygulamanın her değeri sunucudan aldığı tek tek kontrol edilir.
-2. **Şıklar ve yeni ipuçları** (İlk 10, Kariyer Yolu): uygulama güncellemesi, 1.2.0. Derleme kullanıcının onayıyla.
+2. **Şıklar ve yeni ipuçları** (İlk 10, Kariyer Yolu) ve **Kadro Kur'un tur istatistikleri**: uygulama güncellemesi, 1.2.0. Derleme kullanıcının onayıyla.
 3. **Tombala ve Gizli Futbolcu:** uygulama güncellemesi. Önce kurallar ve testler, sonra emülatörde baştan sona maç.
 
 ## Veri

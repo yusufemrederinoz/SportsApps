@@ -1389,6 +1389,27 @@ Kullanıcı "yayına hazır olana kadar en optimize kararı seç ve devam et, ba
 - **Sürüm.** `app.json` 1.2.0.
 - **Yayın adımları.** `is-plani.md` içinde "1.2.0 yayın adımları".
 
+### Kadro Kur'da her tura ayrı istatistik (15 Kasım 2026)
+
+Kullanıcı emülatörde denerken Kadro Kur'un yalnızca asistle oynanmasını istemediğini, her turda farklı bir istatistik olmasını söyledi. Dört karar seçenekli sorularla alındı: tur kazanana 1 puan; istatistikler gol, asist, maç ve piyasa değeri; istatistik tur başında görünür; değişiklik 1.2.0'a girer. Ayrıntı `oyun-modlari.md` içinde "Kadro Kur (15 Kasım…)".
+
+- **Veri ölçümü.**
+  - İstatistik kaydı olan 30.110 futbolcunun hepsinde gol, 30.032'sinde maç, 25.401'inde asist var.
+  - Piyasa değeri 17.016'sında, millî maç ise yalnızca 6.703'ünde var. Tanınmış futbolcuların (Türkiye pazarı, bilinirlik 32+) %72'sinde piyasa değeri, %46'sında millî maç verisi bulunuyor.
+  - Millî maç bu yüzden dışarıda kaldı.
+- **Kendi verdiğim karar: rakibin seçimi tur sonuna kadar gizli.** Tur puanıyla önce seçen dezavantajlı olurdu: ikinci seçen, rakibin değerini görüp ya onu geçecek birini alır ya da turu bırakıp zor bir yuvayı doldururdu. Gizli seçim Kart Düellosu'ndaki gibi. Gizlilik yüzünden aynı turda iki oyuncunun aynı futbolcuyu seçmesine izin verildi; o tur berabere biter.
+- **Kod.**
+  - `game-core`: `DraftScoring` (`total` ya da `rounds`), `roundWinner`, `settleRound`, `takenIds`.
+  - `football-data`: istatistiğe göre `draftValue`, `draftEligible`, `draftValuesStatement`, `draftMetricCountStatement`.
+  - Sunucu: `chooseDraftMetrics`, oyuncuya göre görünüm, önbellekli `draftMetricCount`.
+  - Uygulama: plakada istatistik etiketi ve kural satırı, yuvalarda birimli değer, tur sonucu, "Rakip seçimini yaptı" durumu, "Rakamları gör" jokeri.
+- **Uyumluluk.** Uygulama `draft-metrics` bildirir. 1.1.0 ile eşleşen maç eski kurallarla (asist toplamı) oynanır. 1.2.0 eski sunucuyla da eski kurallarla oynar.
+- **Metinler.**
+  - Ana sayfa tanıtım cümlesi, arama boş metni, yuva erişilebilirlik etiketi ve joker adı altı dilde yeniden yazıldı.
+  - Mağaza açıklamalarının Kadro Kur satırı (altı dil, iki mağaza) ve site metni de yeniden yazıldı.
+  - 1.2.0 sürüm notlarına Kadro Kur satırı eklendi. Sınıra sığması için İlk 10'un "ilk hataya kadar devam" satırı notlardan çıktı (her dil 464–498 karakter). App Store inceleme notuna da eklendi.
+- **Testler.** game-core 4, sunucu 7 (biri gerçek veriyle: Kolay'daki 16 kulübün her istatistikte en az 12 futbolcusu var), uygulama 2 yeni test.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
