@@ -29,12 +29,17 @@ if __name__ == "__main__":
     tools, audition = Path(sys.argv[1]), Path(sys.argv[2])
     first = json.loads((audition / "audio" / "candidates.json").read_text(encoding="utf-8"))
     second = json.loads((audition / "audio" / "candidates-round2.json").read_text(encoding="utf-8"))
-    candidates = [item for item in first if item["role"] not in REPLACED] + second
-    pending = [role for role in ROLES if role["id"] in ROUND_TWO]
-    for role in pending:
-        role["tag"] = "2. tur"
-        role["where"] = f"{role['where']} {ROUND_TWO[role['id']]}"
-    ROLES[:] = pending + [role for role in ROLES if role["id"] not in ROUND_TWO]
+    music_file = audition / "audio" / "candidates-music.json"
+    music = json.loads(music_file.read_text(encoding="utf-8")) if music_file.exists() else []
+    candidates = music + [item for item in first if item["role"] not in REPLACED] + second
+    music_role = {
+        "id": "music",
+        "name": "Video müziği",
+        "tag": "Takım senin videosu",
+        "loop": False,
+        "where": "Hafta sonu videosunun müziği, efektlerin altında çalar. Her aday parçanın en hareketli 30 saniyesi. Mixkit parçaları sosyal medya tanıtımında kaynak göstermeden kullanılabilir, Freesound olanlar CC0.",
+    }
+    ROLES[:] = ([music_role] if music else []) + ROLES
     fields = ("role", "name", "title", "author", "source", "page", "duration")
     data = {"roles": ROLES, "candidates": [{key: item[key] for key in fields} for item in candidates]}
     payload = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")

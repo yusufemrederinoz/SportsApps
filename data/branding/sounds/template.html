@@ -359,7 +359,7 @@
           credit.href = candidate.page;
           credit.target = "_blank";
           credit.rel = "noopener";
-          credit.textContent = candidate.source === "Kenney" ? "Kenney" : `${candidate.author} · Freesound`;
+          credit.textContent = candidate.source === "Freesound" ? `${candidate.author} · Freesound` : candidate.source;
         } else {
           credit = "Kendi üretimimiz";
         }
