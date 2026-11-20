@@ -233,6 +233,7 @@
         "lead": "Kim oynar, kim yedek, kim gider?",
         "step": "{{n}}/{{total}}",
         "slots": { "start": "İLK 11", "bench": "YEDEK", "sell": "SATIŞ" },
+        "round": "{{n}}. TUR",
         "call": "TERCİHLERİN NE OLDU?"
       },
       "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"

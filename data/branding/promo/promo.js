@@ -142,7 +142,7 @@ const FOOTBALLERS = {
   greenwood: { id: 61986758, name: 'Mason Greenwood', short: 'Greenwood', position: 'FW' },
   trossard: { id: 6509762, name: 'Leandro Trossard', short: 'Trossard', position: 'FW' },
   kerem: { id: 97725322, name: 'Kerem Aktürkoğlu', short: 'Kerem', position: 'FW' },
-  olaitan: { id: 'olaitan', image: null, initials: 'JO', name: 'Junior Olaitan', short: 'Olaitan', position: 'MF' },
+  olaitan: { id: 'olaitan', image: '/promo-portraits/olaitan.webp', name: 'Junior Olaitan', short: 'Olaitan', position: 'MF' },
   cerny: { id: 19588392, name: 'Václav Černý', short: 'Černý', position: 'FW' },
   oguz: { id: 109282705, name: 'Oğuz Aydın', short: 'Oğuz', position: 'FW' },
 };
@@ -1546,13 +1546,12 @@ function verdict(texts, start) {
   cue(at(call, -0.1), 'whoosh', 0.7);
   cue(call, 'impact', 0.9);
   cue(at(call, 0.3), 'win', 0.6);
+  const blanks = VERDICT.slots.map((slot) => `<span class="${slot}"><small>${r.slots[slot]}</small><i></i></span>`).join('');
   const recap = VERDICT.rounds
-    .map((round, index) => {
-      const names = round
-        .map((entry) => `<span>${appCrest(SHIRT_CLUBS[entry.club].crest)}${FOOTBALLERS[entry.key].short}</span>`)
-        .join('');
-      return `<div class="verdict-recap-row in rise" style="--t: ${at(call, 0.4 + index * 0.25)}"><b>${index + 1}</b><div>${names}</div></div>`;
-    })
+    .map(
+      (_, index) =>
+        `<div class="verdict-recap-row in rise" style="--t: ${at(call, 0.4 + index * 0.25)}"><b>${fill(r.round, { n: index + 1 })}</b><div>${blanks}</div></div>`,
+    )
     .join('');
 
   return `<div class="display mark">CHALLENGE<span>GOAL</span></div>
