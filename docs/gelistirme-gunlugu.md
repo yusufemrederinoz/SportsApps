@@ -1491,6 +1491,10 @@ Kullanıcı uygulamadaki seslerin amatör geldiğini söyledi. Sebebi: 10 sesin 
 - `cut=reel-verdict` (sahne `trio`), 25,4 saniye, müzikli. Paylaşım metni `captions/challengegoal-tr-reel-verdict.txt`.
 - Videodaki beş oyuncu sitenin görsel kaynakları listesinde yoktu: Greenwood, Trossard, Kerem, Černý, Oğuz. Site şimdi dağıtılamıyor, çünkü yayında olmayan 1.2.0 Kadro Kur metnini taşıyor. Bu yüzden sekiz çizimin fotoğraf kaynakları paylaşım metnine doğrudan yazıldı. `credits.json`'a da eklendi; site bir sonraki dağıtımla güncellenecek.
 
+**Kullanıcının istediği iki düzeltme.**
+- **Olaitan'ın fotoğrafı.** Commons'taki tek kare bir maç özeti videosundan alınmış, video CC BY olarak işaretli. Yayıncı görüntüsünü yeniden yükleyen bir kanal böyle bir lisans veremeyeceği için videodan büyük kare alınmadı. Flickr ve Wikidata'da da serbest lisanslı fotoğraf bulunmadı. Kullanıcı kendi bulduğu bir portre fotoğrafını verdi ve kullanım sorumluluğunu üstlendi. Çizim bu fotoğraftan yapıldı; paylaşım metnindeki kaynak listesinde Olaitan yok.
+- **Kapanış.** Oyuncu adlarıyla yapılan özet "bizim yaptığımız bir sıralama gibi" durduğu için kaldırıldı. Kullanıcı dört seçenekten doldurulacak şablonu seçti: her tur için "İLK 11 ___ · YEDEK ___ · SATIŞ ___" satırı.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

@@ -856,9 +856,13 @@ Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir 
 - **İlk 11, yedek, satış** (`cut=reel-verdict`, sahne adı `trio`, 21 Kasım 2026).
   - "Takım senin. Kim oynar, kim yedek, kim gider?" açılışı 3,4 saniye sürer. Ardından 3 tur gelir, her biri 5,2 saniye (`VERDICT`, metinler `reel.verdict`).
   - Her turda Galatasaray, Fenerbahçe ve Beşiktaş'tan birer kart 0,3 saniye arayla gelir. Altlarında "İLK 11 / YEDEK / SATIŞ" kutuları ve boşalan süre çubuğu çıkar.
-  - Sonda "Tercihlerin ne oldu?" ve üç turun özeti, ardından `signature` gelir; toplam 25,4 saniye.
+  - Sonda "Tercihlerin ne oldu?" ve doldurulacak bir şablon gelir: her tur için "1. TUR · İLK 11 ___ · YEDEK ___ · SATIŞ ___" satırı (`reel.verdict.round`). Ardından `signature`; toplam 25,4 saniye.
+  - İlk sürümde kapanışta oyuncu adları vardı; kullanıcı bunun "bizim yaptığımız bir sıralama gibi durduğunu" söyledi, adlar kaldırıldı.
   - Sahne adı `verdict` olamadı: `.verdict` sınıfı Kart Düellosu sahnesinde kullanılıyor ve yeni sahneyi 1280 piksel aşağı kaydırdı.
-  - Portresi olmayan oyuncu `FOOTBALLERS` kaydında `image: null` ve `initials` ile tanımlanır; kartta baş harfler çıkar. Olaitan'ın Commons'taki tek fotoğrafı 247 piksel olduğu için çizim kullanılamaz çıktı.
+  - Portresi olmayan oyuncu `FOOTBALLERS` kaydında `image: null` ve `initials` ile tanımlanır; kartta baş harfler çıkar.
+  - Olaitan'ın Commons'taki tek fotoğrafından (247 piksel) çizim çıkmadı. Kullanıcının verdiği bir portre fotoğrafından çizildi (`data/build/promo/portraits/olaitan.webp`).
+    - Yüz kareyi doldurduğu için çizim adımı fotoğrafı "tight" diye reddetti. Fotoğraf iki kat büyütülüp kenarlarına beyaz boşluk eklenince çizildi.
+    - Fotoğrafın kaynağı ve lisansı belli değil, kullanım sorumluluğunu kullanıcı üstlendi. Bu çizim için paylaşım metnine kaynak yazılamıyor ve uygulamada kullanılmamalı.
 - **Müzik** (21 Kasım 2026).
   - `capture.mjs` `music=<wav yolu>` seçeneği alır. Müzik efektlerin altına `MUSIC_GAIN` (0,55) kazancıyla karışır, son 2 saniyede kısılır, karışım −15 LUFS'a çekilir (`loudnorm`).
   - `mode=sound` ile görüntü yeniden çekilmeden yalnızca ses değiştirilebilir.
