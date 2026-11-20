@@ -1457,6 +1457,40 @@ Kullanıcı uygulamadaki seslerin amatör geldiğini söyledi. Sebebi: 10 sesin 
 
 **Denenmeyen.** Sesler henüz cihazda ya da emülatörde çalınmadı. Uğultunun döngü ek yeri ve sessiz mod davranışı cihazda denenmeli.
 
+### Hafta sonu videosu: "İlk 11, yedek, satış" (21 Kasım 2026)
+
+**İstek.** Kullanıcı hafta sonu için insanları dürtecek, yorum yazdıracak viral bir video istedi.
+
+**Gündem.**
+- Süper Lig milli aradan sonra 12. haftayla dönüyor. Hafta sonunda derbi yok.
+- Premier Lig'de Pazar günü Liverpool–Manchester United var.
+- 30 Kasım'da Beşiktaş–Galatasaray derbisi oynanacak.
+
+**Seçimler.**
+- İlk dört öneriden kullanıcı birini seçmedi, "yorum attıracak" bir şey istedi. İkinci turda, doğru cevabı olmayan "İlk 11, yedek, satış" biçimini seçti.
+- Oyuncuları kullanıcı verdi. Her turda Galatasaray, Fenerbahçe ve Beşiktaş'tan birer kişi:
+  - Leão, Greenwood, Trossard
+  - Batrakov, Kerem, Olaitan
+  - Černý, Oğuz Aydın, Barış Alper
+- Greenwood için tanıtım kuralı hatırlatıldı; kullanıcı kalmasını istedi.
+- Açılış "Takım senin. Kim oynar, kim yedek, kim gider?". Kapanış kullanıcının kendi cümlesi, "Tercihlerin ne oldu?". Kartlarda yalnızca ad ve kulüp var.
+
+**Doğrulama.**
+- Veri, bu yıl kulübünden ayrılan oyuncuyu da hâlâ orada gösterebiliyor; örneğin Cengiz Ünder hem Fenerbahçe'de hem Beşiktaş'ta görünüyor. Dokuz oyuncunun bugünkü kulübü bu yüzden haberlerden ayrıca doğrulandı:
+  - Galatasaray'ın Şampiyonlar Ligi listesinde Leão, Batrakov ve Barış Alper var.
+  - Greenwood 8 Kasım'da Fenerbahçe'de ilk 11'de oynadı.
+  - Beşiktaş'ın Kasım maçlarında Trossard, Olaitan ve Černý var.
+- Olaitan'ın Commons'taki tek fotoğrafı (CC BY 4.0, 247×254) büyütülüp çizildi, sonuç kullanılamaz bir leke çıktı. Kartında baş harfleri (JO) var.
+
+**Müzik.**
+- Kullanıcı videoya izleyiciyi tutacak telifsiz bir müzik istedi.
+- Mixkit'ten 7, Freesound'dan CC0 lisanslı 2 aday hazırlandı, her biri en hareketli 30 saniyesiyle. Ses seçme sayfasına "Video müziği" bölümü olarak kondu.
+- Kullanıcı Mixkit 989'u ("action") seçti. Karışım −14,4 LUFS.
+
+**Üretim.**
+- `cut=reel-verdict` (sahne `trio`), 25,4 saniye, müzikli. Paylaşım metni `captions/challengegoal-tr-reel-verdict.txt`.
+- Videodaki beş oyuncu sitenin görsel kaynakları listesinde yoktu: Greenwood, Trossard, Kerem, Černý, Oğuz. Site şimdi dağıtılamıyor, çünkü yayında olmayan 1.2.0 Kadro Kur metnini taşıyor. Bu yüzden sekiz çizimin fotoğraf kaynakları paylaşım metnine doğrudan yazıldı. `credits.json`'a da eklendi; site bir sonraki dağıtımla güncellenecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |
