@@ -19,6 +19,9 @@ const DEBUG_PORT = 9337;
 const FPS = 30;
 const ENCODER_THREADS = 2;
 const SIZES = { video: [1080, 1920], poster: [1080, 1350] };
+const MUSIC_GAIN = 0.55;
+const MUSIC_FADE = 2;
+const MIX_LOUDNESS = -15;
 const MOUNTS = {
   '/promo/': HERE,
   '/fonts/': join(ROOT, 'deploy', 'site', 'fonts'),
@@ -128,10 +131,30 @@ function run(command, parameters) {
   });
 }
 
-function soundtrack(cues, duration) {
-  const path = join(folders.sound, `${name}-sfx.wav`);
-  writeWave(path, mix(cues, duration, loadSounds(SOUNDS)));
-  return path;
+async function soundtrack(cues, duration) {
+  const effects = join(folders.sound, `${name}-sfx.wav`);
+  writeWave(effects, mix(cues, duration, loadSounds(SOUNDS)));
+  if (!options.music) return effects;
+  const mixed = join(folders.sound, `${name}-mix.wav`);
+  const gain = Number(options.musicgain ?? MUSIC_GAIN);
+  const fade = Math.min(MUSIC_FADE, duration / 4);
+  await run(FFMPEG, [
+    '-y',
+    '-loglevel',
+    'error',
+    '-i',
+    effects,
+    '-i',
+    resolve(options.music),
+    '-filter_complex',
+    `[1:a]aresample=44100,atrim=0:${duration},afade=t=out:st=${(duration - fade).toFixed(2)}:d=${fade.toFixed(2)},volume=${gain}[m];[0:a][m]amix=inputs=2:normalize=0:duration=first,loudnorm=I=${MIX_LOUDNESS}:TP=-1.5:LRA=11,aresample=44100[out]`,
+    '-map',
+    '[out]',
+    '-c:a',
+    'pcm_s16le',
+    mixed,
+  ]);
+  return mixed;
 }
 
 function dub(video, audio, output) {
@@ -210,7 +233,7 @@ try {
   if (mode === 'sound') {
     const output = join(folders.videos, `${name}.mp4`);
     const dubbed = join(folders.videos, `${name}-dubbed.mp4`);
-    await dub(output, soundtrack(await evaluate(send, 'window.cues'), duration), dubbed);
+    await dub(output, await soundtrack(await evaluate(send, 'window.cues'), duration), dubbed);
     renameSync(dubbed, output);
     console.log(output);
   } else if (mode === 'poster') {
@@ -236,7 +259,7 @@ try {
       if (index % 60 === 59) console.log(`${index + 1}/${total} frames, ${Math.round((Date.now() - started) / 1000)} s`);
     }
     const output = join(folders.videos, `${name}.mp4`);
-    await encode(frames, soundtrack(await evaluate(send, 'window.cues'), duration), output);
+    await encode(frames, await soundtrack(await evaluate(send, 'window.cues'), duration), output);
     if (!options.keep) rmSync(frames, { recursive: true, force: true });
     console.log(output);
   }

@@ -228,6 +228,13 @@
         "score": "BU AKŞAM KAZANAN KİM OLUR?",
         "note": "Sayılar uygulamanın verisine göredir."
       },
+      "verdict": {
+        "hook": ["TAKIM", "SENİN"],
+        "lead": "Kim oynar, kim yedek, kim gider?",
+        "step": "{{n}}/{{total}}",
+        "slots": { "start": "İLK 11", "bench": "YEDEK", "sell": "SATIŞ" },
+        "call": "TERCİHLERİN NE OLDU?"
+      },
       "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"
     },
     "poster": {

@@ -2619,6 +2619,7 @@
       }
 
       .shirts .mark,
+      .trio .mark,
       .pick .mark {
         position: absolute;
         top: 196px;
@@ -3188,6 +3189,191 @@
         50% {
           transform: scale(1.05);
         }
+      }
+
+      .v {
+        --tone: var(--stroke-bright);
+        --face: linear-gradient(150deg, #f4f7fb, #c8d1dd 45%, #7d8a9c);
+      }
+
+      .card .initials {
+        position: absolute;
+        top: 12%;
+        right: 8%;
+        width: 58%;
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: rgba(5, 7, 10, 0.16);
+        color: var(--ink);
+        font-family: var(--display);
+        font-weight: 800;
+        font-style: italic;
+        font-size: calc(84px * var(--u, 1));
+        line-height: 1;
+      }
+
+      .trio .q-title.reel-title {
+        top: 560px;
+        text-align: center;
+      }
+
+      .trio .reel-title span,
+      .trio .reel-title em {
+        transform-origin: center;
+      }
+
+      .verdict-crests {
+        top: 920px;
+      }
+
+      .trio .verdict-lead {
+        top: 1080px;
+        font-size: 60px;
+      }
+
+      .verdict-head {
+        position: absolute;
+        top: 400px;
+        left: 70px;
+        width: 940px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .verdict-head .chip {
+        position: static;
+        font-size: 44px;
+      }
+
+      .verdict-row {
+        position: absolute;
+        top: 500px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-items: center;
+        --u: 1.38;
+      }
+
+      .verdict-club {
+        font-size: 28px;
+      }
+
+      .verdict-slots {
+        position: absolute;
+        top: 960px;
+        left: 70px;
+        width: 940px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 26px;
+      }
+
+      .verdict-preview {
+        top: 1200px;
+      }
+
+      .verdict-slot {
+        display: grid;
+        justify-items: center;
+        align-content: center;
+        gap: 4px;
+        height: 230px;
+        border: 4px dashed var(--tone);
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .verdict-preview .verdict-slot {
+        height: 150px;
+      }
+
+      .verdict-slot strong {
+        font-style: italic;
+        font-size: 60px;
+        line-height: 1;
+        color: var(--tone);
+      }
+
+      .verdict-slot em {
+        font-style: normal;
+        font-size: 92px;
+        line-height: 1;
+        color: var(--text);
+      }
+
+      .verdict-preview .verdict-slot em {
+        display: none;
+      }
+
+      .verdict-slot.start {
+        --tone: var(--volt);
+      }
+
+      .verdict-slot.bench {
+        --tone: var(--gold);
+      }
+
+      .verdict-slot.sell {
+        --tone: var(--negative);
+      }
+
+      .verdict-timer {
+        top: 1260px;
+      }
+
+      .trio .verdict-call {
+        top: 560px;
+        font-size: 96px;
+      }
+
+      .verdict-recap {
+        position: absolute;
+        top: 740px;
+        left: 80px;
+        width: 920px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .verdict-recap-row {
+        display: grid;
+        grid-template-columns: 56px 1fr;
+        align-items: center;
+        padding: 20px 26px;
+        border: 2px solid var(--stroke);
+        border-radius: 22px;
+        background: var(--panel);
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 44px;
+      }
+
+      .verdict-recap-row b {
+        color: var(--volt);
+      }
+
+      .verdict-recap-row div {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .verdict-recap-row span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        white-space: nowrap;
+      }
+
+      .verdict-recap-row svg {
+        flex: none;
+        width: 34px;
+        height: 38px;
       }
     </style>
   </head>

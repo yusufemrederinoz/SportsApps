@@ -67,6 +67,10 @@ const CUTS = {
     ['qcount', 17.4],
     ['signature', 3],
   ],
+  'reel-verdict': [
+    ['trio', 22.4],
+    ['signature', 3],
+  ],
   'promo-xox': [
     ['qxox', 12],
     ['finale', 5.1],
@@ -134,6 +138,13 @@ const FOOTBALLERS = {
   ozer: { id: 30111941, name: 'Berke Özer', short: 'Özer', position: 'GK' },
   babel: { id: 184218, name: 'Ryan Babel', short: 'Babel', position: 'FW' },
   batrakov: { id: 'batrakov', image: '/promo-portraits/batrakov.webp', name: 'Aleksey Batrakov', short: 'Batrakov', position: 'MF' },
+  leao: { id: 30055335, name: 'Rafael Leão', short: 'Leão', position: 'FW' },
+  greenwood: { id: 61986758, name: 'Mason Greenwood', short: 'Greenwood', position: 'FW' },
+  trossard: { id: 6509762, name: 'Leandro Trossard', short: 'Trossard', position: 'FW' },
+  kerem: { id: 97725322, name: 'Kerem Aktürkoğlu', short: 'Kerem', position: 'FW' },
+  olaitan: { id: 'olaitan', image: null, initials: 'JO', name: 'Junior Olaitan', short: 'Olaitan', position: 'MF' },
+  cerny: { id: 19588392, name: 'Václav Černý', short: 'Černý', position: 'FW' },
+  oguz: { id: 109282705, name: 'Oğuz Aydın', short: 'Oğuz', position: 'FW' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -274,6 +285,7 @@ const SHIRT_CLUBS = {
   LIV: { name: 'LIVERPOOL', crest: { code: 'LIV', pattern: 'plain', colors: ['#C8102E', '#FFFFFF'] } },
   GS: { name: 'GALATASARAY', crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
   VFB: { name: 'STUTTGART', crest: { code: 'VFB', pattern: 'band', colors: ['#FFFFFF', '#E32219'] } },
+  BJK: { name: 'BEŞİKTAŞ', crest: { code: 'BJK', pattern: 'stripes', colors: ['#FFFFFF', '#000000'], trim: '#C9CED6' } },
 };
 const SHIRTS = {
   pairs: [
@@ -321,6 +333,28 @@ const PICKS = {
     { role: 'striker', home: { key: 'osimhen', career: [267, 153, 36] }, away: { key: 'undav', career: [338, 155, 69] } },
   ],
   score: 1.4,
+};
+const VERDICT = {
+  first: 3.4,
+  period: 5.2,
+  slots: ['start', 'bench', 'sell'],
+  rounds: [
+    [
+      { key: 'leao', club: 'GS' },
+      { key: 'greenwood', club: 'FB' },
+      { key: 'trossard', club: 'BJK' },
+    ],
+    [
+      { key: 'batrakov', club: 'GS' },
+      { key: 'kerem', club: 'FB' },
+      { key: 'olaitan', club: 'BJK' },
+    ],
+    [
+      { key: 'cerny', club: 'BJK' },
+      { key: 'oguz', club: 'FB' },
+      { key: 'baris', club: 'GS' },
+    ],
+  ],
 };
 const COUNT = {
   first: 2,
@@ -470,8 +504,9 @@ function backdrop() {
 function card(texts, key, side, classes = '', time = null) {
   const footballer = FOOTBALLERS[key];
   const style = time === null ? '' : ` style="--t: ${time}"`;
-  const image = footballer.image ?? `/portraits/${footballer.id}.webp`;
-  return `<div class="card ${side} ${classes}"${style}><b>${texts.grid.positions[footballer.position]}</b><img src="${image}" alt="" /><span>${footballer.name}</span></div>`;
+  const image = footballer.image === undefined ? `/portraits/${footballer.id}.webp` : footballer.image;
+  const face = image === null ? `<i class="initials">${footballer.initials}</i>` : `<img src="${image}" alt="" />`;
+  return `<div class="card ${side} ${classes}"${style}><b>${texts.grid.positions[footballer.position]}</b>${face}<span>${footballer.name}</span></div>`;
 }
 
 function scoreboard(texts, start, turns, scores, top = null) {
@@ -1465,6 +1500,75 @@ function pick(texts, start) {
     <p class="q-note">${r.note}</p>`;
 }
 
+function verdict(texts, start) {
+  const r = texts.reel.verdict;
+  const time = (offset) => at(start, offset);
+  const total = VERDICT.rounds.length;
+  const call = time(VERDICT.first + total * VERDICT.period);
+  const clubLine = (code) => `<p class="pick-club verdict-club">${appCrest(SHIRT_CLUBS[code].crest)}${SHIRT_CLUBS[code].name}</p>`;
+  const slots = (from, step, classes) =>
+    VERDICT.slots
+      .map(
+        (slot, index) =>
+          `<div class="verdict-slot ${slot} ${classes}" style="--t: ${at(from, index * step)}"><strong class="display">${r.slots[slot]}</strong><em class="display">?</em></div>`,
+      )
+      .join('');
+
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(time(offset), 'impact', index === 1 ? 1 : 0.6));
+  cue(time(1.05), 'impact', 0.5);
+  [2, 2.25, 2.5].forEach((offset) => cue(time(offset), 'tick', 0.5));
+  const crests = `<div class="crest-row verdict-crests">${['GS', 'FB', 'BJK']
+    .map((code, index) => `<i class="in pop" style="--t: ${time(1.05 + index * 0.12)}">${appCrest(SHIRT_CLUBS[code].crest)}</i>`)
+    .join('')}</div>`;
+
+  const rounds = VERDICT.rounds.map((round, index) => {
+    const from = time(VERDICT.first + index * VERDICT.period);
+    const until = index + 1 < total ? at(from, VERDICT.period) : call;
+    cue(at(from, -0.1), 'whoosh', 0.7);
+    round.forEach((_, slot) => cue(at(from, 0.2 + slot * 0.3), 'impact', 0.55 + slot * 0.15));
+    [1.4, 1.7, 2].forEach((offset) => cue(at(from, offset), 'tick', 0.45));
+    [0.8, 0.5, 0.25].forEach((left, tick) => cue(at(until, -left), 'tick', 0.45, 1 + tick * 0.12));
+    const cards = round
+      .map(
+        (entry, slot) =>
+          `<div class="pick-side">${card(texts, entry.key, 'v', 'flip shiny', at(from, 0.15 + slot * 0.3))}${clubLine(entry.club)}</div>`,
+      )
+      .join('');
+    return `<div class="layer state" style="--start: ${from}; --end: ${until}">
+      <div class="verdict-head in slam" style="--t: ${from}"><span class="chip">${fill(r.step, { n: index + 1, total })}</span></div>
+      <div class="verdict-row">${cards}</div>
+      <div class="verdict-slots">${slots(at(from, 1.4), 0.3, 'in pop')}</div>
+      <div class="pick-timer verdict-timer"><i style="--t: ${from}; --d: ${until - from}"></i></div>
+    </div>`;
+  });
+
+  cue(at(call, -0.1), 'whoosh', 0.7);
+  cue(call, 'impact', 0.9);
+  cue(at(call, 0.3), 'win', 0.6);
+  const recap = VERDICT.rounds
+    .map((round, index) => {
+      const names = round
+        .map((entry) => `<span>${appCrest(SHIRT_CLUBS[entry.club].crest)}${FOOTBALLERS[entry.key].short}</span>`)
+        .join('');
+      return `<div class="verdict-recap-row in rise" style="--t: ${at(call, 0.4 + index * 0.25)}"><b>${index + 1}</b><div>${names}</div></div>`;
+    })
+    .join('');
+
+  return `<div class="display mark">CHALLENGE<span>GOAL</span></div>
+    <div class="layer state" style="--start: ${start}; --end: ${time(VERDICT.first)}">
+      ${titleLines(r.hook, start, 'reel-title')}
+      ${crests}
+      <p class="q-line verdict-lead in rise" style="--t: ${time(1.45)}">${r.lead}</p>
+      <div class="verdict-slots verdict-preview">${slots(time(2), 0.25, 'in rise')}</div>
+    </div>
+    ${rounds.join('')}
+    <div class="layer state" style="--start: ${call}; --end: ${NEVER}">
+      <div class="display centered q-call verdict-call in slam" style="--t: ${call}" data-fit>${r.call}</div>
+      <div class="verdict-recap">${recap}</div>
+    </div>`;
+}
+
 function signature(texts, start) {
   cue(at(start, 0.05), 'whoosh', 0.7);
   cue(at(start, 0.3), 'impact', 0.9);
@@ -1521,6 +1625,7 @@ const SCENES = {
   friend,
   shirts,
   pick,
+  trio: verdict,
   signature,
 };
 
