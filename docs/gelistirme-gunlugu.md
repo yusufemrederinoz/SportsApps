@@ -1495,6 +1495,51 @@ Kullanıcı uygulamadaki seslerin amatör geldiğini söyledi. Sebebi: 10 sesin 
 - **Olaitan'ın fotoğrafı.** Commons'taki tek kare bir maç özeti videosundan alınmış, video CC BY olarak işaretli. Yayıncı görüntüsünü yeniden yükleyen bir kanal böyle bir lisans veremeyeceği için videodan büyük kare alınmadı. Flickr ve Wikidata'da da serbest lisanslı fotoğraf bulunmadı. Kullanıcı kendi bulduğu bir portre fotoğrafını verdi ve kullanım sorumluluğunu üstlendi. Çizim bu fotoğraftan yapıldı; paylaşım metnindeki kaynak listesinde Olaitan yok.
 - **Kapanış.** Oyuncu adlarıyla yapılan özet "bizim yaptığımız bir sıralama gibi" durduğu için kaldırıldı. Kullanıcı dört seçenekten doldurulacak şablonu seçti: her tur için "İLK 11 ___ · YEDEK ___ · SATIŞ ___" satırı.
 
+### 1.2.0 nerede kaldı (23 Kasım 2026)
+
+Kullanıcı 1.2.0'ı mağazalara göndermek için neyi beklediğimizi sordu.
+
+**Durum.**
+- App Store Connect'te 1.1.0 yayında. 1.2.0'ın yapı 14'ü `VALID`, ama sürüm kaydı açılmadı.
+- Yapı 14'ten sonra uygulama kodu değişmedi.
+- Android 1.2.0 (sürüm kodu 18) derlenmedi; 15 Kasım'da kullanıcı oyun oynarken durdurulmuştu.
+- Cihazda deneme yapılmadı.
+
+**Düzeltilen öneri.** TestFlight denemesi önerilmişti, ama TestFlight sürümü canlı sunucuya bağlanıyor ve canlı sunucuda 1.2.0 kuralları yok. Yeni Kadro Kur ancak yerel sunucuyla emülatörde denenebilir.
+
+**Sonuç.** Kullanıcı konuyu kenara koydu, Şampiyonlar Ligi videosuna geçti.
+
+### Şampiyonlar Ligi videosu: "8 futbolcu, iki forma" (23–25 Kasım 2026)
+
+**Gündem.** Şampiyonlar Ligi 5. haftası (TimeTürk ve Milli Gazete'den):
+- 24 Kasım Salı 20.45: Galatasaray–Aston Villa.
+- 25 Kasım Çarşamba 23.00: Shakhtar–Fenerbahçe.
+- 4. hafta sonunda Galatasaray 6 puanla 18., Fenerbahçe 5 puanla 19. sıradaydı.
+- Bir kaynak Shakhtar maçını Stamford Bridge'de gösteriyordu, doğrulanamadı ve kullanılmadı.
+
+**Seçim.** Dört öneriden kullanıcı "Rakibin formasını giyenler"i seçti. Galatasaray maçı video bitmeden oynandı; açılış ve kapanış güne bağlı olmadığı için video yine kullanılabilir.
+
+**Doğrulama.**
+- Veride iki kulüpte de oynayanlar şunlar:
+  - Galatasaray–Aston Villa: Baroš, Zaniolo, Friedel, Saunders, Six.
+  - Fenerbahçe–Shakhtar: Fred, Rebrov, Karavaev.
+- Wikipedia'daki kulüp yılları ve kulüp oyuncu kategorilerinin kesişimi aynı sekiz ismi verdi; liste eksiksiz.
+- Karavaev 2017'de Fenerbahçe'de kiralık oynadı, 2026'dan beri yeniden Shakhtar'da. Kullanıcı bunun videoda vurgulanmamasını istedi.
+
+**Tanıtım kuralı.**
+- Geçmişinde not bulunan isimler: Zaniolo (2023 bahis soruşturması, Roma'daki saldırı iddiası), Saunders (2019 alkol testini reddetme cezası), Baroš (2007 ırkçı hareket suçlaması, aklandı), Fred (doping dosyası).
+- Kullanıcı sekizinin de kalmasını seçti, çünkü sayma videosunda eksik isim yorumlarda hemen yakalanır.
+
+**Seçimler.**
+- Açılış "8 futbolcu, iki forma. Kaçını biliyorsun?", kapanış "Kaçını bildin? Yoruma yaz." Kartlar sade, müzik geçen videodaki Mixkit parçası.
+- Paylaşım metni "Bu haftanın rakipleri" ile açılıyor.
+
+**Zaniolo'nun portresi.** Commons'taki tek fotoğrafında (Joe K., CC BY-SA 4.0) arkası dönük. Kullanıcı bir fotoğraf gönderdi ve kullanım sorumluluğunu üstlendi. Fotoğraf küçük olduğu için üç kat büyütülüp kenarına boşluk eklenerek çizildi. Paylaşım metninin kaynak listesinde Zaniolo yok.
+
+**Üretim.**
+- `cut=reel-former` (sahne `crossover`), 25 saniye, müzikli. Paylaşım metni `captions/challengegoal-tr-reel-former.txt`.
+- Yedi Commons fotoğrafının kaynakları paylaşım metninde. Altısı sitenin listesine de eklendi (`credits.json`); site sunucu dağıtımıyla güncellenecek.
+
 ## Commit listesi
 
 | Commit | Tarih | İçerik |

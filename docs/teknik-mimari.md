@@ -839,7 +839,7 @@ Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir 
 | Akış görseli | 1080×1350 | `challengegoal-<dil>-post.png` |
 | Paylaşım metni | — | `challengegoal-<dil>-caption.txt` (elle yazılır) |
 | Soru-cevap videoları (28 Ekim–1 Kasım 2026) | aynı biçim, 23–30 sn | `challengegoal-tr-quiz-grid.mp4`, `-quiz-higher.mp4`, `-quiz-top.mp4`, `-quiz-auction.mp4`, `-quiz-duel.mp4`, `-quiz-career.mp4`, `-quiz-chain.mp4` ve her birinin `-caption.txt` dosyası |
-| Gündem videoları (2 Kasım 2026'dan) | aynı biçim, 15–20 sn, `videos/reels/` | `challengegoal-tr-reel-shirts.mp4`, `-reel-pick.mp4`, `-reel-who.mp4`, `-reel-count.mp4`, `-reel-verdict.mp4` ve `captions/` altındaki aynı adlı `.txt` dosyaları |
+| Gündem videoları (2 Kasım 2026'dan) | aynı biçim, 15–20 sn, `videos/reels/` | `challengegoal-tr-reel-shirts.mp4`, `-reel-pick.mp4`, `-reel-who.mp4`, `-reel-count.mp4`, `-reel-verdict.mp4`, `-reel-former.mp4` ve `captions/` altındaki aynı adlı `.txt` dosyaları |
 
 - **Sayfa.** `promo.html` (görünüm ve hareketler), `promo.js` (sahneler, kurgular, örnek maçlar), `texts.json` (dil bazında metinler). Sahneler: açılış, XOX, Kart Düellosu, Açık Artırma, Zincir, sekiz oyun, özellikler, kapanış. Uzun kurgu açılış, dört oyun, sekiz oyun ve kapanıştan; kısa kurgu açılış, XOX, sekiz oyun, özellikler ve kapanıştan oluşur (`CUTS`).
 - **Oyun sahneleri.** Uygulamanın gerçek ekran kaydı değildir; ekranlar emülatör görüntülerine bakılarak sayfada yeniden çizilmiştir ve metinler uygulamadaki çevirilerle aynıdır. Örnek maçlardaki bilgiler veritabanından alınmıştır: Kart Düellosu'nda "Süper Lig tarihindeki yabancılar" konsepti, Eto'o 368 gole karşı Gómez 333 ve Osimhen (1998) ile Džeko (1986); Açık Artırma'da Real Madrid CF × Brezilya için Ronaldo, Kaká, Marcelo, Casemiro, Rodrygo; Zincir'de Arda Güler, Mbappé (Real Madrid CF), Messi (Paris Saint-Germain), Arda Turan (FC Barcelona).
@@ -863,6 +863,12 @@ Sosyal medya için tanıtım malzemesi `data/branding/promo/` içindeki tek bir 
   - Olaitan'ın Commons'taki tek fotoğrafından (247 piksel) çizim çıkmadı. Kullanıcının verdiği bir portre fotoğrafından çizildi (`data/build/promo/portraits/olaitan.webp`).
     - Yüz kareyi doldurduğu için çizim adımı fotoğrafı "tight" diye reddetti. Fotoğraf iki kat büyütülüp kenarlarına beyaz boşluk eklenince çizildi.
     - Fotoğrafın kaynağı ve lisansı belli değil, kullanım sorumluluğunu kullanıcı üstlendi. Bu çizim için paylaşım metnine kaynak yazılamıyor ve uygulamada kullanılmamalı.
+- **Rakibin formasını giyenler** (`cut=reel-former`, sahne `crossover`, 25 Kasım 2026).
+  - "8 futbolcu, iki forma. Kaçını biliyorsun?" açılışı 3 saniye sürer, altında iki maçın arma çiftleri görünür.
+  - Her takım çiftinin (`CROSSOVER.groups`) başlığı gelir, ardından numaralı boş kutular. 0,8 saniye sonra ilk kart, sonra her 2 saniyede bir kart açılır; son karttan 1,4 saniye sonra sıradaki çifte geçilir.
+  - Kartın altında iki kulübün arması ve yılları yazar. Beş kartlık çift iki sıraya dizilir; üç ve daha az kartlık çift tek sırada, biraz daha aşağıda durur (`single`).
+  - Sonda "Kaçını bildin? Yoruma yaz" ve arma çiftleri gelir, ardından `signature`; toplam 25 saniye. Aston Villa (`AVL`) ve Shakhtar (`SHA`) armaları `SHIRT_CLUBS` içinde, uydurma desenlerle çizildi.
+  - Liste Wikipedia'nın kulüp oyuncu kategorilerinin kesişimiyle eksiksiz olduğu doğrulandı. Wikidata'nın sorgu servisi o gün kesinti nedeniyle dakikada bir istekle sınırlıydı.
 - **Müzik** (21 Kasım 2026).
   - `capture.mjs` `music=<wav yolu>` seçeneği alır. Müzik efektlerin altına `MUSIC_GAIN` (0,55) kazancıyla karışır, son 2 saniyede kısılır, karışım −15 LUFS'a çekilir (`loudnorm`).
   - `mode=sound` ile görüntü yeniden çekilmeden yalnızca ses değiştirilebilir.
