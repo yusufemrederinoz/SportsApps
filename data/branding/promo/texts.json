@@ -236,6 +236,11 @@
         "round": "{{n}}. TUR",
         "call": "TERCİHLERİN NE OLDU?"
       },
+      "crossover": {
+        "hook": ["8 FUTBOLCU,", "İKİ FORMA"],
+        "lead": "Kaçını biliyorsun?",
+        "call": "KAÇINI BİLDİN? YORUMA YAZ"
+      },
       "signature": "FUTBOL BİLGİNİ RAKİBİNE KARŞI DENE"
     },
     "poster": {

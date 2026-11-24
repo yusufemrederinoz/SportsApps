@@ -2620,6 +2620,7 @@
 
       .shirts .mark,
       .trio .mark,
+      .crossover .mark,
       .pick .mark {
         position: absolute;
         top: 196px;
@@ -3399,6 +3400,79 @@
 
       .verdict-recap-row .sell {
         --tone: var(--negative);
+      }
+
+      .crossover .q-title.reel-title {
+        top: 600px;
+        text-align: center;
+      }
+
+      .crossover .reel-title span,
+      .crossover .reel-title em {
+        transform-origin: center;
+      }
+
+      .crossover .cross-lead {
+        top: 930px;
+        font-size: 60px;
+      }
+
+      .cross-duos {
+        top: 1060px;
+        gap: 70px;
+      }
+
+      .crossover .matchup {
+        top: 430px;
+      }
+
+      .cross-answers {
+        top: 600px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 34px 40px;
+        --u: 1.25;
+      }
+
+      .cross-answers.single {
+        top: 700px;
+      }
+
+      .cross-answer {
+        height: calc(216px * var(--u) + 106px);
+      }
+
+      .cross-stints {
+        display: grid;
+        justify-items: center;
+        gap: 4px;
+        margin: 10px 0 0;
+        font-family: var(--display);
+        font-weight: 700;
+        font-size: 32px;
+        letter-spacing: 0.03em;
+        color: var(--gold);
+      }
+
+      .cross-stints span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .cross-stints svg {
+        width: 30px;
+        height: 34px;
+      }
+
+      .crossover .cross-call {
+        top: 820px;
+        font-size: 92px;
+      }
+
+      .cross-end {
+        top: 1020px;
       }
     </style>
   </head>

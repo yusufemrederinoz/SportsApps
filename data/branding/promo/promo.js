@@ -71,6 +71,10 @@ const CUTS = {
     ['trio', 22.4],
     ['signature', 3],
   ],
+  'reel-former': [
+    ['crossover', 22],
+    ['signature', 3],
+  ],
   'promo-xox': [
     ['qxox', 12],
     ['finale', 5.1],
@@ -145,6 +149,14 @@ const FOOTBALLERS = {
   olaitan: { id: 'olaitan', image: '/promo-portraits/olaitan.webp', name: 'Junior Olaitan', short: 'Olaitan', position: 'MF' },
   cerny: { id: 19588392, name: 'Václav Černý', short: 'Černý', position: 'FW' },
   oguz: { id: 109282705, name: 'Oğuz Aydın', short: 'Oğuz', position: 'FW' },
+  baros: { id: 180581, name: 'Milan Baroš', short: 'Baroš', position: 'FW' },
+  zaniolo: { id: 'zaniolo', image: '/promo-portraits/zaniolo.webp', name: 'Nicolò Zaniolo', short: 'Zaniolo', position: 'FW' },
+  friedel: { id: 241378, name: 'Brad Friedel', short: 'Friedel', position: 'GK' },
+  saunders: { id: 545303, name: 'Dean Saunders', short: 'Saunders', position: 'FW' },
+  six: { id: 444341, name: 'Didier Six', short: 'Six', position: 'FW' },
+  fred: { id: 965448, name: 'Fred', short: 'Fred', position: 'MF' },
+  rebrov: { id: 296992, name: 'Serhii Rebrov', short: 'Rebrov', position: 'FW' },
+  karavaev: { id: 7086249, name: 'O. Karavaev', short: 'Karavaev', position: 'DF' },
 };
 const QUIZ = {
   grid: { ask: 1.9, seconds: 8, answer: 'zidane', club: CLUBS[1] },
@@ -286,6 +298,8 @@ const SHIRT_CLUBS = {
   GS: { name: 'GALATASARAY', crest: { code: 'GS', pattern: 'halves', colors: ['#FDB912', '#A90432'] } },
   VFB: { name: 'STUTTGART', crest: { code: 'VFB', pattern: 'band', colors: ['#FFFFFF', '#E32219'] } },
   BJK: { name: 'BEŞİKTAŞ', crest: { code: 'BJK', pattern: 'stripes', colors: ['#FFFFFF', '#000000'], trim: '#C9CED6' } },
+  AVL: { name: 'ASTON VILLA', crest: { code: 'AVL', pattern: 'pale', colors: ['#7A1E3E', '#95BFE5'] } },
+  SHA: { name: 'SHAKHTAR', crest: { code: 'SHA', pattern: 'stripes', colors: ['#F26522', '#111111'], trim: '#F26522' } },
 };
 const SHIRTS = {
   pairs: [
@@ -333,6 +347,32 @@ const PICKS = {
     { role: 'striker', home: { key: 'osimhen', career: [267, 153, 36] }, away: { key: 'undav', career: [338, 155, 69] } },
   ],
   score: 1.4,
+};
+const CROSSOVER = {
+  hook: 3,
+  lead: 0.8,
+  step: 2,
+  hold: 1.4,
+  groups: [
+    {
+      clubs: ['GS', 'AVL'],
+      players: [
+        { key: 'baros', stints: [['AVL', '2005–2007'], ['GS', '2008–2013']] },
+        { key: 'zaniolo', stints: [['GS', '2023–2026'], ['AVL', '2023–2024']] },
+        { key: 'friedel', stints: [['GS', '1995–1996'], ['AVL', '2008–2011']] },
+        { key: 'saunders', stints: [['AVL', '1992–1995'], ['GS', '1995–1996']] },
+        { key: 'six', stints: [['AVL', '1984–1985'], ['GS', '1987–1988']] },
+      ],
+    },
+    {
+      clubs: ['FB', 'SHA'],
+      players: [
+        { key: 'fred', stints: [['SHA', '2013–2018'], ['FB', '2023–2026']] },
+        { key: 'rebrov', stints: [['SHA', '1991–1992'], ['FB', '2002–2004']] },
+        { key: 'karavaev', stints: [['SHA', '2009–2017'], ['FB', '2017']] },
+      ],
+    },
+  ],
 };
 const VERDICT = {
   first: 3.4,
@@ -1568,6 +1608,66 @@ function verdict(texts, start) {
     </div>`;
 }
 
+function crossover(texts, start) {
+  const r = texts.reel.crossover;
+  const time = (offset) => at(start, offset);
+  const { hook, lead, step, hold, groups } = CROSSOVER;
+  const duos = (base) =>
+    groups
+      .map((group, index) => {
+        const [home, away] = group.clubs.map((club) => `<i>${appCrest(SHIRT_CLUBS[club].crest)}</i>`);
+        return `<div class="duo in pop" style="--t: ${at(base, index * 0.2)}">${home}<em class="display">×</em>${away}</div>`;
+      })
+      .join('');
+
+  cue(time(0.05), 'whoosh', 0.8);
+  [0.35, 0.7].forEach((offset, index) => cue(time(offset), 'impact', index === 1 ? 1 : 0.6));
+  cue(time(1.1), 'impact', 0.5);
+
+  let from = time(hook);
+  const layers = groups.map((group) => {
+    const until = at(from, lead + (group.players.length - 1) * step + hold);
+    const [home, away] = group.clubs.map((club) => SHIRT_CLUBS[club]);
+    const base = from;
+    cue(at(base, -0.1), 'whoosh', 0.7);
+    cue(at(base, 0.15), 'impact', 0.8);
+    const cells = group.players
+      .map((player, index) => {
+        const shown = at(base, lead + index * step);
+        cue(shown, 'whoosh', 0.45);
+        cue(at(shown, 0.2), 'correct', 0.7, 0.95 + index * 0.05);
+        const stints = player.stints.map(([club, years]) => `<span>${appCrest(SHIRT_CLUBS[club].crest)}${years}</span>`).join('');
+        return `<div class="count-answer cross-answer">
+          <div class="count-ghost in pop" style="--t: ${at(base, 0.3 + index * 0.08)}"><b class="display">${index + 1}</b></div>
+          <div class="count-filled in pop" style="--t: ${shown}">${card(texts, player.key, 'x', 'flip shiny', shown)}<p class="cross-stints">${stints}</p></div>
+        </div>`;
+      })
+      .join('');
+    from = until;
+    return `<div class="layer state" style="--start: ${base}; --end: ${until}">
+      <div class="matchup in slam" style="--t: ${at(base, 0.1)}"><i>${appCrest(home.crest)}</i><strong class="display" data-fit>${home.name}<em> × </em>${away.name}</strong><i>${appCrest(away.crest)}</i></div>
+      <div class="count-answers cross-answers ${group.players.length > 3 ? '' : 'single'}">${cells}</div>
+    </div>`;
+  });
+
+  const call = from;
+  cue(at(call, -0.1), 'whoosh', 0.7);
+  cue(call, 'impact', 0.9);
+  cue(at(call, 0.3), 'win', 0.6);
+
+  return `<div class="display mark">CHALLENGE<span>GOAL</span></div>
+    <div class="layer state" style="--start: ${start}; --end: ${time(hook)}">
+      ${titleLines(r.hook, start, 'reel-title')}
+      <p class="q-line cross-lead in rise" style="--t: ${time(1.3)}">${r.lead}</p>
+      <div class="crest-row cross-duos">${duos(time(1.1))}</div>
+    </div>
+    ${layers.join('')}
+    <div class="layer state" style="--start: ${call}; --end: ${NEVER}">
+      <div class="display centered q-call cross-call in slam" style="--t: ${call}" data-fit>${r.call}</div>
+      <div class="crest-row cross-duos cross-end">${duos(at(call, 0.4))}</div>
+    </div>`;
+}
+
 function signature(texts, start) {
   cue(at(start, 0.05), 'whoosh', 0.7);
   cue(at(start, 0.3), 'impact', 0.9);
@@ -1625,6 +1725,7 @@ const SCENES = {
   shirts,
   pick,
   trio: verdict,
+  crossover,
   signature,
 };
 
